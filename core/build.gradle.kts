@@ -1,29 +1,25 @@
-import java.lang.IllegalStateException
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     `maven-publish`
 }
 
+val version = "0.1.0-SNAPSHOT"
+
 repositories {
-    mavenCentral()
+    configureRepositories()
 }
 
-group = "dev.azide"
-version = "0.1.0-SNAPSHOT"
+this@Project.group = groupId
+this@Project.version = version
 
 kotlin {
-    jvm()
-
-    // Java 21 is the most recent LTS version
-    jvmToolchain(21)
-
-    js {
-        browser()
-        nodejs()
-    }
+    configureKotlin()
 
     sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kmpx.collections)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

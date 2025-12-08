@@ -1,10 +1,14 @@
 [versions]
 kotlin = "2.2.21"
-kmpx = "0.1.0-SNAPSHOT"
 
 [libraries]
+# Proper dependencies
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kmpx-core = { module = "dev.kmpx:core", version.ref = "kmpx" }
+kmpx-collections = { module = "dev.kmpx:collections", version = "0.1.1-SNAPSHOT" }
+# Build logic dependencies
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kmpx-gradleCoreApiUtils = { module = "dev.kmpx:gradle-core-api-utils", version = "0.1.0" }
+kmpx-gradleKotlinApiUtils = { module = "dev.kmpx:gradle-kotlin-api-utils", version = "0.1.0" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
