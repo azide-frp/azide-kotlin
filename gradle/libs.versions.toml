@@ -1,10 +1,15 @@
 [versions]
 kotlin = "2.2.21"
+kotlinx-coroutines = "1.10.2"
 
 [libraries]
 # Proper dependencies
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kmpx-collections = { module = "dev.kmpx:collections", version = "0.1.1-SNAPSHOT" }
+kmpx-jsApiCompat = { module = "dev.kmpx:js-api-compat", version = "0.1.0-SNAPSHOT" }
+kmpx-platform = { module = "dev.kmpx:platform", version = "0.1.0-SNAPSHOT" }
 # Build logic dependencies
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kmpx-gradleCoreApiUtils = { module = "dev.kmpx:gradle-core-api-utils", version = "0.1.0" }

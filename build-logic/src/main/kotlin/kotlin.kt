@@ -7,6 +7,9 @@ private const val usedJvmToolchainVersion = 21
 
 private val enabledExperimentalCompilerFeatures = listOf(
     ExperimentalLanguageFeature.ConsistentDataClassCopyVisibility,
+    ExperimentalLanguageFeature.ExpectActualClasses,
+    ExperimentalLanguageFeature.ContextParameters,
+    ExperimentalLanguageFeature.NestedTypeAliases,
 )
 
 fun KotlinMultiplatformExtension.configureKotlin() {

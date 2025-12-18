@@ -1,0 +1,133 @@
+package dev.azide.internal.cell.operated_vertices
+
+import dev.azide.internal.Transactions
+import dev.azide.internal.cell.CellVertex
+import dev.azide.internal.cell.CellVertex.Observer
+import dev.azide.internal.cell.CellVertex.ObserverHandle
+import dev.azide.internal.cell.CellVertex.Update
+import dev.azide.internal.cell.abstract_vertices.AbstractCachingCellVertex
+
+class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
+    private val sourceVertex1: CellVertex<ValueT1>,
+    private val sourceVertex2: CellVertex<ValueT2>,
+    private val transform: (ValueT1, ValueT2) -> TransformedValueT,
+) : AbstractCachingCellVertex<TransformedValueT>(
+    cacheType = CacheType.Momentary,
+), Observer<Any?> {
+    private var upstreamObserverHandle1: ObserverHandle? = null
+    private var upstreamObserverHandle2: ObserverHandle? = null
+
+    override fun activate(
+        propagationContext: Transactions.PropagationContext,
+    ): Update<TransformedValueT>? {
+        if (upstreamObserverHandle1 != null) {
+            throw IllegalStateException("Vertex seems to be already active")
+        }
+
+        if (upstreamObserverHandle2 != null) {
+            throw IllegalStateException("Vertex seems to be already active")
+        }
+
+        this.upstreamObserverHandle1 = sourceVertex1.registerObserver(
+            propagationContext = propagationContext,
+            observer = this,
+        )
+
+        this.upstreamObserverHandle2 = sourceVertex2.registerObserver(
+            propagationContext = propagationContext,
+            observer = this,
+        )
+
+        return buildTransformedUpdate(
+            propagationContext = propagationContext,
+        )
+    }
+
+    override fun deactivate() {
+        val upstreamObserverHandle1 =
+            this.upstreamObserverHandle1 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+
+        sourceVertex1.unregisterObserver(
+            handle = upstreamObserverHandle1,
+        )
+
+        this.upstreamObserverHandle1 = null
+
+        val upstreamObserverHandle2 =
+            this.upstreamObserverHandle2 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+
+        sourceVertex2.unregisterObserver(
+            handle = upstreamObserverHandle2,
+        )
+
+        this.upstreamObserverHandle2 = null
+    }
+
+    /**
+     * Handle an update of one of the source vertices.
+     */
+    override fun handleUpdate(
+        propagationContext: Transactions.PropagationContext,
+        update: Update<Any?>?,
+    ) {
+        exposeAndPropagateTransformedUpdate(
+            propagationContext = propagationContext,
+        )
+    }
+
+    private fun exposeAndPropagateTransformedUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ) {
+        val transformedUpdate = buildTransformedUpdate(
+            propagationContext = propagationContext,
+        )
+
+        exposeAndPropagateUpdate(
+            propagationContext = propagationContext,
+            update = transformedUpdate,
+        )
+    }
+
+    private fun buildTransformedUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): Update<TransformedValueT>? {
+        val ongoingSourceUpdate1 = sourceVertex1.ongoingUpdate
+        val ongoingSourceUpdate2 = sourceVertex2.ongoingUpdate
+
+        run {
+            if (ongoingSourceUpdate1 != null) return@run
+            if (ongoingSourceUpdate2 != null) return@run
+            return null
+        }
+
+        val newSourceValue1 = when (ongoingSourceUpdate1) {
+            null -> sourceVertex1.getOldValue(
+                propagationContext = propagationContext,
+            )
+
+            else -> ongoingSourceUpdate1.updatedValue
+        }
+
+        val newSourceValue2 = when (ongoingSourceUpdate2) {
+            null -> sourceVertex2.getOldValue(
+                propagationContext = propagationContext,
+            )
+
+            else -> ongoingSourceUpdate2.updatedValue
+        }
+
+        return Update(
+            updatedValue = transform(
+                newSourceValue1,
+                newSourceValue2,
+            ),
+        )
+    }
+
+    override fun computeOldValue(
+        propagationContext: Transactions.PropagationContext,
+    ): TransformedValueT = transform(
+        sourceVertex1.getOldValue(propagationContext),
+        sourceVertex2.getOldValue(propagationContext),
+    )
+}

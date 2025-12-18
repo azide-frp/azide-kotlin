@@ -18,10 +18,14 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kmpx.collections)
+            implementation(libs.kmpx.jsApiCompat)
+            implementation(libs.kmpx.platform)
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
