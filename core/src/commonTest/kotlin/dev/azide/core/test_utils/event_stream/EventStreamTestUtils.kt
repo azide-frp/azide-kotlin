@@ -2,6 +2,7 @@ package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
 import dev.azide.core.MomentContext
+import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
@@ -26,7 +27,7 @@ internal object EventStreamTestUtils {
         spawn: context(MomentContext) () -> EventStream<EventT>,
     ): EventStream<EventT> = Transactions.execute { propagationContext ->
         val subjectEventStream = with(
-            MomentContext(
+            MomentContextImpl(
                 propagationContext = propagationContext,
             ),
         ) {
@@ -60,7 +61,7 @@ internal object EventStreamTestUtils {
         )
 
         val subjectEventStream = with(
-            MomentContext(
+            MomentContextImpl(
                 propagationContext = propagationContext,
             ),
         ) {

@@ -2,6 +2,7 @@ package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.MomentContext
+import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.CellVertex.Observer
@@ -39,7 +40,7 @@ internal object CellTestUtils {
         spawn: context(MomentContext) () -> Cell<ValueT>,
     ): Cell<ValueT> = Transactions.execute { propagationContext ->
         val subjectCell = with(
-            MomentContext(
+            MomentContextImpl(
                 propagationContext = propagationContext,
             ),
         ) {
@@ -72,7 +73,7 @@ internal object CellTestUtils {
         )
 
         val subjectCell = with(
-            MomentContext(
+            MomentContextImpl(
                 propagationContext = propagationContext,
             ),
         ) {
