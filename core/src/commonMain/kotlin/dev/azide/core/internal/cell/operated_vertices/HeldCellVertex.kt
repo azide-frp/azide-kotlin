@@ -7,7 +7,7 @@ import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.registerLooseSubscriber
 
-class HeldCellVertex<ValueT>(
+class HeldCellVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     sourceVertex: LiveEventStreamVertex<ValueT>,
     initialValue: ValueT,
@@ -15,10 +15,14 @@ class HeldCellVertex<ValueT>(
     initialValue = initialValue,
 ), LiveEventStreamVertex.BasicSubscriber<ValueT> {
     companion object {
-        fun <ValueT> buildUpdate(
-            sourceEmission: EventStreamVertex.Emission<ValueT>,
-        ): CellVertex.Update<ValueT> = CellVertex.Update(
-            updatedValue = sourceEmission.emittedEvent,
+        fun <ValueT> start(
+            propagationContext: Transactions.PropagationContext,
+            sourceVertex: LiveEventStreamVertex<ValueT>,
+            initialValue: ValueT,
+        ): HeldCellVertex<ValueT> = HeldCellVertex(
+            propagationContext = propagationContext,
+            sourceVertex = sourceVertex,
+            initialValue = initialValue,
         )
     }
 
@@ -33,7 +37,9 @@ class HeldCellVertex<ValueT>(
             propagationContext = propagationContext,
             update = when (emission) {
                 null -> null
-                else -> buildUpdate(sourceEmission = emission)
+                else -> CellVertex.Update(
+                    updatedValue = emission.emittedEvent,
+                )
             },
         )
     }
@@ -48,7 +54,9 @@ class HeldCellVertex<ValueT>(
         sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
             exposeUpdate(
                 propagationContext = propagationContext,
-                update = buildUpdate(sourceEmission = sourceOngoingEmission),
+                update = CellVertex.Update(
+                    updatedValue = sourceOngoingEmission.emittedEvent,
+                ),
             )
         }
     }

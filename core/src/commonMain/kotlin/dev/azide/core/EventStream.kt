@@ -100,7 +100,7 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     initialValue: EventT,
 ): Cell<EventT> = Cell.Ordinary {
     when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> HeldCellVertex(
+        is LiveEventStreamVertex -> HeldCellVertex.start(
             propagationContext = momentContext.propagationContext,
             sourceVertex = sourceVertex,
             initialValue = initialValue,
