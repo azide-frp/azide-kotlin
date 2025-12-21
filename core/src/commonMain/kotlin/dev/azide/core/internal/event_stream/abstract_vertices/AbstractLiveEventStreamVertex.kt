@@ -53,9 +53,9 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     final override fun commit() {
-        commit(
-            ongoingEmission = _ongoingEmission,
-        )
+        if (_ongoingEmission != null) {
+            transit()
+        }
 
         _ongoingEmission = null
         _isEnqueuedForCommitment = false
@@ -116,8 +116,6 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     protected open fun onLastSubscriberUnregistered() {
     }
 
-    protected open fun commit(
-        ongoingEmission: EventStreamVertex.Emission<EventT>?,
-    ) {
+    protected open fun transit() {
     }
 }

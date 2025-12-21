@@ -10,11 +10,12 @@ class SingleEventStreamVertex<EventT>(
     propagationContext: Transactions.PropagationContext,
     sourceVertex: LiveEventStreamVertex<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
-    private var upstreamLooseSubscription: LiveEventStreamVertex.LooseSubscription? = sourceVertex.registerLooseSubscriber(
-        propagationContext = propagationContext,
-        dependentVertex = this,
-        subscriber = this,
-    )
+    private var upstreamLooseSubscription: LiveEventStreamVertex.LooseSubscription? =
+        sourceVertex.registerLooseSubscriber(
+            propagationContext = propagationContext,
+            dependentVertex = this,
+            subscriber = this,
+        )
 
     /**
      * Handle the emission of the source event stream.
@@ -49,16 +50,12 @@ class SingleEventStreamVertex<EventT>(
         }
     }
 
-    override fun commit(
-        ongoingEmission: EventStreamVertex.Emission<EventT>?,
-    ) {
+    override fun transit() {
         val upstreamLooseSubscription = this.upstreamLooseSubscription
             ?: throw IllegalStateException("It looks as if the single emission already had place")
 
-        if (ongoingEmission != null) {
-            upstreamLooseSubscription.cancel()
+        upstreamLooseSubscription.cancel()
 
-            this.upstreamLooseSubscription = null
-        }
+        this.upstreamLooseSubscription = null
     }
 }
