@@ -54,9 +54,11 @@ abstract class AbstractAutonomousCellVertex<ValueT>() : WarmCellVertex<ValueT>, 
     }
 
     final override fun commit() {
-        commit(
+        persist(
             ongoingUpdate = _ongoingUpdate,
         )
+
+        transit()
 
         _ongoingUpdate = null
         _isEnqueuedForCommitment = false
@@ -125,8 +127,12 @@ abstract class AbstractAutonomousCellVertex<ValueT>() : WarmCellVertex<ValueT>, 
     protected open fun onLastObserverUnregistered() {
     }
 
-    protected open fun commit(
+    protected open fun persist(
         ongoingUpdate: CellVertex.Update<ValueT>?,
+    ) {
+    }
+
+    protected open fun transit(
     ) {
     }
 }

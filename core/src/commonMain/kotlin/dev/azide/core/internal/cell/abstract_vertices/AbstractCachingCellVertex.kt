@@ -46,7 +46,7 @@ abstract class AbstractCachingCellVertex<ValueT>(
         }
     }
 
-    override fun commit(
+    override fun persist(
         ongoingUpdate: CellVertex.Update<ValueT>?,
     ) {
         when (cacheType) {
