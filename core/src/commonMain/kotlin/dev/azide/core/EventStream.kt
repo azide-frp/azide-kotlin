@@ -98,8 +98,8 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.take(
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     initialValue: EventT,
-): Cell<EventT> = Cell.Ordinary {
-    when (val sourceVertex = this.vertex) {
+): Cell<EventT> = Cell.Ordinary(
+    vertex = when (val sourceVertex = this.vertex) {
         is LiveEventStreamVertex -> HeldCellVertex.start(
             propagationContext = momentContext.propagationContext,
             sourceVertex = sourceVertex,
@@ -109,8 +109,8 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
         is TerminatedEventStreamVertex -> PureCellVertex(
             value = initialValue,
         )
-    }
-}
+    },
+)
 
 context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.accumulate(
     initialAccValue: AccT,

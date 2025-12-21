@@ -31,6 +31,12 @@ interface Cell<out ValueT> {
     class Ordinary<out ValueT> internal constructor(
         private val buildVertex: (propagationContext: Transactions.PropagationContext) -> CellVertex<ValueT>,
     ) : Cell<ValueT> {
+        internal constructor(
+            vertex: CellVertex<ValueT>,
+        ) : this(
+            buildVertex = { vertex },
+        )
+
         private var cachedVertex: CellVertex<ValueT>? = null
 
         override fun getVertex(
