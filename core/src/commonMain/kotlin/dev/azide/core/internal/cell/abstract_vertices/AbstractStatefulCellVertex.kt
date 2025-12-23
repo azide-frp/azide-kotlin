@@ -3,7 +3,7 @@ package dev.azide.core.internal.cell.abstract_vertices
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 
-abstract class AbstractStatefulCellVertex<ValueT>() : AbstractAutonomousCellVertex<ValueT>() {
+abstract class AbstractStatefulCellVertex<ValueT>() : AbstractWarmCellVertex<ValueT>() {
     constructor(
         initialValue: ValueT,
     ) : this() {

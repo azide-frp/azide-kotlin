@@ -8,7 +8,7 @@ import dev.azide.core.internal.utils.weak_bag.MutableBag
 import dev.azide.core.internal.cell.CellVertex.Observer
 import kotlin.jvm.JvmInline
 
-abstract class AbstractAutonomousCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
+abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
     @JvmInline
     private value class ObserverHandleImpl<ValueT>(
         val internalHandle: MutableBag.Handle<Observer<ValueT>>,
