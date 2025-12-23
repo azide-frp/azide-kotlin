@@ -4,15 +4,11 @@ import dev.azide.core.internal.FinalizationTransactionRegistry
 import dev.azide.core.internal.Transaction
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
+import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.kmpx.platform.PlatformWeakReference
 
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
-    interface Subscriber<in EventT> {
-        fun handleEmissionWithStatus(
-            propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
-        ): SubscriberStatus
-    }
 
     interface BasicSubscriber<in EventT> : Subscriber<EventT> {
         override fun handleEmissionWithStatus(
@@ -53,31 +49,20 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
                         emission = emission,
                     )
 
-
                     return SubscriberStatus.Reachable
                 }
             }
         }
     }
 
-    enum class SubscriberStatus {
-        Reachable, Unreachable,
-    }
-
-    interface SubscriberHandle
-
     interface LooseSubscription {
         fun cancel()
     }
 
-    fun registerSubscriber(
+    override fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: Subscriber<EventT>,
-    ): SubscriberHandle
-
-    fun unregisterSubscriber(
-        handle: SubscriberHandle,
-    )
+    ): EventStreamVertex.SubscriberHandle
 }
 
 fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): LiveEventStreamVertex.WeaklyReferencedSubscriber<EventT> =
