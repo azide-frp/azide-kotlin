@@ -7,6 +7,7 @@ import dev.azide.core.internal.cell.PureCellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.Mapped2FrozenCellVertex
 import dev.azide.core.internal.cell.operated_vertices.Mapped2WarmCellVertex
+import dev.azide.core.internal.cell.operated_vertices.MappedAtCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedFrozenCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedWarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.SwitchedCellVertex
@@ -171,4 +172,33 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.map(
 
 context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<ValueT>.mapAt(
     transform: context(MomentContext) (ValueT) -> TransformedValueT,
-): Cell<TransformedValueT> = TODO()
+): Cell<TransformedValueT> {
+    val initialPropagationContext = momentContext.propagationContext
+
+    val sourceVertex = this.getVertex(
+        propagationContext = initialPropagationContext,
+    )
+
+    return when (sourceVertex) {
+        is FrozenCellVertex -> Cell.Const(
+            constValue = transform(
+                sourceVertex.getOldValue(
+                    propagationContext = initialPropagationContext,
+                ),
+            )
+        )
+
+        is WarmCellVertex -> Cell.Ordinary(
+            MappedAtCellVertex.start(
+                propagationContext = initialPropagationContext,
+                sourceVertex = sourceVertex,
+                transform = { propagationContext, updatedValue ->
+                    transform(
+                        MomentContext.wrap(propagationContext),
+                        updatedValue,
+                    )
+                },
+            ),
+        )
+    }
+}
