@@ -44,7 +44,9 @@ fun <EventT, TransformedEventT> EventStream<EventT>.map(
     vertex = when (val sourceVertex = this.vertex) {
         is LiveEventStreamVertex -> MappedEventStreamVertex(
             sourceVertex = sourceVertex,
-            transform = transform,
+            transform = { _, event ->
+                transform(event)
+            },
         )
 
         is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
@@ -57,7 +59,20 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
-): EventStream<TransformedEventT> = TODO()
+): EventStream<TransformedEventT> = EventStream.Ordinary(
+    vertex = when (val sourceVertex = this.vertex) {
+        is LiveEventStreamVertex -> MappedEventStreamVertex(
+            sourceVertex = sourceVertex,
+            transform = { propagationContext, event ->
+                with(MomentContext.wrap(propagationContext)) {
+                    transform(event)
+                }
+            },
+        )
+
+        is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
+    },
+)
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNullAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT?,
