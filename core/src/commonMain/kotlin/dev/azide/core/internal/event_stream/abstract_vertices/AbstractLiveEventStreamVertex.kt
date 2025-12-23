@@ -3,6 +3,7 @@ package dev.azide.core.internal.event_stream.abstract_vertices
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
+import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.utils.weak_bag.MutableBag
 import kotlin.jvm.JvmInline
@@ -104,7 +105,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
             )
 
             // Remove the subscriber if it's unreachable
-            subscriberStatus == EventStreamVertex.SubscriberStatus.Unreachable
+            subscriberStatus == SubscriberStatus.Unreachable
         }
     }
 

@@ -9,7 +9,6 @@ import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.kmpx.platform.PlatformWeakReference
 
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
-
     interface BasicSubscriber<in EventT> : Subscriber<EventT> {
         override fun handleEmissionWithStatus(
             propagationContext: Transactions.PropagationContext,

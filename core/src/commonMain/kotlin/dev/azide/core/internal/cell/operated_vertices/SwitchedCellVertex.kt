@@ -9,7 +9,7 @@ import dev.azide.core.internal.cell.getNewValue
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: WarmCellVertex<Cell<ValueT>>,
-) : AbstractStatelessCellVertex<ValueT>(), CellVertex.Observer<Cell<ValueT>> {
+) : AbstractStatelessCellVertex<ValueT>(), WarmCellVertex.BasicObserver<Cell<ValueT>> {
     /**
      * The outer vertex observer handle.
      *
@@ -50,7 +50,7 @@ class SwitchedCellVertex<ValueT>(
      */
     private var upstreamNewInnerObserverHandle: CellVertex.ObserverHandle? = null
 
-    private val innerSourceObserver = object : CellVertex.Observer<ValueT> {
+    private val innerSourceObserver = object : WarmCellVertex.BasicObserver<ValueT> {
         /**
          * Handle the update of the inner source cell.
          */

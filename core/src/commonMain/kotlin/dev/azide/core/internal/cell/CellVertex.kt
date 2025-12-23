@@ -17,13 +17,17 @@ sealed interface CellVertex<out ValueT> : Vertex {
     }
 
     interface Observer<in ValueT> {
-        fun handleUpdate(
+        fun handleUpdateWithStatus(
             propagationContext: Transactions.PropagationContext,
             update: Update<ValueT>?,
-        )
+        ): ObserverStatus
     }
 
     interface ObserverHandle
+
+    enum class ObserverStatus {
+        Reachable, Unreachable,
+    }
 
     val ongoingUpdate: Update<ValueT>?
 
