@@ -88,29 +88,29 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private fun buildTransformedUpdate(
         propagationContext: Transactions.PropagationContext,
     ): CellVertex.Update<TransformedValueT>? {
-        val ongoingSourceUpdate1 = sourceVertex1.ongoingUpdate
-        val ongoingSourceUpdate2 = sourceVertex2.ongoingUpdate
+        val sourceOngoingUpdate1 = sourceVertex1.ongoingUpdate
+        val sourceOngoingUpdate2 = sourceVertex2.ongoingUpdate
 
         run {
-            if (ongoingSourceUpdate1 != null) return@run
-            if (ongoingSourceUpdate2 != null) return@run
+            if (sourceOngoingUpdate1 != null) return@run
+            if (sourceOngoingUpdate2 != null) return@run
             return null
         }
 
-        val newSourceValue1 = when (ongoingSourceUpdate1) {
+        val newSourceValue1 = when (sourceOngoingUpdate1) {
             null -> sourceVertex1.getOldValue(
                 propagationContext = propagationContext,
             )
 
-            else -> ongoingSourceUpdate1.updatedValue
+            else -> sourceOngoingUpdate1.updatedValue
         }
 
-        val newSourceValue2 = when (ongoingSourceUpdate2) {
+        val newSourceValue2 = when (sourceOngoingUpdate2) {
             null -> sourceVertex2.getOldValue(
                 propagationContext = propagationContext,
             )
 
-            else -> ongoingSourceUpdate2.updatedValue
+            else -> sourceOngoingUpdate2.updatedValue
         }
 
         return CellVertex.Update(

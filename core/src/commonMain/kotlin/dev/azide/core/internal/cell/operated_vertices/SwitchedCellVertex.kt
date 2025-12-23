@@ -167,7 +167,7 @@ class SwitchedCellVertex<ValueT>(
 
                 this.updatedInnerSourceVertex = handledUpdatedInnerSourceVertex
 
-                // Unsubscribe from the previous updated inner source vertex / stable source verte
+                // Unsubscribe from the previous updated inner source vertex / stable source vertex
 
                 val previousUpstreamNewInnerObserverHandle = this.upstreamNewInnerObserverHandle
                     ?: throw IllegalStateException("Vertex doesn't seem to be active")
@@ -304,9 +304,7 @@ class SwitchedCellVertex<ValueT>(
         )
     }
 
-    override fun commit(
-        ongoingUpdate: CellVertex.Update<ValueT>?,
-    ) {
+    override fun transit() {
         val updatedInnerSourceVertex = this.updatedInnerSourceVertex ?: return
 
         this.stableInnerSourceVertex = updatedInnerSourceVertex

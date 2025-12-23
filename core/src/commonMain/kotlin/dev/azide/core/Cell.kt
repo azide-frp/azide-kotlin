@@ -31,6 +31,12 @@ interface Cell<out ValueT> {
     class Ordinary<out ValueT> internal constructor(
         private val buildVertex: (propagationContext: Transactions.PropagationContext) -> CellVertex<ValueT>,
     ) : Cell<ValueT> {
+        internal constructor(
+            vertex: CellVertex<ValueT>,
+        ) : this(
+            buildVertex = { vertex },
+        )
+
         private var cachedVertex: CellVertex<ValueT>? = null
 
         override fun getVertex(
@@ -96,10 +102,6 @@ interface Cell<out ValueT> {
             transform: (ValueT1, ValueT2, ValueT3, ValueT4) -> ResultT,
         ): Cell<ResultT> = TODO()
 
-        fun <ValueT> of(
-            value: ValueT,
-        ): Cell<ValueT> = TODO()
-
         context(momentContext: MomentContext) fun <ValueT> define(
             initialValue: ValueT,
             newValues: EventStream<ValueT>,
@@ -137,7 +139,15 @@ interface Cell<out ValueT> {
     }
 }
 
-context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT = TODO()
+context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT {
+    val propagationContext = momentContext.propagationContext
+
+    return getVertex(
+        propagationContext = propagationContext,
+    ).getOldValue(
+        propagationContext = propagationContext,
+    )
+}
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.map(
     transform: (ValueT) -> TransformedValueT,
@@ -158,3 +168,7 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.map(
         )
     }
 }
+
+context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<ValueT>.mapAt(
+    transform: context(MomentContext) (ValueT) -> TransformedValueT,
+): Cell<TransformedValueT> = TODO()

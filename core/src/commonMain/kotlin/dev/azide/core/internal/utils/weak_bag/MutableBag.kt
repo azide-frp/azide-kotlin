@@ -3,7 +3,7 @@ package dev.azide.core.internal.utils.weak_bag
 import kotlin.jvm.JvmInline
 
 /**
- * A very simple implementation of a _weak bag_. A bag is a collection that can hold multiple instances of the same
+ * A very simple implementation of a bag. A bag is a collection that can hold multiple instances of the same
  * value, without keeping any specific internal order, nor guaranteeing any efficient lookup operations.
  */
 class MutableBag<ElementT : Any> {

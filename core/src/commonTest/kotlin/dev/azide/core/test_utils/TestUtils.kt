@@ -1,5 +1,6 @@
 package dev.azide.core.test_utils
 
+import dev.azide.core.MomentContext
 import dev.azide.core.internal.Transactions
 
 internal object TestUtils {
@@ -10,6 +11,14 @@ internal object TestUtils {
             inputStimulation.stimulate(
                 propagationContext = propagationContext,
             )
+        }
+    }
+
+    fun <ResultT> pull(
+        block: context(MomentContext) () -> ResultT,
+    ): ResultT = Transactions.execute { propagationContext ->
+        with(MomentContext.wrap(propagationContext)) {
+            block()
         }
     }
 }
