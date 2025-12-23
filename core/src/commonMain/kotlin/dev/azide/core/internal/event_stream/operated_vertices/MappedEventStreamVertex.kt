@@ -9,7 +9,7 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceVertex: LiveEventStreamVertex<EventT>,
     private val transform: (Transactions.PropagationContext, EventT) -> TransformedEventT,
 ) : AbstractStatelessEventStreamVertex<TransformedEventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
-    private var upstreamSubscriberHandle: LiveEventStreamVertex.SubscriberHandle? = null
+    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     /**
      * Handle the emission of the source event stream.
