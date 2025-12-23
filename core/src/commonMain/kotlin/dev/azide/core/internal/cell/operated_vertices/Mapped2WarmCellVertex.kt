@@ -41,21 +41,21 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     }
 
     override fun deactivate() {
-        val upstreamObserverHandle1 =
-            this.upstreamObserverHandle1 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        // Unregister each observer if the respective source vertex is warm and actually gave us a handle
 
-        sourceVertex1.unregisterObserver(
-            handle = upstreamObserverHandle1,
-        )
+        this.upstreamObserverHandle1?.let { upstreamObserverHandle1 ->
+            sourceVertex1.unregisterObserver(
+                handle = upstreamObserverHandle1,
+            )
+        }
 
         this.upstreamObserverHandle1 = null
 
-        val upstreamObserverHandle2 =
-            this.upstreamObserverHandle2 ?: throw IllegalStateException("Vertex doesn't seem to be active")
-
-        sourceVertex2.unregisterObserver(
-            handle = upstreamObserverHandle2,
-        )
+        this.upstreamObserverHandle2?.let { upstreamObserverHandle2 ->
+            sourceVertex2.unregisterObserver(
+                handle = upstreamObserverHandle2,
+            )
+        }
 
         this.upstreamObserverHandle2 = null
     }

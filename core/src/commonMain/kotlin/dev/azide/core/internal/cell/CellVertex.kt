@@ -30,7 +30,7 @@ sealed interface CellVertex<out ValueT> : Vertex {
     fun registerObserver(
         propagationContext: Transactions.PropagationContext,
         observer: Observer<ValueT>,
-    ): ObserverHandle
+    ): ObserverHandle?
 
     fun unregisterObserver(
         handle: ObserverHandle,

@@ -255,7 +255,7 @@ class SwitchedCellVertex<ValueT>(
         val stableInnerSourceVertex = this.stableInnerSourceVertex
         val upstreamNewInnerObserverHandle = this.upstreamNewInnerObserverHandle
 
-        if (upstreamOuterObserverHandle == null || stableInnerSourceVertex == null || upstreamNewInnerObserverHandle == null) {
+        if (upstreamOuterObserverHandle == null || stableInnerSourceVertex == null) {
             throw IllegalStateException("Vertex doesn't seem to be active")
         }
 
@@ -272,9 +272,12 @@ class SwitchedCellVertex<ValueT>(
         val updatedInnerSourceVertex = this.updatedInnerSourceVertex
         val newInnerSourceVertex = updatedInnerSourceVertex ?: stableInnerSourceVertex
 
-        newInnerSourceVertex.unregisterObserver(
-            handle = upstreamNewInnerObserverHandle,
-        )
+        // Unregister the inner observer if the inner source vertex is warm and actually gave us a handle
+        if (upstreamNewInnerObserverHandle != null) {
+            newInnerSourceVertex.unregisterObserver(
+                handle = upstreamNewInnerObserverHandle,
+            )
+        }
 
         this.stableInnerSourceVertex = null
         this.updatedInnerSourceVertex = null
