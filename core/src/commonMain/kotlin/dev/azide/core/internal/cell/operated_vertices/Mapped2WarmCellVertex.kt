@@ -2,6 +2,7 @@ package dev.azide.core.internal.cell.operated_vertices
 
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
+import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractCachingCellVertex
 
 class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
@@ -10,7 +11,7 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), CellVertex.Observer<Any?> {
+), WarmCellVertex.BasicObserver<Any?> {
     private var upstreamObserverHandle1: CellVertex.ObserverHandle? = null
     private var upstreamObserverHandle2: CellVertex.ObserverHandle? = null
 
@@ -41,21 +42,21 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     }
 
     override fun deactivate() {
-        val upstreamObserverHandle1 =
-            this.upstreamObserverHandle1 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        // Unregister each observer if the respective source vertex is warm and actually gave us a handle
 
-        sourceVertex1.unregisterObserver(
-            handle = upstreamObserverHandle1,
-        )
+        this.upstreamObserverHandle1?.let { upstreamObserverHandle1 ->
+            sourceVertex1.unregisterObserver(
+                handle = upstreamObserverHandle1,
+            )
+        }
 
         this.upstreamObserverHandle1 = null
 
-        val upstreamObserverHandle2 =
-            this.upstreamObserverHandle2 ?: throw IllegalStateException("Vertex doesn't seem to be active")
-
-        sourceVertex2.unregisterObserver(
-            handle = upstreamObserverHandle2,
-        )
+        this.upstreamObserverHandle2?.let { upstreamObserverHandle2 ->
+            sourceVertex2.unregisterObserver(
+                handle = upstreamObserverHandle2,
+            )
+        }
 
         this.upstreamObserverHandle2 = null
     }

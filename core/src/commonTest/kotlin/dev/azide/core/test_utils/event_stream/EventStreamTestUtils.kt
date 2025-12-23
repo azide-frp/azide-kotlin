@@ -4,6 +4,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.MomentContext
 import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex.BasicSubscriber
@@ -100,7 +101,7 @@ internal object EventStreamTestUtils {
          */
         private var receivedEmission: ReceivedEmission<EventT>? = null
 
-        private var upstreamSubscriberHandle: LiveEventStreamVertex.SubscriberHandle? =
+        private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
             Transactions.execute { propagationContext ->
                 subjectVertex.registerSubscriber(
                     propagationContext = propagationContext,

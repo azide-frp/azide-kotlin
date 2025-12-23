@@ -9,7 +9,7 @@ class FilteredEventStreamVertex<EventT>(
     private val sourceVertex: LiveEventStreamVertex<EventT>,
     private val predicate: (EventT) -> Boolean,
 ) : AbstractStatelessEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
-    private var upstreamSubscriberHandle: LiveEventStreamVertex.SubscriberHandle? = null
+    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     /**
      * Handle the emission of the source event stream.
