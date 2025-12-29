@@ -8,6 +8,7 @@ import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
 
 interface EventStream<out EventT> {
     val vertex: EventStreamVertex<EventT>
@@ -21,6 +22,14 @@ interface EventStream<out EventT> {
     ) : EventStream<EventT>
 
     companion object {
+        fun <EventT> wrap(
+            externalSourceAdapter: ExternalSourceAdapter<EventT>,
+        ): EventStream<EventT> = Ordinary(
+            vertex = WrappedExternalEventStreamVertex(
+                externalSourceAdapter = externalSourceAdapter,
+            ),
+        )
+
         fun <EventT, ResultT> looped(
             block: (EventStream<EventT>) -> Pair<ResultT, EventStream<EventT>>,
         ): ResultT = TODO()
