@@ -7,6 +7,7 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
+import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
 import dev.azide.core.internal.cell.FrozenCellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
@@ -19,11 +20,10 @@ import kotlin.test.assertNull
 
 internal object CellTestUtils {
     private object NoopObserver : Observer<Any?> {
-        override fun handleUpdate(
+        override fun handleUpdateWithStatus(
             propagationContext: Transactions.PropagationContext,
             update: Update<Any?>?,
-        ) {
-        }
+        ): ObserverStatus = ObserverStatus.Reachable
     }
 
     fun <ValueT> createInputCell(
@@ -111,7 +111,7 @@ internal object CellTestUtils {
 
     class ObservingVerifier<ValueT>(
         private val subjectVertex: CellVertex<ValueT>,
-    ) : Observer<ValueT> {
+    ) : WarmCellVertex.BasicObserver<ValueT> {
         @JvmInline
         value class ReceivedUpdate<ValueT>(
             val receivedUpdate: Update<ValueT>?,

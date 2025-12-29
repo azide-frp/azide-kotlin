@@ -5,16 +5,15 @@ import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.FrozenCellVertex
 
 abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
-    private object NoopObserverHandle : CellVertex.ObserverHandle
-
     final override fun registerObserver(
         propagationContext: Transactions.PropagationContext,
         observer: CellVertex.Observer<ValueT>,
-    ): CellVertex.ObserverHandle = NoopObserverHandle
+    ): Nothing? = null
 
     final override fun unregisterObserver(
         handle: CellVertex.ObserverHandle,
-    ) {
+    ): Nothing {
+        throw UnsupportedOperationException("Frozen cell vertices do not support unregistering observers")
     }
 
     final override val ongoingUpdate: Nothing?

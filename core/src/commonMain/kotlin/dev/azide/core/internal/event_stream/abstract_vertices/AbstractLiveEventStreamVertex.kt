@@ -3,6 +3,7 @@ package dev.azide.core.internal.event_stream.abstract_vertices
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
+import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.utils.weak_bag.MutableBag
 import kotlin.jvm.JvmInline
@@ -10,10 +11,10 @@ import kotlin.jvm.JvmInline
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
     @JvmInline
     private value class SubscriberHandleImpl<EventT>(
-        val internalHandle: MutableBag.Handle<LiveEventStreamVertex.Subscriber<EventT>>,
-    ) : LiveEventStreamVertex.SubscriberHandle
+        val internalHandle: MutableBag.Handle<EventStreamVertex.Subscriber<EventT>>,
+    ) : EventStreamVertex.SubscriberHandle
 
-    private val _registeredSubscribers: MutableBag<LiveEventStreamVertex.Subscriber<EventT>> = MutableBag()
+    private val _registeredSubscribers: MutableBag<EventStreamVertex.Subscriber<EventT>> = MutableBag()
 
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
 
@@ -24,8 +25,8 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
 
     override fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: LiveEventStreamVertex.Subscriber<EventT>,
-    ): LiveEventStreamVertex.SubscriberHandle {
+        subscriber: EventStreamVertex.Subscriber<EventT>,
+    ): EventStreamVertex.SubscriberHandle {
         val internalHandle = _registeredSubscribers.add(subscriber)
 
         if (_registeredSubscribers.size == 1) {
@@ -40,7 +41,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     override fun unregisterSubscriber(
-        handle: LiveEventStreamVertex.SubscriberHandle,
+        handle: EventStreamVertex.SubscriberHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
             handle as? SubscriberHandleImpl<EventT> ?: throw IllegalArgumentException("Invalid handle")
@@ -104,7 +105,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
             )
 
             // Remove the subscriber if it's unreachable
-            subscriberStatus == LiveEventStreamVertex.SubscriberStatus.Unreachable
+            subscriberStatus == SubscriberStatus.Unreachable
         }
     }
 

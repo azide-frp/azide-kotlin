@@ -3,12 +3,12 @@ package dev.azide.core.internal.cell.abstract_vertices
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
+import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.utils.weak_bag.MutableBag
-import dev.azide.core.internal.cell.CellVertex.Observer
 import kotlin.jvm.JvmInline
 
-abstract class AbstractAutonomousCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
+abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
     @JvmInline
     private value class ObserverHandleImpl<ValueT>(
         val internalHandle: MutableBag.Handle<Observer<ValueT>>,
@@ -99,13 +99,13 @@ abstract class AbstractAutonomousCellVertex<ValueT>() : WarmCellVertex<ValueT>, 
         update: CellVertex.Update<ValueT>?,
     ) {
         _registeredObservers.forEach { observer ->
-            observer.handleUpdate(
+            val observerStatus = observer.handleUpdateWithStatus(
                 propagationContext = propagationContext,
                 update = update,
             )
 
-            // Do not remove the observer
-            false
+            // Remove the observer if it's unreachable
+            observerStatus == CellVertex.ObserverStatus.Unreachable
         }
     }
 
