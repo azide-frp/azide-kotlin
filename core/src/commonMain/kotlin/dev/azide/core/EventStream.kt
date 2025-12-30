@@ -1,10 +1,12 @@
 package dev.azide.core
 
+import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.PureCellVertex
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.ExecutedEachEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
@@ -157,3 +159,33 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
         newAccValues,
     )
 }
+
+fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStream<EventT>> =
+    object : Action<EventStream<EventT>> {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): Pair<EventStream<EventT>, Action.RevocationHandle> {
+            val sourceVertex = this@executeEachForever.vertex as? LiveEventStreamVertex ?: return Pair(
+                EventStream.Never,
+                Action.RevocationHandle.Noop,
+            )
+
+            val effectVertex = ExecutedEachEventStreamVertex.start(
+                propagationContext,
+                sourceVertex,
+            )
+
+            return Pair(
+                EventStream.Ordinary(
+                    vertex = effectVertex,
+                ),
+                object : Action.RevocationHandle {
+                    override fun revoke() {
+                        effectVertex.abort()
+                    }
+                },
+            )
+        }
+    }
+
+fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
