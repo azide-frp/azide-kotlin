@@ -17,6 +17,13 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
     }
 
     interface Subscriber<in EventT> {
+        object Noop : Subscriber<Any?> {
+            override fun handleEmissionWithStatus(
+                propagationContext: Transactions.PropagationContext,
+                emission: Emission<Any?>?,
+            ): SubscriberStatus = SubscriberStatus.Reachable
+        }
+
         fun handleEmissionWithStatus(
             propagationContext: Transactions.PropagationContext,
             emission: EventStreamVertex.Emission<EventT>?,

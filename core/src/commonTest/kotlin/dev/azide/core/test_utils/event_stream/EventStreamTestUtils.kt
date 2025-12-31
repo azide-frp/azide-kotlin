@@ -1,11 +1,13 @@
 package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
+import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
+import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex.BasicSubscriber
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
@@ -55,21 +57,23 @@ internal object EventStreamTestUtils {
     fun <EventT> spawnStatefulEventStreamExpectingEmission(
         inputStimulation: TestInputStimulation? = null,
         expectedEmittedEvent: EventT,
-        spawn: context(MomentContext) () -> EventStream<EventT>,
+        spawn: Moment<EventStream<EventT>>,
     ): EventStream<EventT> = Transactions.execute { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
-        val subjectEventStream = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            spawn()
-        }
+        val subjectEventStream = spawn.pullInternally(
+            propagationContext = propagationContext,
+        )
 
         val subjectVertex = subjectEventStream.vertex
+
+        // Register a subscriber, as event stream vertices aren't required to expose the emission otherwise
+        subjectVertex.registerSubscriber(
+            propagationContext = propagationContext,
+            subscriber = Subscriber.Noop,
+        )
 
         val ongoingEmission = subjectVertex.ongoingEmission
 
@@ -86,6 +90,29 @@ internal object EventStreamTestUtils {
 
         return@execute subjectEventStream
     }
+
+    /**
+     * Spawn a stateful event stream, expecting it to emit during spawn with [expectedEmittedEvent].
+     */
+    fun <EventT> spawnStatefulEventStreamExpectingEmission(
+        inputStimulation: TestInputStimulation? = null,
+        expectedEmittedEvent: EventT,
+        spawn: context(MomentContext) () -> EventStream<EventT>,
+    ): EventStream<EventT> = spawnStatefulEventStreamExpectingEmission(
+        inputStimulation = inputStimulation,
+        expectedEmittedEvent = expectedEmittedEvent,
+        spawn = object : Moment<EventStream<EventT>> {
+            override fun pullInternally(
+                propagationContext: Transactions.PropagationContext,
+            ): EventStream<EventT> = with(
+                MomentContextImpl(
+                    propagationContext = propagationContext,
+                ),
+            ) {
+                spawn()
+            }
+        },
+    )
 
     class SubscribingVerifier<EventT>(
         private val subjectVertex: LiveEventStreamVertex<EventT>,
@@ -307,13 +334,7 @@ internal object EventStreamTestUtils {
         Transactions.execute { propagationContext ->
             subjectVertex.registerSubscriber(
                 propagationContext = propagationContext,
-                subscriber = object : BasicSubscriber<EventT> {
-                    override fun handleEmission(
-                        propagationContext: Transactions.PropagationContext,
-                        emission: Emission<EventT>?,
-                    ) {
-                    }
-                },
+                subscriber = Subscriber.Noop,
             )
         }
     }

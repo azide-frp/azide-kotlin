@@ -83,6 +83,14 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     ) {
         _ongoingEmission = emission
 
+        ensureEnqueuedForCommitment(
+            propagationContext = propagationContext,
+        )
+    }
+
+    protected fun ensureEnqueuedForCommitment(
+        propagationContext: Transactions.PropagationContext,
+    ) {
         if (!_isEnqueuedForCommitment) {
             propagationContext.enqueueForCommitment(this)
 

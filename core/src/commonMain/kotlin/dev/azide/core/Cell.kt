@@ -11,6 +11,7 @@ import dev.azide.core.internal.cell.operated_vertices.MappedAtCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedFrozenCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedWarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.SwitchedCellVertex
+import dev.azide.core.internal.event_stream.operated_vertices.ValuesEventStreamVertex
 
 interface Cell<out ValueT> {
     fun getVertex(
@@ -150,6 +151,30 @@ val <ValueT> Cell<ValueT>.sampling: Moment<ValueT>
             propagationContext = propagationContext,
         )
     }
+
+val <ValueT> Cell<ValueT>.values: Moment<EventStream<ValueT>>
+    get() = object : Moment<EventStream<ValueT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): EventStream<ValueT> {
+            val sourceVertex = getVertex(
+                propagationContext = propagationContext,
+            ) as? WarmCellVertex ?: return EventStream.Never
+
+            val valuesEventStreamVertex = ValuesEventStreamVertex.start(
+                propagationContext = propagationContext,
+                sourceVertex = sourceVertex,
+            )
+
+            return EventStream.Ordinary(
+                vertex = valuesEventStreamVertex,
+            )
+        }
+    }
+
+val <ValueT> Cell<ValueT>.updatedValues: EventStream<ValueT>
+    get() = TODO()
+
 context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT {
     val propagationContext = momentContext.propagationContext
 
