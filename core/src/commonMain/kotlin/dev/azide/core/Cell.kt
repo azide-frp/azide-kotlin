@@ -140,6 +140,16 @@ interface Cell<out ValueT> {
     }
 }
 
+val <ValueT> Cell<ValueT>.sampling: Moment<ValueT>
+    get() = object : Moment<ValueT> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): ValueT = getVertex(
+            propagationContext = propagationContext,
+        ).getOldValue(
+            propagationContext = propagationContext,
+        )
+    }
 context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT {
     val propagationContext = momentContext.propagationContext
 
