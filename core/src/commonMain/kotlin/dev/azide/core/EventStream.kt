@@ -11,6 +11,7 @@ import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStrea
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
+import dev.azide.core.internal.utils.LazyUtils
 
 interface EventStream<out EventT> {
     val vertex: EventStreamVertex<EventT>
@@ -23,6 +24,14 @@ interface EventStream<out EventT> {
         override val vertex: EventStreamVertex<EventT>,
     ) : EventStream<EventT>
 
+    class Lazy<EventT> internal constructor(
+        private val eventStreamLazy: kotlin.Lazy<EventStream<EventT>>,
+    ) : EventStream<EventT> {
+        override val vertex: EventStreamVertex<EventT> by lazy {
+            eventStreamLazy.value.vertex
+        }
+    }
+
     companion object {
         fun <EventT> wrap(
             externalSourceAdapter: ExternalSourceAdapter<EventT>,
@@ -32,9 +41,25 @@ interface EventStream<out EventT> {
             ),
         )
 
-        fun <EventT, ResultT> looped(
-            block: (EventStream<EventT>) -> Pair<ResultT, EventStream<EventT>>,
-        ): ResultT = TODO()
+        fun <ResultT, LoopedEventT> looped(
+            block: (EventStream<LoopedEventT>) -> Pair<ResultT, EventStream<LoopedEventT>>,
+        ): ResultT = LazyUtils.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
+
+        fun <ResultT, LoopedEventT> loopedInAction(
+            block: (EventStream<LoopedEventT>) -> Action<Pair<ResultT, EventStream<LoopedEventT>>>,
+        ): Action<ResultT> = Action.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
 
         fun <EventT> merge2(
             eventStream1: EventStream<EventT>,
@@ -122,26 +147,38 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.take(
     count: Int,
 ): EventStream<EventT> = TODO()
 
+fun <EventT> EventStream<EventT>.holding(
+    initialValue: EventT,
+): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
+    override fun pullInternally(
+        propagationContext: Transactions.PropagationContext,
+    ): Cell<EventT> = Cell.Ordinary {
+        when (val sourceVertex = this@holding.vertex) {
+            is LiveEventStreamVertex -> HeldCellVertex.start(
+                propagationContext = propagationContext,
+                sourceVertex = sourceVertex,
+                initialValue = initialValue,
+            )
+
+            is TerminatedEventStreamVertex -> PureCellVertex(
+                value = initialValue,
+            )
+        }
+    }
+}
+
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     initialValue: EventT,
-): Cell<EventT> = Cell.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> HeldCellVertex.start(
-            propagationContext = momentContext.propagationContext,
-            sourceVertex = sourceVertex,
-            initialValue = initialValue,
-        )
-
-        is TerminatedEventStreamVertex -> PureCellVertex(
-            value = initialValue,
-        )
-    },
+): Cell<EventT> = holding(
+    initialValue = initialValue,
+).pullInternally(
+    propagationContext = momentContext.propagationContext,
 )
 
 context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.accumulate(
     initialAccValue: AccT,
     transform: (accValue: AccT, newEvent: EventT) -> AccT,
-): Cell<AccT> = EventStream.looped<AccT, Cell<AccT>> { loopedNewAccValues ->
+): Cell<AccT> = EventStream.looped<Cell<AccT>, AccT> { loopedNewAccValues ->
     val accCell = Cell.define(
         initialValue = initialAccValue,
         newValues = loopedNewAccValues,
