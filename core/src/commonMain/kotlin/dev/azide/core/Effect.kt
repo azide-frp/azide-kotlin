@@ -6,6 +6,18 @@ interface Effect<ResultT> {
             override val cancel: Trigger = Triggers.Noop
         }
 
+        companion object {
+            fun combine(
+                firstSubHandle: Handle,
+                secondSubHandle: Handle,
+            ): Handle = object : Handle {
+                override val cancel: Trigger = Triggers.combine(
+                    firstSubHandle.cancel,
+                    secondSubHandle.cancel,
+                )
+            }
+        }
+
         val cancel: Trigger
     }
 
@@ -26,4 +38,30 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.map(
             handle,
         )
     }
+}
+
+fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
+    transform: (ResultT) -> Effect<TransformedResultT>,
+): Effect<TransformedResultT> = object : Effect<TransformedResultT> {
+    override val start: Action<Pair<TransformedResultT, Effect.Handle>> =
+        this@joinOf.start.joinOf { (result: ResultT, handle) ->
+            val transformedEffect: Effect<TransformedResultT> = transform(result)
+
+            transformedEffect.start.map { (transformedResult: TransformedResultT, transformedHandle) ->
+                Pair(
+                    transformedResult,
+                    Effect.Handle.combine(
+                        handle,
+                        transformedHandle,
+                    ),
+                )
+            }
+        }
+}
+
+abstract class AbstractSchedule : Schedule {
+    final override val start: Action<Pair<Unit, Effect.Handle>>
+        get() = launchImpl.map { handle -> Pair(Unit, handle) }
+
+    protected abstract val launchImpl: Action<Effect.Handle>
 }

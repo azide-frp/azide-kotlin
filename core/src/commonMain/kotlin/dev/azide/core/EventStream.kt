@@ -269,4 +269,40 @@ fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStrea
 
 fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
 
-fun EventStream<Schedule>.scheduleNewest(): Schedule = TODO()
+fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
+    override val launchImpl: Action<Effect.Handle> =
+        EventStream.loopedInAction { loopedStartedScheduleHandles: EventStream<Effect.Handle> ->
+            this@actuate.values.asAction.joinOf { newSchedules: EventStream<Schedule> ->
+                loopedStartedScheduleHandles.holding(
+                    initialValue = null,
+                ).asAction.joinOf { currentScheduleHandle: Cell<Effect.Handle?> ->
+                    val innerEffect: Effect<EventStream<Effect.Handle>> = newSchedules.map { newSchedule: Schedule ->
+                        currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
+                            when (currentScheduleHandleNow) {
+                                null -> newSchedule.launch
+                                else -> currentScheduleHandleNow.cancel.joinOf { newSchedule.launch }
+                            }
+                        }
+                    }.executeEach()
+
+                    innerEffect.start.map { (startedScheduleHandles: EventStream<Effect.Handle>, innerEffectHandle: Effect.Handle) ->
+                        val cancelInnerEffectTrigger: Trigger = innerEffectHandle.cancel
+
+                        val cancelCurrentScheduleTrigger: Trigger =
+                            currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
+                                currentScheduleHandleNow?.cancel ?: Triggers.Noop
+                            }
+
+                        val outerEffectHandle: Effect.Handle = object : Effect.Handle {
+                            override val cancel: Trigger = Triggers.combine(
+                                cancelInnerEffectTrigger,
+                                cancelCurrentScheduleTrigger,
+                            )
+                        }
+
+                        Pair(outerEffectHandle, startedScheduleHandles)
+                    }
+                }
+            }
+        }
+}
