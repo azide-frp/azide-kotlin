@@ -51,6 +51,16 @@ interface EventStream<out EventT> {
             )
         }
 
+        fun <ResultT, LoopedEventT> loopedInMoment(
+            block: (EventStream<LoopedEventT>) -> Moment<Pair<ResultT, EventStream<LoopedEventT>>>,
+        ): Moment<ResultT> = Moment.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
+
         fun <ResultT, LoopedEventT> loopedInAction(
             block: (EventStream<LoopedEventT>) -> Action<Pair<ResultT, EventStream<LoopedEventT>>>,
         ): Action<ResultT> = Action.looped { loopedEventStreamLazy ->
@@ -153,6 +163,7 @@ fun <EventT> EventStream<EventT>.holding(
     override fun pullInternally(
         propagationContext: Transactions.PropagationContext,
     ): Cell<EventT> = Cell.Ordinary {
+        // FIXME: Initializing this vertex lazily like this breaks the semantics
         when (val sourceVertex = this@holding.vertex) {
             is LiveEventStreamVertex -> HeldCellVertex.start(
                 propagationContext = propagationContext,

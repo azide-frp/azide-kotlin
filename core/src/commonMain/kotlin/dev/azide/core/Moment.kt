@@ -1,8 +1,34 @@
 package dev.azide.core
 
+import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.utils.LazyUtils
 
 interface Moment<out ResultT> {
+    companion object {
+        fun <ResultT, LoopedValueT : Any> looped(
+            block: (Lazy<LoopedValueT>) -> Moment<Pair<ResultT, LoopedValueT>>,
+        ): Moment<ResultT> = object : Moment<ResultT> {
+            override fun pullInternally(
+                propagationContext: Transactions.PropagationContext,
+            ): ResultT = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+                val moment: Moment<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+
+                return@looped moment.pullInternally(
+                    propagationContext = propagationContext,
+                )
+            }
+        }
+
+        fun <ResultT> pure(
+            result: ResultT,
+        ): Moment<ResultT> = object : Moment<ResultT> {
+            override fun pullInternally(
+                propagationContext: Transactions.PropagationContext,
+            ): ResultT = result
+        }
+    }
+
     fun pullInternally(
         propagationContext: Transactions.PropagationContext,
     ): ResultT
@@ -12,14 +38,14 @@ val <ResultT> Moment<ResultT>.asAction: Action<ResultT>
     get() = object : Action<ResultT> {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
-        ): Pair<ResultT, Action.RevocationHandle> {
+        ): Pair<ResultT, RevocationHandle> {
             val result: ResultT = this@asAction.pullInternally(
                 propagationContext = propagationContext,
             )
 
             return Pair(
                 result,
-                Action.RevocationHandle.Noop,
+                RevocationHandle.Noop,
             )
         }
     }
