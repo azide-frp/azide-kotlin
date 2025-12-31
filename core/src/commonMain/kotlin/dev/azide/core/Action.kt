@@ -1,6 +1,8 @@
 package dev.azide.core
 
+import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.utils.LazyUtils
 
 interface Action<out ResultT> {
     interface RevocationHandle {
@@ -34,16 +36,60 @@ interface Action<out ResultT> {
         fun revoke()
     }
 
-    object Noop : Trigger {
-        override fun executeInternally(
-            propagationContext: Transactions.PropagationContext,
-        ): Pair<Unit, RevocationHandle> = Pair(
-            Unit,
-            RevocationHandle.Noop,
-        )
-    }
-
     companion object {
+        fun <ResultT, LoopedValueT : Any> looped(
+            block: (Lazy<LoopedValueT>) -> Action<Pair<ResultT, LoopedValueT>>,
+        ): Action<ResultT> = object : Action<ResultT> {
+            override fun executeInternally(
+                propagationContext: Transactions.PropagationContext,
+            ): Pair<ResultT, RevocationHandle> = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+                val action: Action<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+
+                val (
+                    resultAndLoopedValue: Pair<ResultT, LoopedValueT>,
+                    revocationHandle: RevocationHandle,
+                ) = action.executeInternally(
+                    propagationContext = propagationContext,
+                )
+
+                val (
+                    result: ResultT,
+                    loopedValue: LoopedValueT,
+                ) = resultAndLoopedValue
+
+                val resultAndRevocationHandle = Pair(
+                    result,
+                    revocationHandle,
+                )
+
+                return@looped Pair(
+                    resultAndRevocationHandle,
+                    loopedValue,
+                )
+            }
+        }
+
+        fun <ResultT> pure(
+            result: ResultT,
+        ): Action<ResultT> = object : Action<ResultT> {
+            override fun executeInternally(
+                propagationContext: Transactions.PropagationContext,
+            ): Pair<ResultT, RevocationHandle> = Pair(
+                result,
+                RevocationHandle.Noop,
+            )
+        }
+
+        inline fun wrap(
+            crossinline executeExternally: () -> Unit,
+        ): Trigger = wrap(
+            object : ExternalSideEffect {
+                override fun executeExternally() {
+                    executeExternally()
+                }
+            },
+        )
+
         fun wrap(
             externalSideEffect: ExternalSideEffect,
         ): Trigger = object : Trigger {
@@ -62,6 +108,42 @@ interface Action<out ResultT> {
 }
 
 typealias Trigger = Action<Unit>
+
+object Triggers {
+    object Noop : Trigger {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): Pair<Unit, RevocationHandle> = Pair(
+            Unit,
+            RevocationHandle.Noop,
+        )
+    }
+
+    fun combine(
+        first: Trigger,
+        second: Trigger,
+    ): Trigger = object : Trigger {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): Pair<Unit, Action.RevocationHandle> {
+            val (_: Unit, firstRevocationHandle) = first.executeInternally(
+                propagationContext = propagationContext,
+            )
+
+            val (_: Unit, secondRevocationHandle) = second.executeInternally(
+                propagationContext = propagationContext,
+            )
+
+            return Pair(
+                Unit,
+                Action.RevocationHandle.combine(
+                    firstRevocationHandle,
+                    secondRevocationHandle,
+                ),
+            )
+        }
+    }
+}
 
 fun <ResultT, TransformedResultT> Action<ResultT>.map(
     transform: (ResultT) -> TransformedResultT,

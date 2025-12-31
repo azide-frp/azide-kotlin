@@ -3,7 +3,7 @@ package dev.azide.core
 interface Effect<ResultT> {
     interface Handle {
         object Noop : Handle {
-            override val cancel: Trigger = Action.Noop
+            override val cancel: Trigger = Triggers.Noop
         }
 
         val cancel: Trigger
