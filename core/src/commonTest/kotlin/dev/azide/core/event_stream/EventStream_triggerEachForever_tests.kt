@@ -1,8 +1,8 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Action
-import dev.azide.core.ExternalSideEffect
 import dev.azide.core.Trigger
+import dev.azide.core.test_utils.MockSideEffect
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -13,17 +13,6 @@ import kotlin.test.assertTrue
 
 @Suppress("ClassName")
 class EventStream_triggerEachForever_tests {
-    class MockSideEffect() : ExternalSideEffect {
-        private var mutableWasCalled = false
-
-        val wasCalled: Boolean
-            get() = mutableWasCalled
-
-        override fun executeExternally() {
-            mutableWasCalled = true
-        }
-    }
-
     @Test
     fun test_triggerEachForever_sourceEmission() {
         val mockSideEffect = MockSideEffect()

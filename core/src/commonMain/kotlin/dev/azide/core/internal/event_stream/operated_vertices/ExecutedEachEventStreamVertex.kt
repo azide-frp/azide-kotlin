@@ -77,6 +77,36 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         )
     }
 
+    fun restart(
+        propagationContext: Transactions.PropagationContext,
+    ) {
+        if (upstreamSubscriberHandle != null) {
+            throw IllegalStateException("Vertex seems to be already active")
+        }
+
+        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
+            propagationContext = propagationContext,
+            subscriber = this,
+        )
+
+        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+            val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
+
+            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternally(
+                propagationContext = propagationContext,
+            )
+
+            executedActionRevocationHandle = revocationHandle
+
+            exposeEmission(
+                propagationContext = propagationContext,
+                emission = EventStreamVertex.Emission(
+                    emittedEvent = emittedEvent,
+                ),
+            )
+        }
+    }
+
     init {
         upstreamSubscriberHandle = sourceVertex.registerSubscriber(
             propagationContext = propagationContext,

@@ -160,32 +160,67 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
     )
 }
 
-fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStream<EventT>> =
-    object : Action<EventStream<EventT>> {
-        override fun executeInternally(
-            propagationContext: Transactions.PropagationContext,
-        ): Pair<EventStream<EventT>, Action.RevocationHandle> {
-            val sourceVertex = this@executeEachForever.vertex as? LiveEventStreamVertex ?: return Pair(
-                EventStream.Never,
-                Action.RevocationHandle.Noop,
-            )
+fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
+    object : Effect<EventStream<EventT>> {
+        override val start: Action<Pair<EventStream<EventT>, Effect.Handle>> =
+            object : Action<Pair<EventStream<EventT>, Effect.Handle>> {
+                override fun executeInternally(
+                    propagationContext: Transactions.PropagationContext,
+                ): Pair<Pair<EventStream<EventT>, Effect.Handle>, Action.RevocationHandle> {
+                    val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Pair(
+                        Pair(
+                            EventStream.Never,
+                            Effect.Handle.Noop,
+                        ),
+                        Action.RevocationHandle.Noop,
+                    )
 
-            val effectVertex = ExecutedEachEventStreamVertex.start(
-                propagationContext,
-                sourceVertex,
-            )
+                    val executedEachEventStreamVertex = ExecutedEachEventStreamVertex.start(
+                        propagationContext = propagationContext,
+                        sourceVertex = sourceVertex,
+                    )
 
-            return Pair(
-                EventStream.Ordinary(
-                    vertex = effectVertex,
-                ),
-                object : Action.RevocationHandle {
-                    override fun revoke() {
-                        effectVertex.abort()
-                    }
-                },
-            )
-        }
+                    return Pair(
+                        Pair(
+                            EventStream.Ordinary(
+                                vertex = executedEachEventStreamVertex,
+                            ),
+                            object : Effect.Handle {
+                                override val cancel: Trigger = object : Trigger {
+                                    override fun executeInternally(
+                                        propagationContext: Transactions.PropagationContext,
+                                    ): Pair<Unit, Action.RevocationHandle> {
+                                        executedEachEventStreamVertex.abort()
+
+                                        return Pair(
+                                            Unit,
+                                            object : Action.RevocationHandle {
+                                                override fun revoke() {
+                                                    executedEachEventStreamVertex.restart(
+                                                        propagationContext = propagationContext,
+                                                    )
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
+                            },
+                        ),
+                        object : Action.RevocationHandle {
+                            override fun revoke() {
+                                executedEachEventStreamVertex.abort()
+                            }
+                        },
+                    )
+                }
+            }
     }
 
+fun EventStream<Trigger>.triggerEach(): Schedule = executeEach().map { }
+
+fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStream<EventT>> =
+    executeEach().start.map { (eventStream, _) -> eventStream }
+
 fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
+
+fun EventStream<Schedule>.scheduleNewest(): Schedule = TODO()

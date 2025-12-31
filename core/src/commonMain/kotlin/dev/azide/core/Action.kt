@@ -34,6 +34,15 @@ interface Action<out ResultT> {
         fun revoke()
     }
 
+    object Noop : Trigger {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+        ): Pair<Unit, RevocationHandle> = Pair(
+            Unit,
+            RevocationHandle.Noop,
+        )
+    }
+
     companion object {
         fun wrap(
             externalSideEffect: ExternalSideEffect,
