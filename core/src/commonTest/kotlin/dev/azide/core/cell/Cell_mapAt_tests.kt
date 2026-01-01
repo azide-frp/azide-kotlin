@@ -187,64 +187,41 @@ class Cell_mapAt_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_looped() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
         val externalCell = CellTestUtils.createInputCell('A')
 
-        val mapAtCell = TestUtils.pullSeparately(
-            EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->
-                loopedMultiplicationStream.holding(initialValue = 0).joinOf { memoryCell: Cell<Int> ->
-                    Moment.decontextualize {
-                        memoryCell.mapAt { value ->
-                            "${externalCell.sample()}$value"
-                        }
-                    }.map { mapAtCell ->
-                        Pair(
-                            mapAtCell,
-                            sourceEventStream,
-                        )
-                    }
-                }
-            },
-        )
-
-        CellTestUtils.verifyAtRest(
-            subjectCell = mapAtCell,
-            expectedValue = "A0",
-        )
-    }
-
-    @Test
-    @Ignore // FIXME: Make this pass
-    fun test_looped_initialSample() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
-
-        val externalCell = CellTestUtils.createInputCell('A')
-
-        val mapAtCellInitialValue: String = TestUtils.pullSeparately(
-            EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->
+        val (mapAtCell, initialValue) = TestUtils.pullSeparately(
+            moment = EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->
                 loopedMultiplicationStream.holding(initialValue = 0).joinOf { memoryCell: Cell<Int> ->
                     Moment.decontextualize {
                         memoryCell.mapAt { value ->
                             "${externalCell.sample()}$value"
                         }
                     }.joinOf { mapAtCell ->
-                        mapAtCell.sampling.map { initialValue: String ->
+                        mapAtCell.sampling.map { initialValue ->
                             Pair(
-                                initialValue,
+                                Pair(mapAtCell, initialValue),
                                 sourceEventStream,
                             )
                         }
                     }
                 }
             },
+            inputStimulation = sourceEventStream.emit(
+                emittedEvent = 1,
+            )
+        )
+
+        CellTestUtils.verifyAtRest(
+            subjectCell = mapAtCell,
+            expectedValue = "A1",
         )
 
         assertEquals(
             expected = "A0",
-            actual = mapAtCellInitialValue,
+            actual = initialValue,
         )
     }
 }

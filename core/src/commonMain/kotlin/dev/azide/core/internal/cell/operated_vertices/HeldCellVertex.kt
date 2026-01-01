@@ -47,6 +47,10 @@ class HeldCellVertex<ValueT> private constructor(
 
     init {
         wrapUpContext.enqueueForWrapUp { propagationContext ->
+            if (hasObservers) {
+                throw IllegalStateException("Cell vertex should not have observers during wrap-up")
+            }
+
             val sourceVertex = sourceEventStream.vertex
 
             sourceVertex.registerSubscriberWeakly(

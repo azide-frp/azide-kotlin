@@ -53,22 +53,28 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     }
 
     init {
-        sourceVertex.registerObserverWeakly(
-            propagationContext = propagationContext,
-            dependentVertex = this,
-            observer = this,
-        )
+        wrapUpContext.enqueueForWrapUp {
+            if (hasObservers) {
+                throw IllegalStateException("Cell vertex should not have observers during wrap-up")
+            }
 
-        sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
-            exposeUpdate(
+            sourceVertex.registerObserverWeakly(
                 propagationContext = propagationContext,
-                update = CellVertex.Update(
-                    updatedValue = transform(
-                        propagationContext,
-                        sourceOngoingUpdate.updatedValue,
-                    ),
-                ),
+                dependentVertex = this,
+                observer = this,
             )
+
+            sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
+                exposeUpdate(
+                    propagationContext = propagationContext,
+                    update = CellVertex.Update(
+                        updatedValue = transform(
+                            propagationContext,
+                            sourceOngoingUpdate.updatedValue,
+                        ),
+                    ),
+                )
+            }
         }
     }
 }

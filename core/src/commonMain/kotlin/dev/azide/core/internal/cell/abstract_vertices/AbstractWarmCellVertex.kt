@@ -59,6 +59,9 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         _isEnqueuedForCommitment = false
     }
 
+    protected val hasObservers: Boolean
+        get() = _registeredObservers.size > 0
+
     protected fun exposeAndPropagateUpdate(
         propagationContext: Transactions.PropagationContext,
         update: CellVertex.Update<ValueT>?,
