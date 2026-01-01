@@ -4,7 +4,7 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.internal.cell.registerLooseObserver
+import dev.azide.core.internal.cell.registerObserverWeakly
 
 class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
@@ -50,7 +50,7 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     }
 
     init {
-        sourceVertex.registerLooseObserver(
+        sourceVertex.registerObserverWeakly(
             propagationContext = propagationContext,
             dependentVertex = this,
             observer = this,

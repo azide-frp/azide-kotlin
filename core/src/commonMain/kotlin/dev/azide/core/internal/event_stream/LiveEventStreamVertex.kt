@@ -61,7 +61,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
         val internalHandle: MutableBag.Handle<Subscriber<EventT>>,
     ) : EventStreamVertex.SubscriberHandle
 
-    interface LooseSubscription {
+    interface WeakSubscriberHandle {
         fun cancel()
     }
 }
@@ -78,12 +78,12 @@ fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): L
  *
  * In a special (supported) case, [dependentVertex] and [subscriber] might be the same object.
  */
-fun <EventT> EventStreamVertex<EventT>.registerLooseSubscriber(
+fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
     subscriber: LiveEventStreamVertex.BasicSubscriber<EventT>,
-): LiveEventStreamVertex.LooseSubscription {
-    val weakSubscriberHandle = registerSubscriber(
+): LiveEventStreamVertex.WeakSubscriberHandle {
+    val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerSubscriber(
         propagationContext = propagationContext,
         subscriber = subscriber.weaklyReferenced(),
     )
@@ -102,25 +102,25 @@ fun <EventT> EventStreamVertex<EventT>.registerLooseSubscriber(
      * In a corner case scenario when the source event stream emits rarely (or never), but it continuously gets new
      * short-lived loose observers, the abandoned subscriber entries would constitute a significant memory leak.
      */
-    val finalizationHandle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: FinalizationTransactionRegistry.Handle = FinalizationTransactionRegistry.register(
         target = dependentVertex,
         finalizationTransaction = object : Transaction<Unit>() {
             override fun propagate(
                 propagationContext: Transactions.PropagationContext,
             ) {
-                this@registerLooseSubscriber.unregisterSubscriber(
-                    handle = weakSubscriberHandle,
+                this@registerSubscriberWeakly.unregisterSubscriber(
+                    handle = innerSubscriberHandle,
                 )
             }
         },
     )
 
-    return object : LiveEventStreamVertex.LooseSubscription {
+    return object : LiveEventStreamVertex.WeakSubscriberHandle {
         override fun cancel() {
             // TODO: If vertex succession is implemented, then this vertex might not contain the given subscription, as
             //  would possibly be migrated!
-            this@registerLooseSubscriber.unregisterSubscriber(
-                handle = weakSubscriberHandle,
+            this@registerSubscriberWeakly.unregisterSubscriber(
+                handle = innerSubscriberHandle,
             )
 
             finalizationHandle.unregister()

@@ -62,7 +62,7 @@ interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
         internal val internalHandle: MutableBag.Handle<Observer<ValueT>>,
     ) : ObserverHandle
 
-    interface LooseObserver {
+    interface WeakObserverHandle {
         fun cancel()
     }
 }
@@ -73,35 +73,35 @@ fun <ValueT> WarmCellVertex.BasicObserver<ValueT>.weaklyReferenced(): WarmCellVe
     )
 
 /**
- * Analogical to [dev.azide.core.internal.event_stream.registerLooseSubscriber].
+ * Analogical to [dev.azide.core.internal.event_stream.registerSubscriberWeakly].
  */
-fun <ValueT> WarmCellVertex<ValueT>.registerLooseObserver(
+fun <ValueT> WarmCellVertex<ValueT>.registerObserverWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: CellVertex<*>,
     observer: WarmCellVertex.BasicObserver<ValueT>,
-): WarmCellVertex.LooseObserver {
-    val weakObserverHandle = registerObserver(
+): WarmCellVertex.WeakObserverHandle {
+    val innerObserverHandle: ObserverHandle = registerObserver(
         propagationContext = propagationContext,
         observer = observer.weaklyReferenced(),
     )
 
-    val finalizationHandle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: FinalizationTransactionRegistry.Handle = FinalizationTransactionRegistry.register(
         target = dependentVertex,
         finalizationTransaction = object : Transaction<Unit>() {
             override fun propagate(
                 propagationContext: Transactions.PropagationContext,
             ) {
                 unregisterObserver(
-                    handle = weakObserverHandle,
+                    handle = innerObserverHandle,
                 )
             }
         },
     )
 
-    return object : WarmCellVertex.LooseObserver {
+    return object : WarmCellVertex.WeakObserverHandle {
         override fun cancel() {
             unregisterObserver(
-                handle = weakObserverHandle,
+                handle = innerObserverHandle,
             )
 
             finalizationHandle.unregister()
