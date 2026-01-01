@@ -14,7 +14,7 @@ abstract class AbstractCachingCellVertex<ValueT>(
     @JvmInline
     private value class OldValueCache<ValueT>(
         val cachedOldValue: ValueT,
-    ) : CellVertex.ObserverHandle
+    )
 
     /**
      * A cache for the old cell's value. Depending on the [cacheType], it may be maintained only for the duration of a

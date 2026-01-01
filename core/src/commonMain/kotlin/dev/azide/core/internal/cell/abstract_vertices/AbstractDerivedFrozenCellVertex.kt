@@ -9,7 +9,7 @@ abstract class AbstractDerivedFrozenCellVertex<ValueT> : AbstractFrozenCellVerte
     @JvmInline
     private value class FrozenValueCache<ValueT>(
         val cachedOldValue: ValueT,
-    ) : CellVertex.ObserverHandle
+    )
 
     /**
      * A cache for the frozen cell's value. It is maintained only for the duration of a single transaction.
