@@ -2,7 +2,6 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Action
 import dev.azide.core.executeEach
-import dev.azide.core.executeEachForever
 import dev.azide.core.map
 import dev.azide.core.test_utils.MockSideEffect
 import dev.azide.core.test_utils.TestInputStimulation
@@ -34,6 +33,40 @@ class EventStream_executeEach_tests {
 
         assertTrue(
             actual = mockSideEffect.wasCalled,
+        )
+    }
+
+    @Test
+    fun test_executeEach_multipleSourceEmissions() {
+        val mockSideEffect1 = MockSideEffect()
+        val mockSideEffect2 = MockSideEffect()
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val (subjectEventStream, _) = TestUtils.executeSeparately(
+            sourceEventStream.executeEach().start,
+        )
+
+        TestUtils.stimulateSeparately(
+            sourceEventStream.emit(
+                emittedEvent = Action.wrap(mockSideEffect1).map { 10 },
+            ),
+        )
+
+        assertTrue(
+            actual = mockSideEffect1.wasCalled,
+        )
+
+        EventStreamTestUtils.verifyEmitsAsExpected(
+            subjectEventStream = subjectEventStream,
+            inputStimulation = sourceEventStream.emit(
+                emittedEvent = Action.wrap(mockSideEffect2).map { 20 },
+            ),
+            expectedEmittedEvent = 20,
+        )
+
+        assertTrue(
+            actual = mockSideEffect2.wasCalled,
         )
     }
 

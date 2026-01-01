@@ -73,6 +73,8 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         val upstreamSubscriberHandle =
             this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex is already aborted")
 
+        this.upstreamSubscriberHandle = null
+
         sourceVertex.unregisterSubscriber(
             handle = upstreamSubscriberHandle,
         )
@@ -106,6 +108,10 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
                 ),
             )
         }
+    }
+
+    override fun transit() {
+        this.executedActionRevocationHandle = null
     }
 
     init {
