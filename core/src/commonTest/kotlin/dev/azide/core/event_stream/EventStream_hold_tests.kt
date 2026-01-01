@@ -10,6 +10,7 @@ import dev.azide.core.sample
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -57,6 +58,26 @@ class EventStream_hold_tests {
         CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 11,
+        )
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_delayed() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+
+        val subjectCell = TestUtils.pullSeparately {
+            sourceEventStream.hold(initialValue = 10)
+        }
+
+        // Emit some source events, while the subject cell wasn't even "touched"
+        TestUtils.stimulateSeparately(
+            sourceEventStream.emit(20),
+        )
+
+        CellTestUtils.verifyAtRest(
+            subjectCell = subjectCell,
+            expectedValue = 20,
         )
     }
 
