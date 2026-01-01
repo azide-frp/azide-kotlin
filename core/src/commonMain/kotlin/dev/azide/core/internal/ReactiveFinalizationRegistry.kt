@@ -1,16 +1,18 @@
 package dev.azide.core.internal
 
-expect object FinalizationTransactionRegistry {
+typealias FinalizationCallback = () -> Unit
+
+expect object ReactiveFinalizationRegistry {
     interface Handle {
         fun unregister()
     }
 
     /**
-     * Register a [finalizationTransaction] to be executed after the [target] object is garbage collected. There's
+     * Register a [finalizationCallback] to be executed after the [target] object is garbage collected. There's
      * no guarantee when the transaction will be executed, or even if it will be executed at all.
      */
     fun register(
         target: Any,
-        finalizationTransaction: Transaction<Any?>,
+        finalizationCallback: FinalizationCallback,
     ): Handle
 }

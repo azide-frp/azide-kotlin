@@ -1,7 +1,6 @@
 package dev.azide.core.internal.event_stream
 
-import dev.azide.core.internal.FinalizationTransactionRegistry
-import dev.azide.core.internal.Transaction
+import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
@@ -102,17 +101,13 @@ fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
      * In a corner case scenario when the source event stream emits rarely (or never), but it continuously gets new
      * short-lived loose observers, the abandoned subscriber entries would constitute a significant memory leak.
      */
-    val finalizationHandle: FinalizationTransactionRegistry.Handle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
         target = dependentVertex,
-        finalizationTransaction = object : Transaction<Unit>() {
-            override fun propagate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                this@registerSubscriberWeakly.unregisterSubscriber(
-                    handle = innerSubscriberHandle,
-                )
-            }
-        },
+        finalizationCallback = {
+            this@registerSubscriberWeakly.unregisterSubscriber(
+                handle = innerSubscriberHandle,
+            )
+        }
     )
 
     return object : LiveEventStreamVertex.WeakSubscriberHandle {

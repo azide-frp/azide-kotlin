@@ -1,13 +1,13 @@
 package dev.azide.core.internal
 
-actual object FinalizationTransactionRegistry {
+actual object ReactiveFinalizationRegistry {
     actual interface Handle {
         actual fun unregister()
     }
 
     actual fun register(
         target: Any,
-        finalizationTransaction: Transaction<Any?>,
+        finalizationCallback: FinalizationCallback,
     ): Handle {
         // For now, do nothing.
         // The JVM target for the reactive framework is currently used only for unit testing. Although JVM offers an API

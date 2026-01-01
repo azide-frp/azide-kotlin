@@ -1,7 +1,6 @@
 package dev.azide.core.internal.cell
 
-import dev.azide.core.internal.FinalizationTransactionRegistry
-import dev.azide.core.internal.Transaction
+import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
@@ -85,16 +84,12 @@ fun <ValueT> WarmCellVertex<ValueT>.registerObserverWeakly(
         observer = observer.weaklyReferenced(),
     )
 
-    val finalizationHandle: FinalizationTransactionRegistry.Handle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
         target = dependentVertex,
-        finalizationTransaction = object : Transaction<Unit>() {
-            override fun propagate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                unregisterObserver(
-                    handle = innerObserverHandle,
-                )
-            }
+        finalizationCallback = {
+            unregisterObserver(
+                handle = innerObserverHandle,
+            )
         },
     )
 
