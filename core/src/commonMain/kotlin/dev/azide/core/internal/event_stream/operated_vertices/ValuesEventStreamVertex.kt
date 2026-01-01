@@ -13,7 +13,7 @@ import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatelessE
  */
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
-    private val sourceVertex: WarmCellVertex<ValueT>,
+    private val sourceVertex: CellVertex<ValueT>,
 ) : AbstractStatelessEventStreamVertex<ValueT>(), WarmCellVertex.BasicObserver<ValueT> {
     private enum class InternalState {
         Spawning, Spawned,
@@ -22,7 +22,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     companion object {
         fun <ValueT> start(
             propagationContext: Transactions.PropagationContext,
-            sourceVertex: WarmCellVertex<ValueT>,
+            sourceVertex: CellVertex<ValueT>,
         ): ValuesEventStreamVertex<ValueT> = ValuesEventStreamVertex(
             propagationContext = propagationContext,
             sourceVertex = sourceVertex,

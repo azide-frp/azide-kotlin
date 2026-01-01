@@ -8,7 +8,7 @@ import dev.azide.core.internal.cell.abstract_vertices.AbstractStatelessCellVerte
 import dev.azide.core.internal.cell.getNewValue
 
 class SwitchedCellVertex<ValueT>(
-    private val outerSourceVertex: WarmCellVertex<Cell<ValueT>>,
+    private val outerSourceVertex: CellVertex<Cell<ValueT>>,
 ) : AbstractStatelessCellVertex<ValueT>(), WarmCellVertex.BasicObserver<Cell<ValueT>> {
     /**
      * The outer vertex observer handle.

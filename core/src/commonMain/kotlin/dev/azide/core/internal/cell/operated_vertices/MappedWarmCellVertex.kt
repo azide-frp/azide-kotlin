@@ -6,7 +6,7 @@ import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractCachingCellVertex
 
 class MappedWarmCellVertex<ValueT, TransformedValueT>(
-    private val sourceVertex: WarmCellVertex<ValueT>,
+    private val sourceVertex: CellVertex<ValueT>,
     private val transform: (ValueT) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
