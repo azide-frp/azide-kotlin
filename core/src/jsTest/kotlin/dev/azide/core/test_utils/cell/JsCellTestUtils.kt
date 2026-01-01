@@ -12,8 +12,8 @@ internal object JsCellTestUtils {
         val (subjectCellWeakRef, subjectVertexWeakRef) = run {
             val subjectCell = buildCell()
 
-            val subjectCellVertex = Transactions.execute { propagationContext ->
-                subjectCell.getVertex(propagationContext = propagationContext)
+            val subjectCellVertex = Transactions.executeWithResult { propagationContext ->
+                subjectCell.vertex
             }
 
             Pair(

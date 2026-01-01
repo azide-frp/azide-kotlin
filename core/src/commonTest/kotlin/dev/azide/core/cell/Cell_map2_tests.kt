@@ -70,9 +70,9 @@ class Cell_map2_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyFrozen(
+        CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
-            expectedFrozenValue = "10:A",
+            expectedValue = "10:A",
         )
     }
 

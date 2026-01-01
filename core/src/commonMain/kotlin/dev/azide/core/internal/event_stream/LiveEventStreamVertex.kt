@@ -1,12 +1,13 @@
 package dev.azide.core.internal.event_stream
 
-import dev.azide.core.internal.FinalizationTransactionRegistry
-import dev.azide.core.internal.Transaction
+import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
+import dev.azide.core.internal.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
+import kotlin.jvm.JvmInline
 
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     interface BasicSubscriber<in EventT> : Subscriber<EventT> {
@@ -54,14 +55,14 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
         }
     }
 
-    interface LooseSubscription {
+    @JvmInline
+    value class LiveSubscriberHandle<EventT>(
+        val internalHandle: MutableBag.Handle<Subscriber<EventT>>,
+    ) : EventStreamVertex.SubscriberHandle
+
+    interface WeakSubscriberHandle {
         fun cancel()
     }
-
-    override fun registerSubscriber(
-        propagationContext: Transactions.PropagationContext,
-        subscriber: Subscriber<EventT>,
-    ): EventStreamVertex.SubscriberHandle
 }
 
 fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): LiveEventStreamVertex.WeaklyReferencedSubscriber<EventT> =
@@ -76,12 +77,12 @@ fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): L
  *
  * In a special (supported) case, [dependentVertex] and [subscriber] might be the same object.
  */
-fun <EventT> LiveEventStreamVertex<EventT>.registerLooseSubscriber(
+fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
     subscriber: LiveEventStreamVertex.BasicSubscriber<EventT>,
-): LiveEventStreamVertex.LooseSubscription {
-    val weakSubscriberHandle = registerSubscriber(
+): LiveEventStreamVertex.WeakSubscriberHandle {
+    val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerSubscriber(
         propagationContext = propagationContext,
         subscriber = subscriber.weaklyReferenced(),
     )
@@ -100,25 +101,21 @@ fun <EventT> LiveEventStreamVertex<EventT>.registerLooseSubscriber(
      * In a corner case scenario when the source event stream emits rarely (or never), but it continuously gets new
      * short-lived loose observers, the abandoned subscriber entries would constitute a significant memory leak.
      */
-    val finalizationHandle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
         target = dependentVertex,
-        finalizationTransaction = object : Transaction<Unit>() {
-            override fun propagate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                unregisterSubscriber(
-                    handle = weakSubscriberHandle,
-                )
-            }
-        },
+        finalizationCallback = {
+            this@registerSubscriberWeakly.unregisterSubscriber(
+                handle = innerSubscriberHandle,
+            )
+        }
     )
 
-    return object : LiveEventStreamVertex.LooseSubscription {
+    return object : LiveEventStreamVertex.WeakSubscriberHandle {
         override fun cancel() {
             // TODO: If vertex succession is implemented, then this vertex might not contain the given subscription, as
             //  would possibly be migrated!
-            unregisterSubscriber(
-                handle = weakSubscriberHandle,
+            this@registerSubscriberWeakly.unregisterSubscriber(
+                handle = innerSubscriberHandle,
             )
 
             finalizationHandle.unregister()

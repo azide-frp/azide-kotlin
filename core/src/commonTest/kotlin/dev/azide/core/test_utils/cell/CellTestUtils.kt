@@ -1,6 +1,7 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
+import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
@@ -9,8 +10,8 @@ import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
-import dev.azide.core.internal.cell.FrozenCellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
@@ -28,35 +29,28 @@ internal object CellTestUtils {
 
     fun <ValueT> createInputCell(
         initialValue: ValueT,
-    ): dev.azide.core.test_utils.cell.TestInputCell<ValueT> =
-        TestInputCell(
-            initialValue = initialValue,
-        )
+    ): dev.azide.core.test_utils.cell.TestInputCell<ValueT> = TestInputCell(
+        initialValue = initialValue,
+    )
 
     /**
      * Spawn a stateful cell, not expecting it to update during spawn.
      */
     fun <ValueT : Any> spawnStatefulCell(
         spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.execute { propagationContext ->
-        val subjectCell = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            spawn()
-        }
-
-        val ongoingUpdate = subjectCell.getVertex(
+    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
+        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
             propagationContext = propagationContext,
-        ).ongoingUpdate
+        )
+
+        val ongoingUpdate = subjectCell.vertex.ongoingUpdate
 
         assertNull(
             actual = ongoingUpdate,
             message = "Spawned subject cell has an ongoing update unexpectedly",
         )
 
-        return@execute subjectCell
+        return@executeWithResult subjectCell
     }
 
     /**
@@ -67,22 +61,16 @@ internal object CellTestUtils {
         expectedOldValue: ValueT,
         expectedUpdatedValue: ValueT,
         spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.execute { propagationContext ->
+    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
-        val subjectCell = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            spawn()
-        }
-
-        val subjectVertex = subjectCell.getVertex(
+        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
             propagationContext = propagationContext,
         )
+
+        val subjectVertex = subjectCell.vertex
 
         val sampledOldValue = subjectVertex.getOldValue(
             propagationContext = propagationContext,
@@ -106,10 +94,11 @@ internal object CellTestUtils {
             actual = ongoingUpdate.updatedValue,
         )
 
-        return@execute subjectCell
+        return@executeWithResult subjectCell
     }
 
     class ObservingVerifier<ValueT>(
+        propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,
     ) : WarmCellVertex.BasicObserver<ValueT> {
         @JvmInline
@@ -119,12 +108,11 @@ internal object CellTestUtils {
 
         private var receivedUpdate: ReceivedUpdate<ValueT>? = null
 
-        private var upstreamObserverHandle: ObserverHandle? = Transactions.execute { propagationContext ->
-            subjectVertex.registerObserver(
-                propagationContext = propagationContext,
-                observer = this,
-            )
-        }
+        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerObserver(
+            propagationContext = propagationContext,
+            observer = this,
+        )
+
 
         /**
          * Verify that, under the given [inputStimulation], the subject cell updates from [expectedOldValue] to
@@ -190,7 +178,7 @@ internal object CellTestUtils {
                 message = "Subject cell vertex is already frozen",
             )
 
-            val preSampledValue = Transactions.execute { propagationContext ->
+            val preSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
                     propagationContext = propagationContext,
                 )
@@ -205,7 +193,7 @@ internal object CellTestUtils {
             // Clear the update potentially received in separate transactions
             receivedUpdate = null
 
-            val intraSampledValue = Transactions.execute(
+            val intraSampledValue = Transactions.executeWithResult(
                 propagate = { propagationContext ->
                     inputStimulation.stimulate(
                         propagationContext = propagationContext,
@@ -232,7 +220,7 @@ internal object CellTestUtils {
                 message = "Intra-update sampled value mismatch",
             )
 
-            val postSampledValue = Transactions.execute { propagationContext ->
+            val postSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
                     propagationContext = propagationContext,
                 )
@@ -273,12 +261,11 @@ internal object CellTestUtils {
 
     fun <ValueT> observeForVerification(
         subjectCell: Cell<ValueT>,
-    ): ObservingVerifier<ValueT> = Transactions.execute { propagationContext ->
-        val subjectVertex = subjectCell.getVertex(
-            propagationContext = propagationContext,
-        )
+    ): ObservingVerifier<ValueT> = Transactions.executeWithResult { propagationContext ->
+        val subjectVertex = subjectCell.vertex
 
         ObservingVerifier(
+            propagationContext = propagationContext,
             subjectVertex = subjectVertex,
         )
     }
@@ -291,18 +278,10 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
         expectedValue: ValueT,
     ) {
-        val subjectVertex = Transactions.execute { propagationContext ->
-            subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-        }
+        val subjectVertex = subjectCell.vertex
 
-        assertIs<WarmCellVertex<ValueT>>(
-            value = subjectVertex,
-            message = "Subject cell vertex is not warm as expected",
-        )
 
-        val passivelySampledValue = Transactions.execute { propagationContext ->
+        val passivelySampledValue = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldValue(
                 propagationContext = propagationContext,
             )
@@ -314,7 +293,7 @@ internal object CellTestUtils {
             message = "Passively sampled value of subject cell did not yield the expected value",
         )
 
-        val activelySampledValue = Transactions.execute { propagationContext ->
+        val activelySampledValue = Transactions.executeWithResult { propagationContext ->
             val observerHandle = subjectVertex.registerObserver(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
@@ -337,48 +316,6 @@ internal object CellTestUtils {
             message = "Actively sampled value of subject cell did not yield the expected value",
         )
     }
-
-    /**
-     * Verify that the [subjectCell] is frozen.
-     */
-    fun <ValueT> verifyFrozen(
-        subjectCell: Cell<ValueT>,
-        expectedFrozenValue: ValueT,
-    ) {
-        val subjectVertex = Transactions.execute { propagationContext ->
-            subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-        }
-
-        assertIs<FrozenCellVertex<ValueT>>(
-            value = subjectVertex,
-            message = "Subject cell vertex is not frozen as expected",
-        )
-
-        val sampledValue = Transactions.execute { propagationContext ->
-            subjectVertex.getOldValue(
-                propagationContext = propagationContext,
-            )
-        }
-
-        assertEquals(
-            expected = expectedFrozenValue,
-            actual = sampledValue,
-            message = "Frozen subject cell's value did not match expected value",
-        )
-    }
-
-    fun <ValueT> verifyFoo(
-        subjectCell: Cell<ValueT>,
-    ) {
-        val observingVerifier = observeForVerification(
-            subjectCell = subjectCell,
-        )
-
-        observingVerifier.stop()
-    }
-
 
     /**
      * A helper wrapper for [ObservingVerifier.verifyUpdatesAsExpected], which observes the [subjectCell] for the
@@ -452,11 +389,7 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            val subjectVertex = subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-
-            subjectVertex.registerObserver(
+            subjectCell.vertex.registerObserver(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )

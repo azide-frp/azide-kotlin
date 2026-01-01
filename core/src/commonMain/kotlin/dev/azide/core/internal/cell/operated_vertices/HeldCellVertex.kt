@@ -1,27 +1,28 @@
 package dev.azide.core.internal.cell.operated_vertices
 
+import dev.azide.core.EventStream
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
-import dev.azide.core.internal.event_stream.registerLooseSubscriber
+import dev.azide.core.internal.event_stream.registerSubscriberWeakly
 
 class HeldCellVertex<ValueT> private constructor(
-    propagationContext: Transactions.PropagationContext,
-    sourceVertex: LiveEventStreamVertex<ValueT>,
+    wrapUpContext: Transactions.WrapUpContext,
+    sourceEventStream: EventStream<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
     initialValue = initialValue,
 ), LiveEventStreamVertex.BasicSubscriber<ValueT> {
     companion object {
         fun <ValueT> start(
-            propagationContext: Transactions.PropagationContext,
-            sourceVertex: LiveEventStreamVertex<ValueT>,
+            wrapUpContext: Transactions.WrapUpContext,
+            sourceEventStream: EventStream<ValueT>,
             initialValue: ValueT,
         ): HeldCellVertex<ValueT> = HeldCellVertex(
-            propagationContext = propagationContext,
-            sourceVertex = sourceVertex,
+            wrapUpContext = wrapUpContext,
+            sourceEventStream = sourceEventStream,
             initialValue = initialValue,
         )
     }
@@ -45,19 +46,27 @@ class HeldCellVertex<ValueT> private constructor(
     }
 
     init {
-        sourceVertex.registerLooseSubscriber(
-            propagationContext = propagationContext,
-            dependentVertex = this,
-            subscriber = this,
-        )
+        wrapUpContext.enqueueForWrapUp { propagationContext ->
+            if (hasObservers) {
+                throw IllegalStateException("Cell vertex should not have observers during wrap-up")
+            }
 
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            exposeUpdate(
+            val sourceVertex = sourceEventStream.vertex
+
+            sourceVertex.registerSubscriberWeakly(
                 propagationContext = propagationContext,
-                update = CellVertex.Update(
-                    updatedValue = sourceOngoingEmission.emittedEvent,
-                ),
+                dependentVertex = this,
+                subscriber = this,
             )
+
+            sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+                exposeUpdate(
+                    propagationContext = propagationContext,
+                    update = CellVertex.Update(
+                        updatedValue = sourceOngoingEmission.emittedEvent,
+                    ),
+                )
+            }
         }
     }
 }

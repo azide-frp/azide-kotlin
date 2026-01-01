@@ -28,9 +28,9 @@ class Cell_map_tests {
             constValue = 10,
         ).map { it.toString() }
 
-        CellTestUtils.verifyFrozen(
+        CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
-            expectedFrozenValue = "10",
+            expectedValue = "10",
         )
     }
 

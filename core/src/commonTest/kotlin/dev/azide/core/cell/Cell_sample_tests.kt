@@ -16,7 +16,7 @@ class Cell_sample_tests {
     fun test_subjectConst() {
         val subjectCell = Cell.Const(10)
 
-        val sampledValue = TestUtils.pull {
+        val sampledValue = TestUtils.pullSeparately {
             subjectCell.sample()
         }
 
@@ -32,7 +32,7 @@ class Cell_sample_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        val sampledValue = TestUtils.pull {
+        val sampledValue = TestUtils.pullSeparately {
             subjectCell.sample()
         }
 
@@ -52,7 +52,7 @@ class Cell_sample_tests {
             subjectCell = subjectCell,
         )
 
-        val sampledValue = TestUtils.pull {
+        val sampledValue = TestUtils.pullSeparately {
             subjectCell.sample()
         }
 
@@ -70,7 +70,7 @@ class Cell_sample_tests {
             sourceEventStream.hold(initialValue = 10)
         }
 
-        val sampledValue = TestUtils.pull {
+        val sampledValue = TestUtils.pullSeparately {
             subjectCell.sample()
         }
 

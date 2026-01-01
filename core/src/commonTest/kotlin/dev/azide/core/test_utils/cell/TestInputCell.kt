@@ -96,7 +96,6 @@ internal class TestInputCell<ValueT>(
         }
     }
 
-    override fun getVertex(
-        propagationContext: Transactions.PropagationContext,
-    ): CellVertex<ValueT> = _vertex
+    override val vertex: CellVertex<ValueT>
+        get() = _vertex
 }

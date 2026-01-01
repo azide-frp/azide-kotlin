@@ -6,7 +6,7 @@ import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
-    private val sourceVertex: LiveEventStreamVertex<EventT>,
+    private val sourceVertex: EventStreamVertex<EventT>,
     private val transform: (Transactions.PropagationContext, EventT) -> TransformedEventT,
 ) : AbstractStatelessEventStreamVertex<TransformedEventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null

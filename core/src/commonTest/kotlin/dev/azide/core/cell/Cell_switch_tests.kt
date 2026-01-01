@@ -56,9 +56,9 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyFrozen(
+        CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
-            expectedFrozenValue = 10,
+            expectedValue = 10,
         )
     }
 

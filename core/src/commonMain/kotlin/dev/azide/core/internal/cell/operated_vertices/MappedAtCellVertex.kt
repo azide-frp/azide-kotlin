@@ -4,10 +4,11 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.internal.cell.registerLooseObserver
+import dev.azide.core.internal.cell.registerObserverWeakly
 
 class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
+    wrapUpContext: Transactions.WrapUpContext,
     sourceVertex: WarmCellVertex<ValueT>,
     private val transform: (Transactions.PropagationContext, ValueT) -> TransformedValueT,
 ) : AbstractStatefulCellVertex<TransformedValueT>(
@@ -19,10 +20,12 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     companion object {
         fun <ValueT, TransformedValueT> start(
             propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
             sourceVertex: WarmCellVertex<ValueT>,
             transform: (Transactions.PropagationContext, ValueT) -> TransformedValueT,
         ): MappedAtCellVertex<ValueT, TransformedValueT> = MappedAtCellVertex(
             propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
             sourceVertex = sourceVertex,
             transform = transform,
         )
@@ -50,22 +53,28 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     }
 
     init {
-        sourceVertex.registerLooseObserver(
-            propagationContext = propagationContext,
-            dependentVertex = this,
-            observer = this,
-        )
+        wrapUpContext.enqueueForWrapUp {
+            if (hasObservers) {
+                throw IllegalStateException("Cell vertex should not have observers during wrap-up")
+            }
 
-        sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
-            exposeUpdate(
+            sourceVertex.registerObserverWeakly(
                 propagationContext = propagationContext,
-                update = CellVertex.Update(
-                    updatedValue = transform(
-                        propagationContext,
-                        sourceOngoingUpdate.updatedValue,
-                    ),
-                ),
+                dependentVertex = this,
+                observer = this,
             )
+
+            sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
+                exposeUpdate(
+                    propagationContext = propagationContext,
+                    update = CellVertex.Update(
+                        updatedValue = transform(
+                            propagationContext,
+                            sourceOngoingUpdate.updatedValue,
+                        ),
+                    ),
+                )
+            }
         }
     }
 }

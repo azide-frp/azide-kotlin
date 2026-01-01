@@ -8,7 +8,7 @@ import dev.azide.core.internal.cell.abstract_vertices.AbstractStatelessCellVerte
 import dev.azide.core.internal.cell.getNewValue
 
 class SwitchedCellVertex<ValueT>(
-    private val outerSourceVertex: WarmCellVertex<Cell<ValueT>>,
+    private val outerSourceVertex: CellVertex<Cell<ValueT>>,
 ) : AbstractStatelessCellVertex<ValueT>(), WarmCellVertex.BasicObserver<Cell<ValueT>> {
     /**
      * The outer vertex observer handle.
@@ -153,9 +153,7 @@ class SwitchedCellVertex<ValueT>(
 
                 val handledUpdatedInnerSourceCell: Cell<ValueT> = update.updatedValue
 
-                val handledUpdatedInnerSourceVertex = handledUpdatedInnerSourceCell.getVertex(
-                    propagationContext = propagationContext,
-                )
+                val handledUpdatedInnerSourceVertex = handledUpdatedInnerSourceCell.vertex
 
                 if (handledUpdatedInnerSourceVertex == previousNewInnerSourceVertex) {
                     // If the source inner vertex doesn't effectively change, we can just ignore the update.
@@ -223,17 +221,11 @@ class SwitchedCellVertex<ValueT>(
             propagationContext = propagationContext,
         )
 
-        val stableInnerSourceVertex = stableInnerSourceCell.getVertex(
-            propagationContext = propagationContext,
-        )
+        val stableInnerSourceVertex = stableInnerSourceCell.vertex
 
-        val updatedInnerSourceVertex = updatedInnerSourceCell?.getVertex(
-            propagationContext = propagationContext,
-        )
+        val updatedInnerSourceVertex = updatedInnerSourceCell?.vertex
 
-        val newInnerSourceVertex = newInnerSourceCell.getVertex(
-            propagationContext = propagationContext,
-        )
+        val newInnerSourceVertex = newInnerSourceCell.vertex
 
         // Store the links to the stable / updated source inner vertices
 
@@ -293,9 +285,7 @@ class SwitchedCellVertex<ValueT>(
                 // transformations.
                 val oldCell = outerSourceVertex.getOldValue(propagationContext)
 
-                oldCell.getVertex(
-                    propagationContext = propagationContext,
-                )
+                oldCell.vertex
             }
 
             // When the vertex is active, use the stored link

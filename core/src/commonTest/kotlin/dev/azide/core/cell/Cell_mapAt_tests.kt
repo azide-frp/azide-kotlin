@@ -1,11 +1,22 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Cell
+import dev.azide.core.EventStream
+import dev.azide.core.Moment
+import dev.azide.core.holding
+import dev.azide.core.joinOf
+import dev.azide.core.map
 import dev.azide.core.mapAt
 import dev.azide.core.sample
+import dev.azide.core.sampling
 import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import kotlin.Int
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @Suppress("ClassName")
 class Cell_mapAt_tests {
@@ -49,9 +60,9 @@ class Cell_mapAt_tests {
             }
         }
 
-        CellTestUtils.verifyFrozen(
+        CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
-            expectedFrozenValue = "10:A",
+            expectedValue = "10:A",
         )
     }
 
@@ -172,6 +183,45 @@ class Cell_mapAt_tests {
             ),
             expectedOldValue = "10:A",
             expectedNewValue = "12:A",
+        )
+    }
+
+    @Test
+    fun test_looped() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+
+        val externalCell = CellTestUtils.createInputCell('A')
+
+        val (mapAtCell, initialValue) = TestUtils.pullSeparately(
+            moment = EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->
+                loopedMultiplicationStream.holding(initialValue = 0).joinOf { memoryCell: Cell<Int> ->
+                    Moment.decontextualize {
+                        memoryCell.mapAt { value ->
+                            "${externalCell.sample()}$value"
+                        }
+                    }.joinOf { mapAtCell ->
+                        mapAtCell.sampling.map { initialValue ->
+                            Pair(
+                                Pair(mapAtCell, initialValue),
+                                sourceEventStream,
+                            )
+                        }
+                    }
+                }
+            },
+            inputStimulation = sourceEventStream.emit(
+                emittedEvent = 1,
+            )
+        )
+
+        CellTestUtils.verifyAtRest(
+            subjectCell = mapAtCell,
+            expectedValue = "A1",
+        )
+
+        assertEquals(
+            expected = "A0",
+            actual = initialValue,
         )
     }
 }

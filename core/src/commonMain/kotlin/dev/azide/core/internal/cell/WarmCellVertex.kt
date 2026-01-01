@@ -1,13 +1,14 @@
 package dev.azide.core.internal.cell
 
-import dev.azide.core.internal.FinalizationTransactionRegistry
-import dev.azide.core.internal.Transaction
+import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
+import dev.azide.core.internal.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
+import kotlin.jvm.JvmInline
 
 interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
     interface BasicObserver<in ValueT> : Observer<ValueT> {
@@ -55,14 +56,14 @@ interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
         }
     }
 
-    interface LooseObserver {
+    @JvmInline
+    value class WarmObserverHandle<ValueT>(
+        internal val internalHandle: MutableBag.Handle<Observer<ValueT>>,
+    ) : ObserverHandle
+
+    interface WeakObserverHandle {
         fun cancel()
     }
-
-    override fun registerObserver(
-        propagationContext: Transactions.PropagationContext,
-        observer: Observer<ValueT>,
-    ): ObserverHandle
 }
 
 fun <ValueT> WarmCellVertex.BasicObserver<ValueT>.weaklyReferenced(): WarmCellVertex.WeaklyReferencedObserver<ValueT> =
@@ -71,35 +72,31 @@ fun <ValueT> WarmCellVertex.BasicObserver<ValueT>.weaklyReferenced(): WarmCellVe
     )
 
 /**
- * Analogical to [dev.azide.core.internal.event_stream.registerLooseSubscriber].
+ * Analogical to [dev.azide.core.internal.event_stream.registerSubscriberWeakly].
  */
-fun <ValueT> WarmCellVertex<ValueT>.registerLooseObserver(
+fun <ValueT> WarmCellVertex<ValueT>.registerObserverWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: CellVertex<*>,
     observer: WarmCellVertex.BasicObserver<ValueT>,
-): WarmCellVertex.LooseObserver {
-    val weakObserverHandle = registerObserver(
+): WarmCellVertex.WeakObserverHandle {
+    val innerObserverHandle: ObserverHandle = registerObserver(
         propagationContext = propagationContext,
         observer = observer.weaklyReferenced(),
     )
 
-    val finalizationHandle = FinalizationTransactionRegistry.register(
+    val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
         target = dependentVertex,
-        finalizationTransaction = object : Transaction<Unit>() {
-            override fun propagate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                unregisterObserver(
-                    handle = weakObserverHandle,
-                )
-            }
+        finalizationCallback = {
+            unregisterObserver(
+                handle = innerObserverHandle,
+            )
         },
     )
 
-    return object : WarmCellVertex.LooseObserver {
+    return object : WarmCellVertex.WeakObserverHandle {
         override fun cancel() {
             unregisterObserver(
-                handle = weakObserverHandle,
+                handle = innerObserverHandle,
             )
 
             finalizationHandle.unregister()

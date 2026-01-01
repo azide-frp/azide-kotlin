@@ -4,14 +4,14 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.internal.event_stream.registerLooseSubscriber
+import dev.azide.core.internal.event_stream.registerSubscriberWeakly
 
 class SingleEventStreamVertex<EventT>(
     propagationContext: Transactions.PropagationContext,
-    sourceVertex: LiveEventStreamVertex<EventT>,
+    sourceVertex: EventStreamVertex<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
-    private var upstreamLooseSubscription: LiveEventStreamVertex.LooseSubscription? =
-        sourceVertex.registerLooseSubscriber(
+    private var upstreamWeakSubscriberHandle: LiveEventStreamVertex.WeakSubscriberHandle? =
+        sourceVertex.registerSubscriberWeakly(
             propagationContext = propagationContext,
             dependentVertex = this,
             subscriber = this,
@@ -51,11 +51,11 @@ class SingleEventStreamVertex<EventT>(
     }
 
     override fun transit() {
-        val upstreamLooseSubscription = this.upstreamLooseSubscription
+        val upstreamWeakSubscriberHandle = this.upstreamWeakSubscriberHandle
             ?: throw IllegalStateException("It looks as if the single emission already had place")
 
-        upstreamLooseSubscription.cancel()
+        upstreamWeakSubscriberHandle.cancel()
 
-        this.upstreamLooseSubscription = null
+        this.upstreamWeakSubscriberHandle = null
     }
 }

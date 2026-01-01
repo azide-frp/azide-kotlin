@@ -5,15 +5,10 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.internal.cell.WarmCellVertex.WarmObserverHandle
 import dev.azide.core.internal.utils.weak_bag.MutableBag
-import kotlin.jvm.JvmInline
 
 abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
-    @JvmInline
-    private value class ObserverHandleImpl<ValueT>(
-        val internalHandle: MutableBag.Handle<Observer<ValueT>>,
-    ) : CellVertex.ObserverHandle
-
     private val _registeredObservers: MutableBag<Observer<ValueT>> = MutableBag()
 
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
@@ -35,7 +30,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
             )
         }
 
-        return ObserverHandleImpl(
+        return WarmObserverHandle(
             internalHandle = internalHandle,
         )
     }
@@ -44,7 +39,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         handle: CellVertex.ObserverHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? ObserverHandleImpl<ValueT> ?: throw IllegalArgumentException("Invalid handle")
+            handle as? WarmObserverHandle<ValueT> ?: throw IllegalArgumentException("Invalid handle")
 
         _registeredObservers.remove(handleImpl.internalHandle)
 
@@ -63,6 +58,9 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         _ongoingUpdate = null
         _isEnqueuedForCommitment = false
     }
+
+    protected val hasObservers: Boolean
+        get() = _registeredObservers.size > 0
 
     protected fun exposeAndPropagateUpdate(
         propagationContext: Transactions.PropagationContext,

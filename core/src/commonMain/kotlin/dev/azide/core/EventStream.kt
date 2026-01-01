@@ -1,13 +1,16 @@
 package dev.azide.core
 
-import dev.azide.core.internal.cell.PureCellVertex
+import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.ExecutedEachEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
+import dev.azide.core.internal.utils.LazyUtils
 
 interface EventStream<out EventT> {
     val vertex: EventStreamVertex<EventT>
@@ -20,10 +23,52 @@ interface EventStream<out EventT> {
         override val vertex: EventStreamVertex<EventT>,
     ) : EventStream<EventT>
 
+    class Lazy<EventT> internal constructor(
+        private val eventStreamLazy: kotlin.Lazy<EventStream<EventT>>,
+    ) : EventStream<EventT> {
+        override val vertex: EventStreamVertex<EventT> by lazy {
+            eventStreamLazy.value.vertex
+        }
+    }
+
     companion object {
-        fun <EventT, ResultT> looped(
-            block: (EventStream<EventT>) -> Pair<ResultT, EventStream<EventT>>,
-        ): ResultT = TODO()
+        fun <EventT> wrap(
+            externalSourceAdapter: ExternalSourceAdapter<EventT>,
+        ): EventStream<EventT> = Ordinary(
+            vertex = WrappedExternalEventStreamVertex(
+                externalSourceAdapter = externalSourceAdapter,
+            ),
+        )
+
+        fun <ResultT, LoopedEventT> looped(
+            block: (EventStream<LoopedEventT>) -> Pair<ResultT, EventStream<LoopedEventT>>,
+        ): ResultT = LazyUtils.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
+
+        fun <ResultT, LoopedEventT> loopedInMoment(
+            block: (EventStream<LoopedEventT>) -> Moment<Pair<ResultT, EventStream<LoopedEventT>>>,
+        ): Moment<ResultT> = Moment.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
+
+        fun <ResultT, LoopedEventT> loopedInAction(
+            block: (EventStream<LoopedEventT>) -> Action<Pair<ResultT, EventStream<LoopedEventT>>>,
+        ): Action<ResultT> = Action.looped { loopedEventStreamLazy ->
+            block(
+                Lazy(
+                    eventStreamLazy = loopedEventStreamLazy,
+                ),
+            )
+        }
 
         fun <EventT> merge2(
             eventStream1: EventStream<EventT>,
@@ -64,7 +109,9 @@ fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
         is LiveEventStreamVertex -> MappedEventStreamVertex(
             sourceVertex = sourceVertex,
             transform = { propagationContext, event ->
-                with(MomentContext.wrap(propagationContext)) {
+                MomentContext.wrapUp(
+                    propagationContext,
+                ) {
                     transform(event)
                 }
             },
@@ -111,26 +158,34 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.take(
     count: Int,
 ): EventStream<EventT> = TODO()
 
+fun <EventT> EventStream<EventT>.holding(
+    initialValue: EventT,
+): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
+    override fun pullInternally(
+        propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
+    ): Cell<EventT> = Cell.Ordinary(
+        vertex = HeldCellVertex.start(
+            wrapUpContext = wrapUpContext,
+            sourceEventStream = this@holding,
+            initialValue = initialValue,
+        ),
+    )
+}
+
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     initialValue: EventT,
-): Cell<EventT> = Cell.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> HeldCellVertex.start(
-            propagationContext = momentContext.propagationContext,
-            sourceVertex = sourceVertex,
-            initialValue = initialValue,
-        )
-
-        is TerminatedEventStreamVertex -> PureCellVertex(
-            value = initialValue,
-        )
-    },
+): Cell<EventT> = holding(
+    initialValue = initialValue,
+).pullInternally(
+    propagationContext = momentContext.propagationContext,
+    wrapUpContext = momentContext.wrapUpContext,
 )
 
 context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.accumulate(
     initialAccValue: AccT,
     transform: (accValue: AccT, newEvent: EventT) -> AccT,
-): Cell<AccT> = EventStream.looped<AccT, Cell<AccT>> { loopedNewAccValues ->
+): Cell<AccT> = EventStream.looped<Cell<AccT>, AccT> { loopedNewAccValues ->
     val accCell = Cell.define(
         initialValue = initialAccValue,
         newValues = loopedNewAccValues,
@@ -147,4 +202,107 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
         accCell,
         newAccValues,
     )
+}
+
+fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
+    object : Effect<EventStream<EventT>> {
+        override val start: Action<Pair<EventStream<EventT>, Effect.Handle>> =
+            object : Action<Pair<EventStream<EventT>, Effect.Handle>> {
+                override fun executeInternally(
+                    propagationContext: Transactions.PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
+                ): Pair<Pair<EventStream<EventT>, Effect.Handle>, Action.RevocationHandle> {
+                    val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Pair(
+                        Pair(
+                            EventStream.Never,
+                            Effect.Handle.Noop,
+                        ),
+                        Action.RevocationHandle.Noop,
+                    )
+
+                    val executedEachEventStreamVertex = ExecutedEachEventStreamVertex.start(
+                        propagationContext = propagationContext,
+                        sourceVertex = sourceVertex,
+                    )
+
+                    return Pair(
+                        Pair(
+                            EventStream.Ordinary(
+                                vertex = executedEachEventStreamVertex,
+                            ),
+                            object : Effect.Handle {
+                                override val cancel: Trigger = object : Trigger {
+                                    override fun executeInternally(
+                                        propagationContext: Transactions.PropagationContext,
+                                        wrapUpContext: Transactions.WrapUpContext,
+                                    ): Pair<Unit, Action.RevocationHandle> {
+                                        executedEachEventStreamVertex.abort()
+
+                                        return Pair(
+                                            Unit,
+                                            object : Action.RevocationHandle {
+                                                override fun revoke() {
+                                                    executedEachEventStreamVertex.restart(
+                                                        propagationContext = propagationContext,
+                                                    )
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
+                            },
+                        ),
+                        object : Action.RevocationHandle {
+                            override fun revoke() {
+                                executedEachEventStreamVertex.abort()
+                            }
+                        },
+                    )
+                }
+            }
+    }
+
+fun EventStream<Trigger>.triggerEach(): Schedule = executeEach().map { }
+
+fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStream<EventT>> =
+    executeEach().start.map { (eventStream, _) -> eventStream }
+
+fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
+
+fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
+    override val launchImpl: Action<Effect.Handle> =
+        EventStream.loopedInAction { loopedStartedScheduleHandles: EventStream<Effect.Handle> ->
+            this@actuate.values.asAction.joinOf { newSchedules: EventStream<Schedule> ->
+                loopedStartedScheduleHandles.holding(
+                    initialValue = null,
+                ).asAction.joinOf { currentScheduleHandle: Cell<Effect.Handle?> ->
+                    val innerEffect: Effect<EventStream<Effect.Handle>> = newSchedules.map { newSchedule: Schedule ->
+                        currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
+                            when (currentScheduleHandleNow) {
+                                null -> newSchedule.launch
+                                else -> currentScheduleHandleNow.cancel.joinOf { newSchedule.launch }
+                            }
+                        }
+                    }.executeEach()
+
+                    innerEffect.start.map { (startedScheduleHandles: EventStream<Effect.Handle>, innerEffectHandle: Effect.Handle) ->
+                        val cancelInnerEffectTrigger: Trigger = innerEffectHandle.cancel
+
+                        val cancelCurrentScheduleTrigger: Trigger =
+                            currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
+                                currentScheduleHandleNow?.cancel ?: Triggers.Noop
+                            }
+
+                        val outerEffectHandle: Effect.Handle = object : Effect.Handle {
+                            override val cancel: Trigger = Triggers.combine(
+                                cancelInnerEffectTrigger,
+                                cancelCurrentScheduleTrigger,
+                            )
+                        }
+
+                        Pair(outerEffectHandle, startedScheduleHandles)
+                    }
+                }
+            }
+        }
 }
