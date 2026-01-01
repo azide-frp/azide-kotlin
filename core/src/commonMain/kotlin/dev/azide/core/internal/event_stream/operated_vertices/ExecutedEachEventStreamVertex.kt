@@ -1,6 +1,7 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
 import dev.azide.core.Action
+import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
@@ -49,7 +50,7 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
 
                 val emittedAction: Action<EventT> = emission.emittedEvent
 
-                val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternally(
+                val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
                     propagationContext = propagationContext,
                 )
 
@@ -92,7 +93,7 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
             val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
 
-            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternally(
+            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 
@@ -116,7 +117,7 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
             val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
 
-            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternally(
+            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 

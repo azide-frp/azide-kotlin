@@ -1,7 +1,6 @@
 package dev.azide.core
 
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.PureCellVertex
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
@@ -110,7 +109,9 @@ fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
         is LiveEventStreamVertex -> MappedEventStreamVertex(
             sourceVertex = sourceVertex,
             transform = { propagationContext, event ->
-                with(MomentContext.wrap(propagationContext)) {
+                MomentContext.wrapUp(
+                    propagationContext,
+                ) {
                     transform(event)
                 }
             },
@@ -162,9 +163,10 @@ fun <EventT> EventStream<EventT>.holding(
 ): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
     override fun pullInternally(
         propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
     ): Cell<EventT> = Cell.Ordinary(
         vertex = HeldCellVertex.start(
-            propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
             sourceVertex = this@holding.vertex,
             initialValue = initialValue,
         ),
@@ -177,6 +179,7 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     initialValue = initialValue,
 ).pullInternally(
     propagationContext = momentContext.propagationContext,
+    wrapUpContext = momentContext.wrapUpContext,
 )
 
 context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.accumulate(
@@ -207,6 +210,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
             object : Action<Pair<EventStream<EventT>, Effect.Handle>> {
                 override fun executeInternally(
                     propagationContext: Transactions.PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
                 ): Pair<Pair<EventStream<EventT>, Effect.Handle>, Action.RevocationHandle> {
                     val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Pair(
                         Pair(
@@ -230,6 +234,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                                 override val cancel: Trigger = object : Trigger {
                                     override fun executeInternally(
                                         propagationContext: Transactions.PropagationContext,
+                                        wrapUpContext: Transactions.WrapUpContext,
                                     ): Pair<Unit, Action.RevocationHandle> {
                                         executedEachEventStreamVertex.abort()
 

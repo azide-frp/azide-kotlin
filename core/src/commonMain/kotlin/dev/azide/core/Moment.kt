@@ -11,11 +11,13 @@ interface Moment<out ResultT> {
         ): Moment<ResultT> = object : Moment<ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
+                wrapUpContext: Transactions.WrapUpContext,
             ): ResultT = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
                 val moment: Moment<Pair<ResultT, LoopedValueT>> = block(loopedValue)
 
                 return@looped moment.pullInternally(
                     propagationContext = propagationContext,
+                    wrapUpContext = wrapUpContext,
                 )
             }
         }
@@ -25,22 +27,55 @@ interface Moment<out ResultT> {
         ): Moment<ResultT> = object : Moment<ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
+                wrapUpContext: Transactions.WrapUpContext,
             ): ResultT = result
+        }
+
+        fun <ResultT> decontextualize(
+            block: context(MomentContext) () -> ResultT,
+        ): Moment<ResultT> = object : Moment<ResultT> {
+            override fun pullInternally(
+                propagationContext: Transactions.PropagationContext,
+                wrapUpContext: Transactions.WrapUpContext,
+            ): ResultT = MomentContext.wrapUp(
+                propagationContext = propagationContext,
+            ) {
+                block()
+            }
         }
     }
 
     fun pullInternally(
         propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
     ): ResultT
+}
+
+context(momentContext: MomentContext) fun <ResultT> Moment<ResultT>.pullInContext(): ResultT = pullInternally(
+    propagationContext = momentContext.propagationContext,
+    wrapUpContext = momentContext.wrapUpContext,
+)
+
+fun <ResultT> Moment<ResultT>.pullInternallyWrappedUp(
+    propagationContext: Transactions.PropagationContext,
+): ResultT = Transactions.WrapUpContext.wrapUp(
+    propagationContext,
+) { wrapUpContext ->
+    pullInternally(
+        propagationContext = propagationContext,
+        wrapUpContext = wrapUpContext,
+    )
 }
 
 val <ResultT> Moment<ResultT>.asAction: Action<ResultT>
     get() = object : Action<ResultT> {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
         ): Pair<ResultT, RevocationHandle> {
             val result: ResultT = this@asAction.pullInternally(
                 propagationContext = propagationContext,
+                wrapUpContext = wrapUpContext,
             )
 
             return Pair(
@@ -55,9 +90,11 @@ fun <ResultT, TransformedResultT> Moment<ResultT>.map(
 ): Moment<TransformedResultT> = object : Moment<TransformedResultT> {
     override fun pullInternally(
         propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
     ): TransformedResultT {
         val result: ResultT = this@map.pullInternally(
             propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
         )
 
         return transform(result)
@@ -69,15 +106,18 @@ fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
 ): Moment<TransformedResultT> = object : Moment<TransformedResultT> {
     override fun pullInternally(
         propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
     ): TransformedResultT {
         val result: ResultT = this@joinOf.pullInternally(
             propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
         )
 
         val transformedMoment = transform(result)
 
         val transformedResult: TransformedResultT = transformedMoment.pullInternally(
             propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
         )
 
         return transformedResult

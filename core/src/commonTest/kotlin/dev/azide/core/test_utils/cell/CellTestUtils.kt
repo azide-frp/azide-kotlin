@@ -1,6 +1,7 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
+import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
@@ -10,6 +11,7 @@ import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
@@ -37,13 +39,9 @@ internal object CellTestUtils {
     fun <ValueT : Any> spawnStatefulCell(
         spawn: context(MomentContext) () -> Cell<ValueT>,
     ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
-        val subjectCell = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            spawn()
-        }
+        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
 
         val ongoingUpdate = subjectCell.vertex.ongoingUpdate
 
@@ -68,13 +66,9 @@ internal object CellTestUtils {
             propagationContext = propagationContext,
         )
 
-        val subjectCell = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            spawn()
-        }
+        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
 
         val subjectVertex = subjectCell.vertex
 

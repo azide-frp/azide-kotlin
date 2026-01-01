@@ -8,6 +8,7 @@ import dev.azide.core.internal.cell.registerObserverWeakly
 
 class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
+    wrapUpContext: Transactions.WrapUpContext,
     sourceVertex: WarmCellVertex<ValueT>,
     private val transform: (Transactions.PropagationContext, ValueT) -> TransformedValueT,
 ) : AbstractStatefulCellVertex<TransformedValueT>(
@@ -19,10 +20,12 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     companion object {
         fun <ValueT, TransformedValueT> start(
             propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
             sourceVertex: WarmCellVertex<ValueT>,
             transform: (Transactions.PropagationContext, ValueT) -> TransformedValueT,
         ): MappedAtCellVertex<ValueT, TransformedValueT> = MappedAtCellVertex(
             propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
             sourceVertex = sourceVertex,
             transform = transform,
         )

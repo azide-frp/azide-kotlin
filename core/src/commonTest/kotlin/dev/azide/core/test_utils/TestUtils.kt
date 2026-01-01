@@ -3,7 +3,9 @@ package dev.azide.core.test_utils
 import dev.azide.core.Action
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
+import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.internal.Transactions
+import dev.azide.core.pullInternallyWrappedUp
 
 internal object TestUtils {
     fun stimulateSeparately(
@@ -19,7 +21,9 @@ internal object TestUtils {
     fun <ResultT> pullSeparately(
         block: context(MomentContext) () -> ResultT,
     ): ResultT = Transactions.executeWithResult { propagationContext ->
-        with(MomentContext.wrap(propagationContext)) {
+        MomentContext.wrapUp(
+            propagationContext = propagationContext,
+        ) {
             block()
         }
     }
@@ -32,7 +36,7 @@ internal object TestUtils {
             propagationContext = propagationContext,
         )
 
-        moment.pullInternally(
+        moment.pullInternallyWrappedUp(
             propagationContext = propagationContext,
         )
     }
@@ -45,7 +49,7 @@ internal object TestUtils {
             propagationContext = propagationContext,
         )
 
-        val (result, _) = action.executeInternally(
+        val (result, _) = action.executeInternallyWrappedUp(
             propagationContext = propagationContext,
         )
 

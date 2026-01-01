@@ -82,6 +82,7 @@ val <ValueT> Cell<ValueT>.sampling: Moment<ValueT>
     get() = object : Moment<ValueT> {
         override fun pullInternally(
             propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
         ): ValueT = vertex.getOldValue(
             propagationContext = propagationContext,
         )
@@ -91,6 +92,7 @@ val <ValueT> Cell<ValueT>.values: Moment<EventStream<ValueT>>
     get() = object : Moment<EventStream<ValueT>> {
         override fun pullInternally(
             propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
         ): EventStream<ValueT> {
             val sourceVertex = vertex as? WarmCellVertex ?: return EventStream.Never
 
@@ -130,9 +132,7 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
 ): Cell<TransformedValueT> {
     val initialPropagationContext = momentContext.propagationContext
 
-    val sourceVertex = this.vertex
-
-    return when (sourceVertex) {
+    return when (val sourceVertex = this.vertex) {
         is FrozenCellVertex -> Cell.Const(
             constValue = transform(
                 sourceVertex.getOldValue(
@@ -144,12 +144,14 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
         is WarmCellVertex -> Cell.Ordinary(
             MappedAtCellVertex.start(
                 propagationContext = initialPropagationContext,
+                wrapUpContext = momentContext.wrapUpContext,
                 sourceVertex = sourceVertex,
                 transform = { propagationContext, updatedValue ->
-                    transform(
-                        MomentContext.wrap(propagationContext),
-                        updatedValue,
-                    )
+                    MomentContext.wrapUp(
+                        propagationContext = propagationContext,
+                    ) {
+                        transform(updatedValue)
+                    }
                 },
             ),
         )

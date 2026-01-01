@@ -11,6 +11,7 @@ import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex.BasicSubscriber
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
@@ -29,17 +30,13 @@ internal object EventStreamTestUtils {
         inputStimulation: TestInputStimulation? = null,
         spawn: context(MomentContext) () -> EventStream<EventT>,
     ): EventStream<EventT> = Transactions.executeWithResult { propagationContext ->
-        val subjectEventStream = with(
-            MomentContextImpl(
-                propagationContext = propagationContext,
-            ),
-        ) {
-            inputStimulation?.stimulate(
-                propagationContext = propagationContext,
-            )
+        inputStimulation?.stimulate(
+            propagationContext = propagationContext,
+        )
 
-            spawn()
-        }
+        val subjectEventStream = Moment.decontextualize(spawn).pullInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
 
         val ongoingEmission = subjectEventStream.vertex.ongoingEmission
 
@@ -63,7 +60,7 @@ internal object EventStreamTestUtils {
             propagationContext = propagationContext,
         )
 
-        val subjectEventStream = spawn.pullInternally(
+        val subjectEventStream = spawn.pullInternallyWrappedUp(
             propagationContext = propagationContext,
         )
 
@@ -101,17 +98,7 @@ internal object EventStreamTestUtils {
     ): EventStream<EventT> = spawnStatefulEventStreamExpectingEmission(
         inputStimulation = inputStimulation,
         expectedEmittedEvent = expectedEmittedEvent,
-        spawn = object : Moment<EventStream<EventT>> {
-            override fun pullInternally(
-                propagationContext: Transactions.PropagationContext,
-            ): EventStream<EventT> = with(
-                MomentContextImpl(
-                    propagationContext = propagationContext,
-                ),
-            ) {
-                spawn()
-            }
-        },
+        spawn = Moment.decontextualize(spawn),
     )
 
     class SubscribingVerifier<EventT>(

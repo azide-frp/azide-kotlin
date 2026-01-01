@@ -8,7 +8,7 @@ import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.registerSubscriberWeakly
 
 class HeldCellVertex<ValueT> private constructor(
-    propagationContext: Transactions.PropagationContext,
+    wrapUpContext: Transactions.WrapUpContext,
     sourceVertex: EventStreamVertex<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
@@ -16,11 +16,11 @@ class HeldCellVertex<ValueT> private constructor(
 ), LiveEventStreamVertex.BasicSubscriber<ValueT> {
     companion object {
         fun <ValueT> start(
-            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
             sourceVertex: EventStreamVertex<ValueT>,
             initialValue: ValueT,
         ): HeldCellVertex<ValueT> = HeldCellVertex(
-            propagationContext = propagationContext,
+            wrapUpContext = wrapUpContext,
             sourceVertex = sourceVertex,
             initialValue = initialValue,
         )
@@ -45,19 +45,21 @@ class HeldCellVertex<ValueT> private constructor(
     }
 
     init {
-        sourceVertex.registerSubscriberWeakly(
-            propagationContext = propagationContext,
-            dependentVertex = this,
-            subscriber = this,
-        )
-
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            exposeUpdate(
+        wrapUpContext.enqueueForWrapUp { propagationContext ->
+            sourceVertex.registerSubscriberWeakly(
                 propagationContext = propagationContext,
-                update = CellVertex.Update(
-                    updatedValue = sourceOngoingEmission.emittedEvent,
-                ),
+                dependentVertex = this,
+                subscriber = this,
             )
+
+            sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+                exposeUpdate(
+                    propagationContext = propagationContext,
+                    update = CellVertex.Update(
+                        updatedValue = sourceOngoingEmission.emittedEvent,
+                    ),
+                )
+            }
         }
     }
 }
