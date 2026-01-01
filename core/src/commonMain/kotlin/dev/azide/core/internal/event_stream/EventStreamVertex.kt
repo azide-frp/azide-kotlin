@@ -41,7 +41,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
     fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: Subscriber<EventT>,
-    ): SubscriberHandle?
+    ): SubscriberHandle
 
     fun unregisterSubscriber(
         handle: SubscriberHandle,

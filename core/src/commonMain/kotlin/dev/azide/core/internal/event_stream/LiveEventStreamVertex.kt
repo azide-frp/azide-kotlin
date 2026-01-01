@@ -6,7 +6,9 @@ import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
+import dev.azide.core.internal.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
+import kotlin.jvm.JvmInline
 
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     interface BasicSubscriber<in EventT> : Subscriber<EventT> {
@@ -54,14 +56,14 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
         }
     }
 
+    @JvmInline
+    value class LiveSubscriberHandle<EventT>(
+        val internalHandle: MutableBag.Handle<Subscriber<EventT>>,
+    ) : EventStreamVertex.SubscriberHandle
+
     interface LooseSubscription {
         fun cancel()
     }
-
-    override fun registerSubscriber(
-        propagationContext: Transactions.PropagationContext,
-        subscriber: Subscriber<EventT>,
-    ): EventStreamVertex.SubscriberHandle
 }
 
 fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): LiveEventStreamVertex.WeaklyReferencedSubscriber<EventT> =
