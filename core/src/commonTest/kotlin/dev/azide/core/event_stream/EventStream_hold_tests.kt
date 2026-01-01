@@ -65,7 +65,6 @@ class EventStream_hold_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_delayed() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
@@ -116,7 +115,6 @@ class EventStream_hold_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_looped() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
@@ -142,7 +140,6 @@ class EventStream_hold_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_looped_initialSample() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 

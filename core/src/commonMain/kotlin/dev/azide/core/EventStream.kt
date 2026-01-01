@@ -167,7 +167,7 @@ fun <EventT> EventStream<EventT>.holding(
     ): Cell<EventT> = Cell.Ordinary(
         vertex = HeldCellVertex.start(
             wrapUpContext = wrapUpContext,
-            sourceVertex = this@holding.vertex,
+            sourceEventStream = this@holding,
             initialValue = initialValue,
         ),
     )

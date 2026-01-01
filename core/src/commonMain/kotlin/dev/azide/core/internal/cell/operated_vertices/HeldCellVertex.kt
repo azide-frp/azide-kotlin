@@ -1,5 +1,6 @@
 package dev.azide.core.internal.cell.operated_vertices
 
+import dev.azide.core.EventStream
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
@@ -9,7 +10,7 @@ import dev.azide.core.internal.event_stream.registerSubscriberWeakly
 
 class HeldCellVertex<ValueT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
-    sourceVertex: EventStreamVertex<ValueT>,
+    sourceEventStream: EventStream<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
     initialValue = initialValue,
@@ -17,11 +18,11 @@ class HeldCellVertex<ValueT> private constructor(
     companion object {
         fun <ValueT> start(
             wrapUpContext: Transactions.WrapUpContext,
-            sourceVertex: EventStreamVertex<ValueT>,
+            sourceEventStream: EventStream<ValueT>,
             initialValue: ValueT,
         ): HeldCellVertex<ValueT> = HeldCellVertex(
             wrapUpContext = wrapUpContext,
-            sourceVertex = sourceVertex,
+            sourceEventStream = sourceEventStream,
             initialValue = initialValue,
         )
     }
@@ -46,6 +47,8 @@ class HeldCellVertex<ValueT> private constructor(
 
     init {
         wrapUpContext.enqueueForWrapUp { propagationContext ->
+            val sourceVertex = sourceEventStream.vertex
+
             sourceVertex.registerSubscriberWeakly(
                 propagationContext = propagationContext,
                 dependentVertex = this,
