@@ -7,9 +7,9 @@ import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
 
 /**
- * This vertex is unusual, as while its operator is semantically stateful, it doesn't need the usual logic required for
- * maintaining stateful entities. Its state stabilizes after the spawning transaction, and it's observably stateless
- * since then, so it's fine with extending [AbstractStatelessEventStreamVertex].
+ * This vertex is unusual: although its operator is semantically stateful, it does not require the usual logic for
+ * maintaining stateful entities. Its state stabilizes after the spawning transaction and remains observably stateless
+ * thereafter, so extending [AbstractStatelessEventStreamVertex] is appropriate.
  */
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,

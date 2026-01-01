@@ -7,7 +7,9 @@ import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
+import dev.azide.core.internal.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
+import kotlin.jvm.JvmInline
 
 interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
     interface BasicObserver<in ValueT> : Observer<ValueT> {
@@ -55,14 +57,14 @@ interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
         }
     }
 
+    @JvmInline
+    value class WarmObserverHandle<ValueT>(
+        internal val internalHandle: MutableBag.Handle<Observer<ValueT>>,
+    ) : ObserverHandle
+
     interface LooseObserver {
         fun cancel()
     }
-
-    override fun registerObserver(
-        propagationContext: Transactions.PropagationContext,
-        observer: Observer<ValueT>,
-    ): ObserverHandle
 }
 
 fun <ValueT> WarmCellVertex.BasicObserver<ValueT>.weaklyReferenced(): WarmCellVertex.WeaklyReferencedObserver<ValueT> =
