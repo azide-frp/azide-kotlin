@@ -15,7 +15,15 @@ object Transactions {
         ): Action.RevocationHandle
     }
 
-    inline fun <ResultT> execute(
+    inline fun execute(
+        propagate: (PropagationContext) -> Unit,
+    ) {
+        executeWithResult(
+            propagate = propagate,
+        )
+    }
+
+    inline fun <ResultT> executeWithResult(
         propagate: (PropagationContext) -> ResultT,
     ): ResultT {
         val verticesToCommit = arrayListOf<CommittableVertex>()

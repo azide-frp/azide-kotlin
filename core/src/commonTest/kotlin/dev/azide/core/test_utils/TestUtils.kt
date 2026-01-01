@@ -18,7 +18,7 @@ internal object TestUtils {
 
     fun <ResultT> pullSeparately(
         block: context(MomentContext) () -> ResultT,
-    ): ResultT = Transactions.execute { propagationContext ->
+    ): ResultT = Transactions.executeWithResult { propagationContext ->
         with(MomentContext.wrap(propagationContext)) {
             block()
         }
@@ -27,7 +27,7 @@ internal object TestUtils {
     fun <ResultT> pullSeparately(
         moment: Moment<ResultT>,
         inputStimulation: TestInputStimulation? = null,
-    ): ResultT = Transactions.execute { propagationContext ->
+    ): ResultT = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
         )
@@ -40,7 +40,7 @@ internal object TestUtils {
     fun <ResultT> executeSeparately(
         action: Action<ResultT>,
         inputStimulation: TestInputStimulation? = null,
-    ): ResultT = Transactions.execute { propagationContext ->
+    ): ResultT = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
         )
@@ -49,6 +49,6 @@ internal object TestUtils {
             propagationContext = propagationContext,
         )
 
-        return@execute result
+        return@executeWithResult result
     }
 }

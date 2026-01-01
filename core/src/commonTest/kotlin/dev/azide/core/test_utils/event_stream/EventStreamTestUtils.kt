@@ -28,7 +28,7 @@ internal object EventStreamTestUtils {
     fun <EventT> spawnStatefulEventStream(
         inputStimulation: TestInputStimulation? = null,
         spawn: context(MomentContext) () -> EventStream<EventT>,
-    ): EventStream<EventT> = Transactions.execute { propagationContext ->
+    ): EventStream<EventT> = Transactions.executeWithResult { propagationContext ->
         val subjectEventStream = with(
             MomentContextImpl(
                 propagationContext = propagationContext,
@@ -48,7 +48,7 @@ internal object EventStreamTestUtils {
             message = "Spawned subject event stream has an ongoing emission unexpectedly",
         )
 
-        return@execute subjectEventStream
+        return@executeWithResult subjectEventStream
     }
 
     /**
@@ -58,7 +58,7 @@ internal object EventStreamTestUtils {
         inputStimulation: TestInputStimulation? = null,
         expectedEmittedEvent: EventT,
         spawn: Moment<EventStream<EventT>>,
-    ): EventStream<EventT> = Transactions.execute { propagationContext ->
+    ): EventStream<EventT> = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
         )
@@ -88,7 +88,7 @@ internal object EventStreamTestUtils {
             message = "Spawned subject event stream's emitted event did not match expected event",
         )
 
-        return@execute subjectEventStream
+        return@executeWithResult subjectEventStream
     }
 
     /**
@@ -129,7 +129,7 @@ internal object EventStreamTestUtils {
         private var receivedEmission: ReceivedEmission<EventT>? = null
 
         private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
-            Transactions.execute { propagationContext ->
+            Transactions.executeWithResult { propagationContext ->
                 subjectVertex.registerSubscriber(
                     propagationContext = propagationContext,
                     subscriber = this,
