@@ -9,7 +9,7 @@ import dev.azide.core.internal.event_stream.registerLooseSubscriber
 
 class HeldCellVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
-    sourceVertex: LiveEventStreamVertex<ValueT>,
+    sourceVertex: EventStreamVertex<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
     initialValue = initialValue,
@@ -17,7 +17,7 @@ class HeldCellVertex<ValueT> private constructor(
     companion object {
         fun <ValueT> start(
             propagationContext: Transactions.PropagationContext,
-            sourceVertex: LiveEventStreamVertex<ValueT>,
+            sourceVertex: EventStreamVertex<ValueT>,
             initialValue: ValueT,
         ): HeldCellVertex<ValueT> = HeldCellVertex(
             propagationContext = propagationContext,

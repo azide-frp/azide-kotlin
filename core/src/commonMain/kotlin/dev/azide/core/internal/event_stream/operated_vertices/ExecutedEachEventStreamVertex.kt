@@ -8,12 +8,12 @@ import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatefulEv
 
 class ExecutedEachEventStreamVertex<EventT> private constructor(
     propagationContext: Transactions.PropagationContext,
-    private val sourceVertex: LiveEventStreamVertex<Action<EventT>>,
+    private val sourceVertex: EventStreamVertex<Action<EventT>>,
 ) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>> {
     companion object {
         fun <EventT> start(
             propagationContext: Transactions.PropagationContext,
-            sourceVertex: LiveEventStreamVertex<Action<EventT>>,
+            sourceVertex: EventStreamVertex<Action<EventT>>,
         ): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
             propagationContext = propagationContext,
             sourceVertex = sourceVertex,

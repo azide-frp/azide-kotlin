@@ -8,7 +8,7 @@ import dev.azide.core.internal.event_stream.registerLooseSubscriber
 
 class SingleEventStreamVertex<EventT>(
     propagationContext: Transactions.PropagationContext,
-    sourceVertex: LiveEventStreamVertex<EventT>,
+    sourceVertex: EventStreamVertex<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
     private var upstreamLooseSubscription: LiveEventStreamVertex.LooseSubscription? =
         sourceVertex.registerLooseSubscriber(

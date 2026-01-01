@@ -78,7 +78,7 @@ fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): L
  *
  * In a special (supported) case, [dependentVertex] and [subscriber] might be the same object.
  */
-fun <EventT> LiveEventStreamVertex<EventT>.registerLooseSubscriber(
+fun <EventT> EventStreamVertex<EventT>.registerLooseSubscriber(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
     subscriber: LiveEventStreamVertex.BasicSubscriber<EventT>,
@@ -108,7 +108,7 @@ fun <EventT> LiveEventStreamVertex<EventT>.registerLooseSubscriber(
             override fun propagate(
                 propagationContext: Transactions.PropagationContext,
             ) {
-                unregisterSubscriber(
+                this@registerLooseSubscriber.unregisterSubscriber(
                     handle = weakSubscriberHandle,
                 )
             }
@@ -119,7 +119,7 @@ fun <EventT> LiveEventStreamVertex<EventT>.registerLooseSubscriber(
         override fun cancel() {
             // TODO: If vertex succession is implemented, then this vertex might not contain the given subscription, as
             //  would possibly be migrated!
-            unregisterSubscriber(
+            this@registerLooseSubscriber.unregisterSubscriber(
                 handle = weakSubscriberHandle,
             )
 
