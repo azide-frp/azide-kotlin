@@ -5,18 +5,14 @@ import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.FrozenCellVertex
 import dev.azide.core.internal.cell.PureCellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
-import dev.azide.core.internal.cell.operated_vertices.Mapped2FrozenCellVertex
 import dev.azide.core.internal.cell.operated_vertices.Mapped2WarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedAtCellVertex
-import dev.azide.core.internal.cell.operated_vertices.MappedFrozenCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedWarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.SwitchedCellVertex
 import dev.azide.core.internal.event_stream.operated_vertices.ValuesEventStreamVertex
 
 interface Cell<out ValueT> {
-    fun getVertex(
-        propagationContext: Transactions.PropagationContext,
-    ): CellVertex<ValueT>
+    val vertex: CellVertex<ValueT>
 
     class Const<out ValueT>(
         constValue: ValueT,
@@ -25,69 +21,26 @@ interface Cell<out ValueT> {
             value = constValue,
         )
 
-        override fun getVertex(
-            propagationContext: Transactions.PropagationContext,
-        ): CellVertex<ValueT> = pureVertex
+        override val vertex: CellVertex<ValueT>
+            get() = pureVertex
     }
 
     class Ordinary<out ValueT> internal constructor(
-        private val buildVertex: (propagationContext: Transactions.PropagationContext) -> CellVertex<ValueT>,
-    ) : Cell<ValueT> {
-        internal constructor(
-            vertex: CellVertex<ValueT>,
-        ) : this(
-            buildVertex = { vertex },
-        )
-
-        private var cachedVertex: CellVertex<ValueT>? = null
-
-        override fun getVertex(
-            propagationContext: Transactions.PropagationContext,
-        ): CellVertex<ValueT> {
-            when (val cachedVertex = this.cachedVertex) {
-                null -> {
-                    val builtVertex = buildVertex(propagationContext)
-
-                    this.cachedVertex = builtVertex
-
-                    return builtVertex
-                }
-
-                else -> {
-                    return cachedVertex
-                }
-            }
-        }
-    }
+        override val vertex: CellVertex<ValueT>,
+    ) : Cell<ValueT>
 
     companion object {
         fun <ValueT1, ValueT2, ResultT> map2(
             cell1: Cell<ValueT1>,
             cell2: Cell<ValueT2>,
             transform: (ValueT1, ValueT2) -> ResultT,
-        ): Cell<ResultT> = Ordinary { propagationContext ->
-            val sourceVertex1 = cell1.getVertex(
-                propagationContext = propagationContext,
-            )
-
-            val sourceVertex2 = cell2.getVertex(
-                propagationContext = propagationContext,
-            )
-
-            when {
-                sourceVertex1 is FrozenCellVertex && sourceVertex2 is FrozenCellVertex -> Mapped2FrozenCellVertex(
-                    sourceVertex1 = sourceVertex1,
-                    sourceVertex2 = sourceVertex2,
-                    transform = transform,
-                )
-
-                else -> Mapped2WarmCellVertex(
-                    sourceVertex1 = sourceVertex1,
-                    sourceVertex2 = sourceVertex2,
-                    transform = transform,
-                )
-            }
-        }
+        ): Cell<ResultT> = Ordinary(
+            vertex = Mapped2WarmCellVertex(
+                sourceVertex1 = cell1.vertex,
+                sourceVertex2 = cell2.vertex,
+                transform = transform,
+            ),
+        )
 
         fun <ValueT1, ValueT2, ValueT3, ResultT> map3(
             cell1: Cell<ValueT1>,
@@ -113,27 +66,11 @@ interface Cell<out ValueT> {
 
         fun <ValueT> switch(
             outerCell: Cell<Cell<ValueT>>,
-        ): Cell<ValueT> = Ordinary { propagationContext ->
-            val outerSourceVertex = outerCell.getVertex(
-                propagationContext = propagationContext,
-            )
-
-            when (outerSourceVertex) {
-                is FrozenCellVertex -> {
-                    val computedCell: Cell<ValueT> = outerSourceVertex.getOldValue(
-                        propagationContext = propagationContext,
-                    )
-
-                    computedCell.getVertex(
-                        propagationContext = propagationContext,
-                    )
-                }
-
-                is WarmCellVertex -> SwitchedCellVertex(
-                    outerSourceVertex = outerSourceVertex,
-                )
-            }
-        }
+        ): Cell<ValueT> = Ordinary(
+            SwitchedCellVertex(
+                outerSourceVertex = outerCell.vertex,
+            ),
+        )
 
         fun <ValueT> divert(
             outerCell: Cell<EventStream<ValueT>>,
@@ -145,9 +82,7 @@ val <ValueT> Cell<ValueT>.sampling: Moment<ValueT>
     get() = object : Moment<ValueT> {
         override fun pullInternally(
             propagationContext: Transactions.PropagationContext,
-        ): ValueT = getVertex(
-            propagationContext = propagationContext,
-        ).getOldValue(
+        ): ValueT = vertex.getOldValue(
             propagationContext = propagationContext,
         )
     }
@@ -157,9 +92,7 @@ val <ValueT> Cell<ValueT>.values: Moment<EventStream<ValueT>>
         override fun pullInternally(
             propagationContext: Transactions.PropagationContext,
         ): EventStream<ValueT> {
-            val sourceVertex = getVertex(
-                propagationContext = propagationContext,
-            ) as? WarmCellVertex ?: return EventStream.Never
+            val sourceVertex = vertex as? WarmCellVertex ?: return EventStream.Never
 
             val valuesEventStreamVertex = ValuesEventStreamVertex.start(
                 propagationContext = propagationContext,
@@ -178,41 +111,26 @@ val <ValueT> Cell<ValueT>.updatedValues: EventStream<ValueT>
 context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT {
     val propagationContext = momentContext.propagationContext
 
-    return getVertex(
-        propagationContext = propagationContext,
-    ).getOldValue(
+    return vertex.getOldValue(
         propagationContext = propagationContext,
     )
 }
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.map(
     transform: (ValueT) -> TransformedValueT,
-): Cell<TransformedValueT> = Cell.Ordinary { propagationContext ->
-    val sourceVertex = this.getVertex(
-        propagationContext = propagationContext,
-    )
-
-    when (sourceVertex) {
-        is FrozenCellVertex -> MappedFrozenCellVertex(
-            sourceVertex = sourceVertex,
-            transform = transform,
-        )
-
-        is WarmCellVertex -> MappedWarmCellVertex(
-            sourceVertex = sourceVertex,
-            transform = transform,
-        )
-    }
-}
+): Cell<TransformedValueT> = Cell.Ordinary(
+    vertex = MappedWarmCellVertex(
+        sourceVertex = this@map.vertex,
+        transform = transform,
+    ),
+)
 
 context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<ValueT>.mapAt(
     transform: context(MomentContext) (ValueT) -> TransformedValueT,
 ): Cell<TransformedValueT> {
     val initialPropagationContext = momentContext.propagationContext
 
-    val sourceVertex = this.getVertex(
-        propagationContext = initialPropagationContext,
-    )
+    val sourceVertex = this.vertex
 
     return when (sourceVertex) {
         is FrozenCellVertex -> Cell.Const(

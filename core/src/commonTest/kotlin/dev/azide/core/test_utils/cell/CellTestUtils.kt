@@ -9,7 +9,6 @@ import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
-import dev.azide.core.internal.cell.FrozenCellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -47,9 +46,7 @@ internal object CellTestUtils {
             spawn()
         }
 
-        val ongoingUpdate = subjectCell.getVertex(
-            propagationContext = propagationContext,
-        ).ongoingUpdate
+        val ongoingUpdate = subjectCell.vertex.ongoingUpdate
 
         assertNull(
             actual = ongoingUpdate,
@@ -80,9 +77,7 @@ internal object CellTestUtils {
             spawn()
         }
 
-        val subjectVertex = subjectCell.getVertex(
-            propagationContext = propagationContext,
-        )
+        val subjectVertex = subjectCell.vertex
 
         val sampledOldValue = subjectVertex.getOldValue(
             propagationContext = propagationContext,
@@ -274,9 +269,7 @@ internal object CellTestUtils {
     fun <ValueT> observeForVerification(
         subjectCell: Cell<ValueT>,
     ): ObservingVerifier<ValueT> = Transactions.execute { propagationContext ->
-        val subjectVertex = subjectCell.getVertex(
-            propagationContext = propagationContext,
-        )
+        val subjectVertex = subjectCell.vertex
 
         ObservingVerifier(
             subjectVertex = subjectVertex,
@@ -291,16 +284,8 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
         expectedValue: ValueT,
     ) {
-        val subjectVertex = Transactions.execute { propagationContext ->
-            subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-        }
+        val subjectVertex = subjectCell.vertex
 
-        assertIs<WarmCellVertex<ValueT>>(
-            value = subjectVertex,
-            message = "Subject cell vertex is not warm as expected",
-        )
 
         val passivelySampledValue = Transactions.execute { propagationContext ->
             subjectVertex.getOldValue(
@@ -337,48 +322,6 @@ internal object CellTestUtils {
             message = "Actively sampled value of subject cell did not yield the expected value",
         )
     }
-
-    /**
-     * Verify that the [subjectCell] is frozen.
-     */
-    fun <ValueT> verifyFrozen(
-        subjectCell: Cell<ValueT>,
-        expectedFrozenValue: ValueT,
-    ) {
-        val subjectVertex = Transactions.execute { propagationContext ->
-            subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-        }
-
-        assertIs<FrozenCellVertex<ValueT>>(
-            value = subjectVertex,
-            message = "Subject cell vertex is not frozen as expected",
-        )
-
-        val sampledValue = Transactions.execute { propagationContext ->
-            subjectVertex.getOldValue(
-                propagationContext = propagationContext,
-            )
-        }
-
-        assertEquals(
-            expected = expectedFrozenValue,
-            actual = sampledValue,
-            message = "Frozen subject cell's value did not match expected value",
-        )
-    }
-
-    fun <ValueT> verifyFoo(
-        subjectCell: Cell<ValueT>,
-    ) {
-        val observingVerifier = observeForVerification(
-            subjectCell = subjectCell,
-        )
-
-        observingVerifier.stop()
-    }
-
 
     /**
      * A helper wrapper for [ObservingVerifier.verifyUpdatesAsExpected], which observes the [subjectCell] for the
@@ -452,11 +395,7 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            val subjectVertex = subjectCell.getVertex(
-                propagationContext = propagationContext,
-            )
-
-            subjectVertex.registerObserver(
+            subjectCell.vertex.registerObserver(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )

@@ -49,9 +49,9 @@ class Cell_mapAt_tests {
             }
         }
 
-        CellTestUtils.verifyFrozen(
+        CellTestUtils.verifyAtRest(
             subjectCell = subjectCell,
-            expectedFrozenValue = "10:A",
+            expectedValue = "10:A",
         )
     }
 

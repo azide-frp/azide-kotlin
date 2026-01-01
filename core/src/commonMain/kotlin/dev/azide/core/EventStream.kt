@@ -162,20 +162,13 @@ fun <EventT> EventStream<EventT>.holding(
 ): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
     override fun pullInternally(
         propagationContext: Transactions.PropagationContext,
-    ): Cell<EventT> = Cell.Ordinary {
-        // FIXME: Initializing this vertex lazily like this breaks the semantics
-        when (val sourceVertex = this@holding.vertex) {
-            is LiveEventStreamVertex -> HeldCellVertex.start(
-                propagationContext = propagationContext,
-                sourceVertex = sourceVertex,
-                initialValue = initialValue,
-            )
-
-            is TerminatedEventStreamVertex -> PureCellVertex(
-                value = initialValue,
-            )
-        }
-    }
+    ): Cell<EventT> = Cell.Ordinary(
+        vertex = HeldCellVertex.start(
+            propagationContext = propagationContext,
+            sourceVertex = this@holding.vertex,
+            initialValue = initialValue,
+        ),
+    )
 }
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(

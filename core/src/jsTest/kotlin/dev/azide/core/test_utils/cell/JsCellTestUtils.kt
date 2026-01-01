@@ -13,7 +13,7 @@ internal object JsCellTestUtils {
             val subjectCell = buildCell()
 
             val subjectCellVertex = Transactions.execute { propagationContext ->
-                subjectCell.getVertex(propagationContext = propagationContext)
+                subjectCell.vertex
             }
 
             Pair(
