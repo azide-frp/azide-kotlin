@@ -48,7 +48,12 @@ object Transactions {
         ): Action.RevocationHandle
     }
 
-    inline fun execute(
+    enum class TransactionState {
+        Open,
+        Closed,
+    }
+
+    fun execute(
         propagate: (PropagationContext) -> Unit,
     ) {
         executeWithResult(
@@ -56,9 +61,17 @@ object Transactions {
         )
     }
 
-    inline fun <ResultT> executeWithResult(
+    fun <ResultT> executeWithResult(
         propagate: (PropagationContext) -> ResultT,
     ): ResultT {
+        var state = TransactionState.Open
+
+        fun ensureIsOpen() {
+            if (state != TransactionState.Open) {
+                throw IllegalStateException("Transaction is already closed")
+            }
+        }
+
         val verticesToCommit = arrayListOf<CommittableVertex>()
 
         val sideEffectsToExecute = linkedListOf<ExternalSideEffect>()
@@ -68,16 +81,22 @@ object Transactions {
                 override fun enqueueForCommitment(
                     vertex: CommittableVertex,
                 ) {
+                    ensureIsOpen()
+
                     verticesToCommit.add(vertex)
                 }
 
                 override fun enqueueForExecution(
                     sideEffect: ExternalSideEffect,
                 ): Action.RevocationHandle {
+                    ensureIsOpen()
+
                     val innerHandle = sideEffectsToExecute.append(sideEffect)
 
                     return object : Action.RevocationHandle {
                         override fun revoke() {
+                            ensureIsOpen()
+
                             sideEffectsToExecute.removeVia(innerHandle)
                         }
                     }
@@ -92,6 +111,8 @@ object Transactions {
         sideEffectsToExecute.forEach { sideEffect ->
             sideEffect.executeExternally()
         }
+
+        state = TransactionState.Closed
 
         return result
     }
