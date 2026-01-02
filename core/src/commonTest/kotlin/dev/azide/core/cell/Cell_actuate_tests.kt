@@ -5,20 +5,18 @@ import dev.azide.core.Cell
 import dev.azide.core.EventStream
 import dev.azide.core.Schedule
 import dev.azide.core.actuate
-import dev.azide.core.executeEach
 import dev.azide.core.filter
-import dev.azide.core.hold
 import dev.azide.core.map
-import dev.azide.core.test_utils.MockSideEffect
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.TestUtils
+import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.executeForTesting
+import dev.azide.core.test_utils.stimulateForTesting
 import dev.azide.core.triggerEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @Suppress("ClassName")
 class Cell_actuate_tests {
@@ -79,6 +77,42 @@ class Cell_actuate_tests {
         assertEquals(
             expected = listOf("A0"),
             actual = log,
+        )
+    }
+
+    @Test
+    fun test_actuate_initial_sourceUpdatesOnSpawn() {
+        val ticker = EventStreamTestUtils.createInputEventStream<Int>()
+
+        val (schedule1, log1) = buildLoggingSchedule(ticker, 'A')
+        val (schedule2, log2) = buildLoggingSchedule(ticker, 'B')
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = schedule1,
+        )
+
+        val subjectSchedule = sourceCell.actuate()
+
+        TransactionTestUtils.execute {
+            subjectSchedule.start.executeForTesting()
+
+            ticker.emit(
+                emittedEvent = 0,
+            ).stimulateForTesting()
+
+            sourceCell.update(
+                newValue = schedule2,
+            ).stimulateForTesting()
+        }
+
+        assertEquals(
+            expected = emptyList(),
+            actual = log1,
+        )
+
+        assertEquals(
+            expected = listOf("B0"),
+            actual = log2,
         )
     }
 
