@@ -50,7 +50,7 @@ class Cell_actuate_tests {
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 1)
+            ticker.emit(emittedEvent = 1),
         )
 
         assertEquals(
@@ -102,16 +102,16 @@ class Cell_actuate_tests {
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 1)
+            ticker.emit(emittedEvent = 1),
         )
 
         // This tick updates the ćurrent schedule from first to second
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 2)
+            ticker.emit(emittedEvent = 2),
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 3)
+            ticker.emit(emittedEvent = 3),
         )
 
         assertEquals(
@@ -191,11 +191,11 @@ class Cell_actuate_tests {
                     newValue = schedule2,
                 ),
                 sourceCell.revokeUpdate(),
-            )
+            ),
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 2)
+            ticker.emit(emittedEvent = 2),
         )
 
         assertEquals(
@@ -237,7 +237,7 @@ class Cell_actuate_tests {
                 sourceCell.correctUpdate(
                     correctedNewValue = schedule2b,
                 ),
-            )
+            ),
         )
 
         TestUtils.stimulateSeparately(
@@ -313,16 +313,16 @@ class Cell_actuate_tests {
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 1)
+            ticker.emit(emittedEvent = 1),
         )
 
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 2)
+            ticker.emit(emittedEvent = 2),
         )
 
         // This tick should cancel the schedule
         TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 3)
+            ticker.emit(emittedEvent = 3),
         )
 
         assertEquals(

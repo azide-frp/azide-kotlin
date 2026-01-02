@@ -37,7 +37,7 @@ interface Moment<out ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): ResultT =  with(
+            ): ResultT = with(
                 MomentContextImpl(
                     propagationContext = propagationContext,
                     wrapUpContext = wrapUpContext,

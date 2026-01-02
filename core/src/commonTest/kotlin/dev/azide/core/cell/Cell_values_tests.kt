@@ -84,7 +84,7 @@ class Cell_values_tests {
             subjectEventStream = subjectEventStream,
             inputStimulation = TestInputStimulation.combine(
                 sourceCell.update(newValue = 20),
-                sourceCell.correctUpdate(correctedNewValue = 21)
+                sourceCell.correctUpdate(correctedNewValue = 21),
             ),
             expectedEmittedEvent = 21,
         )

@@ -2,7 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.ExternalSideEffect
 
-class MockSideEffect() : ExternalSideEffect {
+class MockSideEffect : ExternalSideEffect {
     private var mutableWasCalled = false
 
     val wasCalled: Boolean
