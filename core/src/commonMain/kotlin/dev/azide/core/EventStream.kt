@@ -306,3 +306,7 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
             }
         }
 }
+
+fun <EventT, TransformedEventT> EventStream<EventT>.executeEachOf(
+    transform: (EventT) -> Action<TransformedEventT>,
+): Effect<EventStream<TransformedEventT>> = map(transform).executeEach()

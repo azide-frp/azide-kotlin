@@ -3,6 +3,8 @@ package dev.azide.core
 import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.utils.LazyUtils
+import kotlin.experimental.ExperimentalTypeInference
+import kotlin.jvm.JvmName
 
 interface Action<out ResultT> {
     interface RevocationHandle {
@@ -213,4 +215,13 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
             ),
         )
     }
+}
+
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
+@JvmName("joinOfActionFromMoment")
+fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
+    transform: (ResultT) -> Moment<TransformedResultT>,
+): Action<TransformedResultT> = joinOf {
+    transform(it).asAction
 }
