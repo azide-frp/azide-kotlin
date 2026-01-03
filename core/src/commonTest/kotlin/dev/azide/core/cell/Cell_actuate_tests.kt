@@ -33,29 +33,7 @@ class Cell_actuate_tests {
         return Pair(schedule, log)
     }
 
-    @Test
-    fun test_actuate_initial() {
-        val ticker = EventStreamTestUtils.createInputEventStream<Int>()
 
-        val (schedule, log) = buildLoggingSchedule(ticker, 'A')
-
-        val sourceCell = CellTestUtils.createInputCell(
-            initialValue = schedule,
-        )
-
-        TestUtils.executeSeparately(
-            sourceCell.actuate().start,
-        )
-
-        TestUtils.stimulateSeparately(
-            ticker.emit(emittedEvent = 1),
-        )
-
-        assertEquals(
-            expected = listOf("A1"),
-            actual = log,
-        )
-    }
 
     @Test
     fun test_actuate_initial_scheduleRunsOnStart() {
@@ -93,7 +71,7 @@ class Cell_actuate_tests {
 
         val subjectSchedule = sourceCell.actuate()
 
-        TransactionTestUtils.execute {
+        TransactionTestUtils.executeInsideTransaction {
             subjectSchedule.start.executeForTesting()
 
             ticker.emit(

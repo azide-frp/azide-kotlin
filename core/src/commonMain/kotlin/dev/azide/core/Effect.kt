@@ -22,6 +22,12 @@ interface Effect<ResultT> {
         }
 
         companion object {
+            fun of(
+                cancel: Trigger,
+            ): Handle = object : Handle {
+                override val cancel: Trigger = cancel
+            }
+
             fun combine(
                 firstSubHandle: Handle,
                 secondSubHandle: Handle,

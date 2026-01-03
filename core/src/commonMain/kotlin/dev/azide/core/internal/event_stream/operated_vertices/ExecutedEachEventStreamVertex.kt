@@ -70,14 +70,18 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         this.executedActionRevocationHandle?.revoke()
         this.executedActionRevocationHandle = null
 
-        val upstreamSubscriberHandle =
-            this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex is already aborted")
+        val upstreamSubscriberHandle = this.upstreamSubscriberHandle
 
-        this.upstreamSubscriberHandle = null
+        if (upstreamSubscriberHandle != null) {
+            // It's possible that we already unsubscribed from the upstream cell in a corner case when the effect
+            // was first cancelled and then its start action was revoked
 
-        sourceVertex.unregisterSubscriber(
-            handle = upstreamSubscriberHandle,
-        )
+            sourceVertex.unregisterSubscriber(
+                handle = upstreamSubscriberHandle,
+            )
+
+            this.upstreamSubscriberHandle = null
+        }
     }
 
     fun restart(
