@@ -2,6 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
@@ -55,33 +56,28 @@ interface Action<out ResultT> {
 
     companion object {
         fun <ResultT, LoopedValueT : Any> looped(
-            block: (Lazy<LoopedValueT>) -> Action<Pair<ResultT, LoopedValueT>>,
+            block: (Lazy<LoopedValueT>) -> Action<LoopClosure<ResultT, LoopedValueT>>,
         ): Action<ResultT> = object : Action<ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Action.Outcome<ResultT> = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
-                val action: Action<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+            ): Outcome<ResultT> = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+                val action: Action<LoopClosure<ResultT, LoopedValueT>> = block(loopedValue)
 
                 val actionOutcome = action.executeInternally(
                     propagationContext = propagationContext,
                     wrapUpContext = wrapUpContext,
                 )
 
-                val resultAndLoopedValue: Pair<ResultT, LoopedValueT> = actionOutcome.result
+                val loopClosure: LoopClosure<ResultT, LoopedValueT> = actionOutcome.result
                 val revocationHandle: RevocationHandle = actionOutcome.revocationHandle
 
-                val (
-                    result: ResultT,
-                    loopedValueResult: LoopedValueT,
-                ) = resultAndLoopedValue
-
-                return@looped Pair(
-                    Action.Outcome.of(
-                        result = result,
+                return@looped LoopClosure(
+                    result = Outcome.of(
+                        result = loopClosure.result,
                         revocationHandle = revocationHandle,
                     ),
-                    loopedValueResult,
+                    loopedValue = loopClosure.loopedValue,
                 )
             }
         }
@@ -92,7 +88,7 @@ interface Action<out ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Action.Outcome<ResultT> = Action.Outcome.of(
+            ): Outcome<ResultT> = Outcome.of(
                 result = result,
                 revocationHandle = RevocationHandle.Noop,
             )
@@ -114,7 +110,7 @@ interface Action<out ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Action.Outcome<Unit> = Action.Outcome.of(
+            ): Outcome<Unit> = Outcome.of(
                 result = Unit,
                 revocationHandle = propagationContext.enqueueForExecution(externalSideEffect),
             )
@@ -124,7 +120,7 @@ interface Action<out ResultT> {
     fun executeInternally(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): Action.Outcome<ResultT>
+    ): Outcome<ResultT>
 }
 
 fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(

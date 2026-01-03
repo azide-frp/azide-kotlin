@@ -2,19 +2,20 @@ package dev.azide.core
 
 import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 
 interface Moment<out ResultT> {
     companion object {
         fun <ResultT, LoopedValueT : Any> looped(
-            block: (Lazy<LoopedValueT>) -> Moment<Pair<ResultT, LoopedValueT>>,
+            block: (Lazy<LoopedValueT>) -> Moment<LoopClosure<ResultT, LoopedValueT>>,
         ): Moment<ResultT> = object : Moment<ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
             ): ResultT = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
-                val moment: Moment<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+                val moment: Moment<LoopClosure<ResultT, LoopedValueT>> = block(loopedValue)
 
                 return@looped moment.pullInternally(
                     propagationContext = propagationContext,

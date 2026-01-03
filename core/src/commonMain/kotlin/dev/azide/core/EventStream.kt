@@ -10,6 +10,7 @@ import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStrea
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
+import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
 
 interface EventStream<out EventT> {
@@ -41,7 +42,7 @@ interface EventStream<out EventT> {
         )
 
         fun <ResultT, LoopedEventT> looped(
-            block: (EventStream<LoopedEventT>) -> Pair<ResultT, EventStream<LoopedEventT>>,
+            block: (EventStream<LoopedEventT>) -> LoopClosure<ResultT, EventStream<LoopedEventT>>,
         ): ResultT = LoopUtils.looped { loopedEventStreamLazy ->
             block(
                 Lazy(
@@ -51,7 +52,7 @@ interface EventStream<out EventT> {
         }
 
         fun <ResultT, LoopedEventT> loopedInMoment(
-            block: (EventStream<LoopedEventT>) -> Moment<Pair<ResultT, EventStream<LoopedEventT>>>,
+            block: (EventStream<LoopedEventT>) -> Moment<LoopClosure<ResultT, EventStream<LoopedEventT>>>,
         ): Moment<ResultT> = Moment.looped { loopedEventStreamLazy ->
             block(
                 Lazy(
@@ -61,7 +62,7 @@ interface EventStream<out EventT> {
         }
 
         fun <ResultT, LoopedEventT> loopedInAction(
-            block: (EventStream<LoopedEventT>) -> Action<Pair<ResultT, EventStream<LoopedEventT>>>,
+            block: (EventStream<LoopedEventT>) -> Action<LoopClosure<ResultT, EventStream<LoopedEventT>>>,
         ): Action<ResultT> = Action.looped { loopedEventStreamLazy ->
             block(
                 Lazy(
@@ -198,9 +199,9 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
         )
     }
 
-    Pair(
-        accCell,
-        newAccValues,
+    LoopClosure(
+        result = accCell,
+        loopedValue = newAccValues,
     )
 }
 
@@ -300,7 +301,10 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
                             )
                         }
 
-                        Pair(outerEffectHandle, startedScheduleHandles)
+                        LoopClosure(
+                            result = outerEffectHandle,
+                            loopedValue = startedScheduleHandles,
+                        )
                     }
                 }
             }
