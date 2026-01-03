@@ -76,15 +76,15 @@ val <ResultT> Moment<ResultT>.asAction: Action<ResultT>
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
-        ): Pair<ResultT, RevocationHandle> {
+        ): Action.Outcome<ResultT> {
             val result: ResultT = this@asAction.pullInternally(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
 
-            return Pair(
-                result,
-                RevocationHandle.Noop,
+            return Action.Outcome.of(
+                result = result,
+                revocationHandle = RevocationHandle.Noop,
             )
         }
     }

@@ -211,8 +211,8 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                 override fun executeInternally(
                     propagationContext: Transactions.PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
-                ): Pair<Pair<EventStream<EventT>, Effect.Handle>, Action.RevocationHandle> {
-                    val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Pair(
+                ): Action.Outcome<Pair<EventStream<EventT>, Effect.Handle> > {
+                    val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Action.Outcome.of(
                         Pair(
                             EventStream.Never,
                             Effect.Handle.Noop,
@@ -225,7 +225,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                         sourceVertex = sourceVertex,
                     )
 
-                    return Pair(
+                    return Action.Outcome.of(
                         Pair(
                             EventStream.Ordinary(
                                 vertex = executedEachEventStreamVertex,
@@ -235,10 +235,10 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                                     override fun executeInternally(
                                         propagationContext: Transactions.PropagationContext,
                                         wrapUpContext: Transactions.WrapUpContext,
-                                    ): Pair<Unit, Action.RevocationHandle> {
+                                    ): Action.Outcome<Unit> {
                                         executedEachEventStreamVertex.abort()
 
-                                        return Pair(
+                                        return Action.Outcome.of(
                                             Unit,
                                             object : Action.RevocationHandle {
                                                 override fun revoke() {

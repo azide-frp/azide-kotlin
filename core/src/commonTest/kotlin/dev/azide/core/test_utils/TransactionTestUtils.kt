@@ -25,22 +25,24 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
     ) { wrapUpContext ->
-        val (result, _) = this.executeInternally(
+        val outcome = this.executeInternally(
             propagationContext = transactionTestContext.propagationContext,
             wrapUpContext = wrapUpContext,
         )
 
-        result
+        outcome.result
     }
 
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, Action.RevocationHandle> =
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
     ) { wrapUpContext ->
-        this.executeInternally(
+        val outcome = this.executeInternally(
             propagationContext = transactionTestContext.propagationContext,
             wrapUpContext = wrapUpContext,
         )
+
+        Pair(outcome.result, outcome.revocationHandle)
     }
 
 context(transactionTestContext: TransactionTestContext) internal fun TestInputStimulation.stimulateForTesting() {
