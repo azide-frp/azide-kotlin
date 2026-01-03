@@ -19,9 +19,11 @@ class EventStream_executeEach_tests {
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val (subjectEventStream, _) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceEventStream.executeEach().start,
         )
+
+        val subjectEventStream = effectOutcome.result
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
@@ -43,9 +45,11 @@ class EventStream_executeEach_tests {
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val (subjectEventStream, _) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceEventStream.executeEach().start,
         )
+
+        val subjectEventStream = effectOutcome.result
 
         TestUtils.stimulateSeparately(
             sourceEventStream.emit(
@@ -76,9 +80,11 @@ class EventStream_executeEach_tests {
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val (subjectEventStream, _) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceEventStream.executeEach().start,
         )
+
+        val subjectEventStream = effectOutcome.result
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
@@ -102,9 +108,11 @@ class EventStream_executeEach_tests {
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val (subjectEventStream, _) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceEventStream.executeEach().start,
         )
+
+        val subjectEventStream = effectOutcome.result
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
@@ -152,12 +160,14 @@ class EventStream_executeEach_tests {
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val (subjectEventStream, handle) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceEventStream.executeEach().start,
         )
 
+        val subjectEventStream = effectOutcome.result
+
         TestUtils.executeSeparately(
-            handle.cancel,
+            effectOutcome.handle.cancel,
         )
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(

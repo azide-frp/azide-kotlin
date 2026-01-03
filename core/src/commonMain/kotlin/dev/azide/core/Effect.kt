@@ -1,6 +1,21 @@
 package dev.azide.core
 
 interface Effect<ResultT> {
+    interface Outcome<ResultT> {
+        companion object {
+            fun <ResultT> of(
+                result: ResultT,
+                handle: Handle,
+            ): Outcome<ResultT> = object : Outcome<ResultT> {
+                override val result: ResultT = result
+                override val handle: Handle = handle
+            }
+        }
+
+        val result: ResultT
+        val handle: Handle
+    }
+
     interface Handle {
         object Noop : Handle {
             override val cancel: Trigger = Triggers.Noop
@@ -21,21 +36,21 @@ interface Effect<ResultT> {
         val cancel: Trigger
     }
 
-    val start: Action<Pair<ResultT, Handle>>
+    val start: Action<Outcome<ResultT>>
 }
 
 typealias Schedule = Effect<Unit>
 
 val Schedule.launch: Action<Effect.Handle>
-    get() = start.map { (_, handle) -> handle }
+    get() = start.map { outcome -> outcome.handle }
 
 fun <ResultT, TransformedResultT> Effect<ResultT>.map(
     transform: (ResultT) -> TransformedResultT,
 ): Effect<TransformedResultT> = object : Effect<TransformedResultT> {
-    override val start: Action<Pair<TransformedResultT, Effect.Handle>> = this@map.start.map { (result, handle) ->
-        Pair(
-            transform(result),
-            handle,
+    override val start: Action<Effect.Outcome<TransformedResultT>> = this@map.start.map { outcome ->
+        Effect.Outcome.of(
+            result = transform(outcome.result),
+            handle = outcome.handle,
         )
     }
 }
@@ -43,16 +58,16 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.map(
 fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
     transform: (ResultT) -> Effect<TransformedResultT>,
 ): Effect<TransformedResultT> = object : Effect<TransformedResultT> {
-    override val start: Action<Pair<TransformedResultT, Effect.Handle>> =
-        this@joinOf.start.joinOf { (result: ResultT, handle) ->
-            val transformedEffect: Effect<TransformedResultT> = transform(result)
+    override val start: Action<Effect.Outcome<TransformedResultT>> =
+        this@joinOf.start.joinOf { outcome: Effect.Outcome<ResultT> ->
+            val transformedEffect: Effect<TransformedResultT> = transform(outcome.result)
 
-            transformedEffect.start.map { (transformedResult: TransformedResultT, transformedHandle) ->
-                Pair(
-                    transformedResult,
-                    Effect.Handle.combine(
-                        handle,
-                        transformedHandle,
+            transformedEffect.start.map { transformedOutcome: Effect.Outcome<TransformedResultT> ->
+                Effect.Outcome.of(
+                    result = transformedOutcome.result,
+                    handle = Effect.Handle.combine(
+                        outcome.handle,
+                        transformedOutcome.handle,
                     ),
                 )
             }
@@ -60,8 +75,13 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
 }
 
 abstract class AbstractSchedule : Schedule {
-    final override val start: Action<Pair<Unit, Effect.Handle>>
-        get() = launchImpl.map { handle -> Pair(Unit, handle) }
+    final override val start: Action<Effect.Outcome<Unit>>
+        get() = launchImpl.map { handle ->
+            Effect.Outcome.of(
+                result = Unit,
+                handle = handle,
+            )
+        }
 
     protected abstract val launchImpl: Action<Effect.Handle>
 }

@@ -305,7 +305,7 @@ class Cell_actuate_tests {
             initialValue = schedule,
         )
 
-        val (_, handle) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceCell.actuate().start,
         )
 
@@ -314,7 +314,7 @@ class Cell_actuate_tests {
         )
 
         TestUtils.executeSeparately(
-            handle.cancel,
+            effectOutcome.handle.cancel,
         )
 
         TestUtils.stimulateSeparately(
@@ -337,13 +337,13 @@ class Cell_actuate_tests {
             initialValue = schedule,
         )
 
-        val (_, handle) = TestUtils.executeSeparately(
+        val effectOutcome = TestUtils.executeSeparately(
             sourceCell.actuate().start,
         )
 
         // Cancel the schedule on tick = 3
         TestUtils.executeSeparately(
-            ticker.filter { it == 3 }.map { handle.cancel }.triggerEach().start,
+            ticker.filter { it == 3 }.map { effectOutcome.handle.cancel }.triggerEach().start,
         )
 
         TestUtils.stimulateSeparately(

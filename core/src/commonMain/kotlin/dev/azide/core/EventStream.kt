@@ -207,16 +207,16 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
     object : Effect<EventStream<EventT>> {
-        override val start: Action<Pair<EventStream<EventT>, Effect.Handle>> =
-            object : Action<Pair<EventStream<EventT>, Effect.Handle>> {
+        override val start: Action<Effect.Outcome<EventStream<EventT>>> =
+            object : Action<Effect.Outcome<EventStream<EventT>>> {
                 override fun executeInternally(
                     propagationContext: Transactions.PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
-                ): Action.Outcome<Pair<EventStream<EventT>, Effect.Handle> > {
+                ): Action.Outcome<Effect.Outcome<EventStream<EventT>>> {
                     val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Action.Outcome.of(
-                        Pair(
-                            EventStream.Never,
-                            Effect.Handle.Noop,
+                        Effect.Outcome.of(
+                            result = EventStream.Never,
+                            handle = Effect.Handle.Noop,
                         ),
                         Action.RevocationHandle.Noop,
                     )
@@ -227,11 +227,12 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                     )
 
                     return Action.Outcome.of(
-                        Pair(
-                            EventStream.Ordinary(
+                        Effect.Outcome.of(
+                            result = EventStream.Ordinary(
                                 vertex = executedEachEventStreamVertex,
                             ),
-                            object : Effect.Handle {
+
+                            handle = object : Effect.Handle {
                                 override val cancel: Trigger = object : Trigger {
                                     override fun executeInternally(
                                         propagationContext: Transactions.PropagationContext,
@@ -251,7 +252,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                                         )
                                     }
                                 }
-                            },
+                            }
                         ),
                         object : Action.RevocationHandle {
                             override fun revoke() {
@@ -266,7 +267,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
 fun EventStream<Trigger>.triggerEach(): Schedule = executeEach().map { }
 
 fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStream<EventT>> =
-    executeEach().start.map { (eventStream, _) -> eventStream }
+    executeEach().start.map { outcome -> outcome.result }
 
 fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
 
@@ -286,7 +287,10 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
                         }
                     }.executeEach()
 
-                    innerEffect.start.map { (startedScheduleHandles: EventStream<Effect.Handle>, innerEffectHandle: Effect.Handle) ->
+                    innerEffect.start.map { outcome ->
+                        val startedScheduleHandles: EventStream<Effect.Handle> = outcome.result
+                        val innerEffectHandle: Effect.Handle = outcome.handle
+
                         val cancelInnerEffectTrigger: Trigger = innerEffectHandle.cancel
 
                         val cancelCurrentScheduleTrigger: Trigger =
