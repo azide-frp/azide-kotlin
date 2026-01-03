@@ -2,7 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.utils.LazyUtils
+import dev.azide.core.internal.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 
 interface Moment<out ResultT> {
@@ -13,7 +13,7 @@ interface Moment<out ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): ResultT = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+            ): ResultT = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
                 val moment: Moment<Pair<ResultT, LoopedValueT>> = block(loopedValue)
 
                 return@looped moment.pullInternally(

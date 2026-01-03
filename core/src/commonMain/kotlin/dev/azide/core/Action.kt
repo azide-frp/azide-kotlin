@@ -2,7 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.Action.RevocationHandle
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.utils.LazyUtils
+import dev.azide.core.internal.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
 
@@ -60,7 +60,7 @@ interface Action<out ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Action.Outcome<ResultT> = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+            ): Action.Outcome<ResultT> = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
                 val action: Action<Pair<ResultT, LoopedValueT>> = block(loopedValue)
 
                 val actionOutcome = action.executeInternally(

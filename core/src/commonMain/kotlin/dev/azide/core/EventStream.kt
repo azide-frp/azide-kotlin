@@ -10,7 +10,7 @@ import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStrea
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
-import dev.azide.core.internal.utils.LazyUtils
+import dev.azide.core.internal.utils.LoopUtils
 
 interface EventStream<out EventT> {
     val vertex: EventStreamVertex<EventT>
@@ -42,7 +42,7 @@ interface EventStream<out EventT> {
 
         fun <ResultT, LoopedEventT> looped(
             block: (EventStream<LoopedEventT>) -> Pair<ResultT, EventStream<LoopedEventT>>,
-        ): ResultT = LazyUtils.looped { loopedEventStreamLazy ->
+        ): ResultT = LoopUtils.looped { loopedEventStreamLazy ->
             block(
                 Lazy(
                     eventStreamLazy = loopedEventStreamLazy,
