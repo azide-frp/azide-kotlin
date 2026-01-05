@@ -149,6 +149,17 @@ object Triggers {
         )
     }
 
+    typealias Outcome = Action.Outcome<Unit>
+
+    object Outcomes {
+        fun of(
+            revocationHandle: RevocationHandle,
+        ): Outcome = Action.Outcome.of(
+            result = Unit,
+            revocationHandle = revocationHandle,
+        )
+    }
+
     fun combine(
         first: Trigger,
         second: Trigger,
@@ -179,6 +190,29 @@ object Triggers {
                 ),
             )
         }
+    }
+
+    fun Trigger.merging(): Action<Trigger> = object : Action<Trigger> {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Action.Outcome<Trigger> = Action.Outcome.of(
+            result = object : AbstractExecutionMergingTrigger() {
+                override fun executeInternallyOnce(
+                    propagationContext: Transactions.PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
+                ): RevocationHandle {
+                    val outcome: Triggers.Outcome = this@merging.executeInternally(
+                        propagationContext,
+                        wrapUpContext,
+                    )
+
+                    return outcome.revocationHandle
+                }
+            },
+            // We just allocate the trigger's identity
+            revocationHandle = RevocationHandle.Noop,
+        )
     }
 }
 

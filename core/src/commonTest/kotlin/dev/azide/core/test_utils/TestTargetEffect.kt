@@ -46,7 +46,6 @@ fun <ResultT> TestTargetEffect<ResultT>.verifyWasNotStarted() {
     start.verifyWasNotExecuted()
 }
 
-
 fun <ResultT> TestTargetEffect.Outcome<ResultT>.verifyWasCancelledOnce(): TestTargetAction.ExecutionRecord<Unit> =
     handle.cancel.verifyWasExecutedOnce()
 

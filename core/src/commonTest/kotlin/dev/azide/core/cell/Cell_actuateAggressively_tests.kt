@@ -2,19 +2,13 @@ package dev.azide.core.cell
 
 import dev.azide.core.Action
 import dev.azide.core.Cell
-import dev.azide.core.EventStream
-import dev.azide.core.Schedule
+import dev.azide.core.Effect
 import dev.azide.core.actuateAggressively
-import dev.azide.core.filter
-import dev.azide.core.map
 import dev.azide.core.test_utils.TestCellObserver
-import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
-import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.executeForTesting
 import dev.azide.core.test_utils.executeForTestingRevocable
 import dev.azide.core.test_utils.observeForTesting
@@ -34,7 +28,6 @@ import dev.azide.core.test_utils.verifyWasNotRevoked
 import dev.azide.core.test_utils.verifyWasNotStarted
 import dev.azide.core.test_utils.verifyWasRevoked
 import dev.azide.core.test_utils.verifyWasStartedOnce
-import dev.azide.core.triggerEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -197,6 +190,54 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
+    fun test_actuateAggressively_spawn_cancelledInstantlyTwice() {
+        data class SpawnOutcome(
+            val subjectCellObserver: TestCellObserver<Int>,
+            val targetEffectStartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
+            val targetEffectCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
+        )
+
+        val targetEffect = TestTargetEffect.pure(result = 10)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect,
+        )
+
+        val subjectEffect = sourceCell.actuateAggressively()
+
+        val outcome = TransactionTestUtils.executeInsideTransaction {
+            val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+
+            val subjectCellObserver = subjectCell.observeForTesting()
+
+            val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
+            val targetEffectOutcome = targetEffectStartExecutionRecord.result
+
+            subjectEffectHandle.cancel.executeForTesting()
+            subjectEffectHandle.cancel.executeForTesting()
+
+            val targetEffectCancelExecutionRecord = targetEffectOutcome.verifyWasCancelledOnce()
+
+            subjectCellObserver.verifyDoesNotExposeUpdate() // ...inside the spawn transaction
+
+            SpawnOutcome(
+                subjectCellObserver = subjectCellObserver,
+                targetEffectStartExecutionRecord = targetEffectStartExecutionRecord,
+                targetEffectCancelExecutionRecord = targetEffectCancelExecutionRecord,
+            )
+        }
+
+        targetEffect.verifyWasNotStarted() // ...again
+
+        outcome.targetEffectStartExecutionRecord.verifyWasNotRevoked() // ...at any point
+
+        val targetEffectOutcome = outcome.targetEffectStartExecutionRecord.result
+        targetEffectOutcome.verifyWasNotCancelled() // ...again
+
+        outcome.targetEffectCancelExecutionRecord.verifyWasNotRevoked() // ...at any point
+    }
+
+    @Test
     fun test_actuateAggressively_spawn_sourceUpdatesSimultaneously() {
         data class SpawnOutcome(
             val subjectCellObserver: TestCellObserver<Int>,
@@ -262,7 +303,6 @@ class Cell_actuateAggressively_tests {
         targetEffect2Outcome.verifyWasNotCancelled() // ...at any point
     }
 
-
     @Test
     fun test_actuateAggressively_spawn_sourceUpdatesSimultaneously_revokedInstantly() {
         data class SpawnOutcome(
@@ -311,5 +351,64 @@ class Cell_actuateAggressively_tests {
         targetEffect2.verifyWasNotStarted() // ...again
 
         outcome.targetEffect2Outcome.verifyWasNotCancelled() // ...at any point
+    }
+
+    @Test
+    fun test_actuateAggressively_cancelledTwiceSimultaneously() {
+        data class SpawnOutcome(
+            val subjectCellObserver: TestCellObserver<Int>,
+            val subjectEffectHandle: Effect.Handle,
+            val targetEffectStartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
+        )
+
+        data class LaterOutcome(
+            val targetEffectCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
+        )
+
+        val targetEffect = TestTargetEffect.pure(result = 10)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect,
+        )
+
+        val subjectEffect = sourceCell.actuateAggressively()
+
+        val spawnOutcome = TransactionTestUtils.executeInsideTransaction {
+            val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+
+            val subjectCellObserver = subjectCell.observeForTesting()
+
+            val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
+
+            subjectCellObserver.verifyDoesNotExposeUpdate() // ...inside the spawn transaction
+
+            SpawnOutcome(
+                subjectCellObserver = subjectCellObserver,
+                subjectEffectHandle = subjectEffectHandle,
+                targetEffectStartExecutionRecord = targetEffectStartExecutionRecord,
+            )
+        }
+
+        val subjectEffectHandle = spawnOutcome.subjectEffectHandle
+        val targetEffectOutcome = spawnOutcome.targetEffectStartExecutionRecord.result
+
+        val laterOutcome = TransactionTestUtils.executeInsideTransaction {
+            subjectEffectHandle.cancel.executeForTesting()
+            subjectEffectHandle.cancel.executeForTesting()
+
+            val targetEffectCancelExecutionRecord = targetEffectOutcome.verifyWasCancelledOnce()
+
+            LaterOutcome(
+                targetEffectCancelExecutionRecord = targetEffectCancelExecutionRecord,
+            )
+        }
+
+        targetEffect.verifyWasNotStarted() // ...again
+
+        spawnOutcome.targetEffectStartExecutionRecord.verifyWasNotRevoked() // ...at any point
+
+        targetEffectOutcome.verifyWasNotCancelled() // ...again
+
+        laterOutcome.targetEffectCancelExecutionRecord.verifyWasNotRevoked() // ...at any point
     }
 }

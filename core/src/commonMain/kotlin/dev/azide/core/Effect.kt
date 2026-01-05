@@ -1,5 +1,7 @@
 package dev.azide.core
 
+import dev.azide.core.Triggers.merging
+
 interface Effect<ResultT> {
     interface Outcome<ResultT> {
         companion object {
@@ -23,9 +25,11 @@ interface Effect<ResultT> {
 
         companion object {
             fun of(
-                cancel: Trigger,
-            ): Handle = object : Handle {
-                override val cancel: Trigger = cancel
+                cancelOnce: Trigger,
+            ): Action<Handle> = cancelOnce.merging().map { cancel ->
+                object : Handle {
+                    override val cancel: Trigger = cancel
+                }
             }
 
             fun combine(

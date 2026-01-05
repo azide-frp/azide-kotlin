@@ -227,36 +227,46 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                         sourceVertex = sourceVertex,
                     )
 
-                    return Action.Outcome.of(
-                        Effect.Outcome.of(
-                            result = EventStream.Ordinary(
-                                vertex = executedEachEventStreamVertex,
-                            ),
-                            handle = object : Effect.Handle {
-                                override val cancel: Trigger = object : Trigger {
-                                    override fun executeInternally(
-                                        propagationContext: Transactions.PropagationContext,
-                                        wrapUpContext: Transactions.WrapUpContext,
-                                    ): Action.Outcome<Unit> {
-                                        executedEachEventStreamVertex.abort()
+                    val resultEventStream: EventStream<EventT> = EventStream.Ordinary(
+                        vertex = executedEachEventStreamVertex,
+                    )
 
-                                        return Action.Outcome.of(
-                                            Unit,
-                                            object : Action.RevocationHandle {
-                                                override fun revoke() {
-                                                    executedEachEventStreamVertex.restart(
-                                                        propagationContext = propagationContext,
-                                                    )
-                                                }
-                                            },
+                    val resultEffectHandle: Effect.Handle = object : Effect.Handle {
+                        override val cancel: Trigger = object : AbstractExecutionMergingTrigger() {
+                            override fun executeInternallyOnce(
+                                propagationContext: Transactions.PropagationContext,
+                                wrapUpContext: Transactions.WrapUpContext,
+                            ): Action.RevocationHandle {
+                                if (executedEachEventStreamVertex.isShutdown) {
+                                    return Action.RevocationHandle.Noop
+                                }
+
+                                executedEachEventStreamVertex.stop()
+
+                                return object : Action.RevocationHandle {
+                                    override fun revoke() {
+                                        if (executedEachEventStreamVertex.isShutdown) {
+                                            // The cancel action was revoked after the start action was revoked
+                                            return
+                                        }
+
+                                        executedEachEventStreamVertex.restart(
+                                            propagationContext = propagationContext,
                                         )
                                     }
                                 }
-                            },
+                            }
+                        }
+                    }
+
+                    return Action.Outcome.of(
+                        result = Effect.Outcome.of(
+                            result = resultEventStream,
+                            handle = resultEffectHandle,
                         ),
-                        object : Action.RevocationHandle {
+                        revocationHandle = object : Action.RevocationHandle {
                             override fun revoke() {
-                                executedEachEventStreamVertex.abort()
+                                executedEachEventStreamVertex.shutDown()
                             }
                         },
                     )
@@ -278,16 +288,16 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
                 loopedStartedScheduleHandles.holding(
                     initialValue = null,
                 ).asAction.joinOf { currentScheduleHandle: Cell<Effect.Handle?> ->
-                    val innerEffect: Effect<EventStream<Effect.Handle>> = newSchedules.map { newSchedule: Schedule ->
+                    val innerEffect: Effect<EventStream<Effect.Handle>> = newSchedules.executeEachOf { newSchedule: Schedule ->
                         currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
                             when (currentScheduleHandleNow) {
                                 null -> newSchedule.launch
                                 else -> currentScheduleHandleNow.cancel.joinOf { newSchedule.launch }
                             }
                         }
-                    }.executeEach()
+                    }
 
-                    innerEffect.start.map { outcome ->
+                    innerEffect.start.joinOf { outcome ->
                         val startedScheduleHandles: EventStream<Effect.Handle> = outcome.result
                         val innerEffectHandle: Effect.Handle = outcome.handle
 
@@ -298,17 +308,17 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
                                 currentScheduleHandleNow?.cancel ?: Triggers.Noop
                             }
 
-                        val outerEffectHandle: Effect.Handle = object : Effect.Handle {
-                            override val cancel: Trigger = Triggers.combine(
+                        Effect.Handle.of(
+                            cancelOnce = Triggers.combine(
                                 cancelInnerEffectTrigger,
                                 cancelCurrentScheduleTrigger,
+                            ),
+                        ).map { outerEffectHandle ->
+                            LoopClosure(
+                                result = outerEffectHandle,
+                                loopedValue = startedScheduleHandles,
                             )
                         }
-
-                        LoopClosure(
-                            result = outerEffectHandle,
-                            loopedValue = startedScheduleHandles,
-                        )
                     }
                 }
             }
@@ -339,7 +349,7 @@ fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule()
                         // Define the transition effect that cancels the old schedule and starts the new one whenever a
                         // new schedule arrives
                         val transitionEffect: Effect<EventStream<Effect.Handle>> =
-                            newSchedules.map { updatedSchedule: Schedule ->
+                            newSchedules.executeEachOf { updatedSchedule: Schedule ->
                                 currentScheduleHandle.sampling.joinOf { currentScheduleHandleNow: Effect.Handle ->
                                     // Cancel the old schedule...
                                     currentScheduleHandleNow.cancel.joinOf {
@@ -352,10 +362,10 @@ fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule()
                                     // initial schedule starts, is immediately cancelled, and the updated schedule
                                     // starts.
                                 }
-                            }.executeEach()
+                            }
 
                         // Start the transition effect
-                        transitionEffect.start.map { transitionEffectOutcome ->
+                        transitionEffect.start.joinOf { transitionEffectOutcome ->
                             val newInnerScheduleHandles = transitionEffectOutcome.result
                             val transitionEffectHandle = transitionEffectOutcome.handle
 
@@ -364,20 +374,20 @@ fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule()
                                     currentScheduleHandleNow.cancel
                                 }
 
-                            // Build the handle to the outer effect (the one we're defining)
-                            val outerEffectHandle: Effect.Handle = object : Effect.Handle {
-                                override val cancel: Trigger = Triggers.combine(
+                            // Build the handle to the outer schedule (the one we're defining)
+                            Effect.Handle.of(
+                                cancelOnce = Triggers.combine(
                                     // Canceling the transition effect...
                                     transitionEffectHandle.cancel,
                                     // ...and the currently active inner schedule
                                     cancelCurrentScheduleTrigger,
+                                ),
+                            ).map { outerEffectHandle ->
+                                LoopClosure(
+                                    result = outerEffectHandle,
+                                    loopedValue = newInnerScheduleHandles, // Close the loop
                                 )
                             }
-
-                            LoopClosure(
-                                result = outerEffectHandle,
-                                loopedValue = newInnerScheduleHandles, // Close the loop
-                            )
                         }
                     }
                 }
@@ -408,7 +418,7 @@ fun <ResultT> Cell<Effect<ResultT>>.actuateAggressively(): Effect<Cell<ResultT>>
                         // Define the transition effect that cancels the old effect and starts the new one whenever a
                         // new effect arrives
                         val transitionEffect: Effect<EventStream<Effect.Outcome<ResultT>>> =
-                            newInnerEffects.map { newInnerEffect: Effect<ResultT> ->
+                            newInnerEffects.executeEachOf { newInnerEffect: Effect<ResultT> ->
                                 currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
                                     // Cancel the old effect...
                                     currentInnerEffectHandleNow.cancel.joinOf {
@@ -420,7 +430,7 @@ fun <ResultT> Cell<Effect<ResultT>>.actuateAggressively(): Effect<Cell<ResultT>>
                                     // the outer effect starts, these three actions happen simultaneously: the initial
                                     // effect starts, is immediately cancelled, and the updated effect starts.
                                 }
-                            }.executeEach()
+                            }
 
                         // Start the transition effect
                         transitionEffect.start.joinOf { transitionEffectOutcome ->
@@ -429,31 +439,34 @@ fun <ResultT> Cell<Effect<ResultT>>.actuateAggressively(): Effect<Cell<ResultT>>
                             val transitionEffectHandle = transitionEffectOutcome.handle
 
                             val newInnerEffectResults = newInnerEffectOutcomes.map { it.result }
-                            val newEffectHandles = newInnerEffectOutcomes.map { it.handle }
+                            val newInnerEffectHandles = newInnerEffectOutcomes.map { it.handle }
+
+                            val cancelCurrentInnerEffectTrigger: Trigger =
+                                currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
+                                    currentInnerEffectHandleNow.cancel
+                                }
 
                             // Build the handle to the outer effect (the one we're defining)
-                            val outerEffectHandle: Effect.Handle = object : Effect.Handle {
-                                override val cancel: Trigger = Triggers.combine(
+                            Effect.Handle.of(
+                                cancelOnce = Triggers.combine(
                                     // Canceling the transition effect...
                                     transitionEffectHandle.cancel,
                                     // ...and the currently active inner effect
-                                    currentInnerEffectHandle.sampling.joinOf { currentScheduleHandleNow: Effect.Handle ->
-                                        currentScheduleHandleNow.cancel
-                                    },
-                                )
-                            }
-
-                            newInnerEffectResults.holding(
-                                initialValue = initialResult,
-                            ).map { outerEffectResult: Cell<ResultT> ->
-                                LoopClosure(
-                                    // Return the outer effect's result with the corresponding handle
-                                    result = Effect.Outcome.of(
-                                        result = outerEffectResult,
-                                        handle = outerEffectHandle,
-                                    ),
-                                    loopedValue = newEffectHandles, // Close the loop
-                                )
+                                    cancelCurrentInnerEffectTrigger,
+                                ),
+                            ).joinOf { outerEffectHandle ->
+                                newInnerEffectResults.holding(
+                                    initialValue = initialResult,
+                                ).map { outerEffectResult: Cell<ResultT> ->
+                                    LoopClosure(
+                                        // Return the outer effect's result with the corresponding handle
+                                        result = Effect.Outcome.of(
+                                            result = outerEffectResult,
+                                            handle = outerEffectHandle,
+                                        ),
+                                        loopedValue = newInnerEffectHandles, // Close the loop
+                                    )
+                                }
                             }
                         }
                     }
