@@ -97,6 +97,13 @@ class ExecutedEachEventStreamVertex<EventT>(
         this.executedActionRevocationHandle?.revoke()
         this.executedActionRevocationHandle = null
 
+        if (ongoingEmission != null) {
+            exposeAndPropagateEmission(
+                propagationContext = propagationContext,
+                emission = null,
+            )
+        }
+
         val upstreamSubscriberHandle =
             this.upstreamSubscriberHandle ?: throw AssertionError("Vertex seems to be already stopped")
 

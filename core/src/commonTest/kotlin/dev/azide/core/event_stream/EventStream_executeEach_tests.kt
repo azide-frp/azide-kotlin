@@ -175,7 +175,6 @@ class EventStream_executeEach_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_executeEach_start_sourceEmitsSimultaneously_cancelledInstantly() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
@@ -376,7 +375,6 @@ class EventStream_executeEach_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_executeEach_sourceEmits_cancelledSimultaneously() {
         data class StartTransactionRecord(
             val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,

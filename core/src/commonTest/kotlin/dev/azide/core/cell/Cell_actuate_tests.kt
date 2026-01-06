@@ -269,7 +269,6 @@ class Cell_actuate_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_actuate_start_sourceUpdatesSimultaneously_cancelledInstantly() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
@@ -628,7 +627,6 @@ class Cell_actuate_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_actuate_sourceUpdates_cancelledSimultaneously() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
