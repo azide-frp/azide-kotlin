@@ -3,7 +3,6 @@ package dev.azide.core.test_utils.event_stream
 import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
-import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.Emission

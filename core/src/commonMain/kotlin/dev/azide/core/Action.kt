@@ -1,72 +1,53 @@
 package dev.azide.core
 
-import dev.azide.core.Action.RevocationHandle
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.utils.LazyUtils
+import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
+import dev.azide.core.internal.utils.LoopClosure
+import dev.azide.core.internal.utils.LoopUtils
+import kotlin.experimental.ExperimentalTypeInference
+import kotlin.jvm.JvmName
 
 interface Action<out ResultT> {
-    interface RevocationHandle {
-        object Noop : RevocationHandle {
-            override fun revoke() {
-            }
-        }
-
+    interface Outcome<out ResultT> {
         companion object {
-            fun combine(
-                firstSubHandle: RevocationHandle,
-                secondSubHandle: RevocationHandle,
-            ): RevocationHandle = object : RevocationHandle {
-                override fun revoke() {
-                    firstSubHandle.revoke()
-                    secondSubHandle.revoke()
-                }
-            }
-
-            fun combine(
-                vararg subHandles: RevocationHandle,
-            ): RevocationHandle = object : RevocationHandle {
-                override fun revoke() {
-                    for (handle in subHandles) {
-                        handle.revoke()
-                    }
-                }
+            fun <ResultT> of(
+                result: ResultT,
+                revocationHandle: RevocationHandle,
+            ): Outcome<ResultT> = object : Outcome<ResultT> {
+                override val result: ResultT = result
+                override val revocationHandle: RevocationHandle = revocationHandle
             }
         }
 
-        fun revoke()
+        val result: ResultT
+        val revocationHandle: RevocationHandle
     }
 
     companion object {
         fun <ResultT, LoopedValueT : Any> looped(
-            block: (Lazy<LoopedValueT>) -> Action<Pair<ResultT, LoopedValueT>>,
+            block: (Lazy<LoopedValueT>) -> Action<LoopClosure<ResultT, LoopedValueT>>,
         ): Action<ResultT> = object : Action<ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Pair<ResultT, RevocationHandle> = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
-                val action: Action<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+            ): Outcome<ResultT> = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+                val action: Action<LoopClosure<ResultT, LoopedValueT>> = block(loopedValue)
 
-                val (
-                    resultAndLoopedValue: Pair<ResultT, LoopedValueT>,
-                    revocationHandle: RevocationHandle,
-                ) = action.executeInternally(
+                val actionOutcome = action.executeInternally(
                     propagationContext = propagationContext,
                     wrapUpContext = wrapUpContext,
                 )
 
-                val (
-                    result: ResultT,
-                    loopedValue: LoopedValueT,
-                ) = resultAndLoopedValue
+                val loopClosure: LoopClosure<ResultT, LoopedValueT> = actionOutcome.result
+                val revocationHandle: RevocationHandle = actionOutcome.revocationHandle
 
-                val resultAndRevocationHandle = Pair(
-                    result,
-                    revocationHandle,
-                )
-
-                return@looped Pair(
-                    resultAndRevocationHandle,
-                    loopedValue,
+                return@looped LoopClosure(
+                    result = Outcome.of(
+                        result = loopClosure.result,
+                        revocationHandle = revocationHandle,
+                    ),
+                    loopedValue = loopClosure.loopedValue,
                 )
             }
         }
@@ -77,9 +58,9 @@ interface Action<out ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Pair<ResultT, RevocationHandle> = Pair(
-                result,
-                RevocationHandle.Noop,
+            ): Outcome<ResultT> = Outcome.of(
+                result = result,
+                revocationHandle = RevocationHandle.Noop,
             )
         }
 
@@ -99,9 +80,9 @@ interface Action<out ResultT> {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): Pair<Unit, RevocationHandle> = Pair(
-                Unit,
-                propagationContext.enqueueForExecution(externalSideEffect),
+            ): Outcome<Unit> = Outcome.of(
+                result = Unit,
+                revocationHandle = propagationContext.enqueueForExecution(externalSideEffect),
             )
         }
     }
@@ -109,7 +90,7 @@ interface Action<out ResultT> {
     fun executeInternally(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): Pair<ResultT, RevocationHandle>
+    ): Outcome<ResultT>
 }
 
 fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(
@@ -117,10 +98,12 @@ fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(
 ): Pair<ResultT, RevocationHandle> = Transactions.WrapUpContext.wrapUp(
     propagationContext,
 ) { wrapUpContext ->
-    executeInternally(
+    val outcome = executeInternally(
         propagationContext = propagationContext,
         wrapUpContext = wrapUpContext,
     )
+
+    Pair(outcome.result, outcome.revocationHandle)
 }
 
 typealias Trigger = Action<Unit>
@@ -130,9 +113,20 @@ object Triggers {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
-        ): Pair<Unit, RevocationHandle> = Pair(
-            Unit,
-            RevocationHandle.Noop,
+        ): Action.Outcome<Unit> = Action.Outcome.of(
+            result = Unit,
+            revocationHandle = RevocationHandle.Noop,
+        )
+    }
+
+    typealias Outcome = Action.Outcome<Unit>
+
+    object Outcomes {
+        fun of(
+            revocationHandle: RevocationHandle,
+        ): Outcome = Action.Outcome.of(
+            result = Unit,
+            revocationHandle = revocationHandle,
         )
     }
 
@@ -143,25 +137,52 @@ object Triggers {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
-        ): Pair<Unit, Action.RevocationHandle> {
-            val (_: Unit, firstRevocationHandle) = first.executeInternally(
+        ): Action.Outcome<Unit> {
+            val firstOutcome = first.executeInternally(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
 
-            val (_: Unit, secondRevocationHandle) = second.executeInternally(
+            val firstRevocationHandle = firstOutcome.revocationHandle
+
+            val secondOutcome = second.executeInternally(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
 
-            return Pair(
-                Unit,
-                Action.RevocationHandle.combine(
+            val secondRevocationHandle = secondOutcome.revocationHandle
+
+            return Action.Outcome.of(
+                result = Unit,
+                revocationHandle = RevocationHandle.combine(
                     firstRevocationHandle,
                     secondRevocationHandle,
                 ),
             )
         }
+    }
+
+    fun Trigger.merging(): Action<Trigger> = object : Action<Trigger> {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Action.Outcome<Trigger> = Action.Outcome.of(
+            result = object : AbstractExecutionMergingTrigger() {
+                override fun executeInternallyOnce(
+                    propagationContext: Transactions.PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
+                ): RevocationHandle {
+                    val outcome: Triggers.Outcome = this@merging.executeInternally(
+                        propagationContext,
+                        wrapUpContext,
+                    )
+
+                    return outcome.revocationHandle
+                }
+            },
+            // We just allocate the trigger's identity
+            revocationHandle = RevocationHandle.Noop,
+        )
     }
 }
 
@@ -171,17 +192,20 @@ fun <ResultT, TransformedResultT> Action<ResultT>.map(
     override fun executeInternally(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): Pair<TransformedResultT, Action.RevocationHandle> {
-        val (result: ResultT, revocationHandle) = this@map.executeInternally(
+    ): Action.Outcome<TransformedResultT> {
+        val outcome = this@map.executeInternally(
             propagationContext = propagationContext,
             wrapUpContext = wrapUpContext,
         )
 
+        val result: ResultT = outcome.result
+        val revocationHandle: RevocationHandle = outcome.revocationHandle
+
         val transformedResult: TransformedResultT = transform(result)
 
-        return Pair(
-            transformedResult,
-            revocationHandle,
+        return Action.Outcome.of(
+            result = transformedResult,
+            revocationHandle = revocationHandle,
         )
     }
 }
@@ -192,25 +216,40 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
     override fun executeInternally(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): Pair<TransformedResultT, Action.RevocationHandle> {
-        val (result: ResultT, revocationHandle) = this@joinOf.executeInternally(
+    ): Action.Outcome<TransformedResultT> {
+        val outcome = this@joinOf.executeInternally(
             propagationContext = propagationContext,
             wrapUpContext = wrapUpContext,
         )
+
+        val result: ResultT = outcome.result
+        val revocationHandle: RevocationHandle = outcome.revocationHandle
 
         val transformedAction = transform(result)
 
-        val (transformedResult: TransformedResultT, transformedRevocationHandle) = transformedAction.executeInternally(
+        val transformedOutcome = transformedAction.executeInternally(
             propagationContext = propagationContext,
             wrapUpContext = wrapUpContext,
         )
 
-        return Pair(
-            transformedResult,
-            Action.RevocationHandle.combine(
+        val transformedResult: TransformedResultT = transformedOutcome.result
+        val transformedRevocationHandle: RevocationHandle = transformedOutcome.revocationHandle
+
+        return Action.Outcome.of(
+            result = transformedResult,
+            revocationHandle = RevocationHandle.combine(
                 revocationHandle,
                 transformedRevocationHandle,
             ),
         )
     }
+}
+
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
+@JvmName("joinOfActionFromMoment")
+fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
+    transform: (ResultT) -> Moment<TransformedResultT>,
+): Action<TransformedResultT> = joinOf {
+    transform(it).asAction
 }

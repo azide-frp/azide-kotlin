@@ -1,19 +1,21 @@
 package dev.azide.core
 
-import dev.azide.core.Action.RevocationHandle
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.utils.LazyUtils
+import dev.azide.core.internal.utils.LoopClosure
+import dev.azide.core.internal.utils.LoopUtils
+import kotlin.experimental.ExperimentalTypeInference
 
 interface Moment<out ResultT> {
     companion object {
         fun <ResultT, LoopedValueT : Any> looped(
-            block: (Lazy<LoopedValueT>) -> Moment<Pair<ResultT, LoopedValueT>>,
+            block: (Lazy<LoopedValueT>) -> Moment<LoopClosure<ResultT, LoopedValueT>>,
         ): Moment<ResultT> = object : Moment<ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): ResultT = LazyUtils.looped { loopedValue: Lazy<LoopedValueT> ->
-                val moment: Moment<Pair<ResultT, LoopedValueT>> = block(loopedValue)
+            ): ResultT = LoopUtils.looped { loopedValue: Lazy<LoopedValueT> ->
+                val moment: Moment<LoopClosure<ResultT, LoopedValueT>> = block(loopedValue)
 
                 return@looped moment.pullInternally(
                     propagationContext = propagationContext,
@@ -37,7 +39,7 @@ interface Moment<out ResultT> {
             override fun pullInternally(
                 propagationContext: Transactions.PropagationContext,
                 wrapUpContext: Transactions.WrapUpContext,
-            ): ResultT =  with(
+            ): ResultT = with(
                 MomentContextImpl(
                     propagationContext = propagationContext,
                     wrapUpContext = wrapUpContext,
@@ -75,15 +77,15 @@ val <ResultT> Moment<ResultT>.asAction: Action<ResultT>
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
-        ): Pair<ResultT, RevocationHandle> {
+        ): Action.Outcome<ResultT> {
             val result: ResultT = this@asAction.pullInternally(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
 
-            return Pair(
-                result,
-                RevocationHandle.Noop,
+            return Action.Outcome.of(
+                result = result,
+                revocationHandle = RevocationHandle.Noop,
             )
         }
     }
@@ -126,3 +128,9 @@ fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
         return transformedResult
     }
 }
+
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
+fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
+    transform: (ResultT) -> Action<TransformedResultT>,
+): Action<TransformedResultT> = asAction.joinOf(transform)

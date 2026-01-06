@@ -1,29 +1,20 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
 import dev.azide.core.Action
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.effects.EffectVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 
-class ExecutedEachEventStreamVertex<EventT> private constructor(
-    propagationContext: Transactions.PropagationContext,
+class ExecutedEachEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<Action<EventT>>,
-) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>> {
-    companion object {
-        fun <EventT> start(
-            propagationContext: Transactions.PropagationContext,
-            sourceVertex: EventStreamVertex<Action<EventT>>,
-        ): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
-            propagationContext = propagationContext,
-            sourceVertex = sourceVertex,
-        )
-    }
-
+) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>, EffectVertex {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-    private var executedActionRevocationHandle: Action.RevocationHandle? = null
+    private var executedActionRevocationHandle: RevocationHandle? = null
 
     /**
      * Handle the emission of the source action event stream vertex.
@@ -35,7 +26,7 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         when (emission) {
             null -> {
                 val executedActionRevocationHandle = this.executedActionRevocationHandle
-                    ?: throw AssertionError("Expected executed action revocation handle to be non-null when handling revoked emission")
+                    ?: throw AssertionError("There's no record of the revoked action")
 
                 executedActionRevocationHandle.revoke()
 
@@ -66,75 +57,60 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
         }
     }
 
-    fun abort() {
+    override fun transit() {
+        this.executedActionRevocationHandle = null
+    }
+
+    override fun start(
+        propagationContext: Transactions.PropagationContext,
+    ) {
+        if (upstreamSubscriberHandle != null) {
+            throw AssertionError("Vertex seems to be already active")
+        }
+
+        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
+            propagationContext = propagationContext,
+            subscriber = this,
+        )
+
+        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+            val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
+
+            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
+                propagationContext = propagationContext,
+            )
+
+            executedActionRevocationHandle = revocationHandle
+
+            exposeEmission(
+                propagationContext = propagationContext,
+                emission = EventStreamVertex.Emission(
+                    emittedEvent = emittedEvent,
+                ),
+            )
+        }
+    }
+
+    override fun stop(
+        propagationContext: Transactions.PropagationContext,
+    ) {
         this.executedActionRevocationHandle?.revoke()
         this.executedActionRevocationHandle = null
 
+        if (ongoingEmission != null) {
+            exposeAndPropagateEmission(
+                propagationContext = propagationContext,
+                emission = null,
+            )
+        }
+
         val upstreamSubscriberHandle =
-            this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex is already aborted")
+            this.upstreamSubscriberHandle ?: throw AssertionError("Vertex seems to be already stopped")
 
         this.upstreamSubscriberHandle = null
 
         sourceVertex.unregisterSubscriber(
             handle = upstreamSubscriberHandle,
         )
-    }
-
-    fun restart(
-        propagationContext: Transactions.PropagationContext,
-    ) {
-        if (upstreamSubscriberHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
-        }
-
-        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
-            propagationContext = propagationContext,
-            subscriber = this,
-        )
-
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
-
-            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
-
-            executedActionRevocationHandle = revocationHandle
-
-            exposeEmission(
-                propagationContext = propagationContext,
-                emission = EventStreamVertex.Emission(
-                    emittedEvent = emittedEvent,
-                ),
-            )
-        }
-    }
-
-    override fun transit() {
-        this.executedActionRevocationHandle = null
-    }
-
-    init {
-        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
-            propagationContext = propagationContext,
-            subscriber = this,
-        )
-
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
-
-            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
-
-            executedActionRevocationHandle = revocationHandle
-
-            exposeEmission(
-                propagationContext = propagationContext,
-                emission = EventStreamVertex.Emission(
-                    emittedEvent = emittedEvent,
-                ),
-            )
-        }
     }
 }

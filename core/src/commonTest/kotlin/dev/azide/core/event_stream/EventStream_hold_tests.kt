@@ -4,6 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.EventStream
 import dev.azide.core.hold
 import dev.azide.core.holding
+import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.joinOf
 import dev.azide.core.map
 import dev.azide.core.mapAt
@@ -12,7 +13,6 @@ import dev.azide.core.sampling
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -125,9 +125,9 @@ class EventStream_hold_tests {
                         memoryCell.sample() * multiplier
                     }
 
-                    Pair(
-                        memoryCell,
-                        multiplicationStream,
+                    LoopClosure(
+                        result = memoryCell,
+                        loopedValue = multiplicationStream,
                     )
                 }
             },
@@ -151,9 +151,9 @@ class EventStream_hold_tests {
                     }
 
                     memoryCell.sampling.map { initialValue ->
-                        Pair(
-                            initialValue,
-                            multiplicationStream,
+                        LoopClosure(
+                            result = initialValue,
+                            loopedValue = multiplicationStream,
                         )
                     }
                 }
