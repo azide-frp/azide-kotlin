@@ -149,7 +149,7 @@ class SwitchedCellVertex<ValueT>(
                 }
             }
 
-            else -> { // The inner source vertex has a proper update (potentially a correction)
+            else -> { // The outer source vertex has a proper update (potentially a correction)
                 val stableInnerSourceVertex = this@SwitchedCellVertex.stableInnerSourceVertex
                     ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
@@ -204,7 +204,7 @@ class SwitchedCellVertex<ValueT>(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ): CellVertex.Update<ValueT>? {
-        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || upstreamNewInnerObserverHandle != null || upstreamNewInnerObserverHandle != null) {
+        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamNewInnerObserverHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
@@ -272,7 +272,6 @@ class SwitchedCellVertex<ValueT>(
         val updatedInnerSourceVertex = this.updatedInnerSourceVertex
         val newInnerSourceVertex = updatedInnerSourceVertex ?: stableInnerSourceVertex
 
-        // Unregister the inner observer if the inner source vertex is warm and actually gave us a handle
         if (upstreamNewInnerObserverHandle != null) {
             newInnerSourceVertex.unregisterObserver(
                 handle = upstreamNewInnerObserverHandle,

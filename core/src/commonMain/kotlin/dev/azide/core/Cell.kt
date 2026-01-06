@@ -9,6 +9,7 @@ import dev.azide.core.internal.cell.operated_vertices.Mapped2WarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedAtCellVertex
 import dev.azide.core.internal.cell.operated_vertices.MappedWarmCellVertex
 import dev.azide.core.internal.cell.operated_vertices.SwitchedCellVertex
+import dev.azide.core.internal.event_stream.operated_vertices.DivertedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.UpdatedValuesEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.ValuesEventStreamVertex
 
@@ -75,7 +76,11 @@ interface Cell<out ValueT> {
 
         fun <ValueT> divert(
             outerCell: Cell<EventStream<ValueT>>,
-        ): EventStream<ValueT> = TODO()
+        ): EventStream<ValueT> = EventStream.Ordinary(
+            vertex = DivertedEventStreamVertex(
+                outerSourceVertex = outerCell.vertex,
+            ),
+        )
     }
 }
 
