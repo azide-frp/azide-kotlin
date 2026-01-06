@@ -1,9 +1,8 @@
 package dev.azide.core
 
-import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
+import dev.azide.core.internal.effects.AbstractPrimitiveEffect
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
@@ -209,71 +208,16 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
 }
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
-    object : Effect<EventStream<EventT>> {
-        override val start: Action<Effect.Outcome<EventStream<EventT>>> =
-            object : Action<Effect.Outcome<EventStream<EventT>>> {
-                override fun executeInternally(
-                    propagationContext: Transactions.PropagationContext,
-                    wrapUpContext: Transactions.WrapUpContext,
-                ): Action.Outcome<Effect.Outcome<EventStream<EventT>>> {
-                    val sourceVertex = this@executeEach.vertex as? LiveEventStreamVertex ?: return Action.Outcome.of(
-                        Effect.Outcome.of(
-                            result = EventStream.Never,
-                            handle = Effect.Handle.Noop,
-                        ),
-                        RevocationHandle.Noop,
-                    )
+    object : AbstractPrimitiveEffect<ExecutedEachEventStreamVertex<EventT>, EventStream<EventT>>() {
+        override fun buildVertex(): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
+            sourceVertex = this@executeEach.vertex,
+        )
 
-                    val executedEachEventStreamVertex = ExecutedEachEventStreamVertex.start(
-                        propagationContext = propagationContext,
-                        sourceVertex = sourceVertex,
-                    )
-
-                    val resultEventStream: EventStream<EventT> = EventStream.Ordinary(
-                        vertex = executedEachEventStreamVertex,
-                    )
-
-                    val resultEffectHandle: Effect.Handle = object : Effect.Handle {
-                        override val cancel: Trigger = object : AbstractExecutionMergingTrigger() {
-                            override fun executeInternallyOnce(
-                                propagationContext: Transactions.PropagationContext,
-                                wrapUpContext: Transactions.WrapUpContext,
-                            ): RevocationHandle {
-                                if (executedEachEventStreamVertex.isShutdown) {
-                                    return RevocationHandle.Noop
-                                }
-
-                                executedEachEventStreamVertex.stop()
-
-                                return object : RevocationHandle {
-                                    override fun revoke() {
-                                        if (executedEachEventStreamVertex.isShutdown) {
-                                            // The cancel action was revoked after the start action was revoked
-                                            return
-                                        }
-
-                                        executedEachEventStreamVertex.restart(
-                                            propagationContext = propagationContext,
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    return Action.Outcome.of(
-                        result = Effect.Outcome.of(
-                            result = resultEventStream,
-                            handle = resultEffectHandle,
-                        ),
-                        revocationHandle = object : RevocationHandle {
-                            override fun revoke() {
-                                executedEachEventStreamVertex.shutDown()
-                            }
-                        },
-                    )
-                }
-            }
+        override fun buildResult(
+            effectVertex: ExecutedEachEventStreamVertex<EventT>,
+        ): EventStream<EventT> = EventStream.Ordinary(
+            vertex = effectVertex,
+        )
     }
 
 fun EventStream<Trigger>.triggerEach(): Schedule = executeEach().map { }
