@@ -1,9 +1,11 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Action
+import dev.azide.core.CausalLoopException
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
+import dev.azide.core.executeEachOf
 import dev.azide.core.test_utils.TestEventStreamSubscriber
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TransactionTestUtils
@@ -24,8 +26,9 @@ import dev.azide.core.test_utils.verifyWasExecutedOnce
 import dev.azide.core.test_utils.verifyWasNotExecuted
 import dev.azide.core.test_utils.verifyWasNotRevoked
 import dev.azide.core.test_utils.verifyWasRevoked
-import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertFails
+import kotlin.test.assertIs
 
 @Suppress("ClassName")
 class EventStream_executeEach_tests {
@@ -433,6 +436,39 @@ class EventStream_executeEach_tests {
     @Test
     fun test_executeEach_cancel_twiceSimultaneously() {
         test_executeEach_cancel_once(count = 2)
+    }
+
+    @Test
+    fun test_executeEach_selfCancelling() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val subjectEffectOutcome = TransactionTestUtils.executeInsideTransaction {
+            subjectEffect.start.executeForTesting()
+        }
+
+        val subjectEventStream = subjectEffectOutcome.result
+        val subjectEffectHandle = subjectEffectOutcome.handle
+
+        val nastyEffect = subjectEventStream.executeEachOf { _: Int ->
+            // Attempt to cancel the effect in consequence of its own emission, which leads to a paradox
+            subjectEffectHandle.cancel
+        }
+
+        TransactionTestUtils.executeInsideTransaction {
+            nastyEffect.start.executeForTesting()
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        assertIs<CausalLoopException>(
+            assertFails {
+                TransactionTestUtils.executeInsideTransaction {
+                    sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+                }
+            },
+        )
     }
 
     private fun test_executeEach_cancel_once(count: Int) {

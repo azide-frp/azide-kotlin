@@ -1,5 +1,6 @@
 package dev.azide.core.internal.event_stream.abstract_vertices
 
+import dev.azide.core.CausalLoopException
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
@@ -12,6 +13,8 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     private val _registeredSubscribers: MutableBag<EventStreamVertex.Subscriber<EventT>> = MutableBag()
 
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
+
+    private var _isPropagatingEmission = false
 
     private var _isEnqueuedForCommitment = false
 
@@ -101,14 +104,24 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         propagationContext: Transactions.PropagationContext,
         emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        _registeredSubscribers.forEach { subscriber ->
-            val subscriberStatus = subscriber.handleEmissionWithStatus(
-                propagationContext = propagationContext,
-                emission = emission,
-            )
+        if (_isPropagatingEmission) {
+            throw CausalLoopException("Causal loop detected in event stream vertex: $this")
+        }
 
-            // Remove the subscriber if it's unreachable
-            subscriberStatus == SubscriberStatus.Unreachable
+        try {
+            _isPropagatingEmission = true
+
+            _registeredSubscribers.forEach { subscriber ->
+                val subscriberStatus = subscriber.handleEmissionWithStatus(
+                    propagationContext = propagationContext,
+                    emission = emission,
+                )
+
+                // Remove the subscriber if it's unreachable
+                subscriberStatus == SubscriberStatus.Unreachable
+            }
+        } finally {
+            _isPropagatingEmission = false
         }
     }
 
