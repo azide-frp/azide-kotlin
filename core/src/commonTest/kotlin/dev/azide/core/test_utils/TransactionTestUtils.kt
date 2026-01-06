@@ -2,6 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Action
 import dev.azide.core.Effect
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 
 object TransactionTestUtils {
@@ -37,7 +38,7 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
         outcome.result
     }
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, Action.RevocationHandle> =
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, RevocationHandle> =
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
     ) { wrapUpContext ->
@@ -49,14 +50,14 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
         Pair(outcome.result, outcome.revocationHandle)
     }
 
-context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun Action.RevocationHandle.revokeForTesting() {
+context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun RevocationHandle.revokeForTesting() {
     revoke()
 }
 
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTesting(): ResultT =
     this.start.executeForTesting().result
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, Action.RevocationHandle> {
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, RevocationHandle> {
     val (effectOutcome, revocationHandle) = this.start.executeForTestingRevocable()
 
     return Pair(

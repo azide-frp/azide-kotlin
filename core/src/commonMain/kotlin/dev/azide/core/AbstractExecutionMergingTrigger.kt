@@ -1,6 +1,7 @@
 package dev.azide.core
 
 import dev.azide.core.internal.CommittableVertex
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 
 abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
@@ -12,7 +13,7 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
     /**
      * The revocation handle of the implicit inner action executed once per transaction.
      */
-    private var storedRevocationHandle: Action.RevocationHandle? = null
+    private var storedRevocationHandle: RevocationHandle? = null
 
     private var isEnqueuedForCommitment = false
 
@@ -65,7 +66,7 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
     abstract fun executeInternallyOnce(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): Action.RevocationHandle
+    ): RevocationHandle
 
     override fun commit() {
         executionCount = 0

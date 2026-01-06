@@ -1,5 +1,6 @@
 package dev.azide.core
 
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
@@ -219,7 +220,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                             result = EventStream.Never,
                             handle = Effect.Handle.Noop,
                         ),
-                        Action.RevocationHandle.Noop,
+                        RevocationHandle.Noop,
                     )
 
                     val executedEachEventStreamVertex = ExecutedEachEventStreamVertex.start(
@@ -236,14 +237,14 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                             override fun executeInternallyOnce(
                                 propagationContext: Transactions.PropagationContext,
                                 wrapUpContext: Transactions.WrapUpContext,
-                            ): Action.RevocationHandle {
+                            ): RevocationHandle {
                                 if (executedEachEventStreamVertex.isShutdown) {
-                                    return Action.RevocationHandle.Noop
+                                    return RevocationHandle.Noop
                                 }
 
                                 executedEachEventStreamVertex.stop()
 
-                                return object : Action.RevocationHandle {
+                                return object : RevocationHandle {
                                     override fun revoke() {
                                         if (executedEachEventStreamVertex.isShutdown) {
                                             // The cancel action was revoked after the start action was revoked
@@ -264,7 +265,7 @@ fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<Event
                             result = resultEventStream,
                             handle = resultEffectHandle,
                         ),
-                        revocationHandle = object : Action.RevocationHandle {
+                        revocationHandle = object : RevocationHandle {
                             override fun revoke() {
                                 executedEachEventStreamVertex.shutDown()
                             }

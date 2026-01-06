@@ -1,6 +1,7 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
 import dev.azide.core.Action
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
@@ -46,7 +47,7 @@ class ExecutedEachEventStreamVertex<EventT> private constructor(
 
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-    private var executedActionRevocationHandle: Action.RevocationHandle? = null
+    private var executedActionRevocationHandle: RevocationHandle? = null
 
     /**
      * Handle the emission of the source action event stream vertex.

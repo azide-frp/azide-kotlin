@@ -1,6 +1,8 @@
 package dev.azide.core
 
-abstract class AbstractGuardedRevocationHandle : Action.RevocationHandle {
+import dev.azide.core.internal.RevocationHandle
+
+abstract class AbstractGuardedRevocationHandle : RevocationHandle {
     private var wasRevoked = false
 
     override fun revoke() {

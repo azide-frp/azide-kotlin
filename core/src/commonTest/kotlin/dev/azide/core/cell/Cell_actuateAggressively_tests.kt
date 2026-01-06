@@ -1,8 +1,8 @@
 package dev.azide.core.cell
 
-import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.Effect
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.actuateAggressively
 import dev.azide.core.test_utils.TestCellObserver
 import dev.azide.core.test_utils.TestTargetAction
@@ -134,7 +134,7 @@ class Cell_actuateAggressively_tests {
         val subjectEffect = sourceCell.actuateAggressively()
 
         val targetEffectStartExecutionRecord = TransactionTestUtils.executeInsideTransaction {
-            val (_: Cell<Int>, startRevocationHandle: Action.RevocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
 
             val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
 
@@ -320,7 +320,7 @@ class Cell_actuateAggressively_tests {
         val subjectEffect = sourceCell.actuateAggressively()
 
         val outcome = TransactionTestUtils.executeInsideTransaction {
-            val (_: Cell<Int>, startRevocationHandle: Action.RevocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
 
             val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
             val targetEffect1Outcome = targetEffect1StartExecutionRecord.result

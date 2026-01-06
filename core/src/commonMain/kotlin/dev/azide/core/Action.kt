@@ -1,6 +1,6 @@
 package dev.azide.core
 
-import dev.azide.core.Action.RevocationHandle
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
@@ -21,37 +21,6 @@ interface Action<out ResultT> {
 
         val result: ResultT
         val revocationHandle: RevocationHandle
-    }
-
-    interface RevocationHandle {
-        object Noop : RevocationHandle {
-            override fun revoke() {
-            }
-        }
-
-        companion object {
-            fun combine(
-                firstSubHandle: RevocationHandle,
-                secondSubHandle: RevocationHandle,
-            ): RevocationHandle = object : RevocationHandle {
-                override fun revoke() {
-                    firstSubHandle.revoke()
-                    secondSubHandle.revoke()
-                }
-            }
-
-            fun combine(
-                vararg subHandles: RevocationHandle,
-            ): RevocationHandle = object : RevocationHandle {
-                override fun revoke() {
-                    for (handle in subHandles) {
-                        handle.revoke()
-                    }
-                }
-            }
-        }
-
-        fun revoke()
     }
 
     companion object {

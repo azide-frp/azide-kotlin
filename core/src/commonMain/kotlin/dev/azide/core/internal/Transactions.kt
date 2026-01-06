@@ -1,7 +1,7 @@
 package dev.azide.core.internal
 
-import dev.azide.core.Action
 import dev.azide.core.ExternalSideEffect
+import dev.azide.core.internal.RevocationHandle
 import dev.kmpx.collections.lists.linkedListOf
 
 object Transactions {
@@ -45,7 +45,7 @@ object Transactions {
 
         fun enqueueForExecution(
             sideEffect: ExternalSideEffect,
-        ): Action.RevocationHandle
+        ): RevocationHandle
     }
 
     enum class TransactionState {
@@ -88,12 +88,12 @@ object Transactions {
 
                 override fun enqueueForExecution(
                     sideEffect: ExternalSideEffect,
-                ): Action.RevocationHandle {
+                ): RevocationHandle {
                     ensureIsOpen()
 
                     val innerHandle = sideEffectsToExecute.append(sideEffect)
 
-                    return object : Action.RevocationHandle {
+                    return object : RevocationHandle {
                         override fun revoke() {
                             ensureIsOpen()
 
