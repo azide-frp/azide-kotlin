@@ -19,8 +19,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object EventStreamTestUtils {
-    fun <EventT> createInputEventStream(): dev.azide.core.test_utils.event_stream.TestInputEventStream<EventT> =
-        TestInputEventStream()
+    fun <EventT> createInputEventStream(): TestInputEventStream<EventT> = TestInputEventStream()
 
     /**
      * Spawn a stateful event stream, not expecting it to emit during spawn.
