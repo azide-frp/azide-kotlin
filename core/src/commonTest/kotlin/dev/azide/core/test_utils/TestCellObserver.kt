@@ -89,6 +89,30 @@ fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesUpdate(
     )
 }
 
+fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesRevocation() {
+    val receivedUpdates = getAndResetReceivedUpdates()
+
+    assertEquals(
+        expected = 1,
+        actual = receivedUpdates.size,
+        message = "Expected exactly one update to have been propagated.",
+    )
+
+    val receivedUpdate = receivedUpdates.single()
+
+    assertNull(
+        actual = receivedUpdate,
+        message = "Expected the propagated update to be a revocation (null value), but it was not.",
+    )
+
+    val exposedUpdate = observedCellVertex.ongoingUpdate
+
+    assertNull(
+        actual = exposedUpdate,
+        message = "Expected the exposed ongoing update to be a revocation (null value), but it was not.",
+    )
+}
+
 fun <ValueT> TestCellObserver<ValueT>.verifyDoesNotExposeUpdate() {
     val exposedUpdate = observedCellVertex.ongoingUpdate
 
