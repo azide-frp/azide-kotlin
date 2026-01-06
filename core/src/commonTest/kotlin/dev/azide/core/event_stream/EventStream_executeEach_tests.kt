@@ -1,184 +1,384 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Action
+import dev.azide.core.Effect
+import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.map
-import dev.azide.core.test_utils.MockSideEffect
-import dev.azide.core.test_utils.TestInputStimulation
-import dev.azide.core.test_utils.TestUtils
+import dev.azide.core.test_utils.TestEventStreamSubscriber
+import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.executeForTesting
+import dev.azide.core.test_utils.executeForTestingRevocable
+import dev.azide.core.test_utils.revokeForTesting
+import dev.azide.core.test_utils.startForTesting
+import dev.azide.core.test_utils.startForTestingCancellable
+import dev.azide.core.test_utils.startForTestingRevocable
+import dev.azide.core.test_utils.stimulateForTesting
+import dev.azide.core.test_utils.subscribeForTesting
+import dev.azide.core.test_utils.verifyDidNotPropagateNorExposesEmission
+import dev.azide.core.test_utils.verifyDoesNotExposeEmission
+import dev.azide.core.test_utils.verifyPropagatedAndExposesEmission
+import dev.azide.core.test_utils.verifyPropagatedAndExposesRevocation
+import dev.azide.core.test_utils.verifyWasExecutedOnce
+import dev.azide.core.test_utils.verifyWasNotExecuted
+import dev.azide.core.test_utils.verifyWasNotRevoked
+import dev.azide.core.test_utils.verifyWasRevoked
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @Suppress("ClassName")
 class EventStream_executeEach_tests {
     @Test
-    fun test_executeEach_sourceEmission() {
-        val mockSideEffect = MockSideEffect()
-
+    fun test_executeEach_start() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val effectOutcome = TestUtils.executeSeparately(
-            sourceEventStream.executeEach().start,
-        )
+        val subjectEffect = sourceEventStream.executeEach()
 
-        val subjectEventStream = effectOutcome.result
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val subjectEventStream = subjectEffect.startForTesting()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect).map { 10 },
-            ),
-            expectedEmittedEvent = 10,
-        )
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
 
-        assertTrue(
-            actual = mockSideEffect.wasCalled,
-        )
+            subjectEventStreamSubscriber
+        }
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
     }
 
     @Test
-    fun test_executeEach_multipleSourceEmissions() {
-        val mockSideEffect1 = MockSideEffect()
-        val mockSideEffect2 = MockSideEffect()
+    fun test_executeEach_start_cancelledInstantly_once() {
+        test_executeEach_start_cancelledInstantly(count = 1)
+    }
+
+    @Test
+    fun test_executeEach_start_cancelledInstantly_twice() {
+        test_executeEach_start_cancelledInstantly(count = 2)
+    }
+
+    private fun test_executeEach_start_cancelledInstantly(count: Int) {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            repeat(count) {
+                subjectEffectHandle.cancel.executeForTesting()
+            }
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+
+            subjectEventStreamSubscriber
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission() // ...because the effect is cancelled
+        }
+
+        targetAction.verifyWasNotExecuted() // ...at any point
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
+    }
+
+    @Test
+    fun test_executeEach_start_revokedInstantly() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        TransactionTestUtils.executeInsideTransaction {
+            val (_, revocationHandle) = subjectEffect.startForTestingRevocable()
+
+            revocationHandle.revokeForTesting()
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+        }
+
+        targetAction.verifyWasNotExecuted() // ...at any point
+    }
+
+    @Test
+    fun test_executeEach_start_cancelledAndRevokedInstantly() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        TransactionTestUtils.executeInsideTransaction {
+            val (startActionOutcome, startRevocationHandle) = subjectEffect.start.executeForTestingRevocable()
+
+            val subjectEffectHandle = startActionOutcome.handle
+
+            val (_, cancelRevocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
+
+            startRevocationHandle.revokeForTesting()
+
+            cancelRevocationHandle.revokeForTesting()
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+        }
+
+        targetAction.verifyWasNotExecuted() // ...at any point
+    }
+
+    @Test
+    fun test_executeEach_start_sourceEmitsSimultaneously() {
+        data class StartTransactionRecord(
+            val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,
+            val targetActionExecutionRecord: TestTargetAction.ExecutionRecord<Int>,
+        )
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val effectOutcome = TestUtils.executeSeparately(
-            sourceEventStream.executeEach().start,
-        )
+        val targetAction = TestTargetAction.of(result = 10)
 
-        val subjectEventStream = effectOutcome.result
+        val subjectEffect = sourceEventStream.executeEach()
 
-        TestUtils.stimulateSeparately(
+        val transactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val subjectEventStream = subjectEffect.startForTesting()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
             sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect1).map { 10 },
-            ),
-        )
+                emittedEvent = targetAction,
+            ).stimulateForTesting()
 
-        assertTrue(
-            actual = mockSideEffect1.wasCalled,
-        )
+            val testTargetActionExecutionRecord = targetAction.verifyWasExecutedOnce()
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect2).map { 20 },
-            ),
-            expectedEmittedEvent = 20,
-        )
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 10,
+            )
 
-        assertTrue(
-            actual = mockSideEffect2.wasCalled,
-        )
+            StartTransactionRecord(
+                subjectEventStreamSubscriber = subjectEventStreamSubscriber,
+                targetActionExecutionRecord = testTargetActionExecutionRecord,
+            )
+        }
+
+        transactionRecord.subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
+
+        transactionRecord.targetActionExecutionRecord.verifyWasNotRevoked() // ...at any point
     }
 
     @Test
-    fun test_executeEach_sourceEmission_revoked() {
-        val mockSideEffect = MockSideEffect()
-
+    fun test_executeEach_start_sourceEmitsSimultaneously_revokedInstantly() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val effectOutcome = TestUtils.executeSeparately(
-            sourceEventStream.executeEach().start,
-        )
+        val targetAction1 = TestTargetAction.of(result = 10)
 
-        val subjectEventStream = effectOutcome.result
+        val subjectEffect = sourceEventStream.executeEach()
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = Action.wrap(mockSideEffect).map { 10 },
-                ),
-                sourceEventStream.revokeEmission(),
-            ),
-        )
+        TransactionTestUtils.executeInsideTransaction {
+            val (_: EventStream<Int>, startRevocationHandle) = subjectEffect.startForTestingRevocable()
 
-        assertFalse(
-            actual = mockSideEffect.wasCalled,
-        )
+            sourceEventStream.emit(
+                emittedEvent = targetAction1,
+            ).stimulateForTesting()
+
+            val testTargetActionExecutionRecord = targetAction1.verifyWasExecutedOnce().apply {
+                verifyWasNotRevoked()
+            }
+
+            startRevocationHandle.revokeForTesting()
+
+            testTargetActionExecutionRecord.verifyWasRevoked()
+        }
+
+        val targetAction2 = TestTargetAction.of(result = 20)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction2).stimulateForTesting()
+        }
+
+        targetAction2.verifyWasNotExecuted() // ...at any point
     }
 
     @Test
-    fun test_executeEach_sourceEmission_corrected() {
-        val mockSideEffect1 = MockSideEffect()
-        val mockSideEffect2 = MockSideEffect()
-
+    fun test_executeEach_sourceEmits() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val effectOutcome = TestUtils.executeSeparately(
-            sourceEventStream.executeEach().start,
-        )
+        val subjectEffect = sourceEventStream.executeEach()
 
-        val subjectEventStream = effectOutcome.result
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val subjectEventStream = subjectEffect.startForTesting()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = Action.wrap(mockSideEffect1).map { 10 },
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = Action.wrap(mockSideEffect2).map { 20 },
-                ),
-            ),
-            expectedEmittedEvent = 20,
-        )
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
 
-        assertFalse(
-            actual = mockSideEffect1.wasCalled,
-        )
+            subjectEventStreamSubscriber
+        }
 
-        assertTrue(
-            actual = mockSideEffect2.wasCalled,
-        )
+        val targetAction = TestTargetAction.of(result = 10)
+
+        val targetActionExecutionRecord = TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+
+            val targetActionExecutionRecord = targetAction.verifyWasExecutedOnce()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 10,
+            )
+
+            targetActionExecutionRecord
+        }
+
+        targetAction.verifyWasNotExecuted() // ...again
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
+
+        targetActionExecutionRecord.verifyWasNotRevoked() // ...at any point
     }
 
     @Test
-    fun test_executeEach_sourceEmitsOnStart() {
-        val mockSideEffect = MockSideEffect()
-
+    fun test_executeEach_sourceEmitsAndRevokes() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        TestUtils.executeSeparately(
-            action = sourceEventStream.executeEach().start,
-            inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect).map { 10 },
-            ),
-        )
+        val subjectEffect = sourceEventStream.executeEach()
 
-        assertTrue(
-            actual = mockSideEffect.wasCalled,
-        )
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val subjectEventStream = subjectEffect.startForTesting()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+
+            subjectEventStreamSubscriber
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+
+            val targetActionExecutionRecord = targetAction.verifyWasExecutedOnce()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 10,
+            )
+
+            sourceEventStream.revokeEmission().stimulateForTesting()
+
+            targetActionExecutionRecord.verifyWasRevoked()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesRevocation()
+        }
+
+        targetAction.verifyWasNotExecuted() // ...again
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
     }
 
     @Test
-    fun test_executeEach_cancel() {
-        val mockSideEffect = MockSideEffect()
+    fun test_executeEach_sourceEmitsAndCorrects() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val subjectEventStream = subjectEffect.startForTesting()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+
+            subjectEventStreamSubscriber
+        }
+
+        val targetAction1 = TestTargetAction.of(result = 10)
+        val targetAction2 = TestTargetAction.of(result = 20)
+
+        val targetActionCorrectedExecutionRecord = TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(
+                emittedEvent = targetAction1,
+            ).stimulateForTesting()
+
+            val targetActionInitialExecutionRecord = targetAction1.verifyWasExecutedOnce()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 10,
+            )
+
+            sourceEventStream.correctEmission(
+                correctedEmittedEvent = targetAction2,
+            ).stimulateForTesting()
+
+            targetActionInitialExecutionRecord.verifyWasRevoked()
+
+            val targetActionCorrectedExecutionRecord = targetAction2.verifyWasExecutedOnce()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 20,
+            )
+
+            targetActionCorrectedExecutionRecord
+        }
+
+        targetAction1.verifyWasNotExecuted() // ...again
+        targetAction2.verifyWasNotExecuted() // ...again
+
+        targetActionCorrectedExecutionRecord.verifyWasNotRevoked() // ...at any point
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
+    }
+
+    @Test
+    fun test_executeEach_cancel_once() {
+        test_executeEach_cancel_once(count = 1)
+    }
+
+    @Test
+    fun test_executeEach_cancel_twiceSimultaneously() {
+        test_executeEach_cancel_once(count = 2)
+    }
+
+    private fun test_executeEach_cancel_once(count: Int) {
+        data class StartTransactionRecord(
+            val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,
+            val subjectEffectHandle: Effect.Handle,
+        )
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
-        val effectOutcome = TestUtils.executeSeparately(
-            sourceEventStream.executeEach().start,
-        )
+        val subjectEffect = sourceEventStream.executeEach()
 
-        val subjectEventStream = effectOutcome.result
+        val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
 
-        TestUtils.executeSeparately(
-            effectOutcome.handle.cancel,
-        )
+            StartTransactionRecord(
+                subjectEventStreamSubscriber = subjectEventStreamSubscriber,
+                subjectEffectHandle = subjectEffectHandle,
+            )
+        }
 
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect).map { 10 },
-            ),
-        )
+        val subjectEventStreamSubscriber = startTransactionRecord.subjectEventStreamSubscriber
+        val subjectEffectHandle = startTransactionRecord.subjectEffectHandle
 
-        assertFalse(
-            actual = mockSideEffect.wasCalled,
-        )
+        TransactionTestUtils.executeInsideTransaction {
+            repeat(count) {
+                subjectEffectHandle.cancel.executeForTesting()
+            }
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+        }
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() // ...at any point / now
+
+        targetAction.verifyWasNotExecuted() // ...at any point
     }
 }

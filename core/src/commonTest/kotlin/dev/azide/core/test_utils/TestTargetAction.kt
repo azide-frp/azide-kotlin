@@ -30,6 +30,11 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
         override fun buildResult(): Unit = Unit
     }
 
+    companion object {
+        fun <ResultT> of(result: ResultT): TestTargetAction<ResultT> = object : TestTargetAction<ResultT>() {
+            override fun buildResult(): ResultT = result
+        }
+    }
     private val executionRecords = mutableListOf<ExecutionRecord<ResultT>>()
 
     fun getAndResetExecutionRecords(): List<ExecutionRecord<ResultT>> = executionRecords.toList().also {

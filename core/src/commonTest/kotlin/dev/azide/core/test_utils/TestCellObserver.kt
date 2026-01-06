@@ -4,7 +4,6 @@ import dev.azide.core.Cell
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
-import dev.azide.core.test_utils.TestCellObserver.Companion.observeForTestingCancellable
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -13,36 +12,6 @@ class TestCellObserver<ValueT>(
 ) : WarmCellVertex.BasicObserver<ValueT> {
     interface Handle {
         fun cancel()
-    }
-
-    companion object {
-
-
-        context(transactionTestContext: TransactionTestContext) fun <ValueT> observeForTestingCancellable(
-            cell: Cell<ValueT>,
-        ): Pair<TestCellObserver<ValueT>, Handle> {
-            val vertex = cell.vertex
-
-            val observer = TestCellObserver(
-                observedCellVertex = vertex,
-            )
-
-            val observerHandle = vertex.registerObserver(
-                propagationContext = transactionTestContext.propagationContext,
-                observer = observer,
-            )
-
-            return Pair(
-                observer,
-                object : Handle {
-                    override fun cancel() {
-                        vertex.unregisterObserver(
-                            handle = observerHandle,
-                        )
-                    }
-                },
-            )
-        }
     }
 
     private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
@@ -59,8 +28,32 @@ class TestCellObserver<ValueT>(
     }
 }
 
+context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTestingCancellable(): Pair<TestCellObserver<ValueT>, TestCellObserver.Handle> {
+    val vertex = vertex
+
+    val observer = TestCellObserver(
+        observedCellVertex = vertex,
+    )
+
+    val observerHandle = vertex.registerObserver(
+        propagationContext = transactionTestContext.propagationContext,
+        observer = observer,
+    )
+
+    return Pair(
+        observer,
+        object : TestCellObserver.Handle {
+            override fun cancel() {
+                vertex.unregisterObserver(
+                    handle = observerHandle,
+                )
+            }
+        },
+    )
+}
+
 context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTesting(): TestCellObserver<ValueT> {
-    val (testCellObserver, _) = observeForTestingCancellable(cell = this)
+    val (testCellObserver, _) = this.observeForTestingCancellable()
     return testCellObserver
 }
 
