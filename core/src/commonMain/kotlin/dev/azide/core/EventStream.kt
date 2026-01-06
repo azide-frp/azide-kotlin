@@ -287,14 +287,14 @@ fun <EventT, TransformedEventT> EventStream<EventT>.executeEachOf(
     transform: (EventT) -> Action<TransformedEventT>,
 ): Effect<EventStream<TransformedEventT>> = map(transform).executeEach()
 
-@JvmName("actuateAggressivelySchedule")
-fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule() {
+@JvmName("actuateSchedule")
+fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
     override val launchImpl: Action<Effect.Handle> = run {
         // Define the launching action of the schedule
 
-        val newSchedules: EventStream<Schedule> = this@actuateAggressively.updatedValues
+        val newSchedules: EventStream<Schedule> = this@actuate.updatedValues
 
-        this@actuateAggressively.sampling.joinOf { initialInnerSchedule: Schedule ->
+        this@actuate.sampling.joinOf { initialInnerSchedule: Schedule ->
             // Launch the initial schedule
             initialInnerSchedule.launch.joinOf { initialInnerScheduleHandle: Effect.Handle ->
                 EventStream.loopedInAction { loopedNewInnerScheduleHandles: EventStream<Effect.Handle> ->
@@ -353,14 +353,14 @@ fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule()
     }
 }
 
-@JvmName("actuateAggressivelyEffect")
-fun <ResultT> Cell<Effect<ResultT>>.actuateAggressively(): Effect<Cell<ResultT>> = object : Effect<Cell<ResultT>> {
+@JvmName("actuateEffect")
+fun <ResultT> Cell<Effect<ResultT>>.actuate(): Effect<Cell<ResultT>> = object : Effect<Cell<ResultT>> {
     override val start = run {
         // Define the starting action of the effect
 
-        val newInnerEffects: EventStream<Effect<ResultT>> = this@actuateAggressively.updatedValues
+        val newInnerEffects: EventStream<Effect<ResultT>> = this@actuate.updatedValues
 
-        this@actuateAggressively.sampling.joinOf { initialInnerEffect: Effect<ResultT> ->
+        this@actuate.sampling.joinOf { initialInnerEffect: Effect<ResultT> ->
             // Start the initial effect
             initialInnerEffect.start.joinOf { initialEffectOutcome ->
                 val initialResult: ResultT = initialEffectOutcome.result

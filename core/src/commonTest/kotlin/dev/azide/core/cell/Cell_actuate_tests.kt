@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.actuateAggressively
+import dev.azide.core.actuate
 import dev.azide.core.test_utils.TestCellObserver
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
@@ -33,16 +33,16 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-class Cell_actuateAggressively_tests {
+class Cell_actuate_tests {
     @Test
-    fun test_actuateAggressively_start() {
+    fun test_actuate_start() {
         val targetEffect = TestTargetEffect.pure(result = 10)
 
         val sourceCell = CellTestUtils.createInputCell(
             initialValue = targetEffect,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val (subjectCellObserver, targetEffectStartExecutionRecord) = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
@@ -74,16 +74,16 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_start_cancelledInstantly_once() {
-        test_actuateAggressively_start_cancelledInstantly(count = 1)
+    fun test_actuate_start_cancelledInstantly_once() {
+        test_actuate_start_cancelledInstantly(count = 1)
     }
 
     @Test
-    fun test_actuateAggressively_start_cancelledInstantly_twice() {
-        test_actuateAggressively_start_cancelledInstantly(count = 2)
+    fun test_actuate_start_cancelledInstantly_twice() {
+        test_actuate_start_cancelledInstantly(count = 2)
     }
 
-    private fun test_actuateAggressively_start_cancelledInstantly(count: Int) {
+    private fun test_actuate_start_cancelledInstantly(count: Int) {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val targetEffectStartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -96,7 +96,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
@@ -136,14 +136,14 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_start_revokedInstantly() {
+    fun test_actuate_start_revokedInstantly() {
         val targetEffect = TestTargetEffect.pure(result = 10)
 
         val sourceCell = CellTestUtils.createInputCell(
             initialValue = targetEffect,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val targetEffectStartExecutionRecord = TransactionTestUtils.executeInsideTransaction {
             val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
@@ -164,14 +164,14 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_start_cancelledAndRevokedInstantly() {
+    fun test_actuate_start_cancelledAndRevokedInstantly() {
         val targetEffect = TestTargetEffect.pure(result = 10)
 
         val sourceCell = CellTestUtils.createInputCell(
             initialValue = targetEffect,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         TransactionTestUtils.executeInsideTransaction {
             val (startActionOutcome, startRevocationHandle) = subjectEffect.start.executeForTestingRevocable()
@@ -202,7 +202,7 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_start_sourceUpdatesSimultaneously() {
+    fun test_actuate_start_sourceUpdatesSimultaneously() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -217,7 +217,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect1,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
@@ -268,7 +268,7 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_start_sourceUpdatesSimultaneously_revokedInstantly() {
+    fun test_actuate_start_sourceUpdatesSimultaneously_revokedInstantly() {
         data class StartTransactionRecord(
             val targetEffect1Outcome: TestTargetEffect.Outcome<Int>,
             val targetEffect2Outcome: TestTargetEffect.Outcome<Int>,
@@ -281,7 +281,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect1,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
@@ -318,7 +318,7 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_sourceUpdates() {
+    fun test_actuate_sourceUpdates() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -341,7 +341,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect1,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
@@ -394,7 +394,7 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_sourceUpdatesAndRevokes() {
+    fun test_actuate_sourceUpdatesAndRevokes() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -409,7 +409,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect1,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
@@ -461,7 +461,7 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_sourceUpdatesAndCorrects() {
+    fun test_actuate_sourceUpdatesAndCorrects() {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -484,7 +484,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect1,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
@@ -554,16 +554,16 @@ class Cell_actuateAggressively_tests {
     }
 
     @Test
-    fun test_actuateAggressively_cancel_once() {
-        test_actuateAggressively_cancel(count = 1)
+    fun test_actuate_cancel_once() {
+        test_actuate_cancel(count = 1)
     }
 
     @Test
-    fun test_actuateAggressively_cancel_twiceSimultaneously() {
-        test_actuateAggressively_cancel(count = 2)
+    fun test_actuate_cancel_twiceSimultaneously() {
+        test_actuate_cancel(count = 2)
     }
 
-    private fun test_actuateAggressively_cancel(count: Int) {
+    private fun test_actuate_cancel(count: Int) {
         data class StartTransactionRecord(
             val subjectCellObserver: TestCellObserver<Int>,
             val subjectEffectHandle: Effect.Handle,
@@ -580,7 +580,7 @@ class Cell_actuateAggressively_tests {
             initialValue = targetEffect,
         )
 
-        val subjectEffect = sourceCell.actuateAggressively()
+        val subjectEffect = sourceCell.actuate()
 
         val spawnOutcome = TransactionTestUtils.executeInsideTransaction {
             val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
