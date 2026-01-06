@@ -2,8 +2,8 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.Effect
-import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.actuate
+import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.test_utils.TestCellObserver
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
@@ -29,6 +29,7 @@ import dev.azide.core.test_utils.verifyWasNotRevoked
 import dev.azide.core.test_utils.verifyWasNotStarted
 import dev.azide.core.test_utils.verifyWasRevoked
 import dev.azide.core.test_utils.verifyWasStartedOnce
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -265,6 +266,79 @@ class Cell_actuate_tests {
 
         val targetEffect2Outcome = transactionRecord.targetEffect2StartExecutionRecord.result
         targetEffect2Outcome.verifyWasNotCancelled() // ...at any point
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_actuate_start_sourceUpdatesSimultaneously_cancelledInstantly() {
+        data class StartTransactionRecord(
+            val subjectCellObserver: TestCellObserver<Int>,
+            val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
+            val targetEffect1SubsequentCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
+        ) {
+            val targetEffect1Outcome: TestTargetEffect.Outcome<Int>
+                get() = targetEffect1StartExecutionRecord.result
+        }
+
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect = sourceCell.actuate()
+
+        val transactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val (subjectCell: Cell<Int>, subjectEffectHandle: Effect.Handle) = subjectEffect.startForTestingCancellable()
+            val subjectCellObserver = subjectCell.observeForTesting()
+
+            val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
+            val targetEffect1Outcome = targetEffect1StartExecutionRecord.result
+
+            sourceCell.update(
+                newValue = targetEffect2,
+            ).stimulateForTesting()
+
+            subjectCellObserver.verifyPropagatedAndExposesUpdate(expectedUpdatedValue = 20)
+
+            val targetEffect1InitialCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce().apply {
+                verifyWasNotRevoked()
+            }
+
+            val targetEffect2StartExecutionRecord = targetEffect2.verifyWasStartedOnce().apply {
+                verifyWasNotRevoked()
+            }
+
+            subjectEffectHandle.cancel.executeForTesting()
+
+            targetEffect1InitialCancelExecutionRecord.verifyWasRevoked()
+            targetEffect2StartExecutionRecord.verifyWasRevoked()
+
+            val targetEffect1SubsequentCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
+
+            subjectCellObserver.verifyPropagatedAndExposesRevocation()
+
+            StartTransactionRecord(
+                subjectCellObserver = subjectCellObserver,
+                targetEffect1StartExecutionRecord = targetEffect1StartExecutionRecord,
+                targetEffect1SubsequentCancelExecutionRecord = targetEffect1SubsequentCancelExecutionRecord,
+            )
+        }
+
+        val subjectCellObserver = transactionRecord.subjectCellObserver
+        val targetEffect1StartExecutionRecord = transactionRecord.targetEffect1StartExecutionRecord
+        val targetEffect1Outcome = transactionRecord.targetEffect1Outcome
+
+        targetEffect1.verifyWasNotStarted() // ...again
+        targetEffect2.verifyWasNotStarted() // ...again
+
+        targetEffect1StartExecutionRecord.verifyWasNotRevoked()
+
+        targetEffect1Outcome.verifyWasNotCancelled() // ...again
+
+        subjectCellObserver.verifyOldValueInsideTransaction(expectedOldValue = 10)
+
     }
 
     @Test
@@ -546,6 +620,92 @@ class Cell_actuate_tests {
 
         targetEffect1Outcome.verifyWasNotCancelled() // ...again
         targetEffect3Outcome.verifyWasNotCancelled() // ...at all
+
+        targetEffect1.verifyWasNotStarted() // ...again
+        targetEffect2.verifyWasNotStarted() // ...again
+
+        subjectCellObserver.verifyDidNotPropagateNorExposesUpdate() // ...again / now
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_actuate_sourceUpdates_cancelledSimultaneously() {
+        data class StartTransactionRecord(
+            val subjectCellObserver: TestCellObserver<Int>,
+            val subjectEffectHandle: Effect.Handle,
+            val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
+        ) {
+            val targetEffect1Outcome: TestTargetEffect.Outcome<Int>
+                get() = targetEffect1StartExecutionRecord.result
+        }
+
+        data class LaterTransactionRecord(
+            val targetEffect1SubsequentCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
+        )
+
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect = sourceCell.actuate()
+
+        val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectCellObserver = subjectCell.observeForTesting()
+
+            val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
+
+            StartTransactionRecord(
+                subjectCellObserver = subjectCellObserver,
+                subjectEffectHandle = subjectEffectHandle,
+                targetEffect1StartExecutionRecord = targetEffect1StartExecutionRecord,
+            )
+        }
+
+        startTransactionRecord.targetEffect1StartExecutionRecord.verifyWasNotRevoked()
+
+        val subjectCellObserver = startTransactionRecord.subjectCellObserver
+        val subjectEffectHandle = startTransactionRecord.subjectEffectHandle
+        val targetEffect1Outcome = startTransactionRecord.targetEffect1Outcome
+
+        targetEffect1Outcome.verifyWasNotCancelled()
+
+        subjectCellObserver.verifyDidNotPropagateNorExposesUpdate() // ...at any point until now / now
+
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+
+        val laterTransactionRecord = TransactionTestUtils.executeInsideTransaction {
+            sourceCell.update(
+                newValue = targetEffect2,
+            ).stimulateForTesting()
+
+            val targetEffect1InitialCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
+            val targetEffect2StartExecutionRecord = targetEffect2.verifyWasStartedOnce()
+
+            subjectCellObserver.verifyPropagatedAndExposesUpdate(expectedUpdatedValue = 20)
+
+            subjectEffectHandle.cancel.executeForTesting()
+
+            targetEffect1InitialCancelExecutionRecord.verifyWasRevoked()
+            targetEffect2StartExecutionRecord.verifyWasRevoked()
+
+            val targetEffect1SubsequentCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
+
+            subjectCellObserver.verifyPropagatedAndExposesRevocation()
+
+            LaterTransactionRecord(
+                targetEffect1SubsequentCancelExecutionRecord = targetEffect1SubsequentCancelExecutionRecord,
+            )
+        }
+
+        val targetEffect1SubsequentCancelExecutionRecord =
+            laterTransactionRecord.targetEffect1SubsequentCancelExecutionRecord
+
+        targetEffect1SubsequentCancelExecutionRecord.verifyWasNotRevoked() // ...at all
+
+        targetEffect1Outcome.verifyWasNotCancelled() // ...again
 
         targetEffect1.verifyWasNotStarted() // ...again
         targetEffect2.verifyWasNotStarted() // ...again

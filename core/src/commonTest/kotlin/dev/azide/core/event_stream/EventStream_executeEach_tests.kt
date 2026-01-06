@@ -24,6 +24,7 @@ import dev.azide.core.test_utils.verifyWasExecutedOnce
 import dev.azide.core.test_utils.verifyWasNotExecuted
 import dev.azide.core.test_utils.verifyWasNotRevoked
 import dev.azide.core.test_utils.verifyWasRevoked
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -171,6 +172,48 @@ class EventStream_executeEach_tests {
         transactionRecord.subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
 
         transactionRecord.targetActionExecutionRecord.verifyWasNotRevoked() // ...at any point
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_executeEach_start_sourceEmitsSimultaneously_cancelledInstantly() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val targetAction1 = TestTargetAction.of(result = 10)
+
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            sourceEventStream.emit(emittedEvent = targetAction1).stimulateForTesting()
+
+            val targetActionExecutionRecord = targetAction1.verifyWasExecutedOnce().apply {
+                verifyWasNotRevoked()
+            }
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(expectedEmittedEvent = 10)
+
+            subjectEffectHandle.cancel.executeForTesting()
+
+            targetActionExecutionRecord.verifyWasRevoked()
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesRevocation()
+
+            subjectEventStreamSubscriber
+        }
+
+        val targetAction2 = TestTargetAction.of(result = 20)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction2).stimulateForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission() // ...because the effect is cancelled
+        }
+
+        targetAction2.verifyWasNotExecuted() // ...at any point
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
     }
 
     @Test
@@ -328,6 +371,58 @@ class EventStream_executeEach_tests {
         targetAction2.verifyWasNotExecuted() // ...again
 
         targetActionCorrectedExecutionRecord.verifyWasNotRevoked() // ...at any point
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_executeEach_sourceEmits_cancelledSimultaneously() {
+        data class StartTransactionRecord(
+            val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,
+            val subjectEffectHandle: Effect.Handle,
+        )
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+
+            StartTransactionRecord(
+                subjectEventStreamSubscriber = subjectEventStreamSubscriber,
+                subjectEffectHandle = subjectEffectHandle,
+            )
+        }
+
+        val subjectEventStreamSubscriber = startTransactionRecord.subjectEventStreamSubscriber
+        val subjectEffectHandle = startTransactionRecord.subjectEffectHandle
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+
+            val targetActionExecutionRecord = targetAction.verifyWasExecutedOnce().apply {
+                verifyWasNotRevoked()
+            }
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesEmission(
+                expectedEmittedEvent = 10,
+            )
+
+            subjectEffectHandle.cancel.executeForTesting()
+
+            targetActionExecutionRecord.verifyWasRevoked()
+
+            subjectEventStreamSubscriber.verifyPropagatedAndExposesRevocation()
+        }
+
+        targetAction.verifyWasNotExecuted() // ...again
 
         subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...again / now
     }
