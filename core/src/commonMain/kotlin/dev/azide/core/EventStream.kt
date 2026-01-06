@@ -3,6 +3,7 @@ package dev.azide.core
 import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
+import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex

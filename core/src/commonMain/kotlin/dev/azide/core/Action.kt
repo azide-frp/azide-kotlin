@@ -2,6 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
 import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference

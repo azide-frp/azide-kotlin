@@ -1,6 +1,4 @@
-package dev.azide.core
-
-import dev.azide.core.internal.RevocationHandle
+package dev.azide.core.internal
 
 abstract class AbstractGuardedRevocationHandle : RevocationHandle {
     private var wasRevoked = false
