@@ -283,54 +283,9 @@ fun <EventT> EventStream<Action<EventT>>.executeEachForever(): Action<EventStrea
 
 fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().map { }
 
-fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
-    override val launchImpl: Action<Effect.Handle> =
-        EventStream.loopedInAction { loopedStartedScheduleHandles: EventStream<Effect.Handle> ->
-            this@actuate.values.asAction.joinOf { newSchedules: EventStream<Schedule> ->
-                loopedStartedScheduleHandles.holding(
-                    initialValue = null,
-                ).asAction.joinOf { currentScheduleHandle: Cell<Effect.Handle?> ->
-                    val innerEffect: Effect<EventStream<Effect.Handle>> = newSchedules.executeEachOf { newSchedule: Schedule ->
-                        currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
-                            when (currentScheduleHandleNow) {
-                                null -> newSchedule.launch
-                                else -> currentScheduleHandleNow.cancel.joinOf { newSchedule.launch }
-                            }
-                        }
-                    }
-
-                    innerEffect.start.joinOf { outcome ->
-                        val startedScheduleHandles: EventStream<Effect.Handle> = outcome.result
-                        val innerEffectHandle: Effect.Handle = outcome.handle
-
-                        val cancelInnerEffectTrigger: Trigger = innerEffectHandle.cancel
-
-                        val cancelCurrentScheduleTrigger: Trigger =
-                            currentScheduleHandle.sampling.asAction.joinOf { currentScheduleHandleNow: Effect.Handle? ->
-                                currentScheduleHandleNow?.cancel ?: Triggers.Noop
-                            }
-
-                        Effect.Handle.of(
-                            cancelOnce = Triggers.combine(
-                                cancelInnerEffectTrigger,
-                                cancelCurrentScheduleTrigger,
-                            ),
-                        ).map { outerEffectHandle ->
-                            LoopClosure(
-                                result = outerEffectHandle,
-                                loopedValue = startedScheduleHandles,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-}
-
 fun <EventT, TransformedEventT> EventStream<EventT>.executeEachOf(
     transform: (EventT) -> Action<TransformedEventT>,
 ): Effect<EventStream<TransformedEventT>> = map(transform).executeEach()
-
 
 @JvmName("actuateAggressivelySchedule")
 fun Cell<Schedule>.actuateAggressively(): Schedule = object : AbstractSchedule() {
