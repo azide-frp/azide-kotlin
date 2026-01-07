@@ -2,6 +2,9 @@ package dev.azide.core.internal.event_stream
 
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
+import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
+import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberHandle
 import kotlin.jvm.JvmInline
 
 sealed interface EventStreamVertex<out EventT> : Vertex {
@@ -41,9 +44,28 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
     fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: Subscriber<EventT>,
+        mode: ActivationMode,
     ): SubscriberHandle
 
     fun unregisterSubscriber(
         handle: SubscriberHandle,
     )
 }
+
+fun <EventT> EventStreamVertex<EventT>.registerSubscriberOnline(
+    propagationContext: Transactions.PropagationContext,
+    subscriber: Subscriber<EventT>,
+): SubscriberHandle = registerSubscriber(
+    propagationContext = propagationContext,
+    subscriber = subscriber,
+    mode = ActivationMode.Online,
+)
+
+fun <EventT> EventStreamVertex<EventT>.registerSubscriberOffline(
+    propagationContext: Transactions.PropagationContext,
+    subscriber: Subscriber<EventT>,
+): SubscriberHandle = registerSubscriber(
+    propagationContext = propagationContext,
+    subscriber = subscriber,
+    mode = ActivationMode.Offline,
+)

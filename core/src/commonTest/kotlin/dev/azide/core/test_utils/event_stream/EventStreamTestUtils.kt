@@ -10,6 +10,7 @@ import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex.BasicSubscriber
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.internal.event_stream.registerSubscriberOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -65,7 +66,7 @@ internal object EventStreamTestUtils {
         val subjectVertex = subjectEventStream.vertex
 
         // Register a subscriber, as event stream vertices aren't required to expose the emission otherwise
-        subjectVertex.registerSubscriber(
+        subjectVertex.registerSubscriberOnline(
             propagationContext = propagationContext,
             subscriber = Subscriber.Noop,
         )
@@ -115,7 +116,7 @@ internal object EventStreamTestUtils {
 
         private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
             Transactions.executeWithResult { propagationContext ->
-                subjectVertex.registerSubscriber(
+                subjectVertex.registerSubscriberOnline(
                     propagationContext = propagationContext,
                     subscriber = this,
                 )
@@ -317,7 +318,7 @@ internal object EventStreamTestUtils {
             ?: throw IllegalStateException("Subject cell vertex is already frozen")
 
         Transactions.execute { propagationContext ->
-            subjectVertex.registerSubscriber(
+            subjectVertex.registerSubscriberOnline(
                 propagationContext = propagationContext,
                 subscriber = Subscriber.Noop,
             )

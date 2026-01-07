@@ -4,6 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.internal.cell.registerObserverOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -35,7 +36,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
         observedCellVertex = vertex,
     )
 
-    val observerHandle = vertex.registerObserver(
+    val observerHandle = vertex.registerObserverOnline(
         propagationContext = transactionTestContext.propagationContext,
         observer = observer,
     )

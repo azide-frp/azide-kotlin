@@ -1,6 +1,7 @@
 package dev.azide.core.internal.cell.operated_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractCachingCellVertex
@@ -17,6 +18,7 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
+        mode: Vertex.ActivationMode,
     ): CellVertex.Update<TransformedValueT>? {
         if (upstreamObserverHandle1 != null) {
             throw IllegalStateException("Vertex seems to be already active")
@@ -29,11 +31,13 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
         this.upstreamObserverHandle1 = sourceVertex1.registerObserver(
             propagationContext = propagationContext,
             observer = this,
+            mode = mode,
         )
 
         this.upstreamObserverHandle2 = sourceVertex2.registerObserver(
             propagationContext = propagationContext,
             observer = this,
+            mode = mode,
         )
 
         return buildTransformedUpdate(

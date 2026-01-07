@@ -1,20 +1,32 @@
 package dev.azide.core.internal.cell.abstract_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.cell.CellVertex
 
 abstract class AbstractStatelessCellVertex<ValueT> : AbstractWarmCellVertex<ValueT>() {
     final override fun onFirstObserverRegistered(
         propagationContext: Transactions.PropagationContext,
+        mode: ActivationMode,
     ) {
-        val updateOnActivation = activate(
-            propagationContext = propagationContext,
-        )
+        when (mode) {
+            ActivationMode.Online -> {
+                val updateOnActivation = activateOnline(
+                    propagationContext = propagationContext,
+                )
 
-        exposeUpdate(
-            propagationContext = propagationContext,
-            update = updateOnActivation,
-        )
+                exposeUpdate(
+                    propagationContext = propagationContext,
+                    update = updateOnActivation,
+                )
+            }
+
+            ActivationMode.Offline -> {
+                activateOffline(
+                    propagationContext = propagationContext,
+                )
+            }
+        }
     }
 
     final override fun onLastObserverUnregistered() {
@@ -23,9 +35,13 @@ abstract class AbstractStatelessCellVertex<ValueT> : AbstractWarmCellVertex<Valu
         clearExposedUpdate()
     }
 
-    abstract fun activate(
+    abstract fun activateOnline(
         propagationContext: Transactions.PropagationContext,
     ): CellVertex.Update<ValueT>?
+
+    abstract fun activateOffline(
+        propagationContext: Transactions.PropagationContext,
+    )
 
     abstract fun deactivate()
 }

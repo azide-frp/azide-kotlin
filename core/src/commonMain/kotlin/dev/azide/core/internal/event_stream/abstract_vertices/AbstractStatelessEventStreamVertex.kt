@@ -1,20 +1,32 @@
 package dev.azide.core.internal.event_stream.abstract_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.event_stream.EventStreamVertex
 
 abstract class AbstractStatelessEventStreamVertex<EventT> : AbstractLiveEventStreamVertex<EventT>() {
     final override fun onFirstSubscriberRegistered(
         propagationContext: Transactions.PropagationContext,
+        mode: ActivationMode,
     ) {
-        val emissionOnActivation = activate(
-            propagationContext = propagationContext,
-        )
+        when (mode) {
+            ActivationMode.Online -> {
+                val emissionOnActivation = activateOnline(
+                    propagationContext = propagationContext,
+                )
 
-        exposeEmission(
-            propagationContext = propagationContext,
-            emission = emissionOnActivation,
-        )
+                exposeEmission(
+                    propagationContext = propagationContext,
+                    emission = emissionOnActivation,
+                )
+            }
+
+            ActivationMode.Offline -> {
+                activateOffline(
+                    propagationContext = propagationContext,
+                )
+            }
+        }
     }
 
     final override fun onLastSubscriberUnregistered() {
@@ -23,9 +35,13 @@ abstract class AbstractStatelessEventStreamVertex<EventT> : AbstractLiveEventStr
         clearExposedEmission()
     }
 
-    abstract fun activate(
+    abstract fun activateOnline(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>?
+
+    abstract fun activateOffline(
+        propagationContext: Transactions.PropagationContext,
+    )
 
     abstract fun deactivate()
 }

@@ -3,6 +3,7 @@ package dev.azide.core.internal.event_stream
 import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
 import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.internal.utils.weak_bag.MutableBag
@@ -81,10 +82,12 @@ fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
     subscriber: LiveEventStreamVertex.BasicSubscriber<EventT>,
+    mode: ActivationMode,
 ): LiveEventStreamVertex.WeakSubscriberHandle {
     val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerSubscriber(
         propagationContext = propagationContext,
         subscriber = subscriber.weaklyReferenced(),
+        mode = mode,
     )
 
     /*

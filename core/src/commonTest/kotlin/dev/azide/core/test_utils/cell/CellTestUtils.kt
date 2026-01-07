@@ -3,7 +3,6 @@ package dev.azide.core.test_utils.cell
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
-import dev.azide.core.MomentContextImpl
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.CellVertex.Observer
@@ -11,6 +10,7 @@ import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
 import dev.azide.core.internal.cell.CellVertex.Update
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.internal.cell.registerObserverOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -108,11 +108,10 @@ internal object CellTestUtils {
 
         private var receivedUpdate: ReceivedUpdate<ValueT>? = null
 
-        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerObserver(
+        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerObserverOnline(
             propagationContext = propagationContext,
             observer = this,
         )
-
 
         /**
          * Verify that, under the given [inputStimulation], the subject cell updates from [expectedOldValue] to
@@ -294,7 +293,7 @@ internal object CellTestUtils {
         )
 
         val activelySampledValue = Transactions.executeWithResult { propagationContext ->
-            val observerHandle = subjectVertex.registerObserver(
+            val observerHandle = subjectVertex.registerObserverOnline(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )
@@ -389,7 +388,7 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            subjectCell.vertex.registerObserver(
+            subjectCell.vertex.registerObserverOnline(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )

@@ -2,6 +2,8 @@ package dev.azide.core.internal.cell
 
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
+import dev.azide.core.internal.cell.CellVertex.Observer
 import kotlin.jvm.JvmInline
 
 sealed interface CellVertex<out ValueT> : Vertex {
@@ -34,6 +36,7 @@ sealed interface CellVertex<out ValueT> : Vertex {
     fun registerObserver(
         propagationContext: Transactions.PropagationContext,
         observer: Observer<ValueT>,
+        mode: ActivationMode,
     ): ObserverHandle
 
     fun unregisterObserver(
@@ -44,6 +47,24 @@ sealed interface CellVertex<out ValueT> : Vertex {
         propagationContext: Transactions.PropagationContext,
     ): ValueT
 }
+
+fun <ValueT> CellVertex<ValueT>.registerObserverOnline(
+    propagationContext: Transactions.PropagationContext,
+    observer: Observer<ValueT>,
+): CellVertex.ObserverHandle = registerObserver(
+    propagationContext = propagationContext,
+    observer = observer,
+    mode = ActivationMode.Online,
+)
+
+fun <ValueT> CellVertex<ValueT>.registerObserverOffline(
+    propagationContext: Transactions.PropagationContext,
+    observer: Observer<ValueT>,
+): CellVertex.ObserverHandle = registerObserver(
+    propagationContext = propagationContext,
+    observer = observer,
+    mode = ActivationMode.Offline,
+)
 
 fun <ValueT> CellVertex<ValueT>.getNewValue(
     propagationContext: Transactions.PropagationContext,

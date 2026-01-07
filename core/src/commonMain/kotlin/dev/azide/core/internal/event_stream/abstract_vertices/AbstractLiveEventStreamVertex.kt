@@ -3,6 +3,7 @@ package dev.azide.core.internal.event_stream.abstract_vertices
 import dev.azide.core.CausalLoopException
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
@@ -24,12 +25,14 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     override fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: EventStreamVertex.Subscriber<EventT>,
+        mode: Vertex.ActivationMode,
     ): EventStreamVertex.SubscriberHandle {
         val internalHandle = _registeredSubscribers.add(subscriber)
 
         if (_registeredSubscribers.size == 1) {
             onFirstSubscriberRegistered(
                 propagationContext = propagationContext,
+                mode = mode,
             )
         }
 
@@ -127,6 +130,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
 
     protected open fun onFirstSubscriberRegistered(
         propagationContext: Transactions.PropagationContext,
+        mode: Vertex.ActivationMode,
     ) {
     }
 

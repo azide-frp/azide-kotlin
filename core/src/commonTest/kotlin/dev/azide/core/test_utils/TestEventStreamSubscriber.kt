@@ -4,6 +4,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
+import dev.azide.core.internal.event_stream.registerSubscriberOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -37,7 +38,7 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> subscribeFo
         subscribedEventStreamVertex = vertex,
     )
 
-    val subscriberHandle = vertex.registerSubscriber(
+    val subscriberHandle = vertex.registerSubscriberOnline(
         propagationContext = transactionTestContext.propagationContext,
         subscriber = subscriber,
     )

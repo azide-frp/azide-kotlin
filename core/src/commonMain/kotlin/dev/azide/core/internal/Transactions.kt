@@ -39,6 +39,10 @@ object Transactions {
     }
 
     interface PropagationContext {
+        fun enqueueForPostProcessing(
+            vertex: PostProcessableVertex,
+        )
+
         fun enqueueForCommitment(
             vertex: CommittableVertex,
         )
@@ -72,41 +76,83 @@ object Transactions {
             }
         }
 
+        val verticesToPostProcess = arrayListOf<PostProcessableVertex>()
+
         val verticesToCommit = arrayListOf<CommittableVertex>()
 
         val sideEffectsToExecute = linkedListOf<ExternalSideEffect>()
 
-        val result = propagate(
-            object : PropagationContext {
-                override fun enqueueForCommitment(
-                    vertex: CommittableVertex,
-                ) {
-                    ensureIsOpen()
+        val propagationContext = object : PropagationContext {
+            override fun enqueueForPostProcessing(
+                vertex: PostProcessableVertex,
+            ) {
+                ensureIsOpen()
 
-                    verticesToCommit.add(vertex)
-                }
+                verticesToPostProcess.add(vertex)
+            }
 
-                override fun enqueueForExecution(
-                    sideEffect: ExternalSideEffect,
-                ): RevocationHandle {
-                    ensureIsOpen()
+            override fun enqueueForCommitment(
+                vertex: CommittableVertex,
+            ) {
+                ensureIsOpen()
 
-                    val innerHandle = sideEffectsToExecute.append(sideEffect)
+                verticesToCommit.add(vertex)
+            }
 
-                    return object : RevocationHandle {
-                        override fun revoke() {
-                            ensureIsOpen()
+            override fun enqueueForExecution(
+                sideEffect: ExternalSideEffect,
+            ): RevocationHandle {
+                ensureIsOpen()
 
-                            sideEffectsToExecute.removeVia(innerHandle)
-                        }
+                val innerHandle = sideEffectsToExecute.append(sideEffect)
+
+                return object : RevocationHandle {
+                    override fun revoke() {
+                        ensureIsOpen()
+
+                        sideEffectsToExecute.removeVia(innerHandle)
                     }
                 }
-            },
+            }
+        }
+
+        // ## Propagation phase
+        //
+        // The main phase of the transaction, when information flows through the vertex graph. The emissions, updates,
+        // and changes are propagated, actions are executed, etc. During the propagation, vertices may enqueue for
+        // post-processing, commitment and side effect execution.
+
+        val result = propagate(
+            propagationContext,
         )
+
+        // ## Post-processing phase
+        //
+        // The part of the transaction after all information was propagated, but vertices haven't yet commited to the
+        // new state. Some vertices can adjust their subscriptions / observations for the sake of future transactions.
+        // Enqueueing for commitment is still possible. Enqueueing for further post-processing is prohibited. Enqueueing
+        // side effects is not expected or needed.
+
+        verticesToPostProcess.forEach { vertex ->
+            vertex.postProcess(
+                propagationContext = propagationContext,
+            )
+        }
+
+        // ## Commitment phase
+        //
+        // The part of the transaction when the vertices commit to the new state. The volatile state influences the
+        // stable state, after which the volatile state is cleared. Accessing other vertices' state (stable or volatile)
+        // is prohibited, as it's undefined whether they are before or after their own commitment. Removing subscribers
+        // / observers and (in consequence) deactivation is allowed.
+        // TODO: Figure out if upstream unregistration (e.g. of `EventStream.single`) shouldn't be moved to
+        //  post-processing for consistency
 
         verticesToCommit.forEach { vertex ->
             vertex.commit()
         }
+
+        // ## Side effect execution phase
 
         sideEffectsToExecute.forEach { sideEffect ->
             sideEffect.executeExternally()

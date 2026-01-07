@@ -2,14 +2,17 @@ package dev.azide.core.internal.cell.operated_vertices
 
 import dev.azide.core.Cell
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.internal.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatelessCellVertex
 import dev.azide.core.internal.cell.getNewValue
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
-) : AbstractStatelessCellVertex<ValueT>(), WarmCellVertex.BasicObserver<Cell<ValueT>> {
+) : AbstractSimpleStatelessCellVertex<ValueT>(), WarmCellVertex.BasicObserver<Cell<ValueT>> {
     /**
      * The outer vertex observer handle.
      *
@@ -126,6 +129,7 @@ class SwitchedCellVertex<ValueT>(
                 this.upstreamNewInnerObserverHandle = stableInnerSourceVertex.registerObserver(
                     propagationContext = propagationContext,
                     observer = innerSourceObserver,
+                    mode = ActivationMode.Online,
                 )
 
                 when (val ongoingStableInnerUpdate = stableInnerSourceVertex.ongoingUpdate) {
@@ -179,6 +183,7 @@ class SwitchedCellVertex<ValueT>(
                 this.upstreamNewInnerObserverHandle = handledUpdatedInnerSourceVertex.registerObserver(
                     propagationContext = propagationContext,
                     observer = innerSourceObserver,
+                    mode = ActivationMode.Online,
                 )
 
                 // Propagate the update
@@ -197,6 +202,7 @@ class SwitchedCellVertex<ValueT>(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
+        mode: ActivationMode,
     ): CellVertex.Update<ValueT>? {
         if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || upstreamNewInnerObserverHandle != null || upstreamNewInnerObserverHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
@@ -207,6 +213,7 @@ class SwitchedCellVertex<ValueT>(
         this.upstreamOuterObserverHandle = outerSourceVertex.registerObserver(
             propagationContext = propagationContext,
             observer = this,
+            mode = mode,
         )
 
         // Resolve the stable / updated inner source cells
@@ -237,6 +244,7 @@ class SwitchedCellVertex<ValueT>(
         this.upstreamNewInnerObserverHandle = newInnerSourceVertex.registerObserver(
             propagationContext = propagationContext,
             observer = innerSourceObserver,
+            mode = mode,
         )
 
         return newInnerSourceVertex.ongoingUpdate

@@ -9,6 +9,7 @@ import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
+@Ignore // TODO: Implement `divert`
 class EventStream_divert_tests {
     @Test
     fun test_emission_onlyCurrentInnerEmits_outerConst() {

@@ -2,6 +2,8 @@ package dev.azide.core.internal.cell.operated_vertices
 
 import dev.azide.core.EventStream
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
@@ -57,6 +59,7 @@ class HeldCellVertex<ValueT> private constructor(
                 propagationContext = propagationContext,
                 dependentVertex = this,
                 subscriber = this,
+                mode = ActivationMode.Online,
             )
 
             sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->

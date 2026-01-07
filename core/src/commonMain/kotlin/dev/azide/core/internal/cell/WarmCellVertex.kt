@@ -2,6 +2,8 @@ package dev.azide.core.internal.cell
 
 import dev.azide.core.internal.ReactiveFinalizationRegistry
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.CellVertex.ObserverHandle
 import dev.azide.core.internal.cell.CellVertex.ObserverStatus
@@ -78,10 +80,12 @@ fun <ValueT> WarmCellVertex<ValueT>.registerObserverWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: CellVertex<*>,
     observer: WarmCellVertex.BasicObserver<ValueT>,
+    mode: ActivationMode,
 ): WarmCellVertex.WeakObserverHandle {
     val innerObserverHandle: ObserverHandle = registerObserver(
         propagationContext = propagationContext,
         observer = observer.weaklyReferenced(),
+        mode = mode,
     )
 
     val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(

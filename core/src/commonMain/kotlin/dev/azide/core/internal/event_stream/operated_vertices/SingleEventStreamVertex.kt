@@ -1,6 +1,7 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
@@ -15,6 +16,7 @@ class SingleEventStreamVertex<EventT>(
             propagationContext = propagationContext,
             dependentVertex = this,
             subscriber = this,
+            mode = ActivationMode.Online,
         )
 
     /**

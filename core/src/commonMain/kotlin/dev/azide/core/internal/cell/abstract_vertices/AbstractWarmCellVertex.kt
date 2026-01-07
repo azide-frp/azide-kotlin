@@ -2,6 +2,7 @@ package dev.azide.core.internal.cell.abstract_vertices
 
 import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.CellVertex.Observer
 import dev.azide.core.internal.cell.WarmCellVertex
@@ -20,13 +21,15 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
 
     final override fun registerObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: CellVertex.Observer<ValueT>,
+        observer: Observer<ValueT>,
+        mode: Vertex.ActivationMode,
     ): CellVertex.ObserverHandle {
         val internalHandle = _registeredObservers.add(observer)
 
         if (_registeredObservers.size == 1) {
             onFirstObserverRegistered(
                 propagationContext = propagationContext,
+                mode = mode,
             )
         }
 
@@ -119,6 +122,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
 
     protected open fun onFirstObserverRegistered(
         propagationContext: Transactions.PropagationContext,
+        mode: Vertex.ActivationMode,
     ) {
     }
 

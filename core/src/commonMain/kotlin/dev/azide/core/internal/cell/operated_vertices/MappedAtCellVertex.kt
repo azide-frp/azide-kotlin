@@ -1,6 +1,8 @@
 package dev.azide.core.internal.cell.operated_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
+import dev.azide.core.internal.Vertex.ActivationMode
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
@@ -62,6 +64,7 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
                 propagationContext = propagationContext,
                 dependentVertex = this,
                 observer = this,
+                mode = ActivationMode.Online,
             )
 
             sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->

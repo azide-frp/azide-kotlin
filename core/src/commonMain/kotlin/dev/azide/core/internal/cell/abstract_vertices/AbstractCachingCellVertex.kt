@@ -6,7 +6,7 @@ import kotlin.jvm.JvmInline
 
 abstract class AbstractCachingCellVertex<ValueT>(
     private val cacheType: CacheType,
-) : AbstractStatelessCellVertex<ValueT>() {
+) : AbstractSimpleStatelessCellVertex<ValueT>() {
     enum class CacheType {
         Momentary, Active,
     }

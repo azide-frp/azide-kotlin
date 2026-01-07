@@ -1,9 +1,11 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
 import dev.azide.core.internal.Transactions
+import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.cell.CellVertex
 import dev.azide.core.internal.cell.WarmCellVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
+import dev.azide.core.internal.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
 
 /**
@@ -14,7 +16,7 @@ import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatelessE
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractStatelessEventStreamVertex<ValueT>(), WarmCellVertex.BasicObserver<ValueT> {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), WarmCellVertex.BasicObserver<ValueT> {
     private enum class InternalState {
         Spawning, Spawned,
     }
@@ -85,6 +87,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
+        mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<ValueT>? {
         if (upstreamObserverHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
@@ -93,6 +96,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
         upstreamObserverHandle = sourceVertex.registerObserver(
             propagationContext = propagationContext,
             observer = this,
+            mode = mode,
         )
 
         val sourceOngoingUpdate = sourceVertex.ongoingUpdate
