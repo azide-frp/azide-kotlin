@@ -95,16 +95,12 @@ interface EventStream<out EventT> {
 fun <EventT, TransformedEventT> EventStream<EventT>.map(
     transform: (EventT) -> TransformedEventT,
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> MappedEventStreamVertex(
-            sourceVertex = sourceVertex,
-            transform = { _, event ->
-                transform(event)
-            },
-        )
-
-        is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-    },
+    vertex = MappedEventStreamVertex(
+        sourceEventStream = this@map,
+        transform = { _, event ->
+            transform(event)
+        },
+    ),
 )
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
@@ -114,20 +110,16 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> MappedEventStreamVertex(
-            sourceVertex = sourceVertex,
-            transform = { propagationContext, event ->
-                MomentContext.wrapUp(
-                    propagationContext,
-                ) {
-                    transform(event)
-                }
-            },
-        )
-
-        is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-    },
+    vertex = MappedEventStreamVertex(
+        sourceEventStream = this@mapAt,
+        transform = { propagationContext, event ->
+            MomentContext.wrapUp(
+                propagationContext,
+            ) {
+                transform(event)
+            }
+        },
+    ),
 )
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNullAt(

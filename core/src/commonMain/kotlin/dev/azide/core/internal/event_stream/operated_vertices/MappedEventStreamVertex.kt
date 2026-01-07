@@ -1,5 +1,6 @@
 package dev.azide.core.internal.event_stream.operated_vertices
 
+import dev.azide.core.EventStream
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.Vertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
@@ -7,9 +8,12 @@ import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
-    private val sourceVertex: EventStreamVertex<EventT>,
+    private val sourceEventStream: EventStream<EventT>,
     private val transform: (Transactions.PropagationContext, EventT) -> TransformedEventT,
 ) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
+    private val sourceVertex: EventStreamVertex<EventT>
+        get() = sourceEventStream.vertex
+
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     /**
