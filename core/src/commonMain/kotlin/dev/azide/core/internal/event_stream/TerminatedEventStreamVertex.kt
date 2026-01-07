@@ -9,6 +9,9 @@ class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
     override val ongoingEmission: Nothing?
         get() = null
 
+    override val subscriberCount: Int
+        get() = 0
+
     override fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: EventStreamVertex.Subscriber<EventT>,

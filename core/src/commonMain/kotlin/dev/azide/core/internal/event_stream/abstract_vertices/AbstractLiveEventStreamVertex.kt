@@ -13,6 +13,9 @@ import dev.azide.core.internal.utils.weak_bag.MutableBag
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
     private val _registeredSubscribers: MutableBag<EventStreamVertex.Subscriber<EventT>> = MutableBag()
 
+    override val subscriberCount: Int
+        get() = _registeredSubscribers.size
+
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
 
     private var _isPropagatingEmission = false

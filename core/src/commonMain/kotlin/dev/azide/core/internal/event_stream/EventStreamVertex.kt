@@ -41,6 +41,8 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
     val ongoingEmission: Emission<EventT>?
 
+    val subscriberCount: Int
+
     fun registerSubscriber(
         propagationContext: Transactions.PropagationContext,
         subscriber: Subscriber<EventT>,
