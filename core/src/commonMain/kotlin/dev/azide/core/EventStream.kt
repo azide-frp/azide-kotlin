@@ -9,6 +9,7 @@ import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.ExecutedEachEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.Merged2EventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
 import dev.azide.core.internal.utils.LoopClosure
@@ -76,7 +77,12 @@ interface EventStream<out EventT> {
         fun <EventT> merge2(
             eventStream1: EventStream<EventT>,
             eventStream2: EventStream<EventT>,
-        ): EventStream<EventT> = TODO()
+        ): EventStream<EventT> = Ordinary(
+            Merged2EventStreamVertex(
+                sourceEventStream1 = eventStream1,
+                sourceEventStream2 = eventStream2,
+            ),
+        )
 
         fun <EventT> merge3(
             eventStream1: EventStream<EventT>,
