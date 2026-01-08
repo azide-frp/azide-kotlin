@@ -2,7 +2,7 @@ package dev.azide.core.internal.effects
 
 import dev.azide.core.internal.Transactions
 
-interface EffectVertex {
+interface RestartableEffectVertex {
     fun start(
         propagationContext: Transactions.PropagationContext,
     )

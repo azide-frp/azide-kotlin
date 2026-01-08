@@ -4,9 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.Vertex
-import dev.azide.core.internal.Vertex.ActivationMode
-import dev.azide.core.internal.effects.EffectVertex
+import dev.azide.core.internal.effects.RestartableEffectVertex
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
@@ -14,7 +12,7 @@ import dev.azide.core.internal.event_stream.registerSubscriberOnline
 
 class ExecutedEachEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<Action<EventT>>,
-) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>, EffectVertex {
+) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>, RestartableEffectVertex {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     private var executedActionRevocationHandle: RevocationHandle? = null

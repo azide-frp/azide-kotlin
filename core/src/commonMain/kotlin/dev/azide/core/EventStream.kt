@@ -2,7 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.internal.effects.AbstractPrimitiveEffect
+import dev.azide.core.internal.effects.AbstractRestartableEffect
 import dev.azide.core.internal.event_stream.EventStreamVertex
 import dev.azide.core.internal.event_stream.LiveEventStreamVertex
 import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
@@ -206,7 +206,7 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
 }
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
-    object : AbstractPrimitiveEffect<ExecutedEachEventStreamVertex<EventT>, EventStream<EventT>>() {
+    object : AbstractRestartableEffect<ExecutedEachEventStreamVertex<EventT>, EventStream<EventT>>() {
         override fun buildVertex(): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
             sourceVertex = this@executeEach.vertex,
         )

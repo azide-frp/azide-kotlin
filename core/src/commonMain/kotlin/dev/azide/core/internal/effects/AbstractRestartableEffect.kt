@@ -7,10 +7,10 @@ import dev.azide.core.internal.CommittableVertex
 import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 
-abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : Effect<ResultT> {
+abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex, ResultT> : Effect<ResultT> {
     private class EffectManagementVertex<ResultT>(
         private val propagationContext: Transactions.PropagationContext,
-        private val effectVertex: EffectVertex,
+        private val restartableEffectVertex: RestartableEffectVertex,
         effectResult: ResultT,
     ) : Action.Outcome<Effect.Outcome<ResultT>>, RevocationHandle, CommittableVertex {
         private enum class EffectState {
@@ -36,7 +36,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : 
 
                         when (effectState) {
                             EffectState.Started -> { // Healthy cancellation
-                                effectVertex.stop(
+                                restartableEffectVertex.stop(
                                     propagationContext = propagationContext,
                                 )
 
@@ -63,7 +63,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : 
                                     }
 
                                     EffectState.Stopped -> { // Healthy cancellation revocation
-                                        effectVertex.start(
+                                        restartableEffectVertex.start(
                                             propagationContext = propagationContext,
                                         )
 
@@ -91,7 +91,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : 
         override fun revoke() {
             when (effectState) {
                 EffectState.Started -> { // A healthy effect's start revocation
-                    effectVertex.stop(
+                    restartableEffectVertex.stop(
                         propagationContext = propagationContext,
                     )
 
@@ -125,7 +125,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : 
         }
 
         init {
-            effectVertex.start(
+            restartableEffectVertex.start(
                 propagationContext = propagationContext,
             )
         }
@@ -142,7 +142,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT : EffectVertex, ResultT> : 
 
             return EffectManagementVertex(
                 propagationContext = propagationContext,
-                effectVertex = effectVertex,
+                restartableEffectVertex = effectVertex,
                 effectResult = effectResult,
             )
         }
