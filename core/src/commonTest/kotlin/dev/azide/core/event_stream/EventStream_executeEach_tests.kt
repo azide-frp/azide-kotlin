@@ -98,9 +98,9 @@ class EventStream_executeEach_tests {
         val subjectEffect = sourceEventStream.executeEach()
 
         TransactionTestUtils.executeInsideTransaction {
-            val (_, revocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_, revocable) = subjectEffect.startForTestingRevocable()
 
-            revocationHandle.revokeForTesting()
+            revocable.revokeForTesting()
         }
 
         val targetAction = TestTargetAction.of(result = 10)
@@ -119,15 +119,15 @@ class EventStream_executeEach_tests {
         val subjectEffect = sourceEventStream.executeEach()
 
         TransactionTestUtils.executeInsideTransaction {
-            val (startActionOutcome, startRevocationHandle) = subjectEffect.start.executeForTestingRevocable()
+            val (startActionOutcome, startRevocable) = subjectEffect.start.executeForTestingRevocable()
 
             val subjectEffectHandle = startActionOutcome.handle
 
-            val (_, cancelRevocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
+            val (_, cancelRevocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
 
-            startRevocationHandle.revokeForTesting()
+            startRevocable.revokeForTesting()
 
-            cancelRevocationHandle.revokeForTesting()
+            cancelRevocable.revokeForTesting()
         }
 
         val targetAction = TestTargetAction.of(result = 10)
@@ -227,7 +227,7 @@ class EventStream_executeEach_tests {
         val subjectEffect = sourceEventStream.executeEach()
 
         TransactionTestUtils.executeInsideTransaction {
-            val (_: EventStream<Int>, startRevocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_: EventStream<Int>, startRevocable) = subjectEffect.startForTestingRevocable()
 
             sourceEventStream.emit(
                 emittedEvent = targetAction1,
@@ -237,7 +237,7 @@ class EventStream_executeEach_tests {
                 verifyWasNotRevoked()
             }
 
-            startRevocationHandle.revokeForTesting()
+            startRevocable.revokeForTesting()
 
             testTargetActionExecutionRecord.verifyWasRevoked()
         }

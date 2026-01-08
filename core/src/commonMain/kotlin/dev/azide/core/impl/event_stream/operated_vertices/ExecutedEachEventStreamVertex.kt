@@ -1,7 +1,7 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.Action
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.effects.RestartableEffectVertex
@@ -15,7 +15,7 @@ class ExecutedEachEventStreamVertex<EventT>(
 ) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>, RestartableEffectVertex {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-    private var executedActionRevocationHandle: RevocationHandle? = null
+    private var executedActionRevocable: Revocable? = null
 
     /**
      * Handle the emission of the source action event stream vertex.
@@ -26,10 +26,10 @@ class ExecutedEachEventStreamVertex<EventT>(
     ) {
         when (emission) {
             null -> {
-                val executedActionRevocationHandle = this.executedActionRevocationHandle
+                val executedActionRevocable = this.executedActionRevocable
                     ?: throw AssertionError("There's no record of the revoked action")
 
-                executedActionRevocationHandle.revoke()
+                executedActionRevocable.revoke()
 
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,
@@ -38,15 +38,15 @@ class ExecutedEachEventStreamVertex<EventT>(
             }
 
             else -> {
-                this.executedActionRevocationHandle?.revoke()
+                this.executedActionRevocable?.revoke()
 
                 val emittedAction: Action<EventT> = emission.emittedEvent
 
-                val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
+                val (emittedEvent: EventT, revocable) = emittedAction.executeInternallyWrappedUp(
                     propagationContext = propagationContext,
                 )
 
-                executedActionRevocationHandle = revocationHandle
+                executedActionRevocable = revocable
 
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,
@@ -59,7 +59,7 @@ class ExecutedEachEventStreamVertex<EventT>(
     }
 
     override fun transit() {
-        this.executedActionRevocationHandle = null
+        this.executedActionRevocable = null
     }
 
     override fun start(
@@ -77,11 +77,11 @@ class ExecutedEachEventStreamVertex<EventT>(
         sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
             val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
 
-            val (emittedEvent: EventT, revocationHandle) = emittedAction.executeInternallyWrappedUp(
+            val (emittedEvent: EventT, revocable) = emittedAction.executeInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 
-            executedActionRevocationHandle = revocationHandle
+            executedActionRevocable = revocable
 
             exposeEmission(
                 propagationContext = propagationContext,
@@ -95,8 +95,8 @@ class ExecutedEachEventStreamVertex<EventT>(
     override fun stop(
         propagationContext: Transactions.PropagationContext,
     ) {
-        this.executedActionRevocationHandle?.revoke()
-        this.executedActionRevocationHandle = null
+        this.executedActionRevocable?.revoke()
+        this.executedActionRevocable = null
 
         if (ongoingEmission != null) {
             exposeAndPropagateEmission(

@@ -50,7 +50,7 @@ object Transactions {
 
         fun enqueueForExecution(
             callback: ExternalExecutionCallback,
-        ): RevocationHandle
+        ): Revocable
     }
 
     enum class TransactionState {
@@ -102,12 +102,12 @@ object Transactions {
 
             override fun enqueueForExecution(
                 callback: ExternalExecutionCallback,
-            ): RevocationHandle {
+            ): Revocable {
                 ensureIsOpen()
 
                 val innerHandle = callbacksToExecuteExternally.append(callback)
 
-                return object : RevocationHandle {
+                return object : Revocable {
                     override fun revoke() {
                         ensureIsOpen()
 

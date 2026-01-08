@@ -2,9 +2,9 @@ package dev.azide.core.impl.effects
 
 import dev.azide.core.Trigger
 import dev.azide.core.Triggers
-import dev.azide.core.impl.AbstractGuardedRevocationHandle
+import dev.azide.core.impl.AbstractGuardedRevocable
 import dev.azide.core.impl.CommittableVertex
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 
 abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
@@ -16,7 +16,7 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
     /**
      * The revocation handle of the implicit inner action executed once per transaction.
      */
-    private var storedRevocationHandle: RevocationHandle? = null
+    private var storedRevocable: Revocable? = null
 
     private var isEnqueuedForCommitment = false
 
@@ -29,9 +29,9 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
         }
 
         if (executionCount == 0) {
-            if (storedRevocationHandle != null) throw AssertionError("Unexpected stored revocation handle")
+            if (storedRevocable != null) throw AssertionError("Unexpected stored revocation handle")
 
-            storedRevocationHandle = executeInternallyOnce(
+            storedRevocable = executeInternallyOnce(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
@@ -46,10 +46,10 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
         ++executionCount
 
         return Triggers.Outcomes.of(
-            revocationHandle = object : AbstractGuardedRevocationHandle() {
+            revocable = object : AbstractGuardedRevocable() {
                 override fun revokeGuarded() {
-                    val storedRevocationHandle =
-                        storedRevocationHandle ?: throw AssertionError("No stored revocation handle found")
+                    val storedRevocable =
+                        storedRevocable ?: throw AssertionError("No stored revocation handle found")
 
                     if (executionCount <= 0) {
                         throw AssertionError("Unexpected execution count: $executionCount")
@@ -58,8 +58,8 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
                     --executionCount
 
                     if (executionCount == 0) {
-                        storedRevocationHandle.revoke()
-                        this@AbstractExecutionMergingTrigger.storedRevocationHandle = null
+                        storedRevocable.revoke()
+                        this@AbstractExecutionMergingTrigger.storedRevocable = null
                     }
                 }
             },
@@ -69,7 +69,7 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
     abstract fun executeInternallyOnce(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): RevocationHandle
+    ): Revocable
 
     override fun commit() {
         executionCount = 0

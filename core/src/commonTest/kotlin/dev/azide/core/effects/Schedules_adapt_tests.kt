@@ -127,8 +127,8 @@ class Schedules_adapt_tests {
         )
 
         TransactionTestUtils.executeInsideTransaction {
-            val (_, revocationHandle) = subjectSchedule.startForTestingRevocable()
-            revocationHandle.revokeForTesting()
+            val (_, revocable) = subjectSchedule.startForTestingRevocable()
+            revocable.revokeForTesting()
         }
 
         customTimerManager.invokeAll()
@@ -162,8 +162,8 @@ class Schedules_adapt_tests {
         }
 
         TransactionTestUtils.executeInsideTransaction {
-            val (_, revocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
-            revocationHandle.revokeForTesting()
+            val (_, revocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
+            revocable.revokeForTesting()
         }
 
         customTimerManager.invokeAll()

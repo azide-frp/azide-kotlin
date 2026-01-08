@@ -116,11 +116,11 @@ class Effect_adapt_tests {
         )
 
         val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
-            val (eventStream, revocationHandle) = subjectEffect.startForTestingRevocable()
+            val (eventStream, revocable) = subjectEffect.startForTestingRevocable()
 
             val eventStreamSubscriber = eventStream.subscribeForTesting()
 
-            revocationHandle.revokeForTesting()
+            revocable.revokeForTesting()
 
             eventStreamSubscriber
         }
@@ -150,8 +150,8 @@ class Effect_adapt_tests {
         }
 
         TransactionTestUtils.executeInsideTransaction {
-            val (_, revocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
-            revocationHandle.revokeForTesting()
+            val (_, revocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
+            revocable.revokeForTesting()
         }
 
         customTimerManager.invokeAll()

@@ -1,16 +1,16 @@
 package dev.azide.core.impl
 
-interface RevocationHandle {
-    object Noop : RevocationHandle {
+interface Revocable {
+    object Noop : Revocable {
         override fun revoke() {
         }
     }
 
     companion object {
         fun combine(
-            firstSubHandle: RevocationHandle,
-            secondSubHandle: RevocationHandle,
-        ): RevocationHandle = object : RevocationHandle {
+            firstSubHandle: Revocable,
+            secondSubHandle: Revocable,
+        ): Revocable = object : Revocable {
             override fun revoke() {
                 firstSubHandle.revoke()
                 secondSubHandle.revoke()
@@ -18,8 +18,8 @@ interface RevocationHandle {
         }
 
         fun combine(
-            vararg subHandles: RevocationHandle,
-        ): RevocationHandle = object : RevocationHandle {
+            vararg subHandles: Revocable,
+        ): Revocable = object : Revocable {
             override fun revoke() {
                 for (handle in subHandles) {
                     handle.revoke()

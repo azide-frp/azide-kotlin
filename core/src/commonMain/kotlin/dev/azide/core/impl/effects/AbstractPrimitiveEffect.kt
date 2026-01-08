@@ -3,11 +3,11 @@ package dev.azide.core.impl.effects
 import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.Trigger
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 
 abstract class AbstractPrimitiveEffect<EffectVertexT, ResultT> :
-    Effect<ResultT> where EffectVertexT : EffectVertex, EffectVertexT : RevocationHandle {
+    Effect<ResultT> where EffectVertexT : EffectVertex, EffectVertexT : Revocable {
     final override val start: Action<Effect.Outcome<ResultT>> = object : Action<Effect.Outcome<ResultT>> {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
@@ -27,13 +27,13 @@ abstract class AbstractPrimitiveEffect<EffectVertexT, ResultT> :
                             override fun executeInternallyOnce(
                                 propagationContext: Transactions.PropagationContext,
                                 wrapUpContext: Transactions.WrapUpContext,
-                            ): RevocationHandle = effectVertex.cancelInternally(
+                            ): Revocable = effectVertex.cancelInternally(
                                 propagationContext = propagationContext,
                             )
                         }
                     },
                 ),
-                revocationHandle = effectVertex,
+                revocable = effectVertex,
             )
         }
     }

@@ -3,18 +3,18 @@ package dev.azide.core.impl.effects
 import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.impl.CommittableVertex
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import kotlin.jvm.JvmInline
 
 class AdaptedExternalScheduleVertex private constructor(
     propagationContext: Transactions.PropagationContext,
     private val externalSchedule: ExternalSchedule,
-) : RevocationHandle, EffectVertex, CommittableVertex {
+) : Revocable, EffectVertex, CommittableVertex {
     private sealed interface InternalState {
         @JvmInline
         value class Scheduled(
-            val startRevocationHandle: RevocationHandle,
+            val startRevocable: Revocable,
         ) : InternalState
 
         data object QuickCancelled : InternalState
@@ -48,15 +48,15 @@ class AdaptedExternalScheduleVertex private constructor(
 
     override fun cancelInternally(
         propagationContext: Transactions.PropagationContext,
-    ): RevocationHandle {
+    ): Revocable {
         when (val internalState = this.internalState) {
             is InternalState.Scheduled -> {
                 // The schedule was (internally) cancelled before it ever had a chance to start externally. We'll need
                 // to revoke the external schedule's start...
-                internalState.startRevocationHandle.revoke()
+                internalState.startRevocable.revoke()
                 this@AdaptedExternalScheduleVertex.internalState = InternalState.QuickCancelled
 
-                return object : RevocationHandle {
+                return object : Revocable {
                     override fun revoke() {
                         // ...but as the internal cancellation can be revoked, we're ready to re-schedule the external
                         // schedule's start. In a certain sense, this revocation revokes another revocation.
@@ -75,16 +75,16 @@ class AdaptedExternalScheduleVertex private constructor(
                 // The schedule was cancelled after it (successfully) started on the external side. Let's schedule its
                 // external cancellation.
 
-                val cancelRevocationHandle = propagationContext.enqueueForExecution {
+                val cancelRevocable = propagationContext.enqueueForExecution {
                     internalState.externalEffectDelegate.cancel()
                     this@AdaptedExternalScheduleVertex.internalState = InternalState.CancelledExternally
                 }
 
                 internalState.wasCancelledInternally = true
 
-                return object : RevocationHandle {
+                return object : Revocable {
                     override fun revoke() {
-                        cancelRevocationHandle.revoke()
+                        cancelRevocable.revoke()
 
                         internalState.wasCancelledInternally = false
                     }
@@ -93,12 +93,12 @@ class AdaptedExternalScheduleVertex private constructor(
 
             InternalState.AwaitingExternalStart -> {
                 // Seems like the external start failed with an exception. Not much we can do...
-                return RevocationHandle.Noop
+                return Revocable.Noop
             }
 
             InternalState.QuickCancelled, InternalState.CancelledExternally -> {
                 // An attempt to cancel an already cancelled effect
-                return RevocationHandle.Noop
+                return Revocable.Noop
             }
 
             InternalState.Revoked -> {
@@ -132,7 +132,7 @@ class AdaptedExternalScheduleVertex private constructor(
             is InternalState.Scheduled -> {
                 // The most typical revocation scenario
 
-                internalState.startRevocationHandle.revoke()
+                internalState.startRevocable.revoke()
 
                 this.internalState = InternalState.Revoked
             }

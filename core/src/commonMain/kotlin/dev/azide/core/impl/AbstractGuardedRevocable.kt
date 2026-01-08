@@ -1,6 +1,6 @@
 package dev.azide.core.impl
 
-abstract class AbstractGuardedRevocationHandle : RevocationHandle {
+abstract class AbstractGuardedRevocable : Revocable {
     private var wasRevoked = false
 
     override fun revoke() {

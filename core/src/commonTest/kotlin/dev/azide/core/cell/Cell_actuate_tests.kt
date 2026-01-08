@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.TestCellObserver
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
@@ -146,11 +146,11 @@ class Cell_actuate_tests {
         val subjectEffect = sourceCell.actuate()
 
         val targetEffectStartExecutionRecord = TransactionTestUtils.executeInsideTransaction {
-            val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_: Cell<Int>, startRevocable: Revocable) = subjectEffect.startForTestingRevocable()
 
             val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
 
-            startRevocationHandle.revokeForTesting()
+            startRevocable.revokeForTesting()
 
             targetEffectStartExecutionRecord.verifyWasRevoked()
 
@@ -174,18 +174,18 @@ class Cell_actuate_tests {
         val subjectEffect = sourceCell.actuate()
 
         TransactionTestUtils.executeInsideTransaction {
-            val (startActionOutcome, startRevocationHandle) = subjectEffect.start.executeForTestingRevocable()
+            val (startActionOutcome, startRevocable) = subjectEffect.start.executeForTestingRevocable()
 
             val subjectEffectHandle = startActionOutcome.handle
 
             val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
             val targetEffectOutcome = targetEffectStartExecutionRecord.result
 
-            val (_, cancelRevocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
+            val (_, cancelRevocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
 
             val targetEffectCancelExecutionRecord = targetEffectOutcome.verifyWasCancelledOnce()
 
-            startRevocationHandle.revokeForTesting()
+            startRevocable.revokeForTesting()
 
             targetEffectStartExecutionRecord.verifyWasRevoked()
 
@@ -193,7 +193,7 @@ class Cell_actuate_tests {
             // operator itself does not track the subsequent executions of the inner actions of the entity it
             // constructed. In the real system, a chain of message revocations might happen between the start action
             // revocation and the cancellation revocation.
-            cancelRevocationHandle.revokeForTesting()
+            cancelRevocable.revokeForTesting()
 
             targetEffectCancelExecutionRecord.verifyWasRevoked()
         }
@@ -356,7 +356,7 @@ class Cell_actuate_tests {
         val subjectEffect = sourceCell.actuate()
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
-            val (_: Cell<Int>, startRevocationHandle: RevocationHandle) = subjectEffect.startForTestingRevocable()
+            val (_: Cell<Int>, startRevocable: Revocable) = subjectEffect.startForTestingRevocable()
 
             val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
             val targetEffect1Outcome = targetEffect1StartExecutionRecord.result
@@ -368,7 +368,7 @@ class Cell_actuate_tests {
             val targetEffect1CancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
             val targetEffect2StartExecutionRecord = targetEffect2.verifyWasStartedOnce()
 
-            startRevocationHandle.revokeForTesting()
+            startRevocable.revokeForTesting()
 
             targetEffect1StartExecutionRecord.verifyWasRevoked()
             targetEffect1CancelExecutionRecord.verifyWasRevoked()

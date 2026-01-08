@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.Trigger
 import dev.azide.core.impl.CommittableVertex
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 
 abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex, ResultT> : Effect<ResultT> {
@@ -12,7 +12,7 @@ abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex
         private val propagationContext: Transactions.PropagationContext,
         private val restartableEffectVertex: RestartableEffectVertex,
         effectResult: ResultT,
-    ) : Action.Outcome<Effect.Outcome<ResultT>>, RevocationHandle, CommittableVertex {
+    ) : Action.Outcome<Effect.Outcome<ResultT>>, Revocable, CommittableVertex {
         private enum class EffectState {
             Started, Stopped, Aborted,
         }
@@ -31,7 +31,7 @@ abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex
                     override fun executeInternallyOnce(
                         propagationContext: Transactions.PropagationContext,
                         wrapUpContext: Transactions.WrapUpContext,
-                    ): RevocationHandle {
+                    ): Revocable {
                         ensureEnqueuedForCommitment(propagationContext = propagationContext)
 
                         when (effectState) {
@@ -52,7 +52,7 @@ abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex
                             }
                         }
 
-                        return object : RevocationHandle {
+                        return object : Revocable {
                             /**
                              * Revoke the effect's cancellation
                              */
@@ -82,7 +82,7 @@ abstract class AbstractRestartableEffect<EffectVertexT : RestartableEffectVertex
             },
         )
 
-        override val revocationHandle: RevocationHandle
+        override val revocable: Revocable
             get() = this
 
         /**

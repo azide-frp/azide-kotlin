@@ -1,7 +1,7 @@
 package dev.azide.core
 
 import dev.azide.core.external.ExternalTrigger
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.effects.AbstractExecutionMergingTrigger
 import dev.azide.core.impl.utils.LoopClosure
@@ -14,15 +14,15 @@ interface Action<out ResultT> {
         companion object {
             fun <ResultT> of(
                 result: ResultT,
-                revocationHandle: RevocationHandle,
+                revocable: Revocable,
             ): Outcome<ResultT> = object : Outcome<ResultT> {
                 override val result: ResultT = result
-                override val revocationHandle: RevocationHandle = revocationHandle
+                override val revocable: Revocable = revocable
             }
         }
 
         val result: ResultT
-        val revocationHandle: RevocationHandle
+        val revocable: Revocable
     }
 
     companion object {
@@ -41,12 +41,12 @@ interface Action<out ResultT> {
                 )
 
                 val loopClosure: LoopClosure<ResultT, LoopedValueT> = actionOutcome.result
-                val revocationHandle: RevocationHandle = actionOutcome.revocationHandle
+                val revocable: Revocable = actionOutcome.revocable
 
                 return@looped LoopClosure(
                     result = Outcome.of(
                         result = loopClosure.result,
-                        revocationHandle = revocationHandle,
+                        revocable = revocable,
                     ),
                     loopedValue = loopClosure.loopedValue,
                 )
@@ -61,7 +61,7 @@ interface Action<out ResultT> {
                 wrapUpContext: Transactions.WrapUpContext,
             ): Outcome<ResultT> = Outcome.of(
                 result = result,
-                revocationHandle = RevocationHandle.Noop,
+                revocable = Revocable.Noop,
             )
         }
 
@@ -83,7 +83,7 @@ interface Action<out ResultT> {
                 wrapUpContext: Transactions.WrapUpContext,
             ): Outcome<Unit> = Outcome.of(
                 result = Unit,
-                revocationHandle = propagationContext.enqueueForExecution {
+                revocable = propagationContext.enqueueForExecution {
                     externalTrigger.executeExternally()
                 },
             )
@@ -98,7 +98,7 @@ interface Action<out ResultT> {
 
 fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(
     propagationContext: Transactions.PropagationContext,
-): Pair<ResultT, RevocationHandle> = Transactions.WrapUpContext.wrapUp(
+): Pair<ResultT, Revocable> = Transactions.WrapUpContext.wrapUp(
     propagationContext,
 ) { wrapUpContext ->
     val outcome = executeInternally(
@@ -106,7 +106,7 @@ fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(
         wrapUpContext = wrapUpContext,
     )
 
-    Pair(outcome.result, outcome.revocationHandle)
+    Pair(outcome.result, outcome.revocable)
 }
 
 typealias Trigger = Action<Unit>
@@ -118,7 +118,7 @@ object Triggers {
             wrapUpContext: Transactions.WrapUpContext,
         ): Action.Outcome<Unit> = Action.Outcome.of(
             result = Unit,
-            revocationHandle = RevocationHandle.Noop,
+            revocable = Revocable.Noop,
         )
     }
 
@@ -126,10 +126,10 @@ object Triggers {
 
     object Outcomes {
         fun of(
-            revocationHandle: RevocationHandle,
+            revocable: Revocable,
         ): Outcome = Action.Outcome.of(
             result = Unit,
-            revocationHandle = revocationHandle,
+            revocable = revocable,
         )
     }
 
@@ -146,20 +146,20 @@ object Triggers {
                 wrapUpContext = wrapUpContext,
             )
 
-            val firstRevocationHandle = firstOutcome.revocationHandle
+            val firstRevocable = firstOutcome.revocable
 
             val secondOutcome = second.executeInternally(
                 propagationContext = propagationContext,
                 wrapUpContext = wrapUpContext,
             )
 
-            val secondRevocationHandle = secondOutcome.revocationHandle
+            val secondRevocable = secondOutcome.revocable
 
             return Action.Outcome.of(
                 result = Unit,
-                revocationHandle = RevocationHandle.combine(
-                    firstRevocationHandle,
-                    secondRevocationHandle,
+                revocable = Revocable.combine(
+                    firstRevocable,
+                    secondRevocable,
                 ),
             )
         }
@@ -174,17 +174,17 @@ object Triggers {
                 override fun executeInternallyOnce(
                     propagationContext: Transactions.PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
-                ): RevocationHandle {
+                ): Revocable {
                     val outcome: Triggers.Outcome = this@merging.executeInternally(
                         propagationContext,
                         wrapUpContext,
                     )
 
-                    return outcome.revocationHandle
+                    return outcome.revocable
                 }
             },
             // We just allocate the trigger's identity
-            revocationHandle = RevocationHandle.Noop,
+            revocable = Revocable.Noop,
         )
     }
 }
@@ -202,13 +202,13 @@ fun <ResultT, TransformedResultT> Action<ResultT>.map(
         )
 
         val result: ResultT = outcome.result
-        val revocationHandle: RevocationHandle = outcome.revocationHandle
+        val revocable: Revocable = outcome.revocable
 
         val transformedResult: TransformedResultT = transform(result)
 
         return Action.Outcome.of(
             result = transformedResult,
-            revocationHandle = revocationHandle,
+            revocable = revocable,
         )
     }
 }
@@ -226,7 +226,7 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
         )
 
         val result: ResultT = outcome.result
-        val revocationHandle: RevocationHandle = outcome.revocationHandle
+        val revocable: Revocable = outcome.revocable
 
         val transformedAction = transform(result)
 
@@ -236,13 +236,13 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
         )
 
         val transformedResult: TransformedResultT = transformedOutcome.result
-        val transformedRevocationHandle: RevocationHandle = transformedOutcome.revocationHandle
+        val transformedRevocable: Revocable = transformedOutcome.revocable
 
         return Action.Outcome.of(
             result = transformedResult,
-            revocationHandle = RevocationHandle.combine(
-                revocationHandle,
-                transformedRevocationHandle,
+            revocable = Revocable.combine(
+                revocable,
+                transformedRevocable,
             ),
         )
     }

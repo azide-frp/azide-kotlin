@@ -3,7 +3,7 @@ package dev.azide.core.impl.effects
 import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.external.bind
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
@@ -12,7 +12,7 @@ import dev.azide.core.impl.utils.LoopClosure
 class AdaptedExternalStreamEffectVertex<EventT> private constructor(
     private val distributionScheduleVertex: AdaptedExternalScheduleVertex,
 ) : AbstractStatefulEventStreamVertex<EventT>(), ExternalEventHandler<EventT>,
-    EffectVertex by distributionScheduleVertex, RevocationHandle by distributionScheduleVertex {
+    EffectVertex by distributionScheduleVertex, Revocable by distributionScheduleVertex {
     companion object {
         fun <EventT> start(
             propagationContext: Transactions.PropagationContext,

@@ -2,7 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Action
 import dev.azide.core.Effect
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 
 object TransactionTestUtils {
@@ -38,7 +38,7 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
         outcome.result
     }
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, RevocationHandle> =
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, Revocable> =
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
     ) { wrapUpContext ->
@@ -47,22 +47,22 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
             wrapUpContext = wrapUpContext,
         )
 
-        Pair(outcome.result, outcome.revocationHandle)
+        Pair(outcome.result, outcome.revocable)
     }
 
-context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun RevocationHandle.revokeForTesting() {
+context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun Revocable.revokeForTesting() {
     revoke()
 }
 
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTesting(): ResultT =
     this.start.executeForTesting().result
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, RevocationHandle> {
-    val (effectOutcome, revocationHandle) = this.start.executeForTestingRevocable()
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, Revocable> {
+    val (effectOutcome, revocable) = this.start.executeForTestingRevocable()
 
     return Pair(
         effectOutcome.result,
-        revocationHandle,
+        revocable,
     )
 }
 

@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Action
-import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -53,7 +53,7 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
 
         return Action.Outcome.of(
             result = result,
-            revocationHandle = object : RevocationHandle {
+            revocable = object : Revocable {
                 override fun revoke() {
                     execution.revoke()
                 }
