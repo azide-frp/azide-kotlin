@@ -1,6 +1,7 @@
 package dev.azide.core
 
 import dev.azide.core.Triggers.merging
+import dev.azide.core.external.ExternalStreamEffect
 
 interface Effect<ResultT> {
     interface Outcome<ResultT> {
@@ -46,6 +47,14 @@ interface Effect<ResultT> {
         val cancel: Trigger
     }
 
+    companion object {
+        fun <EventT> adapt(
+            externalStreamEffect: ExternalStreamEffect<EventT>,
+        ): Effect<EventStream<EventT>> {
+            TODO()
+        }
+    }
+
     val start: Action<Outcome<ResultT>>
 }
 
@@ -78,4 +87,3 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
             }
         }
 }
-
