@@ -82,7 +82,9 @@ interface Action<out ResultT> {
                 wrapUpContext: Transactions.WrapUpContext,
             ): Outcome<Unit> = Outcome.of(
                 result = Unit,
-                revocationHandle = propagationContext.enqueueForExecution(externalSideEffect),
+                revocationHandle = propagationContext.enqueueForExecution {
+                    externalSideEffect.executeExternally()
+                },
             )
         }
     }

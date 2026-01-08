@@ -1,8 +1,7 @@
 package dev.azide.core.internal
 
-import dev.azide.core.ExternalSideEffect
-import dev.azide.core.internal.RevocationHandle
 import dev.kmpx.collections.lists.linkedListOf
+import dev.azide.core.internal.Transactions.PropagationContext.ExternalExecutionCallback
 
 object Transactions {
     interface WrapUpContext {
@@ -39,6 +38,8 @@ object Transactions {
     }
 
     interface PropagationContext {
+        typealias ExternalExecutionCallback = () -> Unit
+
         fun enqueueForPostProcessing(
             vertex: PostProcessableVertex,
         )
@@ -48,7 +49,7 @@ object Transactions {
         )
 
         fun enqueueForExecution(
-            sideEffect: ExternalSideEffect,
+            callback: ExternalExecutionCallback,
         ): RevocationHandle
     }
 
@@ -80,7 +81,7 @@ object Transactions {
 
         val verticesToCommit = arrayListOf<CommittableVertex>()
 
-        val sideEffectsToExecute = linkedListOf<ExternalSideEffect>()
+        val callbacksToExecuteExternally = linkedListOf<ExternalExecutionCallback>()
 
         val propagationContext = object : PropagationContext {
             override fun enqueueForPostProcessing(
@@ -100,17 +101,17 @@ object Transactions {
             }
 
             override fun enqueueForExecution(
-                sideEffect: ExternalSideEffect,
+                callback: ExternalExecutionCallback,
             ): RevocationHandle {
                 ensureIsOpen()
 
-                val innerHandle = sideEffectsToExecute.append(sideEffect)
+                val innerHandle = callbacksToExecuteExternally.append(callback)
 
                 return object : RevocationHandle {
                     override fun revoke() {
                         ensureIsOpen()
 
-                        sideEffectsToExecute.removeVia(innerHandle)
+                        callbacksToExecuteExternally.removeVia(innerHandle)
                     }
                 }
             }
@@ -154,8 +155,8 @@ object Transactions {
 
         // ## Side effect execution phase
 
-        sideEffectsToExecute.forEach { sideEffect ->
-            sideEffect.executeExternally()
+        callbacksToExecuteExternally.forEach { callback ->
+            callback()
         }
 
         state = TransactionState.Closed
