@@ -63,6 +63,18 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> EventStream
 fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmission(
     expectedEmittedEvent: EventT,
 ) {
+    verifyPropagatedEmission(
+        expectedEmittedEvent = expectedEmittedEvent,
+    )
+
+    verifyExposesEmission(
+        expectedExposedEvent = expectedEmittedEvent,
+    )
+}
+
+fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedEmission(
+    expectedEmittedEvent: EventT,
+) {
     val expectedEmission = EventStreamVertex.Emission(
         emittedEvent = expectedEmittedEvent,
     )
@@ -82,11 +94,17 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmissio
         actual = receivedEmission,
         message = "The propagated emission did not match the expected emission.",
     )
+}
 
+fun <EventT> TestEventStreamSubscriber<EventT>.verifyExposesEmission(
+    expectedExposedEvent: EventT,
+) {
     val exposedEmission = subscribedEventStreamVertex.ongoingEmission
 
     assertEquals(
-        expected = expectedEmission,
+        expected = EventStreamVertex.Emission(
+            emittedEvent = expectedExposedEvent,
+        ),
         actual = exposedEmission,
         message = "The exposed ongoing emission did not match the expected emission.",
     )

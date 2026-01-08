@@ -4,7 +4,13 @@ import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.EventStream
 import dev.azide.core.external.ExternalStream
 import dev.azide.core.hold
+import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.subscribeForTesting
+import dev.azide.core.test_utils.verifyDoesNotExposeEmission
+import dev.azide.core.test_utils.verifyPropagatedAndExposesEmission
+import dev.azide.core.test_utils.verifyPropagatedEmission
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -70,7 +76,7 @@ class EventStream_adapt_tests {
     }
 
     @Test
-    fun test_viaCell() {
+    fun test() {
         val customEventSource = CustomEventSource<Int>()
 
         val subjectEventStream = EventStream.adapt(
@@ -79,16 +85,14 @@ class EventStream_adapt_tests {
             ),
         )
 
-        val helperCell = CellTestUtils.spawnStatefulCell {
-            subjectEventStream.hold(0)
+        val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            subjectEventStream.subscribeForTesting()
         }
 
         customEventSource.notify(10)
 
         // Verify the effectiveness of the event delivery indirectly
-        CellTestUtils.verifyAtRest(
-            subjectCell = helperCell,
-            expectedValue = 10,
-        )
+        eventStreamSubscriber.verifyPropagatedEmission(expectedEmittedEvent = 10)
+        eventStreamSubscriber.verifyDoesNotExposeEmission()
     }
 }
