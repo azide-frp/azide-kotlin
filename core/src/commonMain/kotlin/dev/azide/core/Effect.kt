@@ -2,6 +2,11 @@ package dev.azide.core
 
 import dev.azide.core.Triggers.merging
 import dev.azide.core.external.ExternalStreamEffect
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.effects.AbstractPrimitiveEffect
+import dev.azide.core.impl.effects.AbstractPrimitiveSchedule
+import dev.azide.core.impl.effects.AdaptedExternalScheduleVertex
+import dev.azide.core.impl.effects.AdaptedExternalStreamEffectVertex
 
 interface Effect<ResultT> {
     interface Outcome<ResultT> {
@@ -50,9 +55,21 @@ interface Effect<ResultT> {
     companion object {
         fun <EventT> adapt(
             externalStreamEffect: ExternalStreamEffect<EventT>,
-        ): Effect<EventStream<EventT>> {
-            TODO()
-        }
+        ): Effect<EventStream<EventT>> =
+            object : AbstractPrimitiveEffect<AdaptedExternalStreamEffectVertex<EventT>, EventStream<EventT>>() {
+                override fun startInternally(
+                    propagationContext: PropagationContext,
+                ): AdaptedExternalStreamEffectVertex<EventT> = AdaptedExternalStreamEffectVertex.start(
+                    propagationContext = propagationContext,
+                    externalStreamEffectVertex = externalStreamEffect,
+                )
+
+                override fun wrap(
+                    effectVertex: AdaptedExternalStreamEffectVertex<EventT>,
+                ): EventStream<EventT> = EventStream.Ordinary(
+                    vertex = effectVertex,
+                )
+            }
     }
 
     val start: Action<Outcome<ResultT>>

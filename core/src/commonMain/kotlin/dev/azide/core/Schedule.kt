@@ -2,7 +2,8 @@ package dev.azide.core
 
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Transactions.WrapUpContext
+import dev.azide.core.impl.effects.AbstractPrimitiveSchedule
+import dev.azide.core.impl.effects.AdaptedExternalScheduleVertex
 
 typealias Schedule = Effect<Unit>
 
@@ -14,13 +15,13 @@ object Schedules {
 
     fun adapt(
         externalSchedule: ExternalSchedule,
-    ): Schedule = object : AbstractSchedule() {
-        override val launchImpl: Action<Effect.Handle> = object : Action<Effect.Handle> {
-            override fun executeInternally(
-                propagationContext: PropagationContext,
-                wrapUpContext: WrapUpContext,
-            ): Action.Outcome<Effect.Handle> = TODO()
-        }
+    ): Schedule = object : AbstractPrimitiveSchedule<AdaptedExternalScheduleVertex>() {
+        override fun startInternally(
+            propagationContext: PropagationContext,
+        ): AdaptedExternalScheduleVertex = AdaptedExternalScheduleVertex.startInternally(
+            propagationContext = propagationContext,
+            externalSchedule = externalSchedule,
+        )
     }
 }
 

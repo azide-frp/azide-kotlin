@@ -15,11 +15,9 @@ import dev.azide.core.test_utils.subscribeForTesting
 import dev.azide.core.test_utils.verifyDidNotPropagateNorExposesEmission
 import dev.azide.core.test_utils.verifyDoesNotExposeEmission
 import dev.azide.core.test_utils.verifyPropagatedEmission
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class Effect_adapt_tests {
     class CustomTimerStreamEffect(
         private val timerManager: CustomTimerManager,

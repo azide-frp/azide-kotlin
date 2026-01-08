@@ -29,7 +29,7 @@ class CustomTimerManager {
             )
         )
 
-        if (wasStarted) {
+        if (!wasStarted) {
             throw IllegalStateException("Handler already registered")
         }
 

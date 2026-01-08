@@ -11,12 +11,10 @@ import dev.azide.core.test_utils.executeForTestingRevocable
 import dev.azide.core.test_utils.revokeForTesting
 import dev.azide.core.test_utils.startForTestingCancellable
 import dev.azide.core.test_utils.startForTestingRevocable
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class Schedules_adapt_tests {
     class CustomTimerSchedule(
         val customTimerManager: CustomTimerManager,
@@ -166,6 +164,17 @@ class Schedules_adapt_tests {
         TransactionTestUtils.executeInsideTransaction {
             val (_, revocationHandle) = subjectEffectHandle.cancel.executeForTestingRevocable()
             revocationHandle.revokeForTesting()
+        }
+
+        customTimerManager.invokeAll()
+
+        assertEquals(
+            expected = 1,
+            actual = handledCallbackCount,
+        )
+
+        TransactionTestUtils.executeInsideTransaction {
+            subjectEffectHandle.cancel.executeForTesting()
         }
 
         customTimerManager.invokeAll()
