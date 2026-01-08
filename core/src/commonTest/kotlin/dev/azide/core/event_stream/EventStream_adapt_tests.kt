@@ -1,13 +1,14 @@
 package dev.azide.core.event_stream
 
+import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.EventStream
-import dev.azide.core.ExternalSourceAdapter
+import dev.azide.core.external.ExternalStream
 import dev.azide.core.hold
 import dev.azide.core.test_utils.cell.CellTestUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
-class EventStream_wrap_tests {
+class EventStream_adapt_tests {
     private class CustomEventSource<E> {
         private val listeners = mutableSetOf<CustomListener<E>>()
 
@@ -44,19 +45,19 @@ class EventStream_wrap_tests {
         }
     }
 
-    private class CustomEventSourceAdapter(
+    private class CustomEventStream(
         private val customEventSource: CustomEventSource<Int>,
-    ) : ExternalSourceAdapter<Int> {
+    ) : ExternalStream<Int> {
         override fun bind(
-            eventDistributor: ExternalSourceAdapter.EventDistributor<Int>,
-        ): ExternalSourceAdapter.SubscriptionHandle {
+            handler: ExternalEventHandler<Int>,
+        ): ExternalStream.SubscriptionDelegate {
             val customListener = object : CustomEventSource.CustomListener<Int> {
                 override fun handle(event: Int) {
-                    eventDistributor.distribute(event)
+                    handler.handle(event)
                 }
             }
 
-            return object : ExternalSourceAdapter.SubscriptionHandle {
+            return object : ExternalStream.SubscriptionDelegate {
                 override fun register() {
                     customEventSource.addListener(customListener)
                 }
@@ -69,11 +70,11 @@ class EventStream_wrap_tests {
     }
 
     @Test
-    fun test_wrap_viaCell() {
+    fun test_viaCell() {
         val customEventSource = CustomEventSource<Int>()
 
-        val subjectEventStream = EventStream.wrap(
-            externalSourceAdapter = CustomEventSourceAdapter(
+        val subjectEventStream = EventStream.adapt(
+            externalStream = CustomEventStream(
                 customEventSource = customEventSource,
             ),
         )

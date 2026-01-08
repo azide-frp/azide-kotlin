@@ -1,5 +1,6 @@
 package dev.azide.core
 
+import dev.azide.core.external.ExternalTrigger
 import dev.azide.core.internal.RevocationHandle
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
@@ -64,18 +65,18 @@ interface Action<out ResultT> {
             )
         }
 
-        inline fun wrap(
+        inline fun adapt(
             crossinline executeExternally: () -> Unit,
-        ): Trigger = wrap(
-            object : ExternalSideEffect {
+        ): Trigger = adapt(
+            object : ExternalTrigger {
                 override fun executeExternally() {
                     executeExternally()
                 }
             },
         )
 
-        fun wrap(
-            externalSideEffect: ExternalSideEffect,
+        fun adapt(
+            externalTrigger: ExternalTrigger,
         ): Trigger = object : Trigger {
             override fun executeInternally(
                 propagationContext: Transactions.PropagationContext,
@@ -83,7 +84,7 @@ interface Action<out ResultT> {
             ): Outcome<Unit> = Outcome.of(
                 result = Unit,
                 revocationHandle = propagationContext.enqueueForExecution {
-                    externalSideEffect.executeExternally()
+                    externalTrigger.executeExternally()
                 },
             )
         }

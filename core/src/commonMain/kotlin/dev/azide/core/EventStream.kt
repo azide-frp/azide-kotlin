@@ -1,5 +1,6 @@
 package dev.azide.core
 
+import dev.azide.core.external.ExternalStream
 import dev.azide.core.internal.Transactions
 import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
 import dev.azide.core.internal.effects.AbstractRestartableEffect
@@ -11,7 +12,7 @@ import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStrea
 import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.Merged2EventStreamVertex
 import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
+import dev.azide.core.internal.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
 import dev.azide.core.internal.utils.LoopClosure
 import dev.azide.core.internal.utils.LoopUtils
 import kotlin.jvm.JvmName
@@ -36,11 +37,11 @@ interface EventStream<out EventT> {
     }
 
     companion object {
-        fun <EventT> wrap(
-            externalSourceAdapter: ExternalSourceAdapter<EventT>,
+        fun <EventT> adapt(
+            externalStream: ExternalStream<EventT>,
         ): EventStream<EventT> = Ordinary(
-            vertex = WrappedExternalEventStreamVertex(
-                externalSourceAdapter = externalSourceAdapter,
+            vertex = AdaptedExternalEventStreamVertex(
+                externalStream = externalStream,
             ),
         )
 

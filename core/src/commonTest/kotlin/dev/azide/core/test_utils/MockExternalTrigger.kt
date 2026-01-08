@@ -1,8 +1,8 @@
 package dev.azide.core.test_utils
 
-import dev.azide.core.ExternalSideEffect
+import dev.azide.core.external.ExternalTrigger
 
-class MockSideEffect : ExternalSideEffect {
+class MockExternalTrigger : ExternalTrigger {
     private var mutableWasCalled = false
 
     val wasCalled: Boolean
