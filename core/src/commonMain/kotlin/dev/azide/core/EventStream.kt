@@ -1,20 +1,20 @@
 package dev.azide.core
 
 import dev.azide.core.external.ExternalStream
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.internal.effects.AbstractRestartableEffect
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex
-import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.ExecutedEachEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.Merged2EventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
-import dev.azide.core.internal.utils.LoopClosure
-import dev.azide.core.internal.utils.LoopUtils
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.operated_vertices.HeldCellVertex
+import dev.azide.core.impl.effects.AbstractRestartableEffect
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.ExecutedEachEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.FilteredEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.MappedEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.Merged2EventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
+import dev.azide.core.impl.utils.LoopClosure
+import dev.azide.core.impl.utils.LoopUtils
 import kotlin.jvm.JvmName
 
 interface EventStream<out EventT> {

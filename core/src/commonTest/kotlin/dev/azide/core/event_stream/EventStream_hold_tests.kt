@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.EventStream
 import dev.azide.core.hold
 import dev.azide.core.holding
-import dev.azide.core.internal.utils.LoopClosure
+import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.joinOf
 import dev.azide.core.map
 import dev.azide.core.mapAt

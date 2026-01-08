@@ -2,7 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Action
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Transactions
 
 internal interface TestInputStimulation {
     companion object {

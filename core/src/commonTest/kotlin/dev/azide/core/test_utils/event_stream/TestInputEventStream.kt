@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
-import dev.azide.core.internal.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
+import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
 import dev.azide.core.test_utils.TestInputStimulation
 
 internal class TestInputEventStream<EventT>() : EventStream<EventT> {

@@ -2,8 +2,8 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Action
 import dev.azide.core.Effect
-import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Transactions
 
 object TransactionTestUtils {
     fun <ResultT> executeInsideTransaction(

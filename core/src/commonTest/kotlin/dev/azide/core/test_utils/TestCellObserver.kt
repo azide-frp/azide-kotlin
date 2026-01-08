@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Cell
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.CellVertex
-import dev.azide.core.internal.cell.WarmCellVertex
-import dev.azide.core.internal.cell.registerObserverOnline
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.WarmCellVertex
+import dev.azide.core.impl.cell.registerObserverOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 

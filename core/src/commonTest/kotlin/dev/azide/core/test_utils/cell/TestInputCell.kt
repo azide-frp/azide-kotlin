@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.CellVertex
-import dev.azide.core.internal.cell.CellVertex.Update
-import dev.azide.core.internal.cell.abstract_vertices.AbstractStatefulCellVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.CellVertex.Update
+import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.test_utils.TestInputStimulation
 
 internal class TestInputCell<ValueT>(

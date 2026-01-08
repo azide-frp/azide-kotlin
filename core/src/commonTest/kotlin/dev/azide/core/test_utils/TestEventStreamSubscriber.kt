@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex
-import dev.azide.core.internal.event_stream.registerSubscriberOnline
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.registerSubscriberOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 

@@ -2,8 +2,8 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.CausalLoopException
 import dev.azide.core.EventStream
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.utils.LoopClosure
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.map
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.assertIsStackOverflowError

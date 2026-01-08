@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.internal.RevocationHandle
+import dev.azide.core.impl.RevocationHandle
 import dev.azide.core.test_utils.TestCellObserver
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
@@ -29,7 +29,6 @@ import dev.azide.core.test_utils.verifyWasNotRevoked
 import dev.azide.core.test_utils.verifyWasNotStarted
 import dev.azide.core.test_utils.verifyWasRevoked
 import dev.azide.core.test_utils.verifyWasStartedOnce
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

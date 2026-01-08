@@ -1,11 +1,11 @@
 package dev.azide.core
 
 import dev.azide.core.external.ExternalTrigger
-import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.effects.AbstractExecutionMergingTrigger
-import dev.azide.core.internal.utils.LoopClosure
-import dev.azide.core.internal.utils.LoopUtils
+import dev.azide.core.impl.RevocationHandle
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.effects.AbstractExecutionMergingTrigger
+import dev.azide.core.impl.utils.LoopClosure
+import dev.azide.core.impl.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
 
