@@ -36,7 +36,7 @@ class ReactiveCollectionSumCellVertex(
         }
     }
 
-    override fun buildOldValue(
+    override fun computeOldValue(
         oldContentView: Collection<Int>,
     ): Int = oldContentView.sum()
 }

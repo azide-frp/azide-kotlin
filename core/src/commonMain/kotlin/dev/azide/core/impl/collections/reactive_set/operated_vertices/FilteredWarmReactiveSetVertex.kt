@@ -13,7 +13,7 @@ class FilteredWarmReactiveSetVertex<ElementT>(
     private var upstreamObserverHandle: ReactiveSetVertex.SetObserverHandle? = null
 
     /**
-     * Handle the change of the source cell.
+     * Handle the change of the source reactive set.
      */
     override fun handleChange(
         propagationContext: Transactions.PropagationContext,

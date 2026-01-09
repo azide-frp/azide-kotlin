@@ -92,7 +92,7 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
             propagationContext = propagationContext,
         )
 
-        return buildOldValue(
+        return computeOldValue(
             oldContentView = oldContentView,
         )
     }
@@ -102,7 +102,7 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
         sourceChange: ReactiveCollectionVertex.CollectionChange<ElementT>,
     ): CellVertex.Update<ValueT>?
 
-    abstract fun buildOldValue(
+    abstract fun computeOldValue(
         oldContentView: Collection<ElementT>,
     ): ValueT
 }
