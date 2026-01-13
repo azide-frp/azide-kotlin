@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Transactions
 
-internal interface TestInputStimulation {
+interface TestInputStimulation {
     companion object {
         fun executing(
             action: Action<*>,
@@ -15,6 +15,10 @@ internal interface TestInputStimulation {
                 )
             }
         }
+
+        fun combine(
+            stimulations: Iterable<TestInputStimulation>,
+        ): TestInputStimulation = combine(*stimulations.toList().toTypedArray())
 
         fun combine(
             vararg stimulations: TestInputStimulation,

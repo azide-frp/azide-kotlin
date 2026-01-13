@@ -35,9 +35,14 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
             override fun buildResult(): ResultT = result
         }
     }
+
     private val executionRecords = mutableListOf<ExecutionRecord<ResultT>>()
 
     fun getAndResetExecutionRecords(): List<ExecutionRecord<ResultT>> = executionRecords.toList().also {
+        resetExecutionRecords()
+    }
+
+    fun resetExecutionRecords() {
         executionRecords.clear()
     }
 

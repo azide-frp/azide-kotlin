@@ -7,7 +7,7 @@ import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.test_utils.TestInputStimulation
 
-internal class TestInputCell<ValueT>(
+class TestInputCell<ValueT>(
     initialValue: ValueT,
 ) : Cell<ValueT> {
     private val _vertex = object : AbstractStatefulCellVertex<ValueT>(
@@ -85,8 +85,7 @@ internal class TestInputCell<ValueT>(
         }
     }
 
-    fun revokeUpdate(): TestInputStimulation = object :
-        TestInputStimulation {
+    fun revokeUpdate(): TestInputStimulation = object : TestInputStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -99,3 +98,18 @@ internal class TestInputCell<ValueT>(
     override val vertex: CellVertex<ValueT>
         get() = _vertex
 }
+
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+    newValue: ValueT,
+): TestInputStimulation = TestInputStimulation.combine(
+    update(newValue = newValue),
+    revokeUpdate(),
+)
+
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+    intermediateNewValue: ValueT,
+    correctedNewValue: ValueT,
+): TestInputStimulation = TestInputStimulation.combine(
+    update(newValue = intermediateNewValue),
+    correctUpdate(correctedNewValue),
+)

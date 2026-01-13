@@ -2,10 +2,9 @@ package dev.azide.core
 
 import dev.azide.core.Triggers.merging
 import dev.azide.core.external.ExternalStreamEffect
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.effects.AbstractPrimitiveEffect
-import dev.azide.core.impl.effects.AbstractPrimitiveSchedule
-import dev.azide.core.impl.effects.AdaptedExternalScheduleVertex
 import dev.azide.core.impl.effects.AdaptedExternalStreamEffectVertex
 
 interface Effect<ResultT> {
@@ -103,4 +102,10 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
                 )
             }
         }
+}
+
+fun <ResultT> Effect<ResultT>.startExternally(): Effect.Outcome<ResultT> = Transactions.executeWithResult {
+    val (effectOutcome: Effect.Outcome<ResultT>, _) = start.executeInternallyWrappedUp(it)
+
+    effectOutcome
 }

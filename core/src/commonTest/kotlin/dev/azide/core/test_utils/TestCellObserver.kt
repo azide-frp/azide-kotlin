@@ -25,10 +25,15 @@ class TestCellObserver<ValueT>(
     }
 
     fun getAndResetReceivedUpdates(): List<CellVertex.Update<ValueT>?> = receivedUpdates.toList().also {
+        resetReceivedUpdates()
+    }
+
+    fun resetReceivedUpdates() {
         receivedUpdates.clear()
     }
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTestingCancellable(): Pair<TestCellObserver<ValueT>, TestCellObserver.Handle> {
     val vertex = vertex
 
@@ -53,6 +58,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
     )
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTesting(): TestCellObserver<ValueT> {
     val (testCellObserver, _) = this.observeForTestingCancellable()
     return testCellObserver
