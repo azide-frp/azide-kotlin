@@ -175,7 +175,7 @@ object Triggers {
                     propagationContext: Transactions.PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
                 ): Revocable {
-                    val outcome: Triggers.Outcome = this@merging.executeInternally(
+                    val outcome: Outcome = this@merging.executeInternally(
                         propagationContext,
                         wrapUpContext,
                     )

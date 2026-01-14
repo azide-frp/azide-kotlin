@@ -59,8 +59,8 @@ context(transactionTestContext: TransactionTestContext) fun <ElementT> ReactiveS
     return testReactiveSetObserver
 }
 
-fun <ElementT> TestReactiveSetObserver<ElementT>.getOldContentCopy(
+fun <ElementT> ReactiveSetVertex<ElementT>.getOldContentCopy(
     propagationContext: Transactions.PropagationContext,
-): Set<ElementT> = observedReactiveSetVertex.getOldContentView(
+): Set<ElementT> = getOldContentView(
     propagationContext = propagationContext,
 ).toSet()

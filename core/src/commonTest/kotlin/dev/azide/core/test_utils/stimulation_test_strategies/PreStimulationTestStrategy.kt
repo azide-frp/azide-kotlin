@@ -15,7 +15,7 @@ object PreStimulationTestStrategy : StimulationTestStrategy {
         subjectPerceptionTrait: TestSubjectPerceptionTrait<SubjectT, SubjectProxyT>,
         subject: SubjectT,
         inputStimulation: TestInputStimulation,
-        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectProxyT>,
+        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectT, SubjectProxyT>,
         expectedTargetImpact: ExpectedTestTargetImpact?,
     ) {
         val targetImpactVerifier = expectedTargetImpact?.prepareImpactVerifier()
@@ -37,7 +37,7 @@ object PreStimulationTestStrategy : StimulationTestStrategy {
 
             val newStateVerifier = expectedSubjectReaction.prepareNewStateVerifier(
                 propagationContext = propagationContext,
-                subjectProxy = subjectProxy,
+                subject = subject,
             )
 
             newStateVerifier

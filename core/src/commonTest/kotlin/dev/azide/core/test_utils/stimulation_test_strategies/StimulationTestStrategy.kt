@@ -10,7 +10,7 @@ interface StimulationTestStrategy {
         subjectPerceptionTrait: TestSubjectPerceptionTrait<SubjectT, SubjectProxyT>,
         subject: SubjectT,
         inputStimulation: TestInputStimulation,
-        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectProxyT>,
+        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectT, SubjectProxyT>,
         expectedTargetImpact: ExpectedTestTargetImpact? = null,
     )
 }

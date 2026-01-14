@@ -9,7 +9,7 @@ interface TestSubjectPerceptionTrait<SubjectT, SubjectProxyT> {
 
     fun prepareOldStateStabilityVerifier(
         propagationContext: Transactions.PropagationContext,
-        subjectProxy: SubjectProxyT,
+        subject: SubjectT,
     ): OldStateStabilityVerifier
 
     fun perceive(

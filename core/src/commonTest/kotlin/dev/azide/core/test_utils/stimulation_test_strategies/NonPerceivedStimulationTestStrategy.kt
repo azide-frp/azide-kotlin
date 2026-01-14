@@ -15,7 +15,7 @@ object NonPerceivedStimulationTestStrategy : StimulationTestStrategy {
         subjectPerceptionTrait: TestSubjectPerceptionTrait<SubjectT, SubjectProxyT>,
         subject: SubjectT,
         inputStimulation: TestInputStimulation,
-        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectProxyT>,
+        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectT, SubjectProxyT>,
         expectedTargetImpact: ExpectedTestTargetImpact?,
     ) {
         if (expectedTargetImpact == null) {

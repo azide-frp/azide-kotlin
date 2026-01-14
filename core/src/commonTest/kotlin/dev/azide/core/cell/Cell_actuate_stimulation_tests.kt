@@ -136,7 +136,7 @@ class Cell_actuate_stimulation_tests {
             inputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ),
-            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoReaction(
+            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoUpdate(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = ExpectedTestTargetImpact.combine(
@@ -271,7 +271,7 @@ class Cell_actuate_stimulation_tests {
                     TestInputStimulation.executing(subjectEffectHandle.cancel)
                 },
             ),
-            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoReaction(),
+            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoUpdate(),
             expectedTargetImpact = targetEffect1StartRecord.expectIsCancelledOnce(),
         )
     }
@@ -347,7 +347,7 @@ class Cell_actuate_stimulation_tests {
                     else -> inputStimulations
                 },
             ),
-            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoReaction(
+            expectedSubjectReaction = ExpectedCellReactionTestUtils.expectNoUpdate(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = ExpectedTestTargetImpact.combine(

@@ -8,15 +8,15 @@ class TestReactiveSetObservationTrait<ElementT> :
     TestSubjectPerceptionTrait<ReactiveSet<ElementT>, TestReactiveSetObserver<ElementT>> {
     override fun prepareOldStateStabilityVerifier(
         propagationContext: Transactions.PropagationContext,
-        subjectProxy: TestReactiveSetObserver<ElementT>,
+        subject: ReactiveSet<ElementT>,
     ): TestSubjectPerceptionTrait.OldStateStabilityVerifier {
-        val originalOldContent = subjectProxy.getOldContentCopy(
+        val originalOldContent = subject.vertex.getOldContentCopy(
             propagationContext = propagationContext,
         )
 
         return object : TestSubjectPerceptionTrait.OldStateStabilityVerifier {
             override fun verifyOldStateDidNotChange() {
-                val finalOldContent = subjectProxy.getOldContentCopy(
+                val finalOldContent = subject.vertex.getOldContentCopy(
                     propagationContext = propagationContext,
                 )
 

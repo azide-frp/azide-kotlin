@@ -15,7 +15,7 @@ object PerceivedUpFrontStimulationTestStrategy : StimulationTestStrategy {
         subjectPerceptionTrait: TestSubjectPerceptionTrait<SubjectT, SubjectProxyT>,
         subject: SubjectT,
         inputStimulation: TestInputStimulation,
-        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectProxyT>,
+        expectedSubjectReaction: ExpectedTestSubjectReaction<SubjectT, SubjectProxyT>,
         expectedTargetImpact: ExpectedTestTargetImpact?,
     ) {
         val subjectProxy = Transactions.executeWithResult { propagationContext ->
@@ -30,12 +30,12 @@ object PerceivedUpFrontStimulationTestStrategy : StimulationTestStrategy {
         val newStateVerifier = Transactions.executeWithResult { propagationContext ->
             val oldStateStabilityVerifier = subjectPerceptionTrait.prepareOldStateStabilityVerifier(
                 propagationContext = propagationContext,
-                subjectProxy = subjectProxy,
+                subject = subject,
             )
 
             val newStateVerifier = expectedSubjectReaction.prepareNewStateVerifier(
                 propagationContext = propagationContext,
-                subjectProxy = subjectProxy,
+                subject = subject,
             )
 
             val deltaVerifier = expectedSubjectReaction.prepareDeltaVerifier(

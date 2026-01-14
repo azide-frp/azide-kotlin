@@ -90,7 +90,7 @@ class ReactiveSet_filter_tests {
                 elementsToAdd = setOf(-6, -7),
                 elementsToRemove = setOf(-2, -4),
             ),
-            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoReaction(),
+            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoChange(),
         )
     }
 
@@ -174,7 +174,7 @@ class ReactiveSet_filter_tests {
                 elementsToAdd = setOf(6, 7),
                 elementsToRemove = setOf(-2, 5),
             ),
-            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoReaction(
+            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoChange(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
@@ -217,7 +217,7 @@ class ReactiveSet_filter_tests {
                 elementsToAdd = setOf(-6, -7),
                 elementsToRemove = setOf(-2),
             ),
-            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoReaction(),
+            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoChange(),
         )
     }
 
@@ -260,7 +260,7 @@ class ReactiveSet_filter_tests {
                 correctedElementsToAdd = setOf(-8),
                 correctedElementsToRemove = setOf(-2, -4),
             ),
-            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoReaction(),
+            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoChange(),
         )
     }
 
@@ -348,7 +348,7 @@ class ReactiveSet_filter_tests {
                 correctedElementsToAdd = setOf(-6, -8),
                 correctedElementsToRemove = setOf(-2, -4),
             ),
-            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoReaction(
+            expectedSubjectReaction = ExpectedReactiveSetReactionTestUtils.expectNoChange(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
