@@ -18,70 +18,68 @@ data object EffectTestUtils_start_quickCancelledRevoked {
         slottedInputStimulation: TestSlottedStimulation4? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedTestTargetImpact,
-    ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
-            expectedTargetImpact = expectedTargetImpact,
-            expectedNewState = expectedSubjectTransition.expectedNewState,
-        ) { propagationContext ->
-            // 0. Pre-stimulation
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot4.Slot0,
-            )
+    ): SubjectT = EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+           expectedTargetImpact = expectedTargetImpact,
+           expectedNewState = expectedSubjectTransition.expectedNewState,
+       ) { propagationContext ->
+           // 0. Pre-stimulation
+           slottedInputStimulation?.stimulate(
+               propagationContext = propagationContext,
+               slot = TestStimulationSlot4.Slot0,
+           )
 
-            // 1. Start the effect
-            val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+           // 1. Start the effect
+           val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUp(
+               propagationContext = propagationContext,
+           )
 
-            val subject = effectOutcome.result
-            val effectHandle = effectOutcome.handle
+           val subject = effectOutcome.result
+           val effectHandle = effectOutcome.handle
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot4.Slot1,
-            )
+           slottedInputStimulation?.stimulate(
+               propagationContext = propagationContext,
+               slot = TestStimulationSlot4.Slot1,
+           )
 
-            val subjectReactionVerifier: TestSubjectReactionVerifier? =
-                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategy(
-                    propagationContext = propagationContext,
-                    subject = subject,
-                    strategy = subjectPerceptionStrategy,
-                )
+           val subjectReactionVerifier: TestSubjectReactionVerifier? =
+               expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategy(
+                   propagationContext = propagationContext,
+                   subject = subject,
+                   strategy = subjectPerceptionStrategy,
+               )
 
-            // Verify the old state for the first time
-            expectedSubjectTransition.expectedOldState.verifyStableState(
-                propagationContext = propagationContext,
-                subject = subject,
-            )
+           // Verify the old state for the first time
+           expectedSubjectTransition.expectedOldState.verifyStableState(
+               propagationContext = propagationContext,
+               subject = subject,
+           )
 
-            // 2. Cancel the effect
-            val (_: Unit, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+           // 2. Cancel the effect
+           val (_: Unit, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUp(
+               propagationContext = propagationContext,
+           )
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot4.Slot2,
-            )
+           slottedInputStimulation?.stimulate(
+               propagationContext = propagationContext,
+               slot = TestStimulationSlot4.Slot2,
+           )
 
-            // 3. Revoke the effect's cancellation
-            cancelRevocable.revoke()
+           // 3. Revoke the effect's cancellation
+           cancelRevocable.revoke()
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot4.Slot3,
-            )
+           slottedInputStimulation?.stimulate(
+               propagationContext = propagationContext,
+               slot = TestStimulationSlot4.Slot3,
+           )
 
-            // Verify the old state again (to ensure its stability)
-            expectedSubjectTransition.expectedOldState.verifyStableState(
-                propagationContext = propagationContext,
-                subject = subject,
-            )
+           // Verify the old state again (to ensure its stability)
+           expectedSubjectTransition.expectedOldState.verifyStableState(
+               propagationContext = propagationContext,
+               subject = subject,
+           )
 
-            subjectReactionVerifier?.verifyReaction()
+           subjectReactionVerifier?.verifyReaction()
 
-            subject
-        }
-    }
+           subject
+       }
 }

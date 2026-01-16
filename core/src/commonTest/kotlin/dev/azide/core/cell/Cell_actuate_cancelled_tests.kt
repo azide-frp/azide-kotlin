@@ -60,7 +60,10 @@ class Cell_actuate_cancelled_tests {
             expectedTargetImpact = targetEffect1StartRecord.expectIsCancelledOnce(),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -114,7 +117,10 @@ class Cell_actuate_cancelled_tests {
             )
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -168,7 +174,10 @@ class Cell_actuate_cancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -225,6 +234,9 @@ class Cell_actuate_cancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 }

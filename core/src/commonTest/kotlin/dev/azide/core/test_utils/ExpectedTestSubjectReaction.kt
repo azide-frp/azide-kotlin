@@ -4,7 +4,17 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 
-interface ExpectedTestSubjectReaction<SubjectT> {
+interface ExpectedTestSubjectReaction<in SubjectT> {
+    data object Noop : ExpectedTestSubjectReaction<Any> {
+        override fun prepareReactionVerifier(
+            propagationContext: Transactions.PropagationContext,
+            subject: Any,
+        ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier {
+            override fun verifyReaction() {
+            }
+        }
+    }
+
     interface TestSubjectReactionVerifier {
         fun verifyReaction()
     }

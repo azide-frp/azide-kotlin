@@ -17,7 +17,6 @@ import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import kotlin.test.Test
 
@@ -55,7 +54,10 @@ class EventStream_executeEach_cancelled_tests {
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
-        // TODO: Check that the subscription is closed
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -100,7 +102,10 @@ class EventStream_executeEach_cancelled_tests {
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
-        // TODO: Check that the subscription is closed
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -145,7 +150,10 @@ class EventStream_executeEach_cancelled_tests {
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
-        // TODO: Check that the subscription is closed
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -195,6 +203,9 @@ class EventStream_executeEach_cancelled_tests {
             ),
         )
 
-        // TODO: Check that the subscription is closed
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 }

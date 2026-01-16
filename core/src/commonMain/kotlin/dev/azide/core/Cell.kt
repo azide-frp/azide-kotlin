@@ -167,3 +167,9 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
         )
     }
 }
+
+fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
+    vertex.getOldValue(
+        propagationContext = propagationContext,
+    )
+}

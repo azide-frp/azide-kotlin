@@ -9,7 +9,7 @@ data object EffectTestUtils {
         expectedTargetImpact: ExpectedTestTargetImpact,
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,
         propagate: (Transactions.PropagationContext) -> SubjectT,
-    ) {
+    ): SubjectT {
         val targetImpactVerifier = expectedTargetImpact.prepareImpactVerifier()
 
         val subject = Transactions.executeWithResult { propagationContext ->
@@ -29,5 +29,7 @@ data object EffectTestUtils {
                 )
             }
         }
+
+        return subject
     }
 }

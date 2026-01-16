@@ -18,63 +18,61 @@ data object EffectTestUtils_start_quickCancelled {
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedTestTargetImpact,
-    ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
-            expectedTargetImpact = expectedTargetImpact,
-            expectedNewState = expectedSubjectTransition.expectedNewState,
-        ) { propagationContext ->
-            // 0. Pre-stimulation
+    ): SubjectT = EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        expectedTargetImpact = expectedTargetImpact,
+        expectedNewState = expectedSubjectTransition.expectedNewState,
+    ) { propagationContext ->
+        // 0. Pre-stimulation
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot0,
-            )
+        slottedInputStimulation?.stimulate(
+            propagationContext = propagationContext,
+            slot = TestStimulationSlot3.Slot0,
+        )
 
-            // 1. Start the effect
-            val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+        // 1. Start the effect
+        val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
 
-            val subject = effectOutcome.result
-            val effectHandle = effectOutcome.handle
+        val subject = effectOutcome.result
+        val effectHandle = effectOutcome.handle
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot1,
-            )
+        slottedInputStimulation?.stimulate(
+            propagationContext = propagationContext,
+            slot = TestStimulationSlot3.Slot1,
+        )
 
-            val subjectReactionVerifier: TestSubjectReactionVerifier? =
-                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategy(
-                    propagationContext = propagationContext,
-                    subject = subject,
-                    strategy = subjectPerceptionStrategy,
-                )
-
-            // Verify the old state for the first time
-            expectedSubjectTransition.expectedOldState.verifyStableState(
+        val subjectReactionVerifier: TestSubjectReactionVerifier? =
+            expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategy(
                 propagationContext = propagationContext,
                 subject = subject,
+                strategy = subjectPerceptionStrategy,
             )
 
-            // 2. Cancel the effect
-            val (_: Unit, _: Revocable) = effectHandle.cancel.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+        // Verify the old state for the first time
+        expectedSubjectTransition.expectedOldState.verifyStableState(
+            propagationContext = propagationContext,
+            subject = subject,
+        )
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot2,
-            )
+        // 2. Cancel the effect
+        val (_: Unit, _: Revocable) = effectHandle.cancel.executeInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
 
-            // Verify the old state again (to ensure its stability)
-            expectedSubjectTransition.expectedOldState.verifyStableState(
-                propagationContext = propagationContext,
-                subject = subject,
-            )
+        slottedInputStimulation?.stimulate(
+            propagationContext = propagationContext,
+            slot = TestStimulationSlot3.Slot2,
+        )
 
-            subjectReactionVerifier?.verifyReaction()
+        // Verify the old state again (to ensure its stability)
+        expectedSubjectTransition.expectedOldState.verifyStableState(
+            propagationContext = propagationContext,
+            subject = subject,
+        )
 
-            subject
-        }
+        subjectReactionVerifier?.verifyReaction()
+
+        subject
     }
 }

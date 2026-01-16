@@ -8,9 +8,7 @@ import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
-import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
@@ -55,7 +53,10 @@ class EventStream_executeEach_cancelledRevoked_tests {
             expectedTargetImpact = ExpectedTestTargetImpact.None,
         )
 
-        // TODO: Check that the subscription is healthy
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Ignore // FIXME: Handle cancellation revocation correctly
@@ -99,7 +100,10 @@ class EventStream_executeEach_cancelledRevoked_tests {
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
         )
 
-        // TODO: Check that the subscription is healthy
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Ignore // FIXME: Handle cancellation revocation correctly
@@ -143,7 +147,10 @@ class EventStream_executeEach_cancelledRevoked_tests {
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
-        // TODO: Check that the subscription is healthy
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 
     @Ignore // FIXME: Handle cancellation revocation correctly
@@ -192,6 +199,9 @@ class EventStream_executeEach_cancelledRevoked_tests {
             ),
         )
 
-        // TODO: Check that the subscription is healthy
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectOutcome.result,
+        )
     }
 }

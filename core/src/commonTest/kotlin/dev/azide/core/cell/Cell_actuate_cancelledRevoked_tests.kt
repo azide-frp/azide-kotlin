@@ -3,6 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
+import dev.azide.core.sampleExternally
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
@@ -12,9 +13,11 @@ import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_step
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotCancelled
@@ -63,7 +66,10 @@ class Cell_actuate_cancelledRevoked_tests {
             expectedTargetImpact = targetEffect1StartRecord.expectIsNotCancelled(),
         )
 
-        // TODO: Check that the observation is healthy
+        Cell_actuate_testUtils.verifyEffectOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -119,7 +125,10 @@ class Cell_actuate_cancelledRevoked_tests {
             ),
         )
 
-        // TODO: Check that the observation is healthy
+        Cell_actuate_testUtils.verifyEffectOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -173,7 +182,10 @@ class Cell_actuate_cancelledRevoked_tests {
             ),
         )
 
-        // TODO: Check that the observation is healthy
+        Cell_actuate_testUtils.verifyEffectOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
 
     @Test
@@ -233,6 +245,10 @@ class Cell_actuate_cancelledRevoked_tests {
             ),
         )
 
-        // TODO: Check that the observation is healthy
+        Cell_actuate_testUtils.verifyEffectOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectOutcome.result,
+        )
     }
+
 }

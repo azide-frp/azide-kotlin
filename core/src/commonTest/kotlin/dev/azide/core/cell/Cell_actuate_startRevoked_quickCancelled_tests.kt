@@ -3,15 +3,19 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_step
+import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import kotlin.test.Test
 
@@ -34,6 +38,10 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
             ),
+        )
+
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
         )
     }
 
@@ -68,6 +76,10 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
                 targetEffect2.expectIsNotStarted(),
             ),
         )
+
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+        )
     }
 
     @Test
@@ -100,6 +112,10 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
             ),
+        )
+
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
         )
     }
 
@@ -136,6 +152,10 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
                 targetEffect2.expectIsNotStarted(),
                 targetEffect3.expectIsNotStarted(),
             ),
+        )
+
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
         )
     }
 }

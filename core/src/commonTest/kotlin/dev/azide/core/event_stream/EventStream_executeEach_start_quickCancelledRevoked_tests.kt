@@ -11,8 +11,10 @@ import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_step
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.expectIsExecutedOnce
@@ -43,11 +45,16 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -80,7 +87,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
@@ -90,6 +97,11 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -122,7 +134,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -130,6 +142,11 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -163,7 +180,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
@@ -177,6 +194,11 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsExecutedOnce(),
             ),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 }

@@ -45,7 +45,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectCell = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
@@ -56,7 +56,10 @@ class Cell_actuate_start_quickCancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectCell,
+        )
     }
 
     @Test
@@ -90,7 +93,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectCell = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -105,7 +108,10 @@ class Cell_actuate_start_quickCancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectCell,
+        )
     }
 
     @Test
@@ -139,7 +145,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectCell = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -154,7 +160,10 @@ class Cell_actuate_start_quickCancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectCell,
+        )
     }
 
     @Test
@@ -189,7 +198,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectCell = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
@@ -206,6 +215,9 @@ class Cell_actuate_start_quickCancelled_tests {
             ),
         )
 
-        // TODO: Check that the observation is closed
+        Cell_actuate_testUtils.verifyEffectNotOngoing(
+            sourceCell = sourceCell,
+            subjectCell = subjectCell,
+        )
     }
 }

@@ -11,11 +11,12 @@ import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_step
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import kotlin.test.Test
 
@@ -42,11 +43,16 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -78,7 +84,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
@@ -86,6 +92,11 @@ class EventStream_executeEach_start_quickCancelled_tests {
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -117,7 +128,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -125,6 +136,11 @@ class EventStream_executeEach_start_quickCancelled_tests {
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 
@@ -157,7 +173,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        val subjectEventStream = EffectTestUtils_start_quickCancelled.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
@@ -169,6 +185,11 @@ class EventStream_executeEach_start_quickCancelled_tests {
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsNotExecuted(),
             ),
+        )
+
+        EventStream_executeEach_testUtils.verifyEffectNotOngoing(
+            sourceEventStream = sourceEventStream,
+            subjectEventStream = subjectEventStream,
         )
     }
 }

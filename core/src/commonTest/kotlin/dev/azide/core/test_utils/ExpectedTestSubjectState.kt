@@ -21,4 +21,12 @@ data class ExpectedTestSubjectTransition<SubjectT>(
     val expectedOldState: ExpectedTestSubjectState<SubjectT>,
     val expectedReaction: ExpectedTestSubjectReaction<SubjectT>,
     val expectedNewState: ExpectedTestSubjectState<SubjectT>,
-)
+) {
+    companion object {
+        val Noop: ExpectedTestSubjectTransition<Any> = ExpectedTestSubjectTransition(
+            expectedOldState = ExpectedTestSubjectState.Noop,
+            expectedReaction = ExpectedTestSubjectReaction.Noop,
+            expectedNewState = ExpectedTestSubjectState.Noop,
+        )
+    }
+}
