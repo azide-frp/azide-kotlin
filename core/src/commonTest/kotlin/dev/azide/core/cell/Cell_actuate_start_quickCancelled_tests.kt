@@ -55,6 +55,8 @@ class Cell_actuate_start_quickCancelled_tests {
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -102,6 +104,8 @@ class Cell_actuate_start_quickCancelled_tests {
                 targetEffect2.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -149,6 +153,8 @@ class Cell_actuate_start_quickCancelled_tests {
                 targetEffect2.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -199,5 +205,7 @@ class Cell_actuate_start_quickCancelled_tests {
                 targetEffect3.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 }

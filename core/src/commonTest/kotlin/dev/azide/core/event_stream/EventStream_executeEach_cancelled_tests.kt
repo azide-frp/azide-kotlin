@@ -4,75 +4,41 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
+import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
-import dev.azide.core.test_utils.TestSlotDispatcher1x4
-import dev.azide.core.test_utils.TestSlotDispatcher2x4
+import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_cancelled
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
-class EventStream_executeEach_start_quickCancelledRevoked_tests {
+class EventStream_executeEach_cancelled_tests {
     @Test
-    fun test_start_quickCancelledRevoked_subscribed() {
-        test_start_quickCancelledRevoked(
+    fun test_cancelled_subscribed() {
+        test_cancelled(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_nonSubscribed() {
-        test_start_quickCancelledRevoked(
+    fun test_cancelled_nonSubscribed() {
+        test_cancelled(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
 
-    private fun test_start_quickCancelledRevoked(
+    private fun test_cancelled(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-    ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
-
-        val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
-
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
-            subjectEffect = subjectEffect,
-            subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
-        )
-    }
-
-    @Ignore // FIXME: Handle cancellation revocation correctly
-    @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_subscribed() {
-        TestSlotDispatcher1x4.entries.forEach { dispatcher ->
-            test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
-                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
-            )
-        }
-    }
-
-    @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_nonSubscribed() {
-        test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher1x4.Case1,
-        )
-    }
-
-    private fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
-        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher1x4,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
@@ -80,24 +46,67 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        val subjectOutcome = subjectEffect.startExternally()
+
+        EffectTestUtils_cancelled.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+        )
+
+        // TODO: Check that the subscription is closed
+    }
+
+    @Test
+    fun test_cancelled_sourceEmitsSimultaneously_subscribed() {
+        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+            test_cancelled_sourceEmitsSimultaneously(
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    @Test
+    fun test_cancelled_sourceEmitsSimultaneously_nonSubscribed() {
+        test_cancelled_sourceEmitsSimultaneously(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            dispatcher = TestSlotDispatcher1x2.Case1,
+        )
+    }
+
+    private fun test_cancelled_sourceEmitsSimultaneously(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        dispatcher: TestSlotDispatcher1x2,
+    ) {
+        val targetAction = TestTargetAction.of(result = 10)
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
+
+        val subjectOutcome = subjectEffect.startExternally()
+
+        EffectTestUtils_cancelled.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
-                expectedEmittedEvent = 10,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
+
+        // TODO: Check that the subscription is closed
     }
 
-    @Ignore // FIXME: Handle cancellation revocation correctly
     @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_subscribed() {
-        TestSlotDispatcher2x4.entries.forEach { dispatcher ->
-            test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
+    fun test_cancelled_sourceEmitsRevokedSimultaneously_subscribed() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_cancelled_sourceEmitsRevokedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 dispatcher = dispatcher,
             )
@@ -105,16 +114,16 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_nonSubscribed() {
-        test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
+    fun test_cancelled_sourceEmitsRevokedSimultaneously_nonSubscribed() {
+        test_cancelled_sourceEmitsRevokedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x4.Case11,
+            dispatcher = TestSlotDispatcher2x2.Case11,
         )
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
+    private fun test_cancelled_sourceEmitsRevokedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x4,
+        dispatcher: TestSlotDispatcher2x2,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
@@ -122,22 +131,27 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        val subjectOutcome = subjectEffect.startExternally()
+
+        EffectTestUtils_cancelled.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+            ),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
+
+        // TODO: Check that the subscription is closed
     }
 
-    @Ignore // FIXME: Handle cancellation revocation correctly
     @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_subscribed() {
-        TestSlotDispatcher2x4.entries.forEach { dispatcher ->
-            test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
+    fun test_cancelled_sourceEmitsCorrectedSimultaneously_subscribed() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_cancelled_sourceEmitsCorrectedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 dispatcher = dispatcher,
             )
@@ -145,16 +159,16 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_nonSubscribed() {
-        test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
+    fun test_cancelled_sourceEmitsCorrectedSimultaneously_nonSubscribed() {
+        test_cancelled_sourceEmitsCorrectedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x4.Case11,
+            dispatcher = TestSlotDispatcher2x2.Case11,
         )
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
+    private fun test_cancelled_sourceEmitsCorrectedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x4,
+        dispatcher: TestSlotDispatcher2x2,
     ) {
         val targetAction1 = TestTargetAction.of(result = 10)
         val targetAction2 = TestTargetAction.of(result = 20)
@@ -163,20 +177,24 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        val subjectOutcome = subjectEffect.startExternally()
+
+        EffectTestUtils_cancelled.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
-                expectedEmittedEvent = 20,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = ExpectedTestTargetImpact.combine(
                 targetAction1.expectIsNotExecuted(),
-                targetAction2.expectIsExecutedOnce(),
+                targetAction2.expectIsNotExecuted(),
             ),
         )
+
+        // TODO: Check that the subscription is closed
     }
 }

@@ -1,9 +1,14 @@
 package dev.azide.core.test_utils
 
-import dev.azide.core.test_utils.ExpectedTestTargetImpact.TargetImpactVerifier
-import kotlin.test.assertEquals
-
 interface ExpectedTestTargetImpact {
+    data object None : ExpectedTestTargetImpact {
+        override fun prepareImpactVerifier(): TargetImpactVerifier = object : TargetImpactVerifier {
+            override fun verifyPostTransaction() {
+                // There are no expectations
+            }
+        }
+    }
+
     interface TargetImpactVerifier {
         fun verifyPostTransaction()
     }

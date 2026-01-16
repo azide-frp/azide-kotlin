@@ -59,6 +59,8 @@ class Cell_actuate_cancelled_tests {
             ),
             expectedTargetImpact = targetEffect1StartRecord.expectIsCancelledOnce(),
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -111,6 +113,8 @@ class Cell_actuate_cancelled_tests {
                 targetEffect2.expectIsNotStarted(),
             )
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -163,6 +167,8 @@ class Cell_actuate_cancelled_tests {
                 targetEffect2.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 
     @Test
@@ -218,5 +224,7 @@ class Cell_actuate_cancelled_tests {
                 targetEffect3.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is closed
     }
 }

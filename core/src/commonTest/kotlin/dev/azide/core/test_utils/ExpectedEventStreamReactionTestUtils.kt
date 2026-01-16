@@ -45,7 +45,10 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
                     message = "Exposed ongoing emission did not match the expected emission.",
                 )
 
-                val effectiveEmission = receivedEmissions.lastOrNull() ?: initialEmission
+                val effectiveEmission = when {
+                    receivedEmissions.isNotEmpty() -> receivedEmissions.last()
+                    else -> initialEmission
+                }
 
                 assertEquals(
                     expected = expectedEffectiveEmission,

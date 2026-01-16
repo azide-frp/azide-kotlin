@@ -4,14 +4,12 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher1x3
-import dev.azide.core.test_utils.TestSlotDispatcher2x3
+import dev.azide.core.test_utils.TestSlotDispatcher1x5
+import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
@@ -20,30 +18,30 @@ import dev.azide.core.test_utils.expectIsNotExecuted
 import kotlin.test.Test
 
 @Suppress("ClassName")
-class EventStream_executeEach_startRevoked_tests {
+class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledRevoked_tests {
     @Test
-    fun test_startRevoked() {
+    fun test_startRevoked_quickCancelledRevoked() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedTestTargetImpact.None,
         )
     }
 
     @Test
-    fun test_startRevoked_sourceEmitsSimultaneously() {
-        TestSlotDispatcher1x3.entries.forEach { dispatcher ->
-            test_startRevoked_sourceEmitsSimultaneously(
+    fun test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously() {
+        TestSlotDispatcher1x5.entries.forEach { dispatcher ->
+            test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_startRevoked_sourceEmitsSimultaneously(
-        dispatcher: TestSlotDispatcher1x3,
+    private fun test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously(
+        dispatcher: TestSlotDispatcher1x5,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
@@ -51,7 +49,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
@@ -61,16 +59,16 @@ class EventStream_executeEach_startRevoked_tests {
     }
 
     @Test
-    fun test_startRevoked_sourceEmitsRevokedSimultaneously() {
-        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
-            test_startRevoked_sourceEmitsRevokedSimultaneously(
+    fun test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously() {
+        TestSlotDispatcher2x5.entries.forEach { dispatcher ->
+            test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_startRevoked_sourceEmitsRevokedSimultaneously(
-        dispatcher: TestSlotDispatcher2x3,
+    private fun test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
+        dispatcher: TestSlotDispatcher2x5,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
@@ -78,7 +76,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
@@ -88,16 +86,16 @@ class EventStream_executeEach_startRevoked_tests {
     }
 
     @Test
-    fun test_startRevoked_sourceEmitsCorrectedSimultaneously() {
-        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
-            test_startRevoked_sourceEmitsCorrectedSimultaneously(
+    fun test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously() {
+        TestSlotDispatcher2x5.entries.forEach { dispatcher ->
+            test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_startRevoked_sourceEmitsCorrectedSimultaneously(
-        dispatcher: TestSlotDispatcher2x3,
+    private fun test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
+        dispatcher: TestSlotDispatcher2x5,
     ) {
         val targetAction1 = TestTargetAction.of(result = 10)
         val targetAction2 = TestTargetAction.of(result = 10)
@@ -106,7 +104,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,

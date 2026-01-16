@@ -100,6 +100,20 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
 fun <ValueT> TestInputEventStream<ValueT>.revokingEmission(
     emittedEvent: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
-    firstStimulation = emit(emittedEvent = emittedEvent),
+    firstStimulation = emit(
+        emittedEvent = emittedEvent,
+    ),
     secondStimulation = revokeEmission(),
+)
+
+fun <ValueT> TestInputEventStream<ValueT>.correctingEmission(
+    intermediateEmittedEvent: ValueT,
+    correctedEmittedEvent: ValueT,
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = emit(
+        emittedEvent = intermediateEmittedEvent,
+    ),
+    secondStimulation = correctEmission(
+        correctedEmittedEvent = correctedEmittedEvent,
+    ),
 )

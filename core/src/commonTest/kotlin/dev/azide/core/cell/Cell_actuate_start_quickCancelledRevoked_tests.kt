@@ -56,6 +56,8 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
         )
+
+        // TODO: Check that the observation is healthy
     }
 
     @Test
@@ -106,6 +108,8 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 targetEffect2.expectIsStartedOnceButNotCancelled(),
             ),
         )
+
+        // TODO: Check that the observation is healthy
     }
 
     @Test
@@ -154,6 +158,8 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 targetEffect2.expectIsNotStarted(),
             ),
         )
+
+        // TODO: Check that the observation is healthy
     }
 
     @Test
@@ -207,5 +213,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 targetEffect3.expectIsStartedOnceButNotCancelled(),
             ),
         )
+
+        // TODO: Check that the observation is healthy
     }
 }
