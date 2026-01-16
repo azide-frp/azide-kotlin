@@ -5,7 +5,9 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
+import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -101,15 +103,15 @@ class TestInputCell<ValueT>(
 
 fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
     newValue: ValueT,
-): TestInputStimulation = TestInputStimulation.combine(
-    update(newValue = newValue),
-    revokeUpdate(),
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = update(newValue = newValue),
+    secondStimulation = revokeUpdate(),
 )
 
 fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
     intermediateNewValue: ValueT,
     correctedNewValue: ValueT,
-): TestInputStimulation = TestInputStimulation.combine(
-    update(newValue = intermediateNewValue),
-    correctUpdate(correctedNewValue),
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = update(newValue = intermediateNewValue),
+    secondStimulation = correctUpdate(correctedNewValue),
 )

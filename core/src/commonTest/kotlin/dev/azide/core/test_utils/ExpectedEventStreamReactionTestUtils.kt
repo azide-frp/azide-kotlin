@@ -1,0 +1,107 @@
+package dev.azide.core.test_utils
+
+import dev.azide.core.EventStream
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex.BasicSubscriber
+import dev.azide.core.impl.event_stream.registerSubscriberOnline
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+typealias ExpectedEventStreamReaction<EventT> = ExpectedTestSubjectReaction<EventStream<EventT>>
+
+typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>>
+
+val <EventT> ExpectedEventStreamReaction<EventT>.asExpectedTransition: ExpectedEventStreamTransition<EventT>
+    get() = ExpectedEventStreamTransition(
+        expectedOldState = ExpectedTestSubjectState.Noop,
+        expectedReaction = this,
+        expectedNewState = ExpectedTestSubjectState.Noop,
+    )
+
+private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {
+    final override fun prepareReactionVerifier(
+        propagationContext: Transactions.PropagationContext,
+        subject: EventStream<EventT>,
+    ): TestSubjectReactionVerifier {
+        val subjectVertex = subject.vertex
+
+        return object : TestSubjectReactionVerifier, BasicSubscriber<EventT> {
+            private val subscriberHandle = subjectVertex.registerSubscriberOnline(
+                propagationContext = propagationContext,
+                subscriber = this,
+            )
+
+            private val initialEmission: EventStreamVertex.Emission<EventT>? = subjectVertex.ongoingEmission
+
+            private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
+
+            override fun verifyReaction() {
+                assertEquals(
+                    expected = expectedEffectiveEmission,
+                    actual = subjectVertex.ongoingEmission,
+                    message = "Exposed ongoing emission did not match the expected emission.",
+                )
+
+                val effectiveEmission = receivedEmissions.lastOrNull() ?: initialEmission
+
+                assertEquals(
+                    expected = expectedEffectiveEmission,
+                    actual = effectiveEmission,
+                    message = "The effective received emission did not match the expected emission.",
+                )
+
+                subjectVertex.unregisterSubscriber(
+                    handle = subscriberHandle,
+                )
+
+                when (intermediatePropagationTolerance) {
+                    IntermediatePropagationTolerance.DoNotTolerate -> {
+                        assertTrue(
+                            actual = receivedEmissions.size <= 1,
+                            message = "Expected at most one emission to be propagated, but received ${receivedEmissions.size} emissions (intermediate propagation is not tolerated).",
+                        )
+                    }
+
+                    IntermediatePropagationTolerance.Tolerate -> {}
+                }
+            }
+
+            override fun handleEmission(
+                propagationContext: Transactions.PropagationContext,
+                emission: EventStreamVertex.Emission<EventT>?,
+            ) {
+                receivedEmissions.add(emission)
+            }
+        }
+    }
+
+    abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
+
+    abstract val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>?
+}
+
+object ExpectedEventStreamReactionTestUtils {
+    fun <EventT> expectEmission(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedEmittedEvent: EventT,
+    ): ExpectedEventStreamTransition<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+        override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
+            intermediatePropagationTolerance
+
+        override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT> = EventStreamVertex.Emission(
+            emittedEvent = expectedEmittedEvent,
+        )
+    }.asExpectedTransition
+
+
+    fun <EventT> expectNoEmission(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+    ): ExpectedEventStreamTransition<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+        override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>? = null
+
+        override val intermediatePropagationTolerance = intermediatePropagationTolerance
+    }.asExpectedTransition
+}

@@ -12,7 +12,8 @@ import dev.azide.core.impl.event_stream.registerSubscriberOnline
 
 class ExecutedEachEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<Action<EventT>>,
-) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>, RestartableEffectVertex {
+) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<Action<EventT>>,
+    RestartableEffectVertex {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     private var executedActionRevocable: Revocable? = null
@@ -30,6 +31,7 @@ class ExecutedEachEventStreamVertex<EventT>(
                     ?: throw AssertionError("There's no record of the revoked action")
 
                 executedActionRevocable.revoke()
+                this.executedActionRevocable = null
 
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,

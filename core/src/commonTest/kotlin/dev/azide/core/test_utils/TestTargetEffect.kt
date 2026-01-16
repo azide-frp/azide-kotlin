@@ -86,7 +86,7 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedTestTarget
         }
     }
 
-fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndNotCancelled(): ExpectedTestTargetImpact =
+fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceButNotCancelled(): ExpectedTestTargetImpact =
     object : ExpectedTestTargetImpact {
         override fun prepareImpactVerifier(): TargetImpactVerifier {
             resetStartRecords()

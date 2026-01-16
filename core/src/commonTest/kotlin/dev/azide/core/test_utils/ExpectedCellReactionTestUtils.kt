@@ -3,145 +3,151 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.WarmCellVertex
+import dev.azide.core.impl.cell.registerObserverOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
-typealias ExpectedCellReaction<ValueT> = ExpectedTestSubjectReaction<Cell<ValueT>, TestCellObserver<ValueT>>
+typealias ExpectedCellReaction<ValueT> = ExpectedTestSubjectReaction<Cell<ValueT>>
 
-object ExpectedCellReactionTestUtils {
-    fun <ValueT> expectUpdate(
-        expectedNewValue: ValueT,
-    ): ExpectedCellReaction<ValueT> = object : ExpectedCellReaction<ValueT> {
-        override fun prepareDeltaVerifier(
-            propagationContext: Transactions.PropagationContext,
-            subjectProxy: TestCellObserver<ValueT>,
-        ): ExpectedTestSubjectReaction.DeltaVerifier {
-            subjectProxy.resetReceivedUpdates()
+typealias ExpectedCellState<ValueT> = ExpectedTestSubjectState<Cell<ValueT>>
 
-            val expectedUpdate = CellVertex.Update(
-                updatedValue = expectedNewValue,
+typealias ExpectedCellTransition<ValueT> = ExpectedTestSubjectTransition<Cell<ValueT>>
+
+private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReaction<ValueT> {
+    final override fun prepareReactionVerifier(
+        propagationContext: Transactions.PropagationContext,
+        subject: Cell<ValueT>,
+    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier {
+        val subjectVertex = subject.vertex
+
+        return object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, WarmCellVertex.BasicObserver<ValueT> {
+            private val observerHandle = subjectVertex.registerObserverOnline(
+                propagationContext = propagationContext,
+                observer = this,
             )
 
-            return object : ExpectedTestSubjectReaction.DeltaVerifier {
-                override fun verifyExposedCorrectly() {
-                    val exposedOngoingUpdate = assertNotNull(
-                        actual = subjectProxy.observedCellVertex.ongoingUpdate,
-                        message = "Expected an ongoing update on the subject cell vertex.",
-                    )
+            private val initialUpdate: CellVertex.Update<ValueT>? = subjectVertex.ongoingUpdate
 
-                    assertEquals(
-                        expected = expectedUpdate,
-                        actual = exposedOngoingUpdate,
-                        message = "Exposed ongoing update did not match the expected update.",
-                    )
-                }
+            private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
-                override fun verifyPropagatedCorrectly() {
-                    val receivedUpdates = subjectProxy.getAndResetReceivedUpdates()
-
-                    val lastReceivedUpdate = assertNotNull(
-                        actual = receivedUpdates.lastOrNull(),
-                        message = "Expected at least one update to be propagated.",
-                    )
-
-                    assertEquals(
-                        expected = expectedUpdate,
-                        actual = lastReceivedUpdate,
-                        message = "Propagated update did not match the expected update.",
-                    )
-                }
-            }
-        }
-
-        override fun prepareNewStateVerifier(
-            propagationContext: Transactions.PropagationContext,
-            subject: Cell<ValueT>,
-        ): ExpectedTestSubjectReaction.NewStateVerifier = object : ExpectedTestSubjectReaction.NewStateVerifier {
-            override fun verifyNewState(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                val newValue = subject.vertex.getOldValue(
-                    propagationContext = propagationContext,
+            override fun verifyReaction() {
+                assertEquals(
+                    expected = expectedEffectiveUpdate,
+                    actual = subjectVertex.ongoingUpdate,
+                    message = "Exposed ongoing update did not match the expected update.",
                 )
+
+                val effectiveUpdate = when {
+                    receivedUpdates.isNotEmpty() -> receivedUpdates.last()
+                    else -> initialUpdate
+                }
 
                 assertEquals(
-                    expected = expectedNewValue,
-                    actual = newValue,
-                    message = "Expected value to match the new value after update.",
+                    expected = expectedEffectiveUpdate,
+                    actual = effectiveUpdate,
+                    message = "The effective received update did not match the expected update.",
                 )
+
+                subjectVertex.unregisterObserver(
+                    handle = observerHandle,
+                )
+
+                when (intermediatePropagationTolerance) {
+                    IntermediatePropagationTolerance.DoNotTolerate -> {
+                        assertTrue(
+                            actual = receivedUpdates.size <= 1,
+                            message = "Expected at most one update to be propagated, but received ${receivedUpdates.size} updates (intermediate propagation is not tolerated).",
+                        )
+                    }
+
+                    IntermediatePropagationTolerance.Tolerate -> {}
+                }
+            }
+
+            override fun handleUpdate(
+                propagationContext: Transactions.PropagationContext,
+                update: CellVertex.Update<ValueT>?,
+            ) {
+                receivedUpdates.add(update)
             }
         }
     }
 
-    fun <ValueT> expectNoUpdate(
+    abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
+
+    abstract val expectedEffectiveUpdate: CellVertex.Update<ValueT>?
+}
+
+object ExpectedCellReactionTestUtils {
+    fun <ValueT> expectTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
-    ): ExpectedCellReaction<ValueT> = object : ExpectedCellReaction<ValueT> {
-        override fun prepareDeltaVerifier(
-            propagationContext: Transactions.PropagationContext,
-            subjectProxy: TestCellObserver<ValueT>,
-        ): ExpectedTestSubjectReaction.DeltaVerifier {
-            subjectProxy.resetReceivedUpdates()
+        expectedOldValue: ValueT,
+        expectedNewValue: ValueT,
+    ): ExpectedCellTransition<ValueT> = ExpectedCellTransition(
+        expectedOldState = _expectStableValue(
+            expectedStableValue = expectedOldValue,
+        ),
+        expectedReaction = _expectUpdate(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+            expectedUpdatedValue = expectedNewValue,
+        ),
+        expectedNewState = _expectStableValue(
+            expectedStableValue = expectedNewValue,
+        ),
+    )
 
-            return object : ExpectedTestSubjectReaction.DeltaVerifier {
-                override fun verifyExposedCorrectly() {
-                    val ongoingUpdate = subjectProxy.observedCellVertex.ongoingUpdate
+    fun <ValueT> _expectUpdate(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedUpdatedValue: ValueT,
+    ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
+        override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
+            intermediatePropagationTolerance
 
-                    assertNull(
-                        ongoingUpdate,
-                        message = "Expected no ongoing update on the subject cell vertex.",
-                    )
-                }
+        override val expectedEffectiveUpdate: CellVertex.Update<ValueT> = CellVertex.Update(
+            updatedValue = expectedUpdatedValue,
+        )
+    }
 
-                override fun verifyPropagatedCorrectly() {
-                    when (intermediatePropagationTolerance) {
-                        IntermediatePropagationTolerance.DoNotTolerate -> {
-                            val receivedUpdates = subjectProxy.getAndResetReceivedUpdates()
-
-                            assertEquals(
-                                expected = emptyList(),
-                                actual = receivedUpdates,
-                                message = "Expected no updates to be propagated (intermediate propagation is not tolerated).",
-                            )
-                        }
-
-                        IntermediatePropagationTolerance.Tolerate -> {
-                            val lastReceivedUpdate = subjectProxy.getAndResetReceivedUpdates().lastOrNull()
-
-                            assertNull(
-                                actual = lastReceivedUpdate,
-                                message = "Expected the last propagated update to be null (no update or update revocation).",
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        override fun prepareNewStateVerifier(
+    fun <ValueT> _expectStableValue(
+        expectedStableValue: ValueT,
+    ): ExpectedCellState<ValueT> = object : ExpectedCellState<ValueT> {
+        override fun verifyStableState(
             propagationContext: Transactions.PropagationContext,
             subject: Cell<ValueT>,
-        ): ExpectedTestSubjectReaction.NewStateVerifier {
-            val originalValue = subject.vertex.getOldValue(
-                propagationContext = propagationContext,
+        ) {
+            assertEquals(
+                expected = expectedStableValue,
+                actual = subject.vertex.getOldValue(
+                    propagationContext = propagationContext,
+                ),
+                message = "The stable value of the cell did not match the expected stable value.",
             )
-
-            return object : ExpectedTestSubjectReaction.NewStateVerifier {
-                override fun verifyNewState(
-                    propagationContext: Transactions.PropagationContext,
-                ) {
-                    val newValue = subject.vertex.getOldValue(
-                        propagationContext = propagationContext,
-                    )
-
-                    assertEquals(
-                        expected = originalValue,
-                        actual = newValue,
-                        message = "Expected value to remain unchanged.",
-                    )
-                }
-            }
         }
+    }
+
+    fun <ValueT> expectNoTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedUnaffectedValue: ValueT,
+    ): ExpectedCellTransition<ValueT> = ExpectedCellTransition(
+        expectedOldState = _expectStableValue(
+            expectedStableValue = expectedUnaffectedValue,
+        ),
+        expectedReaction = _expectNoUpdate(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+        ),
+        expectedNewState = _expectStableValue(
+            expectedStableValue = expectedUnaffectedValue,
+        ),
+    )
+
+    fun <ValueT> _expectNoUpdate(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+    ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
+        override val expectedEffectiveUpdate: CellVertex.Update<ValueT>? = null
+
+        override val intermediatePropagationTolerance = intermediatePropagationTolerance
     }
 }

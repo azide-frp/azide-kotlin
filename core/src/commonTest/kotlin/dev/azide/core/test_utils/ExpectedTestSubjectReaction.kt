@@ -1,47 +1,33 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.impl.Transactions
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 
-interface ExpectedTestSubjectReaction<SubjectT, SubjectProxyT> {
-    interface DeltaVerifier {
-        fun verifyExposedCorrectly()
-
-        fun verifyPropagatedCorrectly()
-
-    }
-
-    interface NewStateVerifier {
-        fun verifyNewState(
-            propagationContext: Transactions.PropagationContext,
-        )
+interface ExpectedTestSubjectReaction<SubjectT> {
+    interface TestSubjectReactionVerifier {
+        fun verifyReaction()
     }
 
     enum class IntermediatePropagationTolerance {
         DoNotTolerate, Tolerate,
     }
 
-    fun prepareDeltaVerifier(
-        propagationContext: Transactions.PropagationContext,
-        subjectProxy: SubjectProxyT,
-    ): DeltaVerifier
-
-    fun prepareNewStateVerifier(
+    fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subject: SubjectT,
-    ): NewStateVerifier
+    ): TestSubjectReactionVerifier
 }
 
-fun ExpectedTestSubjectReaction.DeltaVerifier.verifyExposedAndPropagatedCorrectly() {
-    verifyExposedCorrectly()
-    verifyPropagatedCorrectly()
-}
-
-fun <SubjectT, SubjectProxyT> ExpectedTestSubjectReaction<SubjectT, SubjectProxyT>.verifyDeltaExposedCorrectly(
+fun <SubjectT> ExpectedTestSubjectReaction<SubjectT>.prepareReactionVerifierWithStrategy(
     propagationContext: Transactions.PropagationContext,
-    subjectProxy: SubjectProxyT,
-) {
-    prepareDeltaVerifier(
+    subject: SubjectT,
+    strategy: TestSubjectPerceptionStrategy,
+): TestSubjectReactionVerifier? = when (strategy) {
+    TestSubjectPerceptionStrategy.NonPerceived -> null
+
+    TestSubjectPerceptionStrategy.Perceived -> prepareReactionVerifier(
         propagationContext = propagationContext,
-        subjectProxy = subjectProxy,
-    ).verifyExposedCorrectly()
+        subject = subject,
+    )
 }

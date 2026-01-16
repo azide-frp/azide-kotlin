@@ -1,7 +1,6 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.EventStream
-import dev.azide.core.filter
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
