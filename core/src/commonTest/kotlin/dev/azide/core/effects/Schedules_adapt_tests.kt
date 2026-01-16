@@ -146,7 +146,6 @@ class Schedules_adapt_tests {
     }
 
     @Test
-    @Ignore // FIXME
     fun test_startRevoked_quickCancelled() {
         val customTimerManager = CustomTimerManager()
 

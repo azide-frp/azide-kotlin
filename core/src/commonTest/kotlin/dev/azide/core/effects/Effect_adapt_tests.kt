@@ -192,7 +192,6 @@ class Effect_adapt_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_startRevoked_quickCancelled() {
         val customTimerManager = CustomTimerManager()
 

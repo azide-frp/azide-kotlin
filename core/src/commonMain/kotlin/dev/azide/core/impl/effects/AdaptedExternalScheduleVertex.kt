@@ -52,17 +52,29 @@ class AdaptedExternalScheduleVertex private constructor(
         when (val internalState = this.internalState) {
             is InternalState.Scheduled -> {
                 // The schedule was (internally) cancelled before it ever had a chance to start externally. We'll need
-                // to revoke the external schedule's start...
+                // to revoke the external schedule's start.
                 internalState.startRevocable.revoke()
                 this@AdaptedExternalScheduleVertex.internalState = InternalState.QuickCancelled
 
                 return object : Revocable {
                     override fun revoke() {
-                        // ...but as the internal cancellation can be revoked, we're ready to re-schedule the external
-                        // schedule's start. In a certain sense, this revocation revokes another revocation.
-                        this@AdaptedExternalScheduleVertex.internalState = enqueueStart(
-                            propagationContext = propagationContext,
-                        )
+                        when (val newInternalState = this@AdaptedExternalScheduleVertex.internalState) {
+                            InternalState.QuickCancelled -> {
+                                // The quick-cancel was revoked, we have to re-schedule the external schedule's start.
+                                // In a certain sense, this revocation revokes another revocation.
+                                this@AdaptedExternalScheduleVertex.internalState = enqueueStart(
+                                    propagationContext = propagationContext,
+                                )
+                            }
+
+                            InternalState.Revoked -> {
+                                // The effect's start was revoked in the meantime. There's nothing to do.
+                            }
+
+                            else -> {
+                                throw IllegalStateException("Unexpected internal state during quick-cancel revocation: $newInternalState")
+                            }
+                        }
                     }
                 }
             }
@@ -145,7 +157,7 @@ class AdaptedExternalScheduleVertex private constructor(
             }
 
             else -> {
-                throw IllegalStateException("Cannot revoke an effect in this state: $internalState")
+                throw IllegalStateException("Unexpected internal state during revocation: $internalState")
             }
         }
     }
