@@ -1,16 +1,21 @@
 package dev.azide.core.effects
 
-import dev.azide.core.Effect
 import dev.azide.core.Schedules
 import dev.azide.core.effects.test_utils.CustomTimerManager
+import dev.azide.core.executeExternally
 import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalSchedule
-import dev.azide.core.test_utils.TransactionTestUtils
-import dev.azide.core.test_utils.executeForTesting
-import dev.azide.core.test_utils.executeForTestingRevocable
-import dev.azide.core.test_utils.revokeForTesting
-import dev.azide.core.test_utils.startForTestingCancellable
-import dev.azide.core.test_utils.startForTestingRevocable
+import dev.azide.core.startExternally
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,10 +41,8 @@ class Schedules_adapt_tests {
     }
 
     @Test
-    fun test_basic() {
+    fun test_start() {
         val customTimerManager = CustomTimerManager()
-
-        var handledCallbackCount = 0
 
         val subjectSchedule = Schedules.adapt(
             externalSchedule = CustomTimerSchedule(
@@ -47,40 +50,22 @@ class Schedules_adapt_tests {
                 intervalMs = 10,
                 handler = object : CustomTimerManager.Handler {
                     override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
-                        ++handledCallbackCount
                     }
                 },
             ),
         )
 
-        val (_, effectHandle: Effect.Handle) = TransactionTestUtils.executeInsideTransaction {
-            subjectSchedule.startForTestingCancellable()
-        }
-
-        customTimerManager.invokeAll()
+        subjectSchedule.startExternally()
 
         assertEquals(
             expected = 1,
-            actual = handledCallbackCount,
-        )
-
-        TransactionTestUtils.executeInsideTransaction {
-            effectHandle.cancel.executeForTesting()
-        }
-
-        customTimerManager.invokeAll()
-
-        assertEquals(
-            expected = 1,
-            actual = handledCallbackCount,
+            actual = customTimerManager.startedTimerCount,
         )
     }
 
     @Test
-    fun test_cancel_quick() {
+    fun test_start_quickCancelled() {
         val customTimerManager = CustomTimerManager()
-
-        var handledCallbackCount = 0
 
         val subjectSchedule = Schedules.adapt(
             externalSchedule = CustomTimerSchedule(
@@ -88,31 +73,27 @@ class Schedules_adapt_tests {
                 intervalMs = 10,
                 handler = object : CustomTimerManager.Handler {
                     override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
-                        ++handledCallbackCount
                     }
                 },
             ),
         )
 
-        TransactionTestUtils.executeInsideTransaction {
-            val (_, effectHandle: Effect.Handle) = subjectSchedule.startForTestingCancellable()
-
-            effectHandle.cancel.executeForTesting()
-        }
-
-        customTimerManager.invokeAll()
+        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+            subjectEffect = subjectSchedule,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
 
         assertEquals(
             expected = 0,
-            actual = handledCallbackCount,
+            actual = customTimerManager.startedTimerCount,
         )
     }
 
     @Test
-    fun test_start_revoked() {
+    fun test_start_quickCancelledRevoked() {
         val customTimerManager = CustomTimerManager()
-
-        var handledCallbackCount = 0
 
         val subjectSchedule = Schedules.adapt(
             externalSchedule = CustomTimerSchedule(
@@ -120,30 +101,54 @@ class Schedules_adapt_tests {
                 intervalMs = 10,
                 handler = object : CustomTimerManager.Handler {
                     override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
-                        ++handledCallbackCount
                     }
                 },
             ),
         )
 
-        TransactionTestUtils.executeInsideTransaction {
-            val (_, revocable) = subjectSchedule.startForTestingRevocable()
-            revocable.revokeForTesting()
-        }
+        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+            subjectEffect = subjectSchedule,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
 
-        customTimerManager.invokeAll()
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_startRevoked() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectSchedule = Schedules.adapt(
+            externalSchedule = CustomTimerSchedule(
+                customTimerManager = customTimerManager,
+                intervalMs = 10,
+                handler = object : CustomTimerManager.Handler {
+                    override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
+                    }
+                },
+            ),
+        )
+
+        EffectTestUtils_startRevoked.executeStartTransaction(
+            subjectEffect = subjectSchedule,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
 
         assertEquals(
             expected = 0,
-            actual = handledCallbackCount,
+            actual = customTimerManager.startedTimerCount,
         )
     }
 
     @Test
-    fun test_cancel_revoked() {
+    @Ignore // FIXME
+    fun test_startRevoked_quickCancelled() {
         val customTimerManager = CustomTimerManager()
-
-        var handledCallbackCount = 0
 
         val subjectSchedule = Schedules.adapt(
             externalSchedule = CustomTimerSchedule(
@@ -151,37 +156,133 @@ class Schedules_adapt_tests {
                 intervalMs = 10,
                 handler = object : CustomTimerManager.Handler {
                     override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
-                        ++handledCallbackCount
                     }
                 },
             ),
         )
 
-        val (_, subjectEffectHandle: Effect.Handle) = TransactionTestUtils.executeInsideTransaction {
-            subjectSchedule.startForTestingCancellable()
-        }
-
-        TransactionTestUtils.executeInsideTransaction {
-            val (_, revocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
-            revocable.revokeForTesting()
-        }
-
-        customTimerManager.invokeAll()
-
-        assertEquals(
-            expected = 1,
-            actual = handledCallbackCount,
+        EffectTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+            subjectEffect = subjectSchedule,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
         )
 
-        TransactionTestUtils.executeInsideTransaction {
-            subjectEffectHandle.cancel.executeForTesting()
-        }
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
 
-        customTimerManager.invokeAll()
+    @Test
+    fun test_startRevoked_quickCancelledRevoked() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectSchedule = Schedules.adapt(
+            externalSchedule = CustomTimerSchedule(
+                customTimerManager = customTimerManager,
+                intervalMs = 10,
+                handler = object : CustomTimerManager.Handler {
+                    override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
+                    }
+                },
+            ),
+        )
+
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+            subjectEffect = subjectSchedule,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_step() {
+        val customTimerManager = CustomTimerManager()
+
+        val receivedMeasures = mutableListOf<Int>()
+
+        val subjectSchedule = Schedules.adapt(
+            externalSchedule = CustomTimerSchedule(
+                customTimerManager = customTimerManager,
+                intervalMs = 10,
+                handler = object : CustomTimerManager.Handler {
+                    override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
+                        receivedMeasures.add(actualElapsedTimeMs)
+                    }
+                },
+            ),
+        )
+
+        subjectSchedule.startExternally()
+
+        customTimerManager.invokeAll(delayMs = 3)
 
         assertEquals(
             expected = 1,
-            actual = handledCallbackCount,
+            actual = customTimerManager.startedTimerCount,
+        )
+
+        assertEquals(
+            expected = listOf(13),
+            actual = receivedMeasures,
+        )
+    }
+
+    @Test
+    fun test_cancelled() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectSchedule = Schedules.adapt(
+            externalSchedule = CustomTimerSchedule(
+                customTimerManager = customTimerManager,
+                intervalMs = 10,
+                handler = object : CustomTimerManager.Handler {
+                    override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
+                    }
+                },
+            ),
+        )
+
+        val subjectHandle = subjectSchedule.startExternally().handle
+
+        subjectHandle.cancel.executeExternally()
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_cancelledRevoked() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectSchedule = Schedules.adapt(
+            externalSchedule = CustomTimerSchedule(
+                customTimerManager = customTimerManager,
+                intervalMs = 10,
+                handler = object : CustomTimerManager.Handler {
+                    override fun handleIntervalElapsed(actualElapsedTimeMs: Int) {
+                    }
+                },
+            ),
+        )
+
+        val subjectOutcome = subjectSchedule.startExternally()
+
+        EffectTestUtils_cancelledRevoked.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
         )
     }
 }

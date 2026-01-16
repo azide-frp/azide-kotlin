@@ -1,21 +1,30 @@
 package dev.azide.core.effects
 
+import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.effects.test_utils.CustomTimerManager
+import dev.azide.core.executeEachOf
+import dev.azide.core.executeExternally
 import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStreamEffect
-import dev.azide.core.test_utils.TransactionTestUtils
-import dev.azide.core.test_utils.executeForTesting
-import dev.azide.core.test_utils.executeForTestingRevocable
-import dev.azide.core.test_utils.revokeForTesting
-import dev.azide.core.test_utils.startForTestingCancellable
-import dev.azide.core.test_utils.startForTestingRevocable
-import dev.azide.core.test_utils.subscribeForTesting
-import dev.azide.core.test_utils.verifyDidNotPropagateNorExposesEmission
-import dev.azide.core.test_utils.verifyDoesNotExposeEmission
-import dev.azide.core.test_utils.verifyPropagatedEmission
+import dev.azide.core.external.ExternalTrigger
+import dev.azide.core.startExternally
+import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.effects.EffectTestUtils_cancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_start
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelled
+import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
+import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @Suppress("ClassName")
 class Effect_adapt_tests {
@@ -44,7 +53,22 @@ class Effect_adapt_tests {
     }
 
     @Test
-    fun test_basic() {
+    fun test_start_subscribed() {
+        test_start(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_start_nonSubscribed() {
+        test_start(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_start(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
         val customTimerManager = CustomTimerManager()
 
         val subjectEffect = Effect.adapt(
@@ -54,32 +78,204 @@ class Effect_adapt_tests {
             ),
         )
 
-        val (eventStreamSubscriber, effectHandle: Effect.Handle) = TransactionTestUtils.executeInsideTransaction {
-            val (eventStream, effectHandle: Effect.Handle) = subjectEffect.startForTestingCancellable()
+        EffectTestUtils_start.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
 
-            val eventStreamSubscriber = eventStream.subscribeForTesting()
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
 
-            Pair(
-                eventStreamSubscriber, effectHandle,
+    @Test
+    fun test_start_quickCancelled_subscribed() {
+        test_start_quickCancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_start_quickCancelled_nonSubscribed() {
+        test_start_quickCancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_start_quickCancelled(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_start_quickCancelledRevoked_subscribed() {
+        test_start_quickCancelledRevoked(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_start_quickCancelledRevoked_nonSubscribed() {
+        test_start_quickCancelledRevoked(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_start_quickCancelledRevoked(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_startRevoked() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        EffectTestUtils_startRevoked.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_startRevoked_quickCancelled() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        EffectTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_startRevoked_quickCancelledRevoked() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
+
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
+    }
+
+    @Test
+    fun test_step() {
+        val customTimerManager = CustomTimerManager()
+
+        val subjectEffect = Effect.adapt(
+            CustomTimerStreamEffect(
+                timerManager = customTimerManager,
+                intervalMs = 10,
+            ),
+        )
+
+        val subjectEventStream = subjectEffect.startExternally().result
+
+        val receivedMeasures = mutableListOf<Int>()
+
+        subjectEventStream.executeEachOf { event ->
+            Action.adapt(
+                externalTrigger = object : ExternalTrigger {
+                    override fun executeExternally() {
+                        receivedMeasures.add(event)
+                    }
+                },
             )
-        }
+        }.startExternally()
 
         customTimerManager.invokeAll(delayMs = 3)
 
-        eventStreamSubscriber.verifyPropagatedEmission(expectedEmittedEvent = 13)
-        eventStreamSubscriber.verifyDoesNotExposeEmission()
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
+        )
 
-        TransactionTestUtils.executeInsideTransaction {
-            effectHandle.cancel.executeForTesting()
-        }
-
-        customTimerManager.invokeAll(delayMs = 2)
-
-        eventStreamSubscriber.verifyDidNotPropagateNorExposesEmission()
+        assertEquals(
+            expected = listOf(13),
+            actual = receivedMeasures,
+        )
     }
 
     @Test
-    fun test_cancel_quick() {
+    fun test_cancelled() {
         val customTimerManager = CustomTimerManager()
 
         val subjectEffect = Effect.adapt(
@@ -89,23 +285,23 @@ class Effect_adapt_tests {
             ),
         )
 
-        val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
-            val (eventStream, effectHandle: Effect.Handle) = subjectEffect.startForTestingCancellable()
+        val subjectOutcome = subjectEffect.startExternally()
 
-            val eventStreamSubscriber = eventStream.subscribeForTesting()
+        EffectTestUtils_cancelled.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
+        )
 
-            effectHandle.cancel.executeForTesting()
-
-            eventStreamSubscriber
-        }
-
-        customTimerManager.invokeAll(delayMs = 3)
-
-        eventStreamSubscriber.verifyDidNotPropagateNorExposesEmission()
+        assertEquals(
+            expected = 0,
+            actual = customTimerManager.startedTimerCount,
+        )
     }
 
     @Test
-    fun test_start_revoked() {
+    fun test_cancelledRevoked() {
         val customTimerManager = CustomTimerManager()
 
         val subjectEffect = Effect.adapt(
@@ -115,48 +311,18 @@ class Effect_adapt_tests {
             ),
         )
 
-        val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
-            val (eventStream, revocable) = subjectEffect.startForTestingRevocable()
+        val subjectOutcome = subjectEffect.startExternally()
 
-            val eventStreamSubscriber = eventStream.subscribeForTesting()
-
-            revocable.revokeForTesting()
-
-            eventStreamSubscriber
-        }
-
-        customTimerManager.invokeAll()
-
-        eventStreamSubscriber.verifyDidNotPropagateNorExposesEmission()
-    }
-
-    @Test
-    fun test_cancel_revoked() {
-        val customTimerManager = CustomTimerManager()
-
-        val subjectEffect = Effect.adapt(
-            CustomTimerStreamEffect(
-                timerManager = customTimerManager,
-                intervalMs = 10,
-            ),
+        EffectTestUtils_cancelledRevoked.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedTargetImpact = ExpectedTestTargetImpact.None,
         )
 
-        val (eventStreamSubscriber, subjectEffectHandle) = TransactionTestUtils.executeInsideTransaction {
-            val (eventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
-
-            val eventStreamSubscriber = eventStream.subscribeForTesting()
-
-            Pair(eventStreamSubscriber, subjectEffectHandle)
-        }
-
-        TransactionTestUtils.executeInsideTransaction {
-            val (_, revocable) = subjectEffectHandle.cancel.executeForTestingRevocable()
-            revocable.revokeForTesting()
-        }
-
-        customTimerManager.invokeAll()
-
-        eventStreamSubscriber.verifyPropagatedEmission(expectedEmittedEvent = 11)
-        eventStreamSubscriber.verifyDoesNotExposeEmission()
+        assertEquals(
+            expected = 1,
+            actual = customTimerManager.startedTimerCount,
+        )
     }
 }

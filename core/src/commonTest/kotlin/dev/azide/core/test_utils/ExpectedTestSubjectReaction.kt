@@ -5,7 +5,7 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReaction
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
 
 interface ExpectedTestSubjectReaction<in SubjectT> {
-    data object Noop : ExpectedTestSubjectReaction<Any> {
+    data object None : ExpectedTestSubjectReaction<Any> {
         override fun prepareReactionVerifier(
             propagationContext: Transactions.PropagationContext,
             subject: Any,

@@ -256,3 +256,9 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
 ): Action<TransformedResultT> = joinOf {
     transform(it).asAction
 }
+
+fun <ResultT> Action<ResultT>.executeExternally(): ResultT = Transactions.executeWithResult {
+    val (result: ResultT, _) = executeInternallyWrappedUp(it)
+
+    result
+}

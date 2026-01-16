@@ -41,7 +41,7 @@ data object EventStream_executeEach_testUtils {
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.Noop,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }

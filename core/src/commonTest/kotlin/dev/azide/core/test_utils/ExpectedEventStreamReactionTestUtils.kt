@@ -16,9 +16,9 @@ typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<
 
 val <EventT> ExpectedEventStreamReaction<EventT>.asExpectedTransition: ExpectedEventStreamTransition<EventT>
     get() = ExpectedEventStreamTransition(
-        expectedOldState = ExpectedTestSubjectState.Noop,
+        expectedOldState = ExpectedTestSubjectState.None,
         expectedReaction = this,
-        expectedNewState = ExpectedTestSubjectState.Noop,
+        expectedNewState = ExpectedTestSubjectState.None,
     )
 
 private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {

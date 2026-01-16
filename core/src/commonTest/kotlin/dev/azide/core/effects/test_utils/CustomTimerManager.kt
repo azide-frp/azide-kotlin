@@ -8,6 +8,9 @@ class CustomTimerManager {
 
     private val startedTimerEntries = mutableSetOf<Entry>()
 
+    val startedTimerCount: Int
+        get() = startedTimerEntries.size
+
     interface Handler {
         fun handleIntervalElapsed(
             actualElapsedTimeMs: Int,

@@ -45,7 +45,7 @@ data object Cell_actuate_testUtils {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.Noop,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
         )
     }
