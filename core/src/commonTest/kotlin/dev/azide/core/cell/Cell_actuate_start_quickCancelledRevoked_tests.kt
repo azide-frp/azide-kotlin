@@ -67,7 +67,6 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_start_quickCancelledRevoked_sourceUpdatesSimultaneously_observed() {
         TestSlotDispatcher1x4.entries.forEach { dispatcher ->
             test_start_quickCancelledRevoked_sourceUpdatesSimultaneously(
@@ -78,7 +77,6 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_start_quickCancelledRevoked_sourceUpdatesSimultaneously_nonObserved() {
         test_start_quickCancelledRevoked_sourceUpdatesSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
@@ -106,6 +104,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 newValue = targetEffect2,
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -122,7 +121,6 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_start_quickCancelledRevoked_sourceUpdatesRevokedSimultaneously_observed() {
         TestSlotDispatcher2x4.entries.forEach { dispatcher ->
             test_start_quickCancelledRevoked_sourceUpdatesRevokedSimultaneously(
@@ -160,6 +158,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 newValue = targetEffect2,
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedTestTargetImpact.combine(
@@ -175,7 +174,6 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_start_quickCancelledRevoked_sourceUpdatesCorrectedSimultaneously_observed() {
         TestSlotDispatcher2x4.entries.forEach { dispatcher ->
             test_start_quickCancelledRevoked_sourceUpdatesCorrectedSimultaneously(

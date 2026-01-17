@@ -58,6 +58,7 @@ interface Effect<ResultT> {
             object : AbstractPrimitiveEffect<AdaptedExternalStreamEffectVertex<EventT>, EventStream<EventT>>() {
                 override fun startInternally(
                     propagationContext: PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
                 ): AdaptedExternalStreamEffectVertex<EventT> = AdaptedExternalStreamEffectVertex.start(
                     propagationContext = propagationContext,
                     externalStreamEffectVertex = externalStreamEffect,

@@ -15,6 +15,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT, ResultT> :
         ): Action.Outcome<Effect.Outcome<ResultT>> {
             val effectVertex = startInternally(
                 propagationContext = propagationContext,
+                wrapUpContext = wrapUpContext,
             )
 
             val effectResult = wrap(effectVertex = effectVertex)
@@ -40,6 +41,7 @@ abstract class AbstractPrimitiveEffect<EffectVertexT, ResultT> :
 
     abstract fun startInternally(
         propagationContext: Transactions.PropagationContext,
+        wrapUpContext: Transactions.WrapUpContext,
     ): EffectVertexT
 
     abstract fun wrap(

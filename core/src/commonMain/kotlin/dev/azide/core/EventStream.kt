@@ -2,17 +2,18 @@ package dev.azide.core
 
 import dev.azide.core.external.ExternalStream
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.impl.effects.AbstractRestartableEffect
+import dev.azide.core.impl.effects.AbstractPrimitiveEffect
+import dev.azide.core.impl.effects.ExecutedEachEventStreamEffectVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
-import dev.azide.core.impl.event_stream.operated_vertices.ExecutedEachEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.Merged2EventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
-import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import kotlin.jvm.JvmName
@@ -164,7 +165,7 @@ fun <EventT> EventStream<EventT>.holding(
     initialValue: EventT,
 ): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
     override fun pullInternally(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
     ): Cell<EventT> = Cell.Ordinary(
         vertex = HeldCellVertex.start(
@@ -207,13 +208,17 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
 }
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
-    object : AbstractRestartableEffect<ExecutedEachEventStreamVertex<EventT>, EventStream<EventT>>() {
-        override fun buildVertex(): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
-            sourceVertex = this@executeEach.vertex,
+    object : AbstractPrimitiveEffect<ExecutedEachEventStreamEffectVertex<EventT>, EventStream<EventT>>() {
+        override fun startInternally(
+            propagationContext: PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): ExecutedEachEventStreamEffectVertex<EventT> = ExecutedEachEventStreamEffectVertex.startInternally(
+            wrapUpContext = wrapUpContext,
+            sourceEventStream = this@executeEach,
         )
 
-        override fun buildResult(
-            effectVertex: ExecutedEachEventStreamVertex<EventT>,
+        override fun wrap(
+            effectVertex: ExecutedEachEventStreamEffectVertex<EventT>,
         ): EventStream<EventT> = EventStream.Ordinary(
             vertex = effectVertex,
         )

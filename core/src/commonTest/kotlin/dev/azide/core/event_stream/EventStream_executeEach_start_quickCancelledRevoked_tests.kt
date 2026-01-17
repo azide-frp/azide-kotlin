@@ -5,6 +5,8 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
@@ -58,7 +60,6 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         )
     }
 
-    @Ignore // FIXME: Handle cancellation revocation correctly
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_subscribed() {
         TestSlotDispatcher1x4.entries.forEach { dispatcher ->
@@ -94,6 +95,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
                 emittedEvent = targetAction,
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
@@ -105,7 +107,6 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         )
     }
 
-    @Ignore // FIXME: Handle cancellation revocation correctly
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_subscribed() {
         TestSlotDispatcher2x4.entries.forEach { dispatcher ->
@@ -140,7 +141,9 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+            ),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
@@ -150,7 +153,6 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         )
     }
 
-    @Ignore // FIXME: Handle cancellation revocation correctly
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_subscribed() {
         TestSlotDispatcher2x4.entries.forEach { dispatcher ->
@@ -188,6 +190,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),
             expectedTargetImpact = ExpectedTestTargetImpact.combine(

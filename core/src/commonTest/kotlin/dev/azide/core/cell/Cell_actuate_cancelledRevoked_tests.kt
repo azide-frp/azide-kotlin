@@ -73,7 +73,6 @@ class Cell_actuate_cancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_cancelledRevoked_sourceUpdates_observed() {
         TestSlotDispatcher1x3.entries.forEach { dispatcher ->
             test_cancelledRevoked_sourceUpdates(
@@ -84,7 +83,6 @@ class Cell_actuate_cancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_cancelledRevoked_sourceUpdates_nonObserved() {
         test_cancelledRevoked_sourceUpdates(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
@@ -116,6 +114,7 @@ class Cell_actuate_cancelledRevoked_tests {
                 newValue = targetEffect2,
             ).bind(dispatcher),
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -189,7 +188,6 @@ class Cell_actuate_cancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_cancelledRevoked_sourceUpdatesCorrected_observed() {
         TestSlotDispatcher2x3.entries.forEach { dispatcher ->
             test_cancelledRevoked_sourceUpdatesCorrected(
@@ -200,7 +198,6 @@ class Cell_actuate_cancelledRevoked_tests {
     }
 
     @Test
-    @Ignore // FIXME: Handle cancellation revocation correctly
     fun test_cancelledRevoked_sourceUpdatesCorrected_nonObserved() {
         test_cancelledRevoked_sourceUpdatesCorrected(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,

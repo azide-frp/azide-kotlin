@@ -66,6 +66,9 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         _isEnqueuedForCommitment = false
     }
 
+    protected val hasSubscribers: Boolean
+        get() = _registeredSubscribers.size > 0
+
     protected fun exposeAndPropagateEmission(
         propagationContext: Transactions.PropagationContext,
         emission: EventStreamVertex.Emission<EventT>?,

@@ -1,0 +1,138 @@
+package dev.azide.core.event_stream
+
+import dev.azide.core.Action
+import dev.azide.core.CausalLoopException
+import dev.azide.core.Effect
+import dev.azide.core.executeEach
+import dev.azide.core.executeEachOf
+import dev.azide.core.test_utils.TestEventStreamSubscriber
+import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TransactionTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.executeForTesting
+import dev.azide.core.test_utils.startForTestingCancellable
+import dev.azide.core.test_utils.stimulateForTesting
+import dev.azide.core.test_utils.subscribeForTesting
+import dev.azide.core.test_utils.verifyDidNotPropagateNorExposesEmission
+import dev.azide.core.test_utils.verifyDoesNotExposeEmission
+import dev.azide.core.test_utils.verifyWasNotExecuted
+import kotlin.test.Test
+import kotlin.test.assertFails
+import kotlin.test.assertIs
+
+@Suppress("ClassName")
+class EventStream_executeEach_misc_tests {
+    @Test
+    fun test_executeEach_start_cancelledInstantly_twice() {
+        test_executeEach_start_cancelledInstantly(count = 2)
+    }
+
+    private fun test_executeEach_start_cancelledInstantly(count: Int) {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            repeat(count) {
+                subjectEffectHandle.cancel.executeForTesting()
+            }
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+
+            subjectEventStreamSubscriber
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+
+            subjectEventStreamSubscriber.verifyDoesNotExposeEmission() // ...because the effect is cancelled
+        }
+
+        targetAction.verifyWasNotExecuted() // ...at any point
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
+    }
+
+    @Test
+    fun test_executeEach_cancel_twiceSimultaneously() {
+        test_executeEach_cancel_once(count = 2)
+    }
+
+    private fun test_executeEach_cancel_once(count: Int) {
+        data class StartTransactionRecord(
+            val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,
+            val subjectEffectHandle: Effect.Handle,
+        )
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
+            val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
+            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+
+            StartTransactionRecord(
+                subjectEventStreamSubscriber = subjectEventStreamSubscriber,
+                subjectEffectHandle = subjectEffectHandle,
+            )
+        }
+
+        val subjectEventStreamSubscriber = startTransactionRecord.subjectEventStreamSubscriber
+        val subjectEffectHandle = startTransactionRecord.subjectEffectHandle
+
+        TransactionTestUtils.executeInsideTransaction {
+            repeat(count) {
+                subjectEffectHandle.cancel.executeForTesting()
+            }
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+        }
+
+        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() // ...at any point / now
+
+        targetAction.verifyWasNotExecuted() // ...at any point
+    }
+
+    @Test
+    fun test_executeEach_selfCancelling() {
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val subjectEffectOutcome = TransactionTestUtils.executeInsideTransaction {
+            subjectEffect.start.executeForTesting()
+        }
+
+        val subjectEventStream = subjectEffectOutcome.result
+        val subjectEffectHandle = subjectEffectOutcome.handle
+
+        val nastyEffect = subjectEventStream.executeEachOf { _: Int ->
+            // Attempt to cancel the effect in consequence of its own emission, which leads to a paradox
+            subjectEffectHandle.cancel
+        }
+
+        TransactionTestUtils.executeInsideTransaction {
+            nastyEffect.start.executeForTesting()
+        }
+
+        val targetAction = TestTargetAction.of(result = 10)
+
+        assertIs<CausalLoopException>(
+            assertFails {
+                TransactionTestUtils.executeInsideTransaction {
+                    sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+                }
+            },
+        )
+    }
+}
