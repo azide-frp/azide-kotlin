@@ -108,19 +108,19 @@ object ExpectedCellReactionTestUtils {
         expectedOldValue: ValueT,
         expectedNewValue: ValueT,
     ): ExpectedCellTransition<ValueT> = ExpectedCellTransition(
-        expectedOldState = _expectStableValue(
+        expectedOldState = expectStableValue(
             expectedStableValue = expectedOldValue,
         ),
-        expectedReaction = _expectUpdate(
+        expectedReaction = expectUpdate(
             intermediatePropagationTolerance = intermediatePropagationTolerance,
             expectedUpdatedValue = expectedNewValue,
         ),
-        expectedNewState = _expectStableValue(
+        expectedNewState = expectStableValue(
             expectedStableValue = expectedNewValue,
         ),
     )
 
-    fun <ValueT> _expectUpdate(
+    fun <ValueT> expectUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUpdatedValue: ValueT,
     ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
@@ -132,7 +132,7 @@ object ExpectedCellReactionTestUtils {
         )
     }
 
-    fun <ValueT> _expectStableValue(
+    fun <ValueT> expectStableValue(
         expectedStableValue: ValueT,
     ): ExpectedCellState<ValueT> = object : ExpectedCellState<ValueT> {
         override fun verifyStableState(
@@ -153,18 +153,18 @@ object ExpectedCellReactionTestUtils {
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUnaffectedValue: ValueT,
     ): ExpectedCellTransition<ValueT> = ExpectedCellTransition(
-        expectedOldState = _expectStableValue(
+        expectedOldState = expectStableValue(
             expectedStableValue = expectedUnaffectedValue,
         ),
-        expectedReaction = _expectNoUpdate(
+        expectedReaction = expectNoUpdate(
             intermediatePropagationTolerance = intermediatePropagationTolerance,
         ),
-        expectedNewState = _expectStableValue(
+        expectedNewState = expectStableValue(
             expectedStableValue = expectedUnaffectedValue,
         ),
     )
 
-    fun <ValueT> _expectNoUpdate(
+    fun <ValueT> expectNoUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
     ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
         override val expectedEffectiveUpdate: CellVertex.Update<ValueT>? = null

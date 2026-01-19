@@ -134,3 +134,7 @@ fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
 fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
     transform: (ResultT) -> Action<TransformedResultT>,
 ): Action<TransformedResultT> = asAction.joinOf(transform)
+
+fun <ResultT> Moment<ResultT>.pullExternally(): ResultT = Transactions.executeWithResult { propagationContext ->
+    pullInternallyWrappedUp(propagationContext = propagationContext)
+}

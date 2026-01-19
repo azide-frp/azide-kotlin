@@ -292,8 +292,10 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
     transform(it).asAction
 }
 
-fun <ResultT> Action<ResultT>.executeExternally(): ResultT = Transactions.executeWithResult {
-    val (result: ResultT, _) = executeInternallyWrappedUp(it)
+fun <ResultT> Action<ResultT>.executeExternally(): ResultT = Transactions.executeWithResult { propagationContext ->
+    val (result: ResultT, _) = executeInternallyWrappedUp(
+        propagationContext = propagationContext,
+    )
 
     result
 }
