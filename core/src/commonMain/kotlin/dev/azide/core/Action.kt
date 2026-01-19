@@ -88,6 +88,41 @@ interface Action<out ResultT> {
                 },
             )
         }
+
+        fun <ResultT1, ResultT2, TransformedResultT> map2(
+            action1: Action<ResultT1>,
+            action2: Action<ResultT2>,
+            transform: (
+                result1: ResultT1,
+                result2: ResultT2,
+            ) -> TransformedResultT,
+        ): Action<TransformedResultT> = object : Action<TransformedResultT> {
+            override fun executeInternally(
+                propagationContext: Transactions.PropagationContext,
+                wrapUpContext: Transactions.WrapUpContext,
+            ): Outcome<TransformedResultT> {
+                val outcome1 = action1.executeInternally(
+                    propagationContext = propagationContext,
+                    wrapUpContext = wrapUpContext,
+                )
+
+                val outcome2 = action2.executeInternally(
+                    propagationContext = propagationContext,
+                    wrapUpContext = wrapUpContext,
+                )
+
+                return Outcome.of(
+                    result = transform(
+                        outcome1.result,
+                        outcome2.result,
+                    ),
+                    revocable = Revocable.combine(
+                        outcome1.revocable,
+                        outcome2.revocable,
+                    ),
+                )
+            }
+        }
     }
 
     fun executeInternally(

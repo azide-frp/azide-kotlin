@@ -75,6 +75,9 @@ interface Effect<ResultT> {
     val start: Action<Outcome<ResultT>>
 }
 
+val <ResultT> Effect<ResultT>.startForever: Action<ResultT>
+    get() = start.map { it.result }
+
 fun <ResultT, TransformedResultT> Effect<ResultT>.map(
     transform: (ResultT) -> TransformedResultT,
 ): Effect<TransformedResultT> = object : Effect<TransformedResultT> {

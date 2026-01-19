@@ -2,9 +2,16 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Action
 import dev.azide.core.CausalLoopException
+import dev.azide.core.Cell
 import dev.azide.core.Effect
+import dev.azide.core.EventStream
+import dev.azide.core.asAction
 import dev.azide.core.executeEach
 import dev.azide.core.executeEachOf
+import dev.azide.core.holding
+import dev.azide.core.impl.utils.LoopClosure
+import dev.azide.core.sampleExternally
+import dev.azide.core.startForever
 import dev.azide.core.test_utils.TestEventStreamSubscriber
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TransactionTestUtils
@@ -16,12 +23,76 @@ import dev.azide.core.test_utils.subscribeForTesting
 import dev.azide.core.test_utils.verifyDidNotPropagateNorExposesEmission
 import dev.azide.core.test_utils.verifyDoesNotExposeEmission
 import dev.azide.core.test_utils.verifyWasNotExecuted
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertIs
 
 @Suppress("ClassName")
 class EventStream_executeEach_misc_tests {
+    @Test
+    @Ignore // FIXME: Make this pass
+    fun test_executeEach_looped1() {
+        val targetAction = TestTargetAction.of(result = 10)
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val memoryCell = TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(targetAction).stimulateForTesting()
+
+            EventStream.loopedInAction { loopedSubjectEventStream: EventStream<Int> ->
+                Action.map2(
+                    loopedSubjectEventStream.holding(0).asAction,
+                    subjectEffect.startForever,
+                ) { memoryCell: Cell<Int>, subjectEventStream: EventStream<Int> ->
+                    LoopClosure(
+                        result = memoryCell,
+                        loopedValue = subjectEventStream,
+                    )
+                }
+            }.executeForTesting()
+        }
+
+        assertEquals(
+            expected = 10,
+            actual = memoryCell.sampleExternally(),
+        )
+    }
+
+    @Test
+    fun test_executeEach_looped2() {
+        val targetAction = TestTargetAction.of(result = 10)
+
+        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+
+        val subjectEffect = sourceEventStream.executeEach()
+
+        val memoryCell = TransactionTestUtils.executeInsideTransaction {
+            sourceEventStream.emit(targetAction).stimulateForTesting()
+
+            EventStream.loopedInAction { loopedSubjectEventStream: EventStream<Int> ->
+                Action.map2(
+                    subjectEffect.startForever,
+                    loopedSubjectEventStream.holding(0).asAction,
+                ) { subjectEventStream: EventStream<Int>, memoryCell: Cell<Int> ->
+                    LoopClosure(
+                        result = memoryCell,
+                        loopedValue = subjectEventStream,
+                    )
+                }
+            }.executeForTesting()
+        }
+
+        assertEquals(
+            expected = 10,
+            actual = memoryCell.sampleExternally(),
+        )
+    }
+
+
     @Test
     fun test_executeEach_start_cancelledInstantly_twice() {
         test_executeEach_start_cancelledInstantly(count = 2)
