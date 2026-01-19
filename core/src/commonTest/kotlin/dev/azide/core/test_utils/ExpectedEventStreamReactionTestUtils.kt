@@ -2,6 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.registerObserverOnline
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.BasicSubscriber
 import dev.azide.core.impl.event_stream.registerSubscriberOnline
@@ -24,21 +25,33 @@ val <EventT> ExpectedEventStreamReaction<EventT>.asExpectedTransition: ExpectedE
 private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
-        subject: EventStream<EventT>,
+        subjectLazy: Lazy<EventStream<EventT>>,
     ): TestSubjectReactionVerifier {
-        val subjectVertex = subject.vertex
+        val subjectVertex = subjectLazy.value.vertex
 
         return object : TestSubjectReactionVerifier, BasicSubscriber<EventT> {
-            private val subscriberHandle = subjectVertex.registerSubscriberOnline(
-                propagationContext = propagationContext,
-                subscriber = this,
-            )
+            private var subscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
             private val initialEmission: EventStreamVertex.Emission<EventT>? = subjectVertex.ongoingEmission
 
             private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
 
+            override fun install() {
+                if (subscriberHandle != null) {
+                    throw IllegalStateException("Event stream verifier is already installed")
+                }
+
+                subscriberHandle = subjectVertex.registerSubscriberOnline(
+                    propagationContext = propagationContext,
+                    subscriber = this,
+                )
+            }
+
             override fun verifyReaction() {
+                if (subscriberHandle == null) {
+                    throw IllegalStateException("A non-installed verifier cannot be used for verification")
+                }
+
                 assertEquals(
                     expected = expectedEffectiveEmission,
                     actual = subjectVertex.ongoingEmission,
@@ -56,10 +69,6 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
                     message = "The effective received emission did not match the expected emission.",
                 )
 
-                subjectVertex.unregisterSubscriber(
-                    handle = subscriberHandle,
-                )
-
                 when (intermediatePropagationTolerance) {
                     IntermediatePropagationTolerance.DoNotTolerate -> {
                         assertTrue(
@@ -70,6 +79,16 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
 
                     IntermediatePropagationTolerance.Tolerate -> {}
                 }
+            }
+
+            override fun uninstall() {
+                val subscriberHandle =
+                    this.subscriberHandle
+                        ?: throw IllegalStateException("Cannot uninstall a non-installed event stream verifier")
+
+                subjectVertex.unregisterSubscriber(
+                    handle = subscriberHandle,
+                )
             }
 
             override fun handleEmission(

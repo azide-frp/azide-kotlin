@@ -8,7 +8,8 @@ import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedTestTargetImpact
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
-import dev.azide.core.test_utils.prepareReactionVerifierWithStrategy
+import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
+import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
 data object EffectTestUtils_start {
@@ -42,7 +43,7 @@ data object EffectTestUtils_start {
             )
 
             val subjectReactionVerifier: ExpectedTestSubjectReaction.TestSubjectReactionVerifier? =
-                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategy(
+                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
                     propagationContext = propagationContext,
                     subject = subject,
                     strategy = subjectPerceptionStrategy,
@@ -53,7 +54,7 @@ data object EffectTestUtils_start {
                 subject = subject,
             )
 
-            subjectReactionVerifier?.verifyReaction()
+            subjectReactionVerifier?.verifyReactionUninstalling()
 
             subject
         }
