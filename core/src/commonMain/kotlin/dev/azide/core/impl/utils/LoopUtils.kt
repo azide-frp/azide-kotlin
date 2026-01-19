@@ -12,4 +12,15 @@ object LoopUtils {
 
         return result
     }
+
+    inline fun <ResultT : Any> selfLooped(
+        block: (Lazy<ResultT>) -> ResultT,
+    ): ResultT = looped { resultLazy: Lazy<ResultT> ->
+        val result = block(resultLazy)
+
+        LoopClosure(
+            result = result,
+            loopedValue = result,
+        )
+    }
 }

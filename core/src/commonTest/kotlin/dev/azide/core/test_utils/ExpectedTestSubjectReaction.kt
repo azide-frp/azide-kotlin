@@ -66,3 +66,11 @@ fun TestSubjectReactionVerifier.verifyReactionUninstalling() {
     verifyReaction()
     uninstall()
 }
+
+fun TestSubjectReactionVerifier.installLater(
+    wrapUpContext: Transactions.WrapUpContext,
+) {
+    wrapUpContext.enqueueForWrapUp {
+        install()
+    }
+}

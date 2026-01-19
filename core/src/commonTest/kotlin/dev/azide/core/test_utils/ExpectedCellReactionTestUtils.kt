@@ -19,13 +19,14 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<Cell<ValueT>>,
-    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier {
-        val subjectVertex = subjectLazy.value.vertex
+    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
+        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, WarmCellVertex.BasicObserver<ValueT> {
+            private val subjectVertex: CellVertex<ValueT>
+                get() = subjectLazy.value.vertex
 
-        return object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, WarmCellVertex.BasicObserver<ValueT> {
             private var observerHandle: CellVertex.ObserverHandle? = null
 
-            private val initialUpdate: CellVertex.Update<ValueT>? = subjectVertex.ongoingUpdate
+            private var initialUpdate: CellVertex.Update<ValueT>? = null
 
             private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
@@ -38,6 +39,8 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
                     propagationContext = propagationContext,
                     observer = this,
                 )
+
+                initialUpdate = subjectVertex.ongoingUpdate
             }
 
             override fun verifyReaction() {
@@ -81,6 +84,9 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
                 subjectVertex.unregisterObserver(
                     handle = observerHandle,
                 )
+
+                this.observerHandle = null
+                this.initialUpdate = null
             }
 
             override fun handleUpdate(
@@ -90,7 +96,6 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
                 receivedUpdates.add(update)
             }
         }
-    }
 
     abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
 

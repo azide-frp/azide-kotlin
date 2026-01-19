@@ -194,11 +194,6 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
             val sourceEventStream = sourceEventStream
                 ?: throw IllegalStateException("ExecutedEachEventStreamEffectVertex was revoked before being wrapped-up")
 
-            if (hasSubscribers) {
-                // TODO: Figure out the actual contract
-//                throw IllegalStateException("Event stream vertex should not have observers during wrap-up")
-            }
-
             val sourceVertex = sourceEventStream.vertex
 
             attach(

@@ -26,77 +26,80 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
-    ): TestSubjectReactionVerifier {
-        val subjectVertex = subjectLazy.value.vertex
+    ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier, BasicSubscriber<EventT> {
+        private val subjectVertex: EventStreamVertex<EventT>
+            get() = subjectLazy.value.vertex
 
-        return object : TestSubjectReactionVerifier, BasicSubscriber<EventT> {
-            private var subscriberHandle: EventStreamVertex.SubscriberHandle? = null
+        private var subscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-            private val initialEmission: EventStreamVertex.Emission<EventT>? = subjectVertex.ongoingEmission
+        private var initialEmission: EventStreamVertex.Emission<EventT>? = null
 
-            private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
+        private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
 
-            override fun install() {
-                if (subscriberHandle != null) {
-                    throw IllegalStateException("Event stream verifier is already installed")
-                }
-
-                subscriberHandle = subjectVertex.registerSubscriberOnline(
-                    propagationContext = propagationContext,
-                    subscriber = this,
-                )
+        override fun install() {
+            if (subscriberHandle != null) {
+                throw IllegalStateException("Event stream verifier is already installed")
             }
 
-            override fun verifyReaction() {
-                if (subscriberHandle == null) {
-                    throw IllegalStateException("A non-installed verifier cannot be used for verification")
-                }
+            subscriberHandle = subjectVertex.registerSubscriberOnline(
+                propagationContext = propagationContext,
+                subscriber = this,
+            )
 
-                assertEquals(
-                    expected = expectedEffectiveEmission,
-                    actual = subjectVertex.ongoingEmission,
-                    message = "Exposed ongoing emission did not match the expected emission.",
-                )
+            initialEmission = subjectVertex.ongoingEmission
+        }
 
-                val effectiveEmission = when {
-                    receivedEmissions.isNotEmpty() -> receivedEmissions.last()
-                    else -> initialEmission
-                }
-
-                assertEquals(
-                    expected = expectedEffectiveEmission,
-                    actual = effectiveEmission,
-                    message = "The effective received emission did not match the expected emission.",
-                )
-
-                when (intermediatePropagationTolerance) {
-                    IntermediatePropagationTolerance.DoNotTolerate -> {
-                        assertTrue(
-                            actual = receivedEmissions.size <= 1,
-                            message = "Expected at most one emission to be propagated, but received ${receivedEmissions.size} emissions (intermediate propagation is not tolerated).",
-                        )
-                    }
-
-                    IntermediatePropagationTolerance.Tolerate -> {}
-                }
+        override fun verifyReaction() {
+            if (subscriberHandle == null) {
+                throw IllegalStateException("A non-installed verifier cannot be used for verification")
             }
 
-            override fun uninstall() {
-                val subscriberHandle =
-                    this.subscriberHandle
-                        ?: throw IllegalStateException("Cannot uninstall a non-installed event stream verifier")
+            assertEquals(
+                expected = expectedEffectiveEmission,
+                actual = subjectVertex.ongoingEmission,
+                message = "Exposed ongoing emission did not match the expected emission.",
+            )
 
-                subjectVertex.unregisterSubscriber(
-                    handle = subscriberHandle,
-                )
+            val effectiveEmission = when {
+                receivedEmissions.isNotEmpty() -> receivedEmissions.last()
+                else -> initialEmission
             }
 
-            override fun handleEmission(
-                propagationContext: Transactions.PropagationContext,
-                emission: EventStreamVertex.Emission<EventT>?,
-            ) {
-                receivedEmissions.add(emission)
+            assertEquals(
+                expected = expectedEffectiveEmission,
+                actual = effectiveEmission,
+                message = "The effective received emission did not match the expected emission.",
+            )
+
+            when (intermediatePropagationTolerance) {
+                IntermediatePropagationTolerance.DoNotTolerate -> {
+                    assertTrue(
+                        actual = receivedEmissions.size <= 1,
+                        message = "Expected at most one emission to be propagated, but received ${receivedEmissions.size} emissions (intermediate propagation is not tolerated).",
+                    )
+                }
+
+                IntermediatePropagationTolerance.Tolerate -> {}
             }
+        }
+
+        override fun uninstall() {
+            val subscriberHandle = this.subscriberHandle
+                ?: throw IllegalStateException("Cannot uninstall a non-installed event stream verifier")
+
+            subjectVertex.unregisterSubscriber(
+                handle = subscriberHandle,
+            )
+
+            this.subscriberHandle = null
+            this.initialEmission = null
+        }
+
+        override fun handleEmission(
+            propagationContext: Transactions.PropagationContext,
+            emission: EventStreamVertex.Emission<EventT>?,
+        ) {
+            receivedEmissions.add(emission)
         }
     }
 
