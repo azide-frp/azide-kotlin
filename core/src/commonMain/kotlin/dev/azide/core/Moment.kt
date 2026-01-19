@@ -1,9 +1,9 @@
 package dev.azide.core
 
-import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.utils.LoopClosure
-import dev.azide.core.internal.utils.LoopUtils
+import dev.azide.core.impl.Revocable
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.utils.LoopClosure
+import dev.azide.core.impl.utils.LoopUtils
 import kotlin.experimental.ExperimentalTypeInference
 
 interface Moment<out ResultT> {
@@ -85,7 +85,7 @@ val <ResultT> Moment<ResultT>.asAction: Action<ResultT>
 
             return Action.Outcome.of(
                 result = result,
-                revocationHandle = RevocationHandle.Noop,
+                revocable = Revocable.Noop,
             )
         }
     }
@@ -134,3 +134,7 @@ fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
 fun <ResultT, TransformedResultT> Moment<ResultT>.joinOf(
     transform: (ResultT) -> Action<TransformedResultT>,
 ): Action<TransformedResultT> = asAction.joinOf(transform)
+
+fun <ResultT> Moment<ResultT>.pullExternally(): ResultT = Transactions.executeWithResult { propagationContext ->
+    pullInternallyWrappedUp(propagationContext = propagationContext)
+}

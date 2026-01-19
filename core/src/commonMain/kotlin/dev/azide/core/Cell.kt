@@ -1,16 +1,17 @@
 package dev.azide.core
 
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.CellVertex
-import dev.azide.core.internal.cell.FrozenCellVertex
-import dev.azide.core.internal.cell.PureCellVertex
-import dev.azide.core.internal.cell.WarmCellVertex
-import dev.azide.core.internal.cell.operated_vertices.Mapped2WarmCellVertex
-import dev.azide.core.internal.cell.operated_vertices.MappedAtCellVertex
-import dev.azide.core.internal.cell.operated_vertices.MappedWarmCellVertex
-import dev.azide.core.internal.cell.operated_vertices.SwitchedCellVertex
-import dev.azide.core.internal.event_stream.operated_vertices.UpdatedValuesEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.ValuesEventStreamVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.FrozenCellVertex
+import dev.azide.core.impl.cell.PureCellVertex
+import dev.azide.core.impl.cell.WarmCellVertex
+import dev.azide.core.impl.cell.operated_vertices.Mapped2WarmCellVertex
+import dev.azide.core.impl.cell.operated_vertices.MappedAtCellVertex
+import dev.azide.core.impl.cell.operated_vertices.MappedWarmCellVertex
+import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
+import dev.azide.core.impl.event_stream.operated_vertices.DivertedEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.UpdatedValuesEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.ValuesEventStreamVertex
 
 interface Cell<out ValueT> {
     val vertex: CellVertex<ValueT>
@@ -75,7 +76,11 @@ interface Cell<out ValueT> {
 
         fun <ValueT> divert(
             outerCell: Cell<EventStream<ValueT>>,
-        ): EventStream<ValueT> = TODO()
+        ): EventStream<ValueT> = EventStream.Ordinary(
+            vertex = DivertedEventStreamVertex(
+                outerSourceVertex = outerCell.vertex,
+            ),
+        )
     }
 }
 
@@ -161,4 +166,10 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
             ),
         )
     }
+}
+
+fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
+    vertex.getOldValue(
+        propagationContext = propagationContext,
+    )
 }

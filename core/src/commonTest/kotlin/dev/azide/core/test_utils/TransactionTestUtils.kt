@@ -2,8 +2,8 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Action
 import dev.azide.core.Effect
-import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Revocable
+import dev.azide.core.impl.Transactions
 
 object TransactionTestUtils {
     fun <ResultT> executeInsideTransaction(
@@ -17,15 +17,9 @@ object TransactionTestUtils {
             block()
         }
     }
-
-    context(transactionTestContext: TransactionTestContext) internal fun <ResultT> verifyIsExecutedOnce(
-        inputStimulation: TestInputStimulation,
-        targetAction: TestTargetAction<ResultT>,
-    ): TestTargetAction.ExecutionRecord<ResultT> {
-        TODO()
-    }
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTesting(): ResultT =
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
@@ -38,7 +32,8 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
         outcome.result
     }
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, RevocationHandle> =
+@Deprecated("Switch to the new test utils")
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<ResultT>.executeForTestingRevocable(): Pair<ResultT, Revocable> =
     Transactions.WrapUpContext.wrapUp(
         propagationContext = transactionTestContext.propagationContext,
     ) { wrapUpContext ->
@@ -47,25 +42,29 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Action<Res
             wrapUpContext = wrapUpContext,
         )
 
-        Pair(outcome.result, outcome.revocationHandle)
+        Pair(outcome.result, outcome.revocable)
     }
 
-context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun RevocationHandle.revokeForTesting() {
+@Deprecated("Switch to the new test utils")
+context(@Suppress("unused") transactionTestContext: TransactionTestContext) fun Revocable.revokeForTesting() {
     revoke()
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTesting(): ResultT =
     this.start.executeForTesting().result
 
-context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, RevocationHandle> {
-    val (effectOutcome, revocationHandle) = this.start.executeForTestingRevocable()
+@Deprecated("Switch to the new test utils")
+context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingRevocable(): Pair<ResultT, Revocable> {
+    val (effectOutcome, revocable) = this.start.executeForTestingRevocable()
 
     return Pair(
         effectOutcome.result,
-        revocationHandle,
+        revocable,
     )
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<ResultT>.startForTestingCancellable(): Pair<ResultT, Effect.Handle> {
     val outcome = this.start.executeForTesting()
 
@@ -75,6 +74,7 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<Res
     )
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) internal fun TestInputStimulation.stimulateForTesting() {
     this.stimulate(
         propagationContext = transactionTestContext.propagationContext,

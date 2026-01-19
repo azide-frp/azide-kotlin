@@ -1,6 +1,11 @@
 package dev.azide.core
 
 import dev.azide.core.Triggers.merging
+import dev.azide.core.external.ExternalStreamEffect
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.effects.AbstractPrimitiveEffect
+import dev.azide.core.impl.effects.AdaptedExternalStreamEffectVertex
 
 interface Effect<ResultT> {
     interface Outcome<ResultT> {
@@ -46,8 +51,32 @@ interface Effect<ResultT> {
         val cancel: Trigger
     }
 
+    companion object {
+        fun <EventT> adapt(
+            externalStreamEffect: ExternalStreamEffect<EventT>,
+        ): Effect<EventStream<EventT>> =
+            object : AbstractPrimitiveEffect<AdaptedExternalStreamEffectVertex<EventT>, EventStream<EventT>>() {
+                override fun startInternally(
+                    propagationContext: PropagationContext,
+                    wrapUpContext: Transactions.WrapUpContext,
+                ): AdaptedExternalStreamEffectVertex<EventT> = AdaptedExternalStreamEffectVertex.start(
+                    propagationContext = propagationContext,
+                    externalStreamEffectVertex = externalStreamEffect,
+                )
+
+                override fun wrap(
+                    effectVertex: AdaptedExternalStreamEffectVertex<EventT>,
+                ): EventStream<EventT> = EventStream.Ordinary(
+                    vertex = effectVertex,
+                )
+            }
+    }
+
     val start: Action<Outcome<ResultT>>
 }
+
+val <ResultT> Effect<ResultT>.startForever: Action<ResultT>
+    get() = start.map { it.result }
 
 fun <ResultT, TransformedResultT> Effect<ResultT>.map(
     transform: (ResultT) -> TransformedResultT,
@@ -79,3 +108,8 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
         }
 }
 
+fun <ResultT> Effect<ResultT>.startExternally(): Effect.Outcome<ResultT> = Transactions.executeWithResult {
+    val (effectOutcome: Effect.Outcome<ResultT>, _) = start.executeInternallyWrappedUp(it)
+
+    effectOutcome
+}

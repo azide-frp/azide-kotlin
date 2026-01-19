@@ -1,0 +1,206 @@
+package dev.azide.core.cell
+
+import dev.azide.core.Cell
+import dev.azide.core.Effect
+import dev.azide.core.actuate
+import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestTargetEffect
+import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.correctingUpdate
+import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.effects.EffectTestUtils_start
+import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
+import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import kotlin.test.Test
+
+@Suppress("ClassName")
+class Cell_actuate_start_tests {
+    @Test
+    fun test_start_observed() {
+        test_start(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_start_nonObserved() {
+        test_start(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_start(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
+
+        EffectTestUtils_start.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+                expectedUnaffectedValue = 10,
+            ),
+            expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
+        )
+    }
+
+    @Test
+    fun test_start_sourceUpdatesSimultaneously_observed() {
+        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+            test_start_sourceUpdatesSimultaneously(
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    @Test
+    fun test_start_sourceUpdatesSimultaneously_nonObserved() {
+        test_start_sourceUpdatesSimultaneously(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            dispatcher = TestSlotDispatcher1x2.Case1,
+        )
+    }
+
+    private fun test_start_sourceUpdatesSimultaneously(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        dispatcher: TestSlotDispatcher1x2,
+    ) {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
+
+        EffectTestUtils_start.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceCell.update(
+                newValue = targetEffect2,
+            ).bind(dispatcher),
+            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+                expectedOldValue = 10,
+                expectedNewValue = 20,
+            ),
+            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+                targetEffect1.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect2.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+    }
+
+    @Test
+    fun test_start_sourceUpdatesRevokedSimultaneously_observed() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_start_sourceUpdatesRevokedSimultaneously(
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    @Test
+    fun test_start_sourceUpdatesRevokedSimultaneously_nonObserved() {
+        test_start_sourceUpdatesRevokedSimultaneously(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            dispatcher = TestSlotDispatcher2x2.Case11,
+        )
+    }
+
+    private fun test_start_sourceUpdatesRevokedSimultaneously(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        dispatcher: TestSlotDispatcher2x2,
+    ) {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
+
+        EffectTestUtils_start.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceCell.revokingUpdate(
+                newValue = targetEffect2,
+            ).bind(dispatcher),
+            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+                expectedUnaffectedValue = 10,
+            ),
+            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+                targetEffect1.expectIsStartedOnceButNotCancelled(),
+                targetEffect2.expectIsNotStarted(),
+            ),
+        )
+    }
+
+    @Test
+    fun test_start_sourceUpdatesCorrectedSimultaneously_observed() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_start_sourceUpdatesCorrectedSimultaneously(
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    @Test
+    fun test_start_sourceUpdatesCorrectedSimultaneously_nonObserved() {
+        test_start_sourceUpdatesCorrectedSimultaneously(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            dispatcher = TestSlotDispatcher2x2.Case11,
+        )
+    }
+
+    private fun test_start_sourceUpdatesCorrectedSimultaneously(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        dispatcher: TestSlotDispatcher2x2,
+    ) {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+
+        val sourceCell = CellTestUtils.createInputCell(
+            initialValue = targetEffect1,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
+
+        EffectTestUtils_start.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceCell.correctingUpdate(
+                intermediateNewValue = targetEffect2,
+                correctedNewValue = targetEffect3,
+            ).bind(dispatcher),
+            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldValue = 10,
+                expectedNewValue = 30,
+            ),
+            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+                targetEffect1.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+    }
+}

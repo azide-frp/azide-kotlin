@@ -1,18 +1,21 @@
 package dev.azide.core
 
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.internal.effects.AbstractPrimitiveEffect
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex
-import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.ExecutedEachEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.FilteredEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.MappedEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.SingleEventStreamVertex
-import dev.azide.core.internal.event_stream.operated_vertices.WrappedExternalEventStreamVertex
-import dev.azide.core.internal.utils.LoopClosure
-import dev.azide.core.internal.utils.LoopUtils
+import dev.azide.core.external.ExternalStream
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.cell.operated_vertices.HeldCellVertex
+import dev.azide.core.impl.effects.AbstractPrimitiveEffect
+import dev.azide.core.impl.effects.ExecutedEachEventStreamEffectVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.FilteredEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.MappedEventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.Merged2EventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
+import dev.azide.core.impl.utils.LoopClosure
+import dev.azide.core.impl.utils.LoopUtils
 import kotlin.jvm.JvmName
 
 interface EventStream<out EventT> {
@@ -35,11 +38,11 @@ interface EventStream<out EventT> {
     }
 
     companion object {
-        fun <EventT> wrap(
-            externalSourceAdapter: ExternalSourceAdapter<EventT>,
+        fun <EventT> adapt(
+            externalStream: ExternalStream<EventT>,
         ): EventStream<EventT> = Ordinary(
-            vertex = WrappedExternalEventStreamVertex(
-                externalSourceAdapter = externalSourceAdapter,
+            vertex = AdaptedExternalEventStreamVertex(
+                externalStream = externalStream,
             ),
         )
 
@@ -76,7 +79,12 @@ interface EventStream<out EventT> {
         fun <EventT> merge2(
             eventStream1: EventStream<EventT>,
             eventStream2: EventStream<EventT>,
-        ): EventStream<EventT> = TODO()
+        ): EventStream<EventT> = Ordinary(
+            Merged2EventStreamVertex(
+                sourceEventStream1 = eventStream1,
+                sourceEventStream2 = eventStream2,
+            ),
+        )
 
         fun <EventT> merge3(
             eventStream1: EventStream<EventT>,
@@ -89,16 +97,12 @@ interface EventStream<out EventT> {
 fun <EventT, TransformedEventT> EventStream<EventT>.map(
     transform: (EventT) -> TransformedEventT,
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> MappedEventStreamVertex(
-            sourceVertex = sourceVertex,
-            transform = { _, event ->
-                transform(event)
-            },
-        )
-
-        is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-    },
+    vertex = MappedEventStreamVertex(
+        sourceEventStream = this@map,
+        transform = { _, event ->
+            transform(event)
+        },
+    ),
 )
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
@@ -108,20 +112,16 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
-    vertex = when (val sourceVertex = this.vertex) {
-        is LiveEventStreamVertex -> MappedEventStreamVertex(
-            sourceVertex = sourceVertex,
-            transform = { propagationContext, event ->
-                MomentContext.wrapUp(
-                    propagationContext,
-                ) {
-                    transform(event)
-                }
-            },
-        )
-
-        is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-    },
+    vertex = MappedEventStreamVertex(
+        sourceEventStream = this@mapAt,
+        transform = { propagationContext, event ->
+            MomentContext.wrapUp(
+                propagationContext,
+            ) {
+                transform(event)
+            }
+        },
+    ),
 )
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNullAt(
@@ -165,7 +165,7 @@ fun <EventT> EventStream<EventT>.holding(
     initialValue: EventT,
 ): Moment<Cell<EventT>> = object : Moment<Cell<EventT>> {
     override fun pullInternally(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
     ): Cell<EventT> = Cell.Ordinary(
         vertex = HeldCellVertex.start(
@@ -208,13 +208,17 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
 }
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
-    object : AbstractPrimitiveEffect<ExecutedEachEventStreamVertex<EventT>, EventStream<EventT>>() {
-        override fun buildVertex(): ExecutedEachEventStreamVertex<EventT> = ExecutedEachEventStreamVertex(
-            sourceVertex = this@executeEach.vertex,
+    object : AbstractPrimitiveEffect<ExecutedEachEventStreamEffectVertex<EventT>, EventStream<EventT>>() {
+        override fun startInternally(
+            propagationContext: PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): ExecutedEachEventStreamEffectVertex<EventT> = ExecutedEachEventStreamEffectVertex.startInternally(
+            wrapUpContext = wrapUpContext,
+            sourceEventStream = this@executeEach,
         )
 
-        override fun buildResult(
-            effectVertex: ExecutedEachEventStreamVertex<EventT>,
+        override fun wrap(
+            effectVertex: ExecutedEachEventStreamEffectVertex<EventT>,
         ): EventStream<EventT> = EventStream.Ordinary(
             vertex = effectVertex,
         )

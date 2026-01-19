@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.cell
 
 import dev.kmpx.platform.PlatformWeakReference
 import dev.azide.core.Cell
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.JsGarbageCollectorUtils.awaitCollection
 
 internal object JsCellTestUtils {

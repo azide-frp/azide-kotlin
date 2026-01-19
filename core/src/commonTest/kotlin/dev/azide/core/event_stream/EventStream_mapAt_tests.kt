@@ -1,6 +1,5 @@
 package dev.azide.core.event_stream
 
-import dev.azide.core.EventStream
 import dev.azide.core.mapAt
 import dev.azide.core.sample
 import dev.azide.core.test_utils.TestInputStimulation
@@ -10,17 +9,6 @@ import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_mapAt_tests {
-    @Test
-    fun test_sourceNever() {
-        val subjectEventStream = EventStream.Never.mapAt {
-            throw UnsupportedOperationException()
-        }
-
-        EventStreamTestUtils.verifyTerminated(
-            subjectEventStream = subjectEventStream,
-        )
-    }
-
     @Test
     fun test_emission() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()

@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Transactions
 import dev.azide.core.pullInternallyWrappedUp
 
 internal object TestUtils {

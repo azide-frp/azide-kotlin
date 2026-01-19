@@ -1,13 +1,14 @@
 package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
-import dev.azide.core.internal.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
+import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
+import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestInputStimulation
 
-internal class TestInputEventStream<EventT>() : EventStream<EventT> {
+class TestInputEventStream<EventT>() : EventStream<EventT> {
     private val _vertex = object : AbstractLiveEventStreamVertex<EventT>() {
         fun emit(
             propagationContext: Transactions.PropagationContext,
@@ -95,3 +96,24 @@ internal class TestInputEventStream<EventT>() : EventStream<EventT> {
     override val vertex: EventStreamVertex<EventT>
         get() = _vertex
 }
+
+fun <ValueT> TestInputEventStream<ValueT>.revokingEmission(
+    emittedEvent: ValueT,
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = emit(
+        emittedEvent = emittedEvent,
+    ),
+    secondStimulation = revokeEmission(),
+)
+
+fun <ValueT> TestInputEventStream<ValueT>.correctingEmission(
+    intermediateEmittedEvent: ValueT,
+    correctedEmittedEvent: ValueT,
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = emit(
+        emittedEvent = intermediateEmittedEvent,
+    ),
+    secondStimulation = correctEmission(
+        correctedEmittedEvent = correctedEmittedEvent,
+    ),
+)

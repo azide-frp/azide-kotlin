@@ -1,6 +1,6 @@
 package dev.azide.core
 
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Transactions
 
 class MomentContextImpl internal constructor(
     override val propagationContext: Transactions.PropagationContext,

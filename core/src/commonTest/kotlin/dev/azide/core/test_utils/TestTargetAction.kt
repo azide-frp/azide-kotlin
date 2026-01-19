@@ -1,8 +1,9 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Action
-import dev.azide.core.internal.RevocationHandle
-import dev.azide.core.internal.Transactions
+import dev.azide.core.impl.Revocable
+import dev.azide.core.impl.Transactions
+import dev.azide.core.test_utils.ExpectedTestTargetImpact.TargetImpactVerifier
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -19,7 +20,7 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
 
         fun revoke() {
             if (_wasRevoked) {
-                throw IllegalStateException("StartRecord already revoked")
+                throw IllegalStateException("The target action was already revoked")
             }
 
             _wasRevoked = true
@@ -35,9 +36,14 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
             override fun buildResult(): ResultT = result
         }
     }
+
     private val executionRecords = mutableListOf<ExecutionRecord<ResultT>>()
 
     fun getAndResetExecutionRecords(): List<ExecutionRecord<ResultT>> = executionRecords.toList().also {
+        resetExecutionRecords()
+    }
+
+    fun resetExecutionRecords() {
         executionRecords.clear()
     }
 
@@ -53,7 +59,7 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
 
         return Action.Outcome.of(
             result = result,
-            revocationHandle = object : RevocationHandle {
+            revocable = object : Revocable {
                 override fun revoke() {
                     execution.revoke()
                 }
@@ -118,4 +124,37 @@ fun TestTargetAction.ExecutionRecord<*>.verifyWasNotRevoked() {
         actual = wasRevoked,
         message = "Expected action to not have been revoked, but it was.",
     )
+}
+
+fun <ResultT> TestTargetAction<ResultT>.expectIsNotExecuted(): ExpectedTestTargetImpact = expectIsExecutedNTimes(
+    expectedExecutionCount = 0,
+    message = "Expected no executions of the target action.",
+)
+
+fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedOnce(): ExpectedTestTargetImpact = expectIsExecutedNTimes(
+    expectedExecutionCount = 1,
+    message = "Expected a single execution of the target action during the stimulation.",
+)
+
+fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedNTimes(
+    expectedExecutionCount: Int,
+    message: String,
+): ExpectedTestTargetImpact = object : ExpectedTestTargetImpact {
+    override fun prepareImpactVerifier(): TargetImpactVerifier {
+        resetExecutionRecords()
+
+        return object : TargetImpactVerifier {
+            override fun verifyPostTransaction() {
+                val effectiveExecutionRecords = getAndResetExecutionRecords().filter {
+                    !it.wasRevoked
+                }
+
+                assertEquals(
+                    expected = expectedExecutionCount,
+                    actual = effectiveExecutionRecords.size,
+                    message = message,
+                )
+            }
+        }
+    }
 }

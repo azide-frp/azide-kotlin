@@ -1,9 +1,10 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Cell
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.cell.CellVertex
-import dev.azide.core.internal.cell.WarmCellVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.WarmCellVertex
+import dev.azide.core.impl.cell.registerObserverOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -24,10 +25,15 @@ class TestCellObserver<ValueT>(
     }
 
     fun getAndResetReceivedUpdates(): List<CellVertex.Update<ValueT>?> = receivedUpdates.toList().also {
+        resetReceivedUpdates()
+    }
+
+    fun resetReceivedUpdates() {
         receivedUpdates.clear()
     }
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTestingCancellable(): Pair<TestCellObserver<ValueT>, TestCellObserver.Handle> {
     val vertex = vertex
 
@@ -35,7 +41,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
         observedCellVertex = vertex,
     )
 
-    val observerHandle = vertex.registerObserver(
+    val observerHandle = vertex.registerObserverOnline(
         propagationContext = transactionTestContext.propagationContext,
         observer = observer,
     )
@@ -52,6 +58,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
     )
 }
 
+@Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTesting(): TestCellObserver<ValueT> {
     val (testCellObserver, _) = this.observeForTestingCancellable()
     return testCellObserver

@@ -3,13 +3,14 @@ package dev.azide.core.test_utils.event_stream
 import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.EventStreamVertex.Emission
-import dev.azide.core.internal.event_stream.EventStreamVertex.Subscriber
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex.BasicSubscriber
-import dev.azide.core.internal.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
+import dev.azide.core.impl.event_stream.EventStreamVertex.Subscriber
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex.BasicSubscriber
+import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
+import dev.azide.core.impl.event_stream.registerSubscriberOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -19,8 +20,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object EventStreamTestUtils {
-    fun <EventT> createInputEventStream(): dev.azide.core.test_utils.event_stream.TestInputEventStream<EventT> =
-        TestInputEventStream()
+    fun <EventT> createInputEventStream(): TestInputEventStream<EventT> = TestInputEventStream()
 
     /**
      * Spawn a stateful event stream, not expecting it to emit during spawn.
@@ -66,7 +66,7 @@ internal object EventStreamTestUtils {
         val subjectVertex = subjectEventStream.vertex
 
         // Register a subscriber, as event stream vertices aren't required to expose the emission otherwise
-        subjectVertex.registerSubscriber(
+        subjectVertex.registerSubscriberOnline(
             propagationContext = propagationContext,
             subscriber = Subscriber.Noop,
         )
@@ -116,7 +116,7 @@ internal object EventStreamTestUtils {
 
         private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
             Transactions.executeWithResult { propagationContext ->
-                subjectVertex.registerSubscriber(
+                subjectVertex.registerSubscriberOnline(
                     propagationContext = propagationContext,
                     subscriber = this,
                 )
@@ -318,7 +318,7 @@ internal object EventStreamTestUtils {
             ?: throw IllegalStateException("Subject cell vertex is already frozen")
 
         Transactions.execute { propagationContext ->
-            subjectVertex.registerSubscriber(
+            subjectVertex.registerSubscriberOnline(
                 propagationContext = propagationContext,
                 subscriber = Subscriber.Noop,
             )

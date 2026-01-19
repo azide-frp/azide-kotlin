@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Action
 import dev.azide.core.Trigger
-import dev.azide.core.test_utils.MockSideEffect
+import dev.azide.core.test_utils.MockExternalTrigger
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 class EventStream_triggerEachForever_tests {
     @Test
     fun test_triggerEachForever_sourceEmission() {
-        val mockSideEffect = MockSideEffect()
+        val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
 
@@ -25,7 +25,7 @@ class EventStream_triggerEachForever_tests {
 
         TestUtils.stimulateSeparately(
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect),
+                emittedEvent = Action.adapt(mockSideEffect),
             ),
         )
 
@@ -36,7 +36,7 @@ class EventStream_triggerEachForever_tests {
 
     @Test
     fun test_triggerEachForever_sourceEmission_revoked() {
-        val mockSideEffect = MockSideEffect()
+        val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
 
@@ -47,7 +47,7 @@ class EventStream_triggerEachForever_tests {
         TestUtils.stimulateSeparately(
             inputStimulation = TestInputStimulation.combine(
                 sourceEventStream.emit(
-                    emittedEvent = Action.wrap(mockSideEffect),
+                    emittedEvent = Action.adapt(mockSideEffect),
                 ),
                 sourceEventStream.revokeEmission(),
             ),
@@ -60,8 +60,8 @@ class EventStream_triggerEachForever_tests {
 
     @Test
     fun test_triggerEachForever_sourceEmission_corrected() {
-        val mockSideEffect1 = MockSideEffect()
-        val mockSideEffect2 = MockSideEffect()
+        val mockSideEffect1 = MockExternalTrigger()
+        val mockSideEffect2 = MockExternalTrigger()
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
 
@@ -72,10 +72,10 @@ class EventStream_triggerEachForever_tests {
         TestUtils.stimulateSeparately(
             inputStimulation = TestInputStimulation.combine(
                 sourceEventStream.emit(
-                    emittedEvent = Action.wrap(mockSideEffect1),
+                    emittedEvent = Action.adapt(mockSideEffect1),
                 ),
                 sourceEventStream.correctEmission(
-                    correctedEmittedEvent = Action.wrap(mockSideEffect2),
+                    correctedEmittedEvent = Action.adapt(mockSideEffect2),
                 ),
             ),
         )
@@ -91,14 +91,14 @@ class EventStream_triggerEachForever_tests {
 
     @Test
     fun test_triggerEachForever_sourceEmitsOnStart() {
-        val mockSideEffect = MockSideEffect()
+        val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
 
         TestUtils.executeSeparately(
             action = sourceEventStream.triggerEachForever(),
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = Action.wrap(mockSideEffect),
+                emittedEvent = Action.adapt(mockSideEffect),
             ),
         )
 

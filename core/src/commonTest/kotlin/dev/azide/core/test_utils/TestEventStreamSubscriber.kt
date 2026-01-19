@@ -1,9 +1,10 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
-import dev.azide.core.internal.Transactions
-import dev.azide.core.internal.event_stream.EventStreamVertex
-import dev.azide.core.internal.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.registerSubscriberOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -37,7 +38,7 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> subscribeFo
         subscribedEventStreamVertex = vertex,
     )
 
-    val subscriberHandle = vertex.registerSubscriber(
+    val subscriberHandle = vertex.registerSubscriberOnline(
         propagationContext = transactionTestContext.propagationContext,
         subscriber = subscriber,
     )
@@ -62,6 +63,18 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> EventStream
 fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmission(
     expectedEmittedEvent: EventT,
 ) {
+    verifyPropagatedEmission(
+        expectedEmittedEvent = expectedEmittedEvent,
+    )
+
+    verifyExposesEmission(
+        expectedExposedEvent = expectedEmittedEvent,
+    )
+}
+
+fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedEmission(
+    expectedEmittedEvent: EventT,
+) {
     val expectedEmission = EventStreamVertex.Emission(
         emittedEvent = expectedEmittedEvent,
     )
@@ -81,11 +94,17 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmissio
         actual = receivedEmission,
         message = "The propagated emission did not match the expected emission.",
     )
+}
 
+fun <EventT> TestEventStreamSubscriber<EventT>.verifyExposesEmission(
+    expectedExposedEvent: EventT,
+) {
     val exposedEmission = subscribedEventStreamVertex.ongoingEmission
 
     assertEquals(
-        expected = expectedEmission,
+        expected = EventStreamVertex.Emission(
+            emittedEvent = expectedExposedEvent,
+        ),
         actual = exposedEmission,
         message = "The exposed ongoing emission did not match the expected emission.",
     )
