@@ -112,19 +112,11 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
-): EventStream<TransformedEventT> = EventStream.Ordinary(
-    // TODO: Extract `sampleEach` operator symmetric to `executeEach`
-    vertex = MappedEventStreamVertex(
-        sourceEventStream = this@mapAt,
-        transform = { propagationContext, event ->
-            MomentContext.wrapUp(
-                propagationContext,
-            ) {
-                transform(event)
-            }
-        },
-    ),
-)
+): EventStream<TransformedEventT> = sampleEachOf { event: EventT ->
+    Moment.decontextualize {
+        transform(event)
+    }
+}
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNullAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT?,
@@ -210,6 +202,10 @@ fun <EventT> EventStream<Moment<EventT>>.sampleEach(): EventStream<EventT> = Eve
         sourceEventStream = this,
     ),
 )
+
+fun <EventT, TransformedEventT> EventStream<EventT>.sampleEachOf(
+    transform: (EventT) -> Moment<TransformedEventT>,
+): EventStream<TransformedEventT> = map(transform).sampleEach()
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
     object : AbstractPrimitiveEffect<ExecutedEachEventStreamEffectVertex<EventT>, EventStream<EventT>>() {
