@@ -170,6 +170,10 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
     }
 }
 
+fun <ValueT> Cell<Moment<ValueT>>.sampleEvery(): Moment<Cell<ValueT>> = sampling.joinOf { it }.joinOf { initialValue ->
+    updatedValues.sampleEach().holding(initialValue = initialValue)
+}
+
 fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
     vertex.getOldValue(
         propagationContext = propagationContext,

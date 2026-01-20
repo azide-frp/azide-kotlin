@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.verifyReactionUninstalling
 @Suppress("ClassName")
 data object StatefulTestUtils_spawn {
     fun <SubjectT> executeSpawnTransaction(
-        subjectMoment: Moment<SubjectT>,
+        subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
     ) {
@@ -25,7 +25,7 @@ data object StatefulTestUtils_spawn {
             )
 
             // 1. Spawn the subject
-            val subject = subjectMoment.pullInternallyWrappedUp(
+            val subject = subjectSpawnMoment.pullInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 

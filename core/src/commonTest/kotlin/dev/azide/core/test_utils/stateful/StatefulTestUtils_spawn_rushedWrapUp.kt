@@ -13,7 +13,7 @@ import dev.azide.core.test_utils.installLater
 @Suppress("ClassName")
 data object StatefulTestUtils_spawn_rushedWrapUp {
     fun <SubjectT : Any> executeSpawnTransaction(
-        subjectMoment: Moment<SubjectT>,
+        subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
     ) {
@@ -45,7 +45,7 @@ data object StatefulTestUtils_spawn_rushedWrapUp {
                     )
 
                     // 1. Spawn the subject
-                    val subject = subjectMoment.pullInternally(
+                    val subject = subjectSpawnMoment.pullInternally(
                         propagationContext = propagationContext,
                         wrapUpContext = wrapUpContext,
                     )
