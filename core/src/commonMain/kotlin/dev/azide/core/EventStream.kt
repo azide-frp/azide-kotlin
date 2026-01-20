@@ -13,6 +13,7 @@ import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventSt
 import dev.azide.core.impl.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.Merged2EventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.SampledEachEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
@@ -203,6 +204,12 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
         loopedValue = newAccValues,
     )
 }
+
+fun <EventT> EventStream<Moment<EventT>>.sampleEach(): EventStream<EventT> = EventStream.Ordinary(
+    vertex = SampledEachEventStreamVertex(
+        sourceEventStream = this,
+    ),
+)
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
     object : AbstractPrimitiveEffect<ExecutedEachEventStreamEffectVertex<EventT>, EventStream<EventT>>() {
