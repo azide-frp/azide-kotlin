@@ -9,7 +9,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStateles
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceEventStream: EventStream<EventT>,
-    private val transform: (Transactions.PropagationContext, EventT) -> TransformedEventT,
+    private val transform: (EventT) -> TransformedEventT,
 ) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
@@ -34,8 +34,8 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
             else -> {
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,
-                    emission = emission.map {
-                        transform(propagationContext, it)
+                    emission = emission.map { event: EventT ->
+                        transform(event)
                     },
                 )
             }
@@ -56,9 +56,7 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
             mode = mode,
         )
 
-        return sourceVertex.ongoingEmission?.map {
-            transform(propagationContext, it)
-        }
+        return sourceVertex.ongoingEmission?.map(transform)
     }
 
     override fun deactivate() {

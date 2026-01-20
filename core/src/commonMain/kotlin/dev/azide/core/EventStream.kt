@@ -100,9 +100,7 @@ fun <EventT, TransformedEventT> EventStream<EventT>.map(
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
     vertex = MappedEventStreamVertex(
         sourceEventStream = this@map,
-        transform = { _, event ->
-            transform(event)
-        },
+        transform = transform,
     ),
 )
 
