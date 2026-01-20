@@ -7,17 +7,17 @@ import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex.BasicSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberOnline
+import dev.azide.core.impl.event_stream.registerEmissionSubscriberOnline
 
 class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
     initialSourceEventStream: EventStream<Action<EventT>>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), BasicSubscriber<Action<EventT>>, EffectVertex, Revocable {
+), EmissionSubscriber<Action<EventT>>, EffectVertex, Revocable {
     companion object {
         fun <EventT> startInternally(
             wrapUpContext: Transactions.WrapUpContext,
@@ -114,7 +114,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
                 // Re-attach to the source event stream
                 this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle =
-                    sourceVertex.registerSubscriberOnline(
+                    sourceVertex.registerEmissionSubscriberOnline(
                         propagationContext = propagationContext,
                         subscriber = this@ExecutedEachEventStreamEffectVertex,
                     )
@@ -185,7 +185,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
         val sourceVertex = sourceEventStream.vertex
 
-        upstreamSubscriberHandle = sourceVertex.registerSubscriberOnline(
+        upstreamSubscriberHandle = sourceVertex.registerEmissionSubscriberOnline(
             propagationContext = propagationContext,
             subscriber = this,
         )

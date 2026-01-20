@@ -4,16 +4,17 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberWeakly
+import dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly
 
 class SingleEventStreamVertex<EventT>(
     wrapUpContext: Transactions.WrapUpContext,
     private val sourceEventStream: EventStream<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), LiveEventStreamVertex.BasicSubscriber<EventT> {
+), EmissionSubscriber<EventT> {
     private var upstreamWeakSubscriberHandle: LiveEventStreamVertex.WeakSubscriberHandle? = null
 
     /**
@@ -45,7 +46,7 @@ class SingleEventStreamVertex<EventT>(
     ): EventStreamVertex.Emission<EventT>? {
         val sourceVertex = sourceEventStream.vertex
 
-        upstreamWeakSubscriberHandle = sourceVertex.registerSubscriberWeakly(
+        upstreamWeakSubscriberHandle = sourceVertex.registerEmissionSubscriberWeakly(
             propagationContext = propagationContext,
             dependentVertex = this,
             subscriber = this,

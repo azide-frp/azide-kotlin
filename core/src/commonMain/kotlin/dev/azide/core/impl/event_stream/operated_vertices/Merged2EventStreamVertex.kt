@@ -4,8 +4,9 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
+import dev.azide.core.impl.event_stream.registerEmissionSubscriber
 
 class Merged2EventStreamVertex<EventT>(
     private val sourceEventStream1: EventStream<EventT>,
@@ -20,7 +21,7 @@ class Merged2EventStreamVertex<EventT>(
     private var upstreamSubscriberHandle1: EventStreamVertex.SubscriberHandle? = null
     private var upstreamSubscriberHandle2: EventStreamVertex.SubscriberHandle? = null
 
-    val innerSubscriber1 = object : LiveEventStreamVertex.BasicSubscriber<EventT> {
+    val innerSubscriber1 = object : EmissionSubscriber<EventT> {
         /**
          * Handle the emission of the first event stream.
          */
@@ -48,7 +49,7 @@ class Merged2EventStreamVertex<EventT>(
         }
     }
 
-    val innerSubscriber2 = object : LiveEventStreamVertex.BasicSubscriber<EventT> {
+    val innerSubscriber2 = object : EmissionSubscriber<EventT> {
         /**
          * Handle the emission of the second event stream.
          */
@@ -77,13 +78,13 @@ class Merged2EventStreamVertex<EventT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle1 = sourceVertex1.registerSubscriber(
+        upstreamSubscriberHandle1 = sourceVertex1.registerEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = innerSubscriber1,
             mode = mode,
         )
 
-        upstreamSubscriberHandle2 = sourceVertex2.registerSubscriber(
+        upstreamSubscriberHandle2 = sourceVertex2.registerEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = innerSubscriber2,
             mode = mode,

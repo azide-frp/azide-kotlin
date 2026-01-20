@@ -4,40 +4,22 @@ import dev.azide.core.impl.ReactiveFinalizationRegistry
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.Subscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
 import kotlin.jvm.JvmInline
 
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
-    interface BasicSubscriber<in EventT> : Subscriber<EventT> {
-        override fun handleEmissionWithStatus(
+    class WeaklyReferencedEmissionNotificationSubscriber<EventT>(
+        private val sourceEventStreamVertex: EventStreamVertex<EventT>,
+        emissionSubscriber: EmissionSubscriber<EventT>,
+    ) : EmissionNotificationSubscriber<EventT> {
+        private val basicSubscriberWeakReference = PlatformWeakReference(emissionSubscriber)
+
+        override fun handleEmissionNotification(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
-        ): SubscriberStatus {
-            handleEmission(
-                propagationContext = propagationContext,
-                emission = emission,
-            )
-
-            return SubscriberStatus.Reachable
-        }
-
-        fun handleEmission(
-            propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
-        )
-    }
-
-    class WeaklyReferencedSubscriber<EventT>(
-        basicSubscriber: BasicSubscriber<EventT>,
-    ) : Subscriber<EventT> {
-        private val basicSubscriberWeakReference = PlatformWeakReference(basicSubscriber)
-
-        override fun handleEmissionWithStatus(
-            propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ): SubscriberStatus {
             when (val basicSubscriber = basicSubscriberWeakReference.get()) {
                 null -> {
@@ -47,7 +29,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
                 else -> {
                     basicSubscriber.handleEmission(
                         propagationContext = propagationContext,
-                        emission = emission,
+                        emission = sourceEventStreamVertex.ongoingEmission,
                     )
 
                     return SubscriberStatus.Reachable
@@ -58,7 +40,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
 
     @JvmInline
     value class LiveSubscriberHandle<EventT>(
-        val internalHandle: MutableBag.Handle<Subscriber<EventT>>,
+        val internalHandle: MutableBag.Handle<EmissionNotificationSubscriber<EventT>>,
     ) : EventStreamVertex.SubscriberHandle
 
     interface WeakSubscriberHandle {
@@ -66,10 +48,12 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     }
 }
 
-fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): LiveEventStreamVertex.WeaklyReferencedSubscriber<EventT> =
-    LiveEventStreamVertex.WeaklyReferencedSubscriber(
-        basicSubscriber = this,
-    )
+fun <EventT> EmissionSubscriber<EventT>.weaklyReferenced(
+    sourceEventStreamVertex: EventStreamVertex<EventT>,
+): LiveEventStreamVertex.WeaklyReferencedEmissionNotificationSubscriber<EventT> = LiveEventStreamVertex.WeaklyReferencedEmissionNotificationSubscriber(
+    sourceEventStreamVertex = sourceEventStreamVertex,
+    emissionSubscriber = this,
+)
 
 /**
  * Register a [subscriber] related to a [dependentVertex]. When the [dependentVertex] object is garbage collected, the
@@ -78,15 +62,17 @@ fun <EventT> LiveEventStreamVertex.BasicSubscriber<EventT>.weaklyReferenced(): L
  *
  * In a special (supported) case, [dependentVertex] and [subscriber] might be the same object.
  */
-fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
+fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
-    subscriber: LiveEventStreamVertex.BasicSubscriber<EventT>,
+    subscriber: EmissionSubscriber<EventT>,
     mode: ActivationMode,
 ): LiveEventStreamVertex.WeakSubscriberHandle {
-    val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerSubscriber(
+    val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerEmissionNotificationSubscriber(
         propagationContext = propagationContext,
-        subscriber = subscriber.weaklyReferenced(),
+        subscriber = subscriber.weaklyReferenced(
+            sourceEventStreamVertex = this@registerEmissionSubscriberWeakly,
+        ),
         mode = mode,
     )
 
@@ -105,19 +91,17 @@ fun <EventT> EventStreamVertex<EventT>.registerSubscriberWeakly(
      * short-lived loose observers, the abandoned subscriber entries would constitute a significant memory leak.
      */
     val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
-        target = dependentVertex,
-        finalizationCallback = {
-            this@registerSubscriberWeakly.unregisterSubscriber(
+        target = dependentVertex, finalizationCallback = {
+            this@registerEmissionSubscriberWeakly.unregisterSubscriber(
                 handle = innerSubscriberHandle,
             )
-        }
-    )
+        })
 
     return object : LiveEventStreamVertex.WeakSubscriberHandle {
         override fun cancel() {
             // TODO: If vertex succession is implemented, then this vertex might not contain the given subscription, as
             //  would possibly be migrated!
-            this@registerSubscriberWeakly.unregisterSubscriber(
+            this@registerEmissionSubscriberWeakly.unregisterSubscriber(
                 handle = innerSubscriberHandle,
             )
 

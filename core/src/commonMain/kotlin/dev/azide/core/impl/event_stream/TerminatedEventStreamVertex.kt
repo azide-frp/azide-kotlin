@@ -12,9 +12,9 @@ class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
     override val subscriberCount: Int
         get() = 0
 
-    override fun registerSubscriber(
+    override fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EventStreamVertex.Subscriber<EventT>,
+        subscriber: EventStreamVertex.EmissionNotificationSubscriber<EventT>,
         mode: Vertex.ActivationMode,
     ): TerminatedSubscriberHandle = TerminatedSubscriberHandle
 

@@ -73,7 +73,7 @@ fun <ValueT> WarmCellVertex.BasicObserver<ValueT>.weaklyReferenced(): WarmCellVe
     )
 
 /**
- * Analogical to [dev.azide.core.impl.event_stream.registerSubscriberWeakly].
+ * Analogical to [dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly].
  */
 fun <ValueT> WarmCellVertex<ValueT>.registerObserverWeakly(
     propagationContext: Transactions.PropagationContext,

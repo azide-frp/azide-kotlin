@@ -3,13 +3,14 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
+import dev.azide.core.impl.event_stream.registerEmissionSubscriber
 
 class FilteredEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<EventT>,
     private val predicate: (EventT) -> Boolean,
-) : AbstractSimpleStatelessEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
+) : AbstractSimpleStatelessEventStreamVertex<EventT>(), EmissionSubscriber<EventT> {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     /**
@@ -60,7 +61,7 @@ class FilteredEventStreamVertex<EventT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
+        upstreamSubscriberHandle = sourceVertex.registerEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = this,
             mode = mode,

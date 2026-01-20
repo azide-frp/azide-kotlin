@@ -5,29 +5,30 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveSubscriberHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
-    private val _registeredSubscribers: MutableBag<EventStreamVertex.Subscriber<EventT>> = MutableBag()
+    private val _registeredSubscribers: MutableBag<EmissionNotificationSubscriber<EventT>> = MutableBag()
 
     override val subscriberCount: Int
         get() = _registeredSubscribers.size
 
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
 
-    private var _isPropagatingEmission = false
+    private var _isPropagatingEmissionNotification = false
 
     private var _isEnqueuedForCommitment = false
 
     final override val ongoingEmission: EventStreamVertex.Emission<EventT>?
         get() = _ongoingEmission
 
-    override fun registerSubscriber(
+    override fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EventStreamVertex.Subscriber<EventT>,
+        subscriber: EmissionNotificationSubscriber<EventT>,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.SubscriberHandle {
         val internalHandle = _registeredSubscribers.add(subscriber)
@@ -78,9 +79,8 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
             emission = emission,
         )
 
-        propagateEmission(
+        propagateEmissionNotification(
             propagationContext = propagationContext,
-            emission = emission,
         )
     }
 
@@ -109,28 +109,26 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         _ongoingEmission = null
     }
 
-    private fun propagateEmission(
+    private fun propagateEmissionNotification(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        if (_isPropagatingEmission) {
+        if (_isPropagatingEmissionNotification) {
             throw CausalLoopException("Causal loop detected in event stream vertex: $this")
         }
 
         try {
-            _isPropagatingEmission = true
+            _isPropagatingEmissionNotification = true
 
             _registeredSubscribers.forEach { subscriber ->
-                val subscriberStatus = subscriber.handleEmissionWithStatus(
+                val subscriberStatus = subscriber.handleEmissionNotification(
                     propagationContext = propagationContext,
-                    emission = emission,
                 )
 
                 // Remove the subscriber if it's unreachable
                 subscriberStatus == SubscriberStatus.Unreachable
             }
         } finally {
-            _isPropagatingEmission = false
+            _isPropagatingEmissionNotification = false
         }
     }
 

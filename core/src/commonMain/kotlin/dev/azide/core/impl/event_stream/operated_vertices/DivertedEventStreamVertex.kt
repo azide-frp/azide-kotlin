@@ -9,9 +9,10 @@ import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.cell.registerObserverOffline
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberOffline
+import dev.azide.core.impl.event_stream.registerEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerEmissionSubscriberOffline
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
@@ -55,7 +56,7 @@ class DivertedEventStreamVertex<EventT>(
      */
     private var upstreamStableInnerSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-    private val innerSourceSubscriber = object : LiveEventStreamVertex.BasicSubscriber<EventT> {
+    private val innerSourceSubscriber = object : EmissionSubscriber<EventT> {
         /**
          * Handle the emission of the inner event stream.
          */
@@ -149,7 +150,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the inner source vertex subscriber (to the stable inner source vertex)
 
-        this.upstreamStableInnerSubscriberHandle = stableInnerSourceVertex.registerSubscriber(
+        this.upstreamStableInnerSubscriberHandle = stableInnerSourceVertex.registerEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = innerSourceSubscriber,
             mode = ActivationMode.Online,
@@ -188,7 +189,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the inner source vertex subscriber (to the new inner source vertex)
 
-        this.upstreamStableInnerSubscriberHandle = newInnerSourceVertex.registerSubscriberOffline(
+        this.upstreamStableInnerSubscriberHandle = newInnerSourceVertex.registerEmissionSubscriberOffline(
             propagationContext = propagationContext,
             subscriber = innerSourceSubscriber,
         )
@@ -248,7 +249,7 @@ class DivertedEventStreamVertex<EventT>(
         )
 
         // In the post-processing phase, the offline activation mode has to be utilized
-        val newInnerSubscriberHandle = updatedInnerSourceVertex.registerSubscriberOffline(
+        val newInnerSubscriberHandle = updatedInnerSourceVertex.registerEmissionSubscriberOffline(
             propagationContext = propagationContext,
             subscriber = innerSourceSubscriber,
         )

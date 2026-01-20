@@ -3,7 +3,8 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.Subscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberHandle
 import kotlin.jvm.JvmInline
 
@@ -19,18 +20,23 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface Subscriber<in EventT> {
-        object Noop : Subscriber<Any?> {
-            override fun handleEmissionWithStatus(
+    interface EmissionNotificationSubscriber<in EventT> {
+        object Noop : EmissionNotificationSubscriber<Any?> {
+            override fun handleEmissionNotification(
                 propagationContext: Transactions.PropagationContext,
-                emission: Emission<Any?>?,
             ): SubscriberStatus = SubscriberStatus.Reachable
         }
 
-        fun handleEmissionWithStatus(
+        fun handleEmissionNotification(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ): SubscriberStatus
+    }
+
+    interface EmissionSubscriber<in EventT> {
+        fun handleEmission(
+            propagationContext: Transactions.PropagationContext,
+            emission: Emission<EventT>?,
+        )
     }
 
     interface SubscriberHandle
@@ -43,9 +49,9 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
     val subscriberCount: Int
 
-    fun registerSubscriber(
+    fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: Subscriber<EventT>,
+        subscriber: EmissionNotificationSubscriber<EventT>,
         mode: ActivationMode,
     ): SubscriberHandle
 
@@ -54,19 +60,49 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
     )
 }
 
-fun <EventT> EventStreamVertex<EventT>.registerSubscriberOnline(
+fun <EventT> EventStreamVertex<EventT>.registerEmissionNotificationSubscriberOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: Subscriber<EventT>,
-): SubscriberHandle = registerSubscriber(
+    subscriber: EmissionNotificationSubscriber<EventT>,
+): SubscriberHandle = registerEmissionNotificationSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerSubscriberOffline(
+fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
     propagationContext: Transactions.PropagationContext,
-    subscriber: Subscriber<EventT>,
-): SubscriberHandle = registerSubscriber(
+    subscriber: EmissionSubscriber<EventT>,
+    mode: ActivationMode,
+): SubscriberHandle = registerEmissionNotificationSubscriber(
+    propagationContext = propagationContext,
+    subscriber = object : EmissionNotificationSubscriber<EventT> {
+        override fun handleEmissionNotification(
+            propagationContext: Transactions.PropagationContext,
+        ): EventStreamVertex.SubscriberStatus {
+            subscriber.handleEmission(
+                propagationContext = propagationContext,
+                emission = this@registerEmissionSubscriber.ongoingEmission,
+            )
+
+            return EventStreamVertex.SubscriberStatus.Reachable
+        }
+    },
+    mode = mode,
+)
+
+fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOnline(
+    propagationContext: Transactions.PropagationContext,
+    subscriber: EmissionSubscriber<EventT>,
+): SubscriberHandle = registerEmissionSubscriber(
+    propagationContext = propagationContext,
+    subscriber = subscriber,
+    mode = ActivationMode.Online,
+)
+
+fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOffline(
+    propagationContext: Transactions.PropagationContext,
+    subscriber: EmissionSubscriber<EventT>,
+): SubscriberHandle = registerEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
     mode = ActivationMode.Offline,
