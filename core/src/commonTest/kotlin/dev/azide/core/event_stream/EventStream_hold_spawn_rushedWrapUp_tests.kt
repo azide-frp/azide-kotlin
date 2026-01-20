@@ -28,7 +28,6 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_spawn_rushedWrapUp_sourceEmitsSimultaneously() {
         TestSlotDispatcher1x3.entries.forEach { dispatcher ->
             test_spawn_rushedWrapUp_sourceEmitsSimultaneously(

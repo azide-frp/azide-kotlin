@@ -32,7 +32,6 @@ import kotlin.test.assertIs
 @Suppress("ClassName")
 class EventStream_executeEach_misc_tests {
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_executeEach_looped1() {
         val targetAction = TestTargetAction.of(result = 10)
 

@@ -37,7 +37,6 @@ class Cell_actuate_start_rushedWrapUp_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_start_sourceUpdatesSimultaneously() {
         TestSlotDispatcher1x3.entries.forEach { dispatcher ->
             test_start_sourceUpdatesSimultaneously(

@@ -15,7 +15,9 @@ import dev.azide.core.impl.event_stream.registerSubscriberOnline
 class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
     initialSourceEventStream: EventStream<Action<EventT>>,
-) : AbstractStatefulEventStreamVertex<EventT>(), BasicSubscriber<Action<EventT>>, EffectVertex, Revocable {
+) : AbstractStatefulEventStreamVertex<EventT>(
+    wrapUpContext = wrapUpContext,
+), BasicSubscriber<Action<EventT>>, EffectVertex, Revocable {
     companion object {
         fun <EventT> startInternally(
             wrapUpContext: Transactions.WrapUpContext,
@@ -111,11 +113,21 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
                 val sourceVertex = sourceEventStream.vertex
 
                 // Re-attach to the source event stream
-                attach(
-                    propagationContext = propagationContext,
-                    sourceVertex = sourceVertex,
-                    shouldPropagate = true,
-                )
+                this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle =
+                    sourceVertex.registerSubscriberOnline(
+                        propagationContext = propagationContext,
+                        subscriber = this@ExecutedEachEventStreamEffectVertex,
+                    )
+
+                sourceVertex.ongoingEmission?.let { sourceOngoingActionEmission ->
+                    exposeAndPropagateEmission(
+                        propagationContext = propagationContext,
+                        emission = processSourceActionEmission(
+                            propagationContext = propagationContext,
+                            sourceActionEmission = sourceOngoingActionEmission,
+                        ),
+                    )
+                }
             }
         }
     }
@@ -148,58 +160,40 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
         this.executedActionRevocable = null
     }
 
-    private fun attach(
-        sourceVertex: EventStreamVertex<Action<EventT>>,
+    private fun processSourceActionEmission(
         propagationContext: PropagationContext,
-        shouldPropagate: Boolean,
-    ) {
+        sourceActionEmission: Emission<Action<EventT>>,
+    ): Emission<EventT> {
+        val emittedAction: Action<EventT> = sourceActionEmission.emittedEvent
+
+        val (event: EventT, executedActionRevocable: Revocable) = emittedAction.executeInternallyWrappedUp(
+            propagationContext = propagationContext,
+        )
+
+        this.executedActionRevocable = executedActionRevocable
+
+        return Emission(
+            emittedEvent = event,
+        )
+    }
+
+    override fun initialize(
+        propagationContext: PropagationContext,
+    ): Emission<EventT>? {
+        val sourceEventStream = sourceEventStream
+            ?: throw IllegalStateException("ExecutedEachEventStreamEffectVertex was revoked before being initialized")
+
+        val sourceVertex = sourceEventStream.vertex
+
         upstreamSubscriberHandle = sourceVertex.registerSubscriberOnline(
             propagationContext = propagationContext,
             subscriber = this,
         )
 
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            val emittedAction: Action<EventT> = sourceOngoingEmission.emittedEvent
-
-            val (event: EventT, executedActionRevocable: Revocable) = emittedAction.executeInternallyWrappedUp(
+        return sourceVertex.ongoingEmission?.let { ongoingSourceActionEmission ->
+            processSourceActionEmission(
                 propagationContext = propagationContext,
-            )
-
-            this.executedActionRevocable = executedActionRevocable
-
-            when {
-                shouldPropagate -> {
-                    exposeAndPropagateEmission(
-                        propagationContext = propagationContext,
-                        emission = Emission(
-                            emittedEvent = event,
-                        ),
-                    )
-                }
-
-                else -> {
-                    exposeEmission(
-                        propagationContext = propagationContext,
-                        emission = Emission(
-                            emittedEvent = event,
-                        ),
-                    )
-                }
-            }
-        }
-    }
-
-    init {
-        wrapUpContext.enqueueForWrapUp { propagationContext ->
-            val sourceEventStream = sourceEventStream
-                ?: throw IllegalStateException("ExecutedEachEventStreamEffectVertex was revoked before being wrapped-up")
-
-            val sourceVertex = sourceEventStream.vertex
-
-            attach(
-                propagationContext = propagationContext,
-                sourceVertex = sourceVertex,
-                shouldPropagate = false, // TODO: Should we?...
+                sourceActionEmission = ongoingSourceActionEmission,
             )
         }
     }

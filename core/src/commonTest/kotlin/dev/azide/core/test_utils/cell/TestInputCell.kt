@@ -4,6 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
+import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestInputStimulation
@@ -12,7 +13,7 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStream
 class TestInputCell<ValueT>(
     initialValue: ValueT,
 ) : Cell<ValueT> {
-    private val _vertex = object : AbstractStatefulCellVertex<ValueT>(
+    private val _vertex = object : AbstractBaseStatefulCellVertex<ValueT>(
         initialValue = initialValue,
     ) {
         fun update(

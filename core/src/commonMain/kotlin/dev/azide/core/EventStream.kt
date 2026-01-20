@@ -112,6 +112,7 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
+    // TODO: Extract `sampleEach` operator symmetric to `executeEach`
     vertex = MappedEventStreamVertex(
         sourceEventStream = this@mapAt,
         transform = { propagationContext, event ->
@@ -147,14 +148,10 @@ fun <EventT> EventStream<EventT>.filterAt(
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.single(): EventStream<EventT> =
     EventStream.Ordinary(
-        vertex = when (val sourceVertex = this.vertex) {
-            is LiveEventStreamVertex -> SingleEventStreamVertex(
-                propagationContext = momentContext.propagationContext,
-                sourceVertex = sourceVertex,
-            )
-
-            is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-        }
+        vertex = SingleEventStreamVertex(
+            wrapUpContext = momentContext.wrapUpContext,
+            sourceEventStream = this,
+        ),
     )
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.take(

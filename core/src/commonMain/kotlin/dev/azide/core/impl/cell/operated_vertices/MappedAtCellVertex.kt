@@ -10,9 +10,10 @@ import dev.azide.core.impl.cell.registerObserverWeakly
 class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     wrapUpContext: Transactions.WrapUpContext,
-    sourceVertex: WarmCellVertex<ValueT>,
+    private val sourceVertex: WarmCellVertex<ValueT>,
     private val transform: (Transactions.PropagationContext, ValueT) -> TransformedValueT,
 ) : AbstractStatefulCellVertex<TransformedValueT>(
+    wrapUpContext = wrapUpContext,
     initialValue = transform(
         propagationContext,
         sourceVertex.getOldValue(propagationContext = propagationContext),
@@ -53,30 +54,23 @@ class MappedAtCellVertex<ValueT, TransformedValueT> private constructor(
         )
     }
 
-    init {
-        wrapUpContext.enqueueForWrapUp {
-            if (hasObservers) {
-                throw IllegalStateException("Cell vertex should not have observers during wrap-up")
-            }
+    override fun initialize(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<TransformedValueT>? {
+        sourceVertex.registerObserverWeakly(
+            propagationContext = propagationContext,
+            dependentVertex = this,
+            observer = this,
+            mode = ActivationMode.Online,
+        )
 
-            sourceVertex.registerObserverWeakly(
-                propagationContext = propagationContext,
-                dependentVertex = this,
-                observer = this,
-                mode = ActivationMode.Online,
+        return sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
+            CellVertex.Update(
+                updatedValue = transform(
+                    propagationContext,
+                    sourceOngoingUpdate.updatedValue,
+                ),
             )
-
-            sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
-                exposeUpdate(
-                    propagationContext = propagationContext,
-                    update = CellVertex.Update(
-                        updatedValue = transform(
-                            propagationContext,
-                            sourceOngoingUpdate.updatedValue,
-                        ),
-                    ),
-                )
-            }
         }
     }
 }

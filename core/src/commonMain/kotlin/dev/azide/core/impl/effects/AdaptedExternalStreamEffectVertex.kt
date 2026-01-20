@@ -6,12 +6,13 @@ import dev.azide.core.external.bind
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 
 class AdaptedExternalStreamEffectVertex<EventT> private constructor(
     private val distributionScheduleVertex: AdaptedExternalScheduleVertex,
-) : AbstractStatefulEventStreamVertex<EventT>(), ExternalEventHandler<EventT>,
+) : AbstractLiveEventStreamVertex<EventT>(), ExternalEventHandler<EventT>,
     EffectVertex by distributionScheduleVertex, Revocable by distributionScheduleVertex {
     companion object {
         fun <EventT> start(

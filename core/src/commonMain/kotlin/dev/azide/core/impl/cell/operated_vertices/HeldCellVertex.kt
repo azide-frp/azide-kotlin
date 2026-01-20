@@ -11,9 +11,10 @@ import dev.azide.core.impl.event_stream.registerSubscriberWeakly
 
 class HeldCellVertex<ValueT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
-    sourceEventStream: EventStream<ValueT>,
+    private val sourceEventStream: EventStream<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
+    wrapUpContext = wrapUpContext,
     initialValue = initialValue,
 ), LiveEventStreamVertex.BasicSubscriber<ValueT> {
     companion object {
@@ -46,25 +47,22 @@ class HeldCellVertex<ValueT> private constructor(
         )
     }
 
-    init {
-        wrapUpContext.enqueueForWrapUp { propagationContext ->
-            val sourceVertex = sourceEventStream.vertex
+    override fun initialize(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<ValueT>? {
+        val sourceVertex = sourceEventStream.vertex
 
-            sourceVertex.registerSubscriberWeakly(
-                propagationContext = propagationContext,
-                dependentVertex = this,
-                subscriber = this,
-                mode = ActivationMode.Online,
+        sourceVertex.registerSubscriberWeakly(
+            propagationContext = propagationContext,
+            dependentVertex = this,
+            subscriber = this,
+            mode = ActivationMode.Online,
+        )
+
+        return sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+            CellVertex.Update(
+                updatedValue = sourceOngoingEmission.emittedEvent,
             )
-
-            sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-                exposeUpdate(
-                    propagationContext = propagationContext,
-                    update = CellVertex.Update(
-                        updatedValue = sourceOngoingEmission.emittedEvent,
-                    ),
-                )
-            }
         }
     }
 }
