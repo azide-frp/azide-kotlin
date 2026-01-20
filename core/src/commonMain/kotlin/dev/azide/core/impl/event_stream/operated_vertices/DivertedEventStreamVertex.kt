@@ -5,9 +5,11 @@ import dev.azide.core.impl.PostProcessableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerObserverOffline
+import dev.azide.core.impl.cell.registerUpdateObserver
+import dev.azide.core.impl.cell.registerUpdateObserverOffline
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -16,8 +18,7 @@ import dev.azide.core.impl.event_stream.registerEmissionSubscriberOffline
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
-) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex,
-    WarmCellVertex.BasicObserver<EventStream<EventT>> {
+) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex, UpdateObserver<EventStream<EventT>> {
     /**
      * The outer vertex observer handle.
      *
@@ -112,7 +113,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the outer observer
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerObserver(
+        this.upstreamOuterObserverHandle = outerSourceVertex.registerUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = ActivationMode.Online,
@@ -168,7 +169,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the outer observer
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerObserverOffline(
+        this.upstreamOuterObserverHandle = outerSourceVertex.registerUpdateObserverOffline(
             propagationContext = propagationContext,
             observer = this,
         )

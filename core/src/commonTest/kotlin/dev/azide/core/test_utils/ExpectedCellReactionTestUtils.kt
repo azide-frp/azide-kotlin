@@ -3,8 +3,9 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerObserverOnline
+import dev.azide.core.impl.cell.registerUpdateObserverOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -20,7 +21,7 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<Cell<ValueT>>,
     ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, WarmCellVertex.BasicObserver<ValueT> {
+        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, UpdateObserver<ValueT> {
             private val subjectVertex: CellVertex<ValueT>
                 get() = subjectLazy.value.vertex
 
@@ -35,7 +36,7 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
                     throw IllegalStateException("Cell verifier is already installed")
                 }
 
-                observerHandle = subjectVertex.registerObserverOnline(
+                observerHandle = subjectVertex.registerUpdateObserverOnline(
                     propagationContext = propagationContext,
                     observer = this,
                 )

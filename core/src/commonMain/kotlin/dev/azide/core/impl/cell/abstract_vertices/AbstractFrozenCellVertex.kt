@@ -6,9 +6,9 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.FrozenCellVertex
 
 abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
-    final override fun registerObserver(
+    override fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: CellVertex.Observer<ValueT>,
+        observer: CellVertex.UpdateNotificationObserver<ValueT>,
         mode: Vertex.ActivationMode,
     ): FrozenCellVertex.FrozenObserverHandle = FrozenCellVertex.FrozenObserverHandle
 

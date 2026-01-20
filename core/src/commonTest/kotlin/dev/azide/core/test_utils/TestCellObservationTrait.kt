@@ -3,7 +3,7 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.cell.registerObserverOnline
+import dev.azide.core.impl.cell.registerUpdateObserverOnline
 import kotlin.test.assertEquals
 
 class TestCellObservationTrait<ValueT> : TestSubjectPerceptionTrait<Cell<ValueT>, TestCellObserver<ValueT>> {
@@ -40,7 +40,7 @@ class TestCellObservationTrait<ValueT> : TestSubjectPerceptionTrait<Cell<ValueT>
             observedCellVertex = subjectVertex,
         )
 
-        subjectVertex.registerObserverOnline(
+        subjectVertex.registerUpdateObserverOnline(
             propagationContext = propagationContext,
             observer = observer,
         )

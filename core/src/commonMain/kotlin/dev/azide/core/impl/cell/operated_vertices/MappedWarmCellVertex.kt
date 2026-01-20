@@ -3,15 +3,17 @@ package dev.azide.core.impl.cell.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
+import dev.azide.core.impl.cell.registerUpdateObserver
 
 class MappedWarmCellVertex<ValueT, TransformedValueT>(
     private val sourceVertex: CellVertex<ValueT>,
     private val transform: (ValueT) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), WarmCellVertex.BasicObserver<ValueT> {
+), UpdateObserver<ValueT> {
     private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
 
     /**
@@ -46,7 +48,7 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerObserver(
+        upstreamObserverHandle = sourceVertex.registerUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = mode,

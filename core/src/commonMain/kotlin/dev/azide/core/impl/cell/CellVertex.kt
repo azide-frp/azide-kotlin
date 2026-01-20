@@ -3,7 +3,9 @@ package dev.azide.core.impl.cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.cell.CellVertex.Observer
+import dev.azide.core.impl.cell.CellVertex.ObserverStatus
+import dev.azide.core.impl.cell.CellVertex.UpdateNotificationObserver
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import kotlin.jvm.JvmInline
 
 sealed interface CellVertex<out ValueT> : Vertex {
@@ -18,11 +20,17 @@ sealed interface CellVertex<out ValueT> : Vertex {
         )
     }
 
-    interface Observer<in ValueT> {
-        fun handleUpdateWithStatus(
+    interface UpdateNotificationObserver<in ValueT> {
+        fun handleUpdateNotification(
+            propagationContext: Transactions.PropagationContext,
+        ): ObserverStatus
+    }
+
+    interface UpdateObserver<in ValueT> {
+        fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
             update: Update<ValueT>?,
-        ): ObserverStatus
+        )
     }
 
     interface ObserverHandle
@@ -33,9 +41,9 @@ sealed interface CellVertex<out ValueT> : Vertex {
 
     val ongoingUpdate: Update<ValueT>?
 
-    fun registerObserver(
+    fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: Observer<ValueT>,
+        observer: UpdateNotificationObserver<ValueT>,
         mode: ActivationMode,
     ): ObserverHandle
 
@@ -48,19 +56,58 @@ sealed interface CellVertex<out ValueT> : Vertex {
     ): ValueT
 }
 
-fun <ValueT> CellVertex<ValueT>.registerObserverOnline(
+fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOnline(
     propagationContext: Transactions.PropagationContext,
-    observer: Observer<ValueT>,
-): CellVertex.ObserverHandle = registerObserver(
+    observer: UpdateNotificationObserver<ValueT>,
+): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
     propagationContext = propagationContext,
     observer = observer,
     mode = ActivationMode.Online,
 )
 
-fun <ValueT> CellVertex<ValueT>.registerObserverOffline(
+fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOffline(
     propagationContext: Transactions.PropagationContext,
-    observer: Observer<ValueT>,
-): CellVertex.ObserverHandle = registerObserver(
+    observer: UpdateNotificationObserver<ValueT>,
+): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
+    propagationContext = propagationContext,
+    observer = observer,
+    mode = ActivationMode.Offline,
+)
+
+fun <ValueT> CellVertex<ValueT>.registerUpdateObserver(
+    propagationContext: Transactions.PropagationContext,
+    observer: UpdateObserver<ValueT>,
+    mode: ActivationMode,
+): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
+    propagationContext = propagationContext,
+    observer = object : UpdateNotificationObserver<ValueT> {
+        override fun handleUpdateNotification(
+            propagationContext: Transactions.PropagationContext,
+        ): ObserverStatus {
+            observer.handleUpdate(
+                propagationContext = propagationContext,
+                update = this@registerUpdateObserver.ongoingUpdate,
+            )
+
+            return ObserverStatus.Reachable
+        }
+    },
+    mode = mode,
+)
+
+fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOnline(
+    propagationContext: Transactions.PropagationContext,
+    observer: UpdateObserver<ValueT>,
+): CellVertex.ObserverHandle = registerUpdateObserver(
+    propagationContext = propagationContext,
+    observer = observer,
+    mode = ActivationMode.Online,
+)
+
+fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOffline(
+    propagationContext: Transactions.PropagationContext,
+    observer: UpdateObserver<ValueT>,
+): CellVertex.ObserverHandle = registerUpdateObserver(
     propagationContext = propagationContext,
     observer = observer,
     mode = ActivationMode.Offline,

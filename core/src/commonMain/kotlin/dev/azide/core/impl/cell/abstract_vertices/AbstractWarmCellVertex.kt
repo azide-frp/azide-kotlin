@@ -4,13 +4,13 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.Observer
+import dev.azide.core.impl.cell.CellVertex.UpdateNotificationObserver
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.WarmCellVertex.WarmObserverHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
-    private val _registeredObservers: MutableBag<Observer<ValueT>> = MutableBag()
+    private val _registeredObservers: MutableBag<UpdateNotificationObserver<ValueT>> = MutableBag()
 
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
 
@@ -19,9 +19,9 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
     final override val ongoingUpdate: CellVertex.Update<ValueT>?
         get() = _ongoingUpdate
 
-    final override fun registerObserver(
+    final override fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: Observer<ValueT>,
+        observer: UpdateNotificationObserver<ValueT>,
         mode: Vertex.ActivationMode,
     ): CellVertex.ObserverHandle {
         val internalHandle = _registeredObservers.add(observer)
@@ -74,9 +74,8 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
             update = update,
         )
 
-        propagateUpdate(
+        propagateUpdateNotification(
             propagationContext = propagationContext,
-            update = update,
         )
     }
 
@@ -95,14 +94,12 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         _ongoingUpdate = null
     }
 
-    private fun propagateUpdate(
+    private fun propagateUpdateNotification(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
         _registeredObservers.forEach { observer ->
-            val observerStatus = observer.handleUpdateWithStatus(
+            val observerStatus = observer.handleUpdateNotification(
                 propagationContext = propagationContext,
-                update = update,
             )
 
             // Remove the observer if it's unreachable
