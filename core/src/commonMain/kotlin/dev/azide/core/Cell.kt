@@ -2,11 +2,9 @@ package dev.azide.core
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.FrozenCellVertex
 import dev.azide.core.impl.cell.PureCellVertex
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2WarmCellVertex
-import dev.azide.core.impl.cell.operated_vertices.MappedAtCellVertex
 import dev.azide.core.impl.cell.operated_vertices.MappedWarmCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
 import dev.azide.core.impl.event_stream.operated_vertices.DivertedEventStreamVertex
@@ -141,38 +139,21 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.map(
 
 context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<ValueT>.mapAt(
     transform: context(MomentContext) (ValueT) -> TransformedValueT,
-): Cell<TransformedValueT> {
-    val initialPropagationContext = momentContext.propagationContext
+): Cell<TransformedValueT> = sampleEveryOf { value: ValueT ->
+    Moment.decontextualize {
+        transform(value)
+    }
+}.pullInContext()
 
-    return when (val sourceVertex = this.vertex) {
-        is FrozenCellVertex -> Cell.Const(
-            constValue = transform(
-                sourceVertex.getOldValue(
-                    propagationContext = initialPropagationContext,
-                ),
-            )
-        )
-
-        is WarmCellVertex -> Cell.Ordinary(
-            MappedAtCellVertex.start(
-                propagationContext = initialPropagationContext,
-                wrapUpContext = momentContext.wrapUpContext,
-                sourceVertex = sourceVertex,
-                transform = { propagationContext, updatedValue ->
-                    MomentContext.wrapUp(
-                        propagationContext = propagationContext,
-                    ) {
-                        transform(updatedValue)
-                    }
-                },
-            ),
-        )
+fun <ValueT> Cell<Moment<ValueT>>.sampleEvery(): Moment<Cell<ValueT>> = sampling.joinOf { initialMoment: Moment<ValueT> ->
+    initialMoment.joinOf { initialValue: ValueT ->
+        updatedValues.sampleEach().holding(initialValue = initialValue)
     }
 }
 
-fun <ValueT> Cell<Moment<ValueT>>.sampleEvery(): Moment<Cell<ValueT>> = sampling.joinOf { it }.joinOf { initialValue ->
-    updatedValues.sampleEach().holding(initialValue = initialValue)
-}
+fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
+    transform: (ValueT) -> Moment<TransformedValueT>,
+): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
 fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
     vertex.getOldValue(
