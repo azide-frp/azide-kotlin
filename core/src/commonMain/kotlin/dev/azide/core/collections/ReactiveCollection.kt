@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveCollection.Companion.map
 import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.ReactiveCollectionSumCellVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.MappedWarmReactiveCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.operated_vertices.MappedWarmReactiveCollectionVertex
 
 interface ReactiveCollection<out ElementT> {
     companion object {

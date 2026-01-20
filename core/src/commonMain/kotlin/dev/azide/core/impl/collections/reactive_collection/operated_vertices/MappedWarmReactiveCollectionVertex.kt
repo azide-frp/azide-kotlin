@@ -1,17 +1,16 @@
-package dev.azide.core.impl.collections.reactive_set.operated_vertices
+package dev.azide.core.impl.collections.reactive_collection.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserver
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessWarmReactiveCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.map
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmReactiveCollectionVertex
 
 class MappedWarmReactiveCollectionVertex<ElementT, TransformedElementT>(
     private val sourceVertex: ReactiveCollectionVertex<ElementT>,
     private val transform: (ElementT) -> TransformedElementT,
-) : AbstractStatelessWarmReactiveCollectionVertex<TransformedElementT>(), CollectionObserver<ElementT> {
-    private var upstreamObserverHandle: CollectionObserverHandle? = null
+) : AbstractStatelessWarmReactiveCollectionVertex<TransformedElementT>(),
+    ReactiveCollectionVertex.CollectionObserver<ElementT> {
+    private var upstreamObserverHandle: ReactiveCollectionVertex.CollectionObserverHandle? = null
 
     /**
      * Handle the change of the source reactive collection.

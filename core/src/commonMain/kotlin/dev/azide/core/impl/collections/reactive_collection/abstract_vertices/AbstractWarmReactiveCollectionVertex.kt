@@ -1,4 +1,4 @@
-package dev.azide.core.impl.collections.reactive_set.abstract_vertices
+package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
