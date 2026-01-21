@@ -35,10 +35,10 @@ class TestReactiveSetObserver<ElementT>(
 @Deprecated("Switch to the new test utils")
 context(transactionTestContext: TransactionTestContext) fun <ElementT> ReactiveSet<ElementT>.observeForTestingCancellable(): Pair<TestReactiveSetObserver<ElementT>, TestReactiveSetObserver.Handle> {
     val observer = TestReactiveSetObserver(
-        observedReactiveSetVertex = vertex,
+        observedReactiveSetVertex = trackedVertex,
     )
 
-    val observerHandle = vertex.registerSetChangeObserver(
+    val observerHandle = trackedVertex.registerSetChangeObserver(
         propagationContext = transactionTestContext.propagationContext,
         observer = observer,
     )
@@ -47,7 +47,7 @@ context(transactionTestContext: TransactionTestContext) fun <ElementT> ReactiveS
         observer,
         object : TestReactiveSetObserver.Handle {
             override fun cancel() {
-                vertex.unregisterCollectionObserver(
+                trackedVertex.unregisterCollectionObserver(
                     handle = observerHandle,
                 )
             }

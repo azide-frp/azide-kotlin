@@ -11,13 +11,13 @@ class TestReactiveSetObservationTrait<ElementT> :
         propagationContext: Transactions.PropagationContext,
         subject: ReactiveSet<ElementT>,
     ): TestSubjectPerceptionTrait.OldStateStabilityVerifier {
-        val originalOldContent = subject.vertex.getOldContentCopy(
+        val originalOldContent = subject.trackedVertex.getOldContentCopy(
             propagationContext = propagationContext,
         )
 
         return object : TestSubjectPerceptionTrait.OldStateStabilityVerifier {
             override fun verifyOldStateDidNotChange() {
-                val finalOldContent = subject.vertex.getOldContentCopy(
+                val finalOldContent = subject.trackedVertex.getOldContentCopy(
                     propagationContext = propagationContext,
                 )
 
@@ -34,7 +34,7 @@ class TestReactiveSetObservationTrait<ElementT> :
         propagationContext: Transactions.PropagationContext,
         subject: ReactiveSet<ElementT>,
     ): TestReactiveSetObserver<ElementT> {
-        val subjectVertex = subject.vertex
+        val subjectVertex = subject.trackedVertex
 
         val observer = TestReactiveSetObserver(
             observedReactiveSetVertex = subjectVertex,

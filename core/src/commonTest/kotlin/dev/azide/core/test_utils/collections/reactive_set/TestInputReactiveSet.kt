@@ -131,7 +131,7 @@ class TestInputReactiveSet<ElementT>(
         }
     }
 
-    override val vertex: TrackedSetVertex<ElementT>
+    override val trackedVertex: TrackedSetVertex<ElementT>
         get() = _vertex
 }
 

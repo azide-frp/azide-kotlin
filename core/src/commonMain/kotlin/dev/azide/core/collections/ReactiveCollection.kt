@@ -12,16 +12,16 @@ interface ReactiveCollection<out ElementT> {
         ): ReactiveCollection<TransformedElementT> = TODO()
     }
 
-    val vertex: TrackedCollectionVertex<ElementT>
+    val trackedVertex: TrackedCollectionVertex<ElementT>
 }
 
 val <ElementT> ReactiveCollection<ElementT>.size: Cell<Int>
     get() = Cell.Ordinary(
-        vertex = vertex.buildSizeVertex()
+        vertex = trackedVertex.buildSizeVertex()
     )
 
 fun ReactiveCollection<Int>.sum(): Cell<Int> = Cell.Ordinary(
-    TrackedCollectionSumCellVertex(sourceVertex = this@sum.vertex),
+    TrackedCollectionSumCellVertex(sourceVertex = this@sum.trackedVertex),
 )
 
 fun <ElementT> ReactiveCollection<ElementT>.sumOf(

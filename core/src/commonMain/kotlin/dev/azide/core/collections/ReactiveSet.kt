@@ -10,29 +10,29 @@ interface ReactiveSet<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
         constElements: Set<ElementT>,
     ) : ReactiveSet<ElementT> {
-        override val vertex: TrackedSetVertex<ElementT> = PureTrackedSetVertex(
+        override val trackedVertex: TrackedSetVertex<ElementT> = PureTrackedSetVertex(
             elements = constElements,
         )
     }
 
     class Ordinary<out ElementT> internal constructor(
-        override val vertex: TrackedSetVertex<ElementT>,
+        override val trackedVertex: TrackedSetVertex<ElementT>,
     ) : ReactiveSet<ElementT>
 
-    override val vertex: TrackedSetVertex<ElementT>
+    override val trackedVertex: TrackedSetVertex<ElementT>
 }
 
 fun <ElementT> ReactiveSet<ElementT>.contains(
     element: @UnsafeVariance ElementT,
 ): Cell<Boolean> = Cell.Ordinary(
-    vertex = vertex.buildContainsVertex(element = element),
+    vertex = trackedVertex.buildContainsVertex(element = element),
 )
 
 fun <ElementT> ReactiveSet<ElementT>.filter(
     predicate: (ElementT) -> Boolean,
 ): ReactiveSet<ElementT> = ReactiveSet.Ordinary(
     FilteredWarmTrackedSetVertex(
-        this@filter.vertex,
+        this@filter.trackedVertex,
         predicate,
     ),
 )

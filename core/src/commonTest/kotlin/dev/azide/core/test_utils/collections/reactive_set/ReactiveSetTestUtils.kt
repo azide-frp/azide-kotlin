@@ -193,7 +193,7 @@ internal object ReactiveSetTestUtils {
     fun <ElementT> observeForVerification(
         subjectReactiveSet: ReactiveSet<ElementT>,
     ): ObservingVerifier<ElementT> {
-        val subjectVertex = subjectReactiveSet.vertex as? WarmTrackedSetVertex<ElementT>
+        val subjectVertex = subjectReactiveSet.trackedVertex as? WarmTrackedSetVertex<ElementT>
             ?: throw IllegalStateException("Subject reactive set vertex is already frozen")
 
         return ObservingVerifier(
@@ -208,7 +208,7 @@ internal object ReactiveSetTestUtils {
         subjectReactiveSet: ReactiveSet<ElementT>,
         expectedElements: Set<ElementT>,
     ) {
-        val subjectVertex = subjectReactiveSet.vertex
+        val subjectVertex = subjectReactiveSet.trackedVertex
 
         assertIs<WarmTrackedSetVertex<ElementT>>(
             value = subjectVertex,
