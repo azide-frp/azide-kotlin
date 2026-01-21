@@ -5,14 +5,14 @@ import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateNotificationObserver
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import dev.azide.core.impl.cell.CellVertex.ObserverHandle
 import dev.azide.core.impl.cell.CellVertex.ObserverStatus
 import dev.azide.core.impl.cell.CellVertex.Update
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerUpdateNotificationObserverOnline
 import dev.azide.core.impl.cell.registerUpdateObserverOnline
+import dev.azide.core.impl.cell.registerBoundUpdateObserverOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object CellTestUtils {
-    private object NoopObserver : UpdateNotificationObserver {
+    private object NoopObserver : UpdateObserver {
         override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus = ObserverStatus.Reachable
@@ -101,7 +101,7 @@ internal object CellTestUtils {
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,
-    ) : UpdateObserver {
+    ) : BoundUpdateObserver {
         @JvmInline
         value class ReceivedUpdate<ValueT>(
             val receivedUpdate: Update<ValueT>?,
@@ -109,7 +109,7 @@ internal object CellTestUtils {
 
         private var receivedUpdate: ReceivedUpdate<ValueT>? = null
 
-        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerUpdateObserverOnline(
+        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerBoundUpdateObserverOnline(
             propagationContext = propagationContext,
             observer = this,
         )
@@ -293,7 +293,7 @@ internal object CellTestUtils {
         )
 
         val activelySampledValue = Transactions.executeWithResult { propagationContext ->
-            val observerHandle = subjectVertex.registerUpdateNotificationObserverOnline(
+            val observerHandle = subjectVertex.registerUpdateObserverOnline(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )
@@ -388,7 +388,7 @@ internal object CellTestUtils {
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            subjectCell.vertex.registerUpdateNotificationObserverOnline(
+            subjectCell.vertex.registerUpdateObserverOnline(
                 propagationContext = propagationContext,
                 observer = NoopObserver,
             )

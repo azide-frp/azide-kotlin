@@ -5,10 +5,10 @@ import dev.azide.core.impl.PostProcessableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerUpdateObserver
-import dev.azide.core.impl.cell.registerUpdateObserverOffline
+import dev.azide.core.impl.cell.registerBoundUpdateObserver
+import dev.azide.core.impl.cell.registerBoundUpdateObserverOffline
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -17,7 +17,7 @@ import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOffline
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
-) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex, UpdateObserver {
+) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex, BoundUpdateObserver {
     /**
      * The outer vertex observer handle.
      *
@@ -113,7 +113,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the outer observer
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerUpdateObserver(
+        this.upstreamOuterObserverHandle = outerSourceVertex.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = ActivationMode.Online,
@@ -169,7 +169,7 @@ class DivertedEventStreamVertex<EventT>(
 
         // Register the outer observer
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerUpdateObserverOffline(
+        this.upstreamOuterObserverHandle = outerSourceVertex.registerBoundUpdateObserverOffline(
             propagationContext = propagationContext,
             observer = this,
         )

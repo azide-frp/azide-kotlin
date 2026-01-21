@@ -4,14 +4,14 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
 import dev.azide.core.impl.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerUpdateObserver
+import dev.azide.core.impl.cell.registerBoundUpdateObserver
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
-) : AbstractSimpleStatelessCellVertex<ValueT>(), UpdateObserver {
+) : AbstractSimpleStatelessCellVertex<ValueT>(), BoundUpdateObserver {
     /**
      * The outer vertex observer handle.
      *
@@ -52,7 +52,7 @@ class SwitchedCellVertex<ValueT>(
      */
     private var upstreamNewInnerObserverHandle: CellVertex.ObserverHandle? = null
 
-    private val innerSourceObserver = object : UpdateObserver {
+    private val innerSourceObserver = object : BoundUpdateObserver {
         /**
          * Handle the update of the inner source cell.
          */
@@ -130,7 +130,7 @@ class SwitchedCellVertex<ValueT>(
                 val stableInnerSourceVertex =
                     this.stableInnerSourceVertex ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-                this.upstreamNewInnerObserverHandle = stableInnerSourceVertex.registerUpdateObserver(
+                this.upstreamNewInnerObserverHandle = stableInnerSourceVertex.registerBoundUpdateObserver(
                     propagationContext = propagationContext,
                     observer = innerSourceObserver,
                     mode = ActivationMode.Online,
@@ -184,7 +184,7 @@ class SwitchedCellVertex<ValueT>(
 
                 // Subscribe to the handled updated inner source vertex
 
-                this.upstreamNewInnerObserverHandle = handledUpdatedInnerSourceVertex.registerUpdateObserver(
+                this.upstreamNewInnerObserverHandle = handledUpdatedInnerSourceVertex.registerBoundUpdateObserver(
                     propagationContext = propagationContext,
                     observer = innerSourceObserver,
                     mode = ActivationMode.Online,
@@ -214,7 +214,7 @@ class SwitchedCellVertex<ValueT>(
 
         // Register the outer observer
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerUpdateObserver(
+        this.upstreamOuterObserverHandle = outerSourceVertex.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = mode,
@@ -245,7 +245,7 @@ class SwitchedCellVertex<ValueT>(
 
         // Register the inner source vertex observer (to the new inner source vertex)
 
-        this.upstreamNewInnerObserverHandle = newInnerSourceVertex.registerUpdateObserver(
+        this.upstreamNewInnerObserverHandle = newInnerSourceVertex.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = innerSourceObserver,
             mode = mode,

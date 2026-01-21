@@ -3,9 +3,9 @@ package dev.azide.core.impl.cell.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.cell.registerUpdateObserver
+import dev.azide.core.impl.cell.registerBoundUpdateObserver
 
 class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex1: CellVertex<ValueT1>,
@@ -13,7 +13,7 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), UpdateObserver {
+), BoundUpdateObserver {
     private var upstreamObserverHandle1: CellVertex.ObserverHandle? = null
     private var upstreamObserverHandle2: CellVertex.ObserverHandle? = null
 
@@ -29,13 +29,13 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        this.upstreamObserverHandle1 = sourceVertex1.registerUpdateObserver(
+        this.upstreamObserverHandle1 = sourceVertex1.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = mode,
         )
 
-        this.upstreamObserverHandle2 = sourceVertex2.registerUpdateObserver(
+        this.upstreamObserverHandle2 = sourceVertex2.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = mode,

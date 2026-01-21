@@ -3,14 +3,14 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.registerUpdateObserverOnline
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.registerBoundUpdateObserverOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class TestCellObserver<ValueT>(
     val observedCellVertex: CellVertex<ValueT>,
-) : UpdateObserver {
+) : BoundUpdateObserver {
     interface Handle {
         fun cancel()
     }
@@ -40,7 +40,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
         observedCellVertex = vertex,
     )
 
-    val observerHandle = vertex.registerUpdateObserverOnline(
+    val observerHandle = vertex.registerBoundUpdateObserverOnline(
         propagationContext = transactionTestContext.propagationContext,
         observer = observer,
     )

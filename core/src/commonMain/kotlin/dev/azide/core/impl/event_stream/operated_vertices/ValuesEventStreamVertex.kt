@@ -3,8 +3,8 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.registerUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.registerBoundUpdateObserver
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -17,7 +17,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEvent
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), UpdateObserver {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), BoundUpdateObserver {
     private enum class InternalState {
         Spawning, Spawned,
     }
@@ -93,7 +93,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerUpdateObserver(
+        upstreamObserverHandle = sourceVertex.registerBoundUpdateObserver(
             propagationContext = propagationContext,
             observer = this,
             mode = mode,

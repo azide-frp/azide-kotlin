@@ -4,13 +4,13 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateNotificationObserver
+import dev.azide.core.impl.cell.CellVertex.UpdateObserver
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.WarmCellVertex.WarmObserverHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
-    private val _registeredObservers: MutableBag<UpdateNotificationObserver> = MutableBag()
+    private val _registeredObservers: MutableBag<UpdateObserver> = MutableBag()
 
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
 
@@ -19,9 +19,9 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
     final override val ongoingUpdate: CellVertex.Update<ValueT>?
         get() = _ongoingUpdate
 
-    final override fun registerUpdateNotificationObserver(
+    final override fun registerUpdateObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: UpdateNotificationObserver,
+        observer: UpdateObserver,
         mode: Vertex.ActivationMode,
     ): CellVertex.ObserverHandle {
         val internalHandle = _registeredObservers.add(observer)
