@@ -1,23 +1,24 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices
 
-import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmReactiveSetVertex
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 
-class FilteredWarmReactiveSetVertex<ElementT>(
-    private val sourceVertex: ReactiveSetVertex<ElementT>,
+class FilteredWarmTrackedSetVertex<ElementT>(
+    private val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
-) : AbstractStatelessWarmReactiveSetVertex<ElementT>(), ReactiveSetVertex.SetObserver<ElementT> {
-    private var upstreamObserverHandle: ReactiveSetVertex.SetObserverHandle? = null
+) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), SetObserver<ElementT> {
+    private var upstreamObserverHandle: TrackedSetVertex.SetObserverHandle? = null
 
     /**
      * Handle the change of the source reactive set.
      */
     override fun handleChange(
-        propagationContext: Transactions.PropagationContext,
-        change: ReactiveSetVertex.SetChange<ElementT>?,
+        propagationContext: PropagationContext,
+        change: SetChange<ElementT>?,
     ) {
         when (change) {
             null -> {
@@ -52,8 +53,8 @@ class FilteredWarmReactiveSetVertex<ElementT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-    ): ReactiveSetVertex.SetChange<ElementT>? {
+        propagationContext: PropagationContext,
+    ): SetChange<ElementT>? {
         if (upstreamObserverHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
@@ -78,7 +79,7 @@ class FilteredWarmReactiveSetVertex<ElementT>(
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): Set<ElementT> {
         val oldContentView = sourceVertex.getOldContentView(
             propagationContext = propagationContext,

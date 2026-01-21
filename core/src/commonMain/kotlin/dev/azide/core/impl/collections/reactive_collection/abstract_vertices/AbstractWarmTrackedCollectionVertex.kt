@@ -3,15 +3,15 @@ package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserver
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.ReactiveCollectionSizeWarmCellVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeWarmCellVertex
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import kotlin.jvm.JvmInline
 
-abstract class AbstractWarmReactiveCollectionVertex<ElementT>() : ReactiveCollectionVertex<ElementT>,
+abstract class AbstractWarmTrackedCollectionVertex<ElementT>() : TrackedCollectionVertex<ElementT>,
     CommittableVertex {
     @JvmInline
     private value class ObserverHandleImpl<ElementT>(
@@ -54,7 +54,7 @@ abstract class AbstractWarmReactiveCollectionVertex<ElementT>() : ReactiveCollec
         }
     }
 
-    final override fun buildSizeVertex(): CellVertex<Int> = ReactiveCollectionSizeWarmCellVertex(
+    final override fun buildSizeVertex(): CellVertex<Int> = TrackedCollectionSizeWarmCellVertex(
         sourceVertex = this,
     )
 

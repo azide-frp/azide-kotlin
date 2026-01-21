@@ -2,12 +2,13 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 
 class TestReactiveSetObserver<ElementT>(
-    val observedReactiveSetVertex: ReactiveSetVertex<ElementT>,
-) : ReactiveSetVertex.SetObserver<ElementT> {
+    val observedReactiveSetVertex: TrackedSetVertex<ElementT>,
+) : SetObserver<ElementT> {
     interface Handle {
         fun cancel()
     }
@@ -59,7 +60,7 @@ context(transactionTestContext: TransactionTestContext) fun <ElementT> ReactiveS
     return testReactiveSetObserver
 }
 
-fun <ElementT> ReactiveSetVertex<ElementT>.getOldContentCopy(
+fun <ElementT> TrackedSetVertex<ElementT>.getOldContentCopy(
     propagationContext: Transactions.PropagationContext,
 ): Set<ElementT> = getOldContentView(
     propagationContext = propagationContext,

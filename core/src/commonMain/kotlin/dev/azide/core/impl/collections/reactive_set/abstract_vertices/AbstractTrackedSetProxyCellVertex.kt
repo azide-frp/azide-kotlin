@@ -4,19 +4,21 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
+import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 
-abstract class AbstractReactiveSetProxyCellVertex<ElementT, ValueT>(
-    private val sourceVertex: WarmReactiveSetVertex<ElementT>,
+abstract class AbstractTrackedSetProxyCellVertex<ElementT, ValueT>(
+    private val sourceVertex: WarmTrackedSetVertex<ElementT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), ReactiveSetVertex.SetObserver<ElementT> {
-    private var upstreamObserverHandle: ReactiveSetVertex.SetObserverHandle? = null
+), SetObserver<ElementT> {
+    private var upstreamObserverHandle: SetObserverHandle? = null
 
     final override fun handleChange(
         propagationContext: Transactions.PropagationContext,
-        change: ReactiveSetVertex.SetChange<ElementT>?,
+        change: SetChange<ElementT>?,
     ) {
         when (change) {
             null -> {
@@ -101,7 +103,7 @@ abstract class AbstractReactiveSetProxyCellVertex<ElementT, ValueT>(
 
     abstract fun buildUpdate(
         propagationContext: Transactions.PropagationContext,
-        sourceChange: ReactiveSetVertex.SetChange<ElementT>,
+        sourceChange: SetChange<ElementT>,
     ): CellVertex.Update<ValueT>?
 
     abstract fun computeOldValue(

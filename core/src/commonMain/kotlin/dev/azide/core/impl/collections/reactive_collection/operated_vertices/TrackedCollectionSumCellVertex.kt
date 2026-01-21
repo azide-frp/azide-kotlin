@@ -2,17 +2,17 @@ package dev.azide.core.impl.collections.reactive_collection.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractReactiveCollectionProxyCellVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
 
-class ReactiveCollectionSumCellVertex(
-    sourceVertex: ReactiveCollectionVertex<Int>,
-) : AbstractReactiveCollectionProxyCellVertex<Int, Int>(
+class TrackedCollectionSumCellVertex(
+    sourceVertex: TrackedCollectionVertex<Int>,
+) : AbstractTrackedCollectionProxyCellVertex<Int, Int>(
     sourceVertex = sourceVertex,
 ) {
     override fun buildUpdate(
         propagationContext: Transactions.PropagationContext,
-        sourceChange: ReactiveCollectionVertex.CollectionChange<Int>,
+        sourceChange: TrackedCollectionVertex.CollectionChange<Int>,
     ): CellVertex.Update<Int>? {
         val positiveDelta = sourceChange.addedElements.sum()
         val negativeDelta = sourceChange.removedElements.sum()

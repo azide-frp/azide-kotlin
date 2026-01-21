@@ -1,11 +1,11 @@
 package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
-import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 
-abstract class AbstractStatelessWarmReactiveSetVertex<ElementT> : AbstractWarmReactiveSetVertex<ElementT>() {
+abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTrackedSetVertex<ElementT>() {
     final override fun onFirstObserverRegistered(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ) {
         val changeOnActivation = activate(
             propagationContext = propagationContext,
@@ -24,8 +24,8 @@ abstract class AbstractStatelessWarmReactiveSetVertex<ElementT> : AbstractWarmRe
     }
 
     abstract fun activate(
-        propagationContext: Transactions.PropagationContext,
-    ): ReactiveSetVertex.SetChange<ElementT>?
+        propagationContext: PropagationContext,
+    ): SetChange<ElementT>?
 
     abstract fun deactivate()
 }

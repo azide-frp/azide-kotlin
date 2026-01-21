@@ -1,5 +1,5 @@
 package dev.azide.core.impl.collections.reactive_set
 
-interface FrozenReactiveSetVertex<out ElementT> : ReactiveSetVertex<ElementT> {
+interface FrozenTrackedSetVertex<out ElementT> : TrackedSetVertex<ElementT> {
     override val ongoingChange: Nothing?
 }

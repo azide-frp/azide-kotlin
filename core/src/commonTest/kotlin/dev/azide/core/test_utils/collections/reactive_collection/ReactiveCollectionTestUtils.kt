@@ -2,10 +2,10 @@ package dev.azide.core.test_utils.collections.reactive_collection
 
 import dev.azide.core.collections.ReactiveCollection
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserver
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.kmpx.collections.multi_sets.MultiSet
 import dev.kmpx.collections.multi_sets.minus
@@ -16,7 +16,7 @@ import kotlin.test.assertNotNull
 
 internal object ReactiveCollectionTestUtils {
     class ObservingVerifier<ElementT>(
-        private val subjectVertex: ReactiveCollectionVertex<ElementT>,
+        private val subjectVertex: TrackedCollectionVertex<ElementT>,
     ) : CollectionObserver<ElementT> {
         @JvmInline
         value class ReceivedChange<ElementT>(

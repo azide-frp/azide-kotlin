@@ -2,13 +2,14 @@ package dev.azide.core.impl.collections.reactive_set
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
 
-sealed interface ReactiveSetVertex<out ElementT> : ReactiveCollectionVertex<ElementT> {
+sealed interface TrackedSetVertex<out ElementT> : TrackedCollectionVertex<ElementT> {
     data class SetChange<out ElementT>(
         override val addedElements: Set<ElementT>,
         override val removedElements: Set<ElementT>,
-    ) : ReactiveCollectionVertex.CollectionChange<ElementT> {
+    ) : CollectionChange<ElementT> {
         companion object {
             fun <ElementT> of(
                 addedElements: Set<ElementT>,
@@ -40,9 +41,9 @@ sealed interface ReactiveSetVertex<out ElementT> : ReactiveCollectionVertex<Elem
             get() = addedElements.size - removedElements.size
     }
 
-    typealias SetObserver<ElementT> = ReactiveCollectionVertex.GenericCollectionObserver<SetChange<ElementT>>
+    typealias SetObserver<ElementT> = TrackedCollectionVertex.GenericCollectionObserver<SetChange<ElementT>>
 
-    interface SetObserverHandle : ReactiveCollectionVertex.CollectionObserverHandle
+    interface SetObserverHandle : TrackedCollectionVertex.CollectionObserverHandle
 
     fun registerSetObserver(
         propagationContext: Transactions.PropagationContext,

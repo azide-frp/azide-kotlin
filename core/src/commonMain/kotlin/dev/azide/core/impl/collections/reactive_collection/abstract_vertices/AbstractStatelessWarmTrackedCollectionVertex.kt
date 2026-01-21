@@ -1,10 +1,10 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
 
-abstract class AbstractStatelessWarmReactiveCollectionVertex<ElementT> :
-    AbstractWarmReactiveCollectionVertex<ElementT>() {
+abstract class AbstractStatelessWarmTrackedCollectionVertex<ElementT> :
+    AbstractWarmTrackedCollectionVertex<ElementT>() {
     final override fun onFirstObserverRegistered(
         propagationContext: Transactions.PropagationContext,
     ) {

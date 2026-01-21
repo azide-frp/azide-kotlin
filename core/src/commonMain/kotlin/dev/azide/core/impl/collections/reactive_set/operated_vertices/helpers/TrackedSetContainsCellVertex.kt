@@ -1,20 +1,20 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractReactiveSetProxyCellVertex
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractTrackedSetProxyCellVertex
 
-class ReactiveSetContainsCellVertex<ElementT>(
-    sourceVertex: WarmReactiveSetVertex<ElementT>,
+class TrackedSetContainsCellVertex<ElementT>(
+    sourceVertex: WarmTrackedSetVertex<ElementT>,
     private val element: ElementT,
-) : AbstractReactiveSetProxyCellVertex<ElementT, Boolean>(
+) : AbstractTrackedSetProxyCellVertex<ElementT, Boolean>(
     sourceVertex = sourceVertex,
 ) {
     override fun buildUpdate(
-        propagationContext: Transactions.PropagationContext,
-        sourceChange: ReactiveSetVertex.SetChange<ElementT>,
+        propagationContext: PropagationContext,
+        sourceChange: SetChange<ElementT>,
     ): CellVertex.Update<Boolean>? = when {
         sourceChange.addedElements.contains(element) -> CellVertex.Update(
             updatedValue = true,

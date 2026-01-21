@@ -1,24 +1,24 @@
 package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
 import dev.azide.core.impl.CommittableVertex
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserver
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetObserver
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.ReactiveSetContainsCellVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.ReactiveSetSizeWarmCellVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
+import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetContainsCellVertex
+import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import kotlin.jvm.JvmInline
 
-abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex<ElementT>, CommittableVertex {
+abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<ElementT>, CommittableVertex {
     @JvmInline
     private value class ObserverHandleImpl<ElementT>(
         val internalHandle: MutableBag.Handle<SetObserver<ElementT>>,
-    ) : ReactiveSetVertex.SetObserverHandle
+    ) : SetObserverHandle
 
     private val _registeredObservers: MutableBag<SetObserver<ElementT>> = MutableBag()
 
@@ -27,7 +27,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     private var _isEnqueuedForCommitment = false
 
     final override fun registerCollectionObserver(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         observer: CollectionObserver<ElementT>,
     ): CollectionObserverHandle = registerSetObserver(
         propagationContext = propagationContext,
@@ -43,13 +43,13 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     final override fun buildSizeVertex(
-    ): CellVertex<Int> = ReactiveSetSizeWarmCellVertex(
+    ): CellVertex<Int> = TrackedSetSizeWarmCellVertex(
         sourceVertex = this,
     )
 
     final override fun buildContainsVertex(
         element: ElementT,
-    ): CellVertex<Boolean> = ReactiveSetContainsCellVertex(
+    ): CellVertex<Boolean> = TrackedSetContainsCellVertex(
         sourceVertex = this,
         element = element,
     )
@@ -58,15 +58,15 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
         get() = _ongoingChange
 
     final override fun registerSetObserver(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         observer: SetObserver<ElementT>,
-    ): ReactiveSetVertex.SetObserverHandle = registerObserverImpl(
+    ): SetObserverHandle = registerObserverImpl(
         propagationContext = propagationContext,
         observer = observer,
     )
 
     final override fun unregisterSetObserver(
-        handle: ReactiveSetVertex.SetObserverHandle,
+        handle: SetObserverHandle,
     ) {
         unregisterObserverImpl(handle)
     }
@@ -81,7 +81,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     protected fun exposeAndPropagateChange(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         change: SetChange<ElementT>?,
     ) {
         exposeChange(
@@ -96,7 +96,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     protected fun exposeChange(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         change: SetChange<ElementT>?,
     ) {
         _ongoingChange = change
@@ -113,7 +113,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     private fun registerObserverImpl(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         observer: SetObserver<ElementT>,
     ): ObserverHandleImpl<ElementT> {
         val internalHandle = _registeredObservers.add(observer)
@@ -143,7 +143,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     private fun propagateChange(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         change: SetChange<ElementT>?,
     ) {
         _registeredObservers.forEach { observer ->
@@ -158,7 +158,7 @@ abstract class AbstractWarmReactiveSetVertex<ElementT>() : WarmReactiveSetVertex
     }
 
     protected open fun onFirstObserverRegistered(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ) {
     }
 

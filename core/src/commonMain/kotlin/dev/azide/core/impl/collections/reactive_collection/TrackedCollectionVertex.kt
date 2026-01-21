@@ -3,9 +3,9 @@ package dev.azide.core.impl.collections.reactive_collection
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
 
-interface ReactiveCollectionVertex<out ElementT> : Vertex {
+interface TrackedCollectionVertex<out ElementT> : Vertex {
     interface CollectionChange<out ElementT> {
         companion object {
             fun <ElementT> of(

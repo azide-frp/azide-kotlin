@@ -1,19 +1,20 @@
 package dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractReactiveCollectionProxyCellVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
 import dev.azide.core.impl.collections.reactive_collection.sizeDelta
 
-class ReactiveCollectionSizeWarmCellVertex<ElementT>(
-    sourceVertex: ReactiveCollectionVertex<ElementT>,
-) : AbstractReactiveCollectionProxyCellVertex<ElementT, Int>(
+class TrackedCollectionSizeWarmCellVertex<ElementT>(
+    sourceVertex: TrackedCollectionVertex<ElementT>,
+) : AbstractTrackedCollectionProxyCellVertex<ElementT, Int>(
     sourceVertex = sourceVertex,
 ) {
     override fun buildUpdate(
-        propagationContext: Transactions.PropagationContext,
-        sourceChange: ReactiveCollectionVertex.CollectionChange<ElementT>,
+        propagationContext: PropagationContext,
+        sourceChange: CollectionChange<ElementT>,
     ): CellVertex.Update<Int>? {
         val sizeDelta = sourceChange.sizeDelta
 

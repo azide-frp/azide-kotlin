@@ -1,21 +1,24 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
 
-abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
-    private val sourceVertex: ReactiveCollectionVertex<ElementT>,
+abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
+    private val sourceVertex: TrackedCollectionVertex<ElementT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), ReactiveCollectionVertex.CollectionObserver<ElementT> {
-    private var upstreamObserverHandle: ReactiveCollectionVertex.CollectionObserverHandle? = null
+), TrackedCollectionVertex.CollectionObserver<ElementT> {
+    private var upstreamObserverHandle: CollectionObserverHandle? = null
 
     final override fun handleChange(
-        propagationContext: Transactions.PropagationContext,
-        change: ReactiveCollectionVertex.CollectionChange<ElementT>?,
+        propagationContext: PropagationContext,
+        change: CollectionChange<ElementT>?,
     ) {
         when (change) {
             null -> {
@@ -55,7 +58,7 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         mode: Vertex.ActivationMode,
     ): CellVertex.Update<ValueT>? {
         if (upstreamObserverHandle != null) {
@@ -69,7 +72,8 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
 
         return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
             buildUpdate(
-                propagationContext = propagationContext, sourceChange = sourceOngoingChange
+                propagationContext = propagationContext,
+                sourceChange = sourceOngoingChange,
             )
         }
     }
@@ -86,7 +90,7 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
     }
 
     final override fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): ValueT {
         val oldContentView = sourceVertex.getOldContentView(
             propagationContext = propagationContext,
@@ -98,8 +102,8 @@ abstract class AbstractReactiveCollectionProxyCellVertex<ElementT, ValueT>(
     }
 
     abstract fun buildUpdate(
-        propagationContext: Transactions.PropagationContext,
-        sourceChange: ReactiveCollectionVertex.CollectionChange<ElementT>,
+        propagationContext: PropagationContext,
+        sourceChange: CollectionChange<ElementT>,
     ): CellVertex.Update<ValueT>?
 
     abstract fun computeOldValue(
