@@ -4,16 +4,17 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.PostProcessableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener as BoundCellListener
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerBoundListener
-import dev.azide.core.impl.cell.registerBoundListenerOffline
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
 import dev.azide.core.impl.event_stream.registerBoundListenerOffline
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener as BoundEventStreamListener
+import dev.azide.core.impl.registerBoundListener
+import dev.azide.core.impl.registerBoundListenerOffline
+import dev.azide.core.impl.Vertex.BoundListener as BoundCellListener
+import dev.azide.core.impl.Vertex.BoundListener as BoundEventStreamListener
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
@@ -25,7 +26,7 @@ class DivertedEventStreamVertex<EventT>(
      *
      * If the vertex is active: A handle to the listener registered in [outerSourceVertex].
      */
-    private var upstreamOuterListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamOuterListenerHandle: ListenerHandle? = null
 
     /**
      * The stable event stream vertex.
@@ -54,13 +55,13 @@ class DivertedEventStreamVertex<EventT>(
      *
      * If the vertex is active: a handle registered in [stableInnerSourceVertex]
      */
-    private var upstreamStableInnerListenerHandle: EventStreamVertex.ListenerHandle? = null
+    private var upstreamStableInnerListenerHandle: ListenerHandle? = null
 
     private val innerSourceListener = object : BoundEventStreamListener {
         /**
          * Handle the emission of the inner event stream.
          */
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             val stableInnerSourceVertex = this@DivertedEventStreamVertex.stableInnerSourceVertex
@@ -78,7 +79,7 @@ class DivertedEventStreamVertex<EventT>(
     /**
      * Handle the update of the outer source vertex.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val update = outerSourceVertex.ongoingUpdate) {

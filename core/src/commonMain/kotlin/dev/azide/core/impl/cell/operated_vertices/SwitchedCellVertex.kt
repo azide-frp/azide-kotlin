@@ -3,11 +3,12 @@ package dev.azide.core.impl.cell.operated_vertices
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerBoundListener
+import dev.azide.core.impl.registerBoundListener
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
@@ -19,7 +20,7 @@ class SwitchedCellVertex<ValueT>(
      *
      * If the vertex is active: A handle to the listener registered in [outerSourceVertex].
      */
-    private var upstreamOuterListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamOuterListenerHandle: ListenerHandle? = null
 
     /**
      * The stable cell vertex.
@@ -50,13 +51,13 @@ class SwitchedCellVertex<ValueT>(
      * - If [updatedInnerSourceVertex] is non-null: a handle registered in [updatedInnerSourceVertex]
      * - Else: a handle registered in [stableInnerSourceVertex]
      */
-    private var upstreamNewInnerListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamNewInnerListenerHandle: ListenerHandle? = null
 
     private val innerSourceListener = object : BoundListener {
         /**
          * Handle the update of the inner source cell.
          */
-        override fun handleUpdate(
+        override fun handle(
             propagationContext: PropagationContext,
         ) {
             val stableInnerSourceVertex = this@SwitchedCellVertex.stableInnerSourceVertex
@@ -103,7 +104,7 @@ class SwitchedCellVertex<ValueT>(
     /**
      * Handle the update of the outer source vertex.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: PropagationContext,
     ) {
         when (val update = outerSourceVertex.ongoingUpdate) {

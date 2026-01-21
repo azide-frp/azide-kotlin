@@ -4,7 +4,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
@@ -23,7 +23,7 @@ class SingleEventStreamVertex<EventT>(
     /**
      * Handle the emission of the source event stream.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val emission = sourceVertex.ongoingEmission) {

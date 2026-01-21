@@ -2,14 +2,14 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.registerSetChangeListener
+import dev.azide.core.impl.registerBoundListenerOnline
 
 class TestReactiveSetListener<ElementT>(
     val observedReactiveSetVertex: TrackedSetVertex<ElementT>,
-) : Listener {
+) : BoundListener {
     interface Handle {
         fun cancel()
     }
@@ -37,7 +37,7 @@ context(transactionTestContext: TransactionTestContext) fun <ElementT> ReactiveS
         observedReactiveSetVertex = trackedVertex,
     )
 
-    val listenerHandle = trackedVertex.registerSetChangeListener(
+    val listenerHandle = trackedVertex.registerBoundListenerOnline(
         propagationContext = transactionTestContext.propagationContext,
         listener = listener,
     )

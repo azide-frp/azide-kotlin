@@ -1,18 +1,18 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
+import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.registerSetChangeListener
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
+import dev.azide.core.impl.registerBoundListener
 
 class FilteredWarmTrackedSetVertex<ElementT>(
     private val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
-) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), Listener {
+) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), Vertex.BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
@@ -55,14 +55,16 @@ class FilteredWarmTrackedSetVertex<ElementT>(
 
     override fun activate(
         propagationContext: PropagationContext,
+        mode: Vertex.ActivationMode,
     ): SetChange<ElementT>? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamListenerHandle = sourceVertex.registerSetChangeListener(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
             listener = this,
+            mode = mode,
         )
 
         return sourceVertex.ongoingChange?.filter(predicate)

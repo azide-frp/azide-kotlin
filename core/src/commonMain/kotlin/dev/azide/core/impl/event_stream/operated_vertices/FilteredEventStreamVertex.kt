@@ -2,8 +2,9 @@ package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
 
@@ -11,12 +12,12 @@ class FilteredEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<EventT>,
     private val predicate: (EventT) -> Boolean,
 ) : AbstractSimpleStatelessEventStreamVertex<EventT>(), BoundListener {
-    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val emission = sourceVertex.ongoingEmission) {

@@ -3,8 +3,8 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
-import dev.azide.core.impl.cell.registerBoundListenerOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -17,7 +17,7 @@ class TestCellListener<ValueT>(
 
     private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         receivedUpdates.add(observedCellVertex.ongoingUpdate)

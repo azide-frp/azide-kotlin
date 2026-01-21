@@ -5,7 +5,7 @@ import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
 import dev.azide.core.pullInternallyWrappedUp
@@ -16,12 +16,12 @@ class SampledEachEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<Moment<EventT>>
         get() = sourceEventStream.vertex
 
-    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: Vertex.ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val emission = sourceVertex.ongoingEmission) {

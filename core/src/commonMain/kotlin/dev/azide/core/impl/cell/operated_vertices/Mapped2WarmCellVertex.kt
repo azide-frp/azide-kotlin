@@ -2,10 +2,11 @@ package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.cell.registerBoundListener
+import dev.azide.core.impl.registerBoundListener
 
 class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex1: CellVertex<ValueT1>,
@@ -14,8 +15,8 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
 ), BoundListener {
-    private var upstreamListenerHandle1: CellVertex.ListenerHandle? = null
-    private var upstreamListenerHandle2: CellVertex.ListenerHandle? = null
+    private var upstreamListenerHandle1: ListenerHandle? = null
+    private var upstreamListenerHandle2: ListenerHandle? = null
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
@@ -69,7 +70,7 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     /**
      * Handle an update of one of the source vertices.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         exposeTransformedUpdateNotifyingListeners(

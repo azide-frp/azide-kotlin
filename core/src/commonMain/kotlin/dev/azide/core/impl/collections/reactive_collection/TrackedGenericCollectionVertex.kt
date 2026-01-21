@@ -22,23 +22,6 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
         val removedElements: Collection<ElementT>
     }
 
-    interface Listener {
-        fun handle(
-            propagationContext: PropagationContext,
-        )
-    }
-
-    interface ListenerHandle
-
-    fun registerListener(
-        propagationContext: PropagationContext,
-        listener: Listener,
-    ): ListenerHandle
-
-    fun unregisterListener(
-        handle: ListenerHandle,
-    )
-
     val ongoingChange: ChangeT?
 
     fun getOldContentView(

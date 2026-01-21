@@ -3,9 +3,9 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
-import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
-import dev.azide.core.impl.event_stream.EventStreamVertex.ListenerHandle
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import kotlin.jvm.JvmInline
 
 sealed interface EventStreamVertex<out EventT> : Vertex {
@@ -20,43 +20,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface Listener {
-        object Noop : Listener {
-            override fun handle(
-                propagationContext: Transactions.PropagationContext,
-            ): ListenerStatus = ListenerStatus.Reachable
-        }
-
-        fun handle(
-            propagationContext: Transactions.PropagationContext,
-        ): ListenerStatus
-    }
-
-    interface BoundListener {
-        fun handleEmission(
-            propagationContext: Transactions.PropagationContext,
-        )
-    }
-
-    interface ListenerHandle
-
-    enum class ListenerStatus {
-        Reachable, Unreachable,
-    }
-
     val ongoingEmission: Emission<EventT>?
-
-    val listenerCount: Int
-
-    fun registerListener(
-        propagationContext: Transactions.PropagationContext,
-        listener: Listener,
-        mode: ActivationMode,
-    ): ListenerHandle
-
-    fun unregisterListener(
-        handle: ListenerHandle,
-    )
 }
 
 fun <EventT> EventStreamVertex<EventT>.registerListenerOnline(
@@ -77,12 +41,12 @@ fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
     listener = object : Listener {
         override fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): EventStreamVertex.ListenerStatus {
-            listener.handleEmission(
+        ): Vertex.ListenerStatus {
+            listener.handle(
                 propagationContext = propagationContext,
             )
 
-            return EventStreamVertex.ListenerStatus.Reachable
+            return Vertex.ListenerStatus.Reachable
         }
     },
     mode = mode,

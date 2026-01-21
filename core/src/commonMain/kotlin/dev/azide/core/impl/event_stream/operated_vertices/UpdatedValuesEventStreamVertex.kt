@@ -3,20 +3,21 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
-import dev.azide.core.impl.cell.registerBoundListener
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 
 class UpdatedValuesEventStreamVertex<ValueT>(
     private val sourceVertex: CellVertex<ValueT>,
 ) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), BoundListener {
-    private var upstreamListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
      * Handle the emission of the source cell vertex.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val update = sourceVertex.ongoingUpdate) {

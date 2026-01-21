@@ -2,19 +2,20 @@ package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.registerBoundListener
 
 abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), Listener {
+), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 
     override fun handle(
@@ -65,9 +66,10 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamListenerHandle = sourceVertex.registerListener(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
             listener = this,
+            mode = mode,
         )
 
         return sourceVertex.ongoingChange?.let { sourceOngoingChange ->

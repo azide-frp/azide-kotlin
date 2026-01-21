@@ -3,7 +3,7 @@ package dev.azide.core.test_utils
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -17,7 +17,7 @@ class TestEventStreamListener<EventT>(
 
     private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
 
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         receivedEmissions.add(subscribedEventStreamVertex.ongoingEmission)

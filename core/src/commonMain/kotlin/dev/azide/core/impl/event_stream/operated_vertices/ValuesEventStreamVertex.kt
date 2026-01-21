@@ -3,8 +3,9 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
-import dev.azide.core.impl.cell.registerBoundListener
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -34,7 +35,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     private var internalState = InternalState.Spawning
 
-    private var upstreamListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     init {
         // Enqueue for commitment to ensure we observe the internal state switches to "spawned"
@@ -46,7 +47,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     /**
      * Handle the emission of the source cell vertex.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val update = sourceVertex.ongoingUpdate) {

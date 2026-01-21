@@ -2,10 +2,11 @@ package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.cell.registerBoundListener
+import dev.azide.core.impl.registerBoundListener
 
 class MappedWarmCellVertex<ValueT, TransformedValueT>(
     private val sourceVertex: CellVertex<ValueT>,
@@ -13,12 +14,12 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
 ), BoundListener {
-    private var upstreamListenerHandle: CellVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
      * Handle the update of the source cell.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         when (val update = sourceVertex.ongoingUpdate) {

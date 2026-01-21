@@ -4,7 +4,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 
 class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
-    data object TerminatedListenerHandle : EventStreamVertex.ListenerHandle
+    data object TerminatedListenerHandle : Vertex.ListenerHandle
 
     override val ongoingEmission: Nothing?
         get() = null
@@ -14,12 +14,12 @@ class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
 
     override fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        listener: EventStreamVertex.Listener,
+        listener: Vertex.Listener,
         mode: Vertex.ActivationMode,
     ): TerminatedListenerHandle = TerminatedListenerHandle
 
     override fun unregisterListener(
-        handle: EventStreamVertex.ListenerHandle,
+        handle: Vertex.ListenerHandle,
     ) {
         if (handle != TerminatedListenerHandle) {
             throw IllegalArgumentException("Invalid handle")

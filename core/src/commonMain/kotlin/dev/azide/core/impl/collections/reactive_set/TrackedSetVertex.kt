@@ -1,10 +1,7 @@
 package dev.azide.core.impl.collections.reactive_set
 
-import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
 
 typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
 
@@ -42,20 +39,3 @@ data class SetChange<out ElementT>(
     val sizeDelta: Int
         get() = addedElements.size - removedElements.size
 }
-
-
-fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeListener(
-    propagationContext: PropagationContext,
-    listener: Listener,
-): ListenerHandle = registerListener(
-    propagationContext = propagationContext,
-    listener = object : Listener {
-        override fun handle(
-            propagationContext: PropagationContext,
-        ) {
-            listener.handle(
-                propagationContext = propagationContext,
-            )
-        }
-    },
-)

@@ -4,7 +4,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
 
@@ -18,14 +18,14 @@ class Merged2EventStreamVertex<EventT>(
     private val sourceVertex2: EventStreamVertex<EventT>
         get() = sourceEventStream2.vertex
 
-    private var upstreamListenerHandle1: EventStreamVertex.ListenerHandle? = null
-    private var upstreamListenerHandle2: EventStreamVertex.ListenerHandle? = null
+    private var upstreamListenerHandle1: Vertex.ListenerHandle? = null
+    private var upstreamListenerHandle2: Vertex.ListenerHandle? = null
 
     val innerListener1 = object : BoundListener {
         /**
          * Handle the emission of the first event stream.
          */
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             when (val emission1 = sourceVertex1.ongoingEmission) {
@@ -52,7 +52,7 @@ class Merged2EventStreamVertex<EventT>(
         /**
          * Handle the emission of the second event stream.
          */
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             val emission1 = sourceVertex1.ongoingEmission

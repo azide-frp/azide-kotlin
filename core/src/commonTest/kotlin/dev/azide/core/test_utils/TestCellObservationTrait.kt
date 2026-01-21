@@ -3,7 +3,7 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.cell.registerBoundListenerOnline
+import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.test.assertEquals
 
 class TestCellObservationTrait<ValueT> : TestSubjectPerceptionTrait<Cell<ValueT>, TestCellListener<ValueT>> {

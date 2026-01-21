@@ -2,11 +2,12 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
+import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.registerSetChangeListener
+import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -21,7 +22,7 @@ internal object ReactiveSetTestUtils {
 
     class ObservingVerifier<ElementT>(
         private val subjectVertex: WarmTrackedSetVertex<ElementT>,
-    ) : Listener {
+    ) : BoundListener {
         @JvmInline
         value class ReceivedChange<ElementT>(
             val receivedChange: SetChange<ElementT>?,
@@ -30,7 +31,7 @@ internal object ReactiveSetTestUtils {
         private var receivedChange: ReceivedChange<ElementT>? = null
 
         private var upstreamListenerHandle: ListenerHandle? = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.registerSetChangeListener(
+            subjectVertex.registerBoundListenerOnline(
                 propagationContext = propagationContext,
                 listener = this,
             )

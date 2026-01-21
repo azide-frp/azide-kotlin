@@ -4,15 +4,15 @@ import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.Listener
-import dev.azide.core.impl.cell.CellVertex.ListenerHandle
-import dev.azide.core.impl.cell.CellVertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex.Update
-import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerListenerOnline
-import dev.azide.core.impl.cell.registerBoundListenerOnline
+import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.impl.registerListenerOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -249,7 +249,7 @@ internal object CellTestUtils {
             this.upstreamListenerHandle = null
         }
 
-        override fun handleUpdate(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             receivedUpdate = ReceivedUpdate(

@@ -5,7 +5,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
 
 class HeldCellVertex<ValueT> private constructor(
@@ -31,7 +31,7 @@ class HeldCellVertex<ValueT> private constructor(
     /**
      * Handle the source event stream vertex emission.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
         exposeUpdateNotifyingListeners(

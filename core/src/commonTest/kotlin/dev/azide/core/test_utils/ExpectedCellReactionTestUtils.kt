@@ -2,9 +2,11 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundListener
-import dev.azide.core.impl.cell.registerBoundListenerOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -24,7 +26,7 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
             private val subjectVertex: CellVertex<ValueT>
                 get() = subjectLazy.value.vertex
 
-            private var listenerHandle: CellVertex.ListenerHandle? = null
+            private var listenerHandle: ListenerHandle? = null
 
             private var initialUpdate: CellVertex.Update<ValueT>? = null
 
@@ -89,7 +91,7 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
                 this.initialUpdate = null
             }
 
-            override fun handleUpdate(
+            override fun handle(
                 propagationContext: Transactions.PropagationContext,
             ) {
                 receivedUpdates.add(subjectVertex.ongoingUpdate)

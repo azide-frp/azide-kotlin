@@ -4,10 +4,12 @@ import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
-import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
@@ -115,7 +117,7 @@ internal object EventStreamTestUtils {
          */
         private var receivedEmission: ReceivedEmission<EventT>? = null
 
-        private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? =
+        private var upstreamListenerHandle: ListenerHandle? =
             Transactions.executeWithResult { propagationContext ->
                 subjectVertex.registerBoundListenerOnline(
                     propagationContext = propagationContext,
@@ -215,7 +217,7 @@ internal object EventStreamTestUtils {
             this.upstreamListenerHandle = null
         }
 
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             receivedEmission = ReceivedEmission(

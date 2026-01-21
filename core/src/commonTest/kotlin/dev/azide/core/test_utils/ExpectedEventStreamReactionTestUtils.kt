@@ -2,8 +2,10 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
@@ -29,7 +31,7 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
         private val subjectVertex: EventStreamVertex<EventT>
             get() = subjectLazy.value.vertex
 
-        private var listenerHandle: EventStreamVertex.ListenerHandle? = null
+        private var listenerHandle: ListenerHandle? = null
 
         private var initialEmission: EventStreamVertex.Emission<EventT>? = null
 
@@ -94,7 +96,7 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
             this.initialEmission = null
         }
 
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             receivedEmissions.add(subjectVertex.ongoingEmission)

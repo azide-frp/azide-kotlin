@@ -4,9 +4,9 @@ import dev.azide.core.impl.ReactiveFinalizationRegistry
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
-import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
-import dev.azide.core.impl.event_stream.EventStreamVertex.ListenerStatus
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
 import kotlin.jvm.JvmInline
@@ -27,7 +27,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
                 }
 
                 else -> {
-                    basicListener.handleEmission(
+                    basicListener.handle(
                         propagationContext = propagationContext,
                     )
 
@@ -40,7 +40,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     @JvmInline
     value class LiveListenerHandle(
         val internalHandle: MutableBag.Handle<Listener>,
-    ) : EventStreamVertex.ListenerHandle
+    ) : Vertex.ListenerHandle
 
     interface WeakListenerHandle {
         fun cancel()
@@ -67,7 +67,7 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
     listener: BoundListener,
     mode: ActivationMode,
 ): LiveEventStreamVertex.WeakListenerHandle {
-    val innerListenerHandle: EventStreamVertex.ListenerHandle = registerListener(
+    val innerListenerHandle: Vertex.ListenerHandle = registerListener(
         propagationContext = propagationContext,
         listener = listener.weaklyReferenced(
             sourceEventStreamVertex = this@registerEmissionListenerWeakly,

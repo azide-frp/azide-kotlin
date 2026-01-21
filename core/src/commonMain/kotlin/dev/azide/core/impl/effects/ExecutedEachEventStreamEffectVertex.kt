@@ -6,8 +6,10 @@ import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
@@ -30,14 +32,14 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
     private var sourceEventStream: EventStream<Action<EventT>>? = initialSourceEventStream
 
-    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     private var executedActionRevocable: Revocable? = null
 
     /**
      * Handle the emission of the source action event stream vertex.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: PropagationContext,
     ) {
         val sourceEventStream = this@ExecutedEachEventStreamEffectVertex.sourceEventStream
