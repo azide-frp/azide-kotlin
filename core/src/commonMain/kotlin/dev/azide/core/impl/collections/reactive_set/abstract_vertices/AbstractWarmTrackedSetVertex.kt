@@ -3,7 +3,7 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
@@ -15,10 +15,10 @@ import kotlin.jvm.JvmInline
 abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<ElementT>, CommittableVertex {
     @JvmInline
     private value class ObserverHandleImpl(
-        val internalHandle: StableCollection.Handle<CollectionChangeNotificationObserver>,
+        val internalHandle: StableCollection.Handle<CollectionChangeObserver>,
     ) : CollectionObserverHandle
 
-    private val _registeredObservers: LinkedList<CollectionChangeNotificationObserver> = LinkedList()
+    private val _registeredObservers: LinkedList<CollectionChangeObserver> = LinkedList()
 
     private var _ongoingChange: SetChange<ElementT>? = null
 
@@ -26,7 +26,7 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
 
     override fun registerCollectionNotificationObserver(
         propagationContext: PropagationContext,
-        observer: CollectionChangeNotificationObserver,
+        observer: CollectionChangeObserver,
     ): CollectionObserverHandle {
         val internalHandle = _registeredObservers.append(observer)
 

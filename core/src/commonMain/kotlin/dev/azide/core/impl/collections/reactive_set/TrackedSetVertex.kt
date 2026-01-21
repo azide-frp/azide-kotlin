@@ -3,12 +3,10 @@ package dev.azide.core.impl.collections.reactive_set
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChangeObserver
 
 typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
-
-typealias SetChangeObserver<ElementT> = GenericCollectionChangeObserver
 
 data class SetChange<out ElementT>(
     override val addedElements: Set<ElementT>,
@@ -48,10 +46,10 @@ data class SetChange<out ElementT>(
 
 fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeObserver(
     propagationContext: PropagationContext,
-    observer: SetChangeObserver<ElementT>,
+    observer: CollectionChangeObserver,
 ): CollectionObserverHandle = registerCollectionNotificationObserver(
     propagationContext = propagationContext,
-    observer = object : TrackedGenericCollectionVertex.CollectionChangeNotificationObserver {
+    observer = object : CollectionChangeObserver {
         override fun handleChange(
             propagationContext: PropagationContext,
         ) {

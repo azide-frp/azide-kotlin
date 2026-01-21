@@ -2,7 +2,7 @@ package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_collection.FrozenTrackedGenericCollectionVertex
 
@@ -12,7 +12,7 @@ abstract class AbstractFrozenTrackedGenericCollectionVertex<ContentT : Collectio
 
     override fun registerCollectionNotificationObserver(
         propagationContext: PropagationContext,
-        observer: CollectionChangeNotificationObserver,
+        observer: CollectionChangeObserver,
     ): CollectionObserverHandle = NoopCollectionObserverHandle
 
     final override fun unregisterCollectionObserver(

@@ -2,9 +2,9 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 import kotlin.jvm.JvmInline
@@ -21,7 +21,7 @@ internal object ReactiveSetTestUtils {
 
     class ObservingVerifier<ElementT>(
         private val subjectVertex: WarmTrackedSetVertex<ElementT>,
-    ) : SetChangeObserver<ElementT> {
+    ) : CollectionChangeObserver {
         @JvmInline
         value class ReceivedChange<ElementT>(
             val receivedChange: SetChange<ElementT>?,

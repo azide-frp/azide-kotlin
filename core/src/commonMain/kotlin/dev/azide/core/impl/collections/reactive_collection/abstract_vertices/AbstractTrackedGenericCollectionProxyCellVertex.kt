@@ -6,7 +6,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
@@ -14,7 +14,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), CollectionChangeNotificationObserver {
+), CollectionChangeObserver {
     private var upstreamObserverHandle: CollectionObserverHandle? = null
 
     override fun handleChange(

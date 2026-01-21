@@ -22,13 +22,7 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
         val removedElements: Collection<ElementT>
     }
 
-    interface CollectionChangeNotificationObserver {
-        fun handleChange(
-            propagationContext: PropagationContext,
-        )
-    }
-
-    interface GenericCollectionChangeObserver {
+    interface CollectionChangeObserver {
         fun handleChange(
             propagationContext: PropagationContext,
         )
@@ -38,7 +32,7 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
 
     fun registerCollectionNotificationObserver(
         propagationContext: PropagationContext,
-        observer: CollectionChangeNotificationObserver,
+        observer: CollectionChangeObserver,
     ): CollectionObserverHandle
 
     fun unregisterCollectionObserver(

@@ -1,9 +1,9 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
@@ -12,7 +12,7 @@ import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 class FilteredWarmTrackedSetVertex<ElementT>(
     private val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
-) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), SetChangeObserver<ElementT> {
+) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), CollectionChangeObserver {
     private var upstreamObserverHandle: CollectionObserverHandle? = null
 
     /**
