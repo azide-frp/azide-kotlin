@@ -29,7 +29,6 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
                 else -> {
                     basicSubscriber.handleEmission(
                         propagationContext = propagationContext,
-                        emission = sourceEventStreamVertex.ongoingEmission,
                     )
 
                     return SubscriberStatus.Reachable

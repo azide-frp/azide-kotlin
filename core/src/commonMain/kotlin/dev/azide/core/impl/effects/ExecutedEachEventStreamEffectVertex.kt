@@ -39,9 +39,11 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
      */
     override fun handleEmission(
         propagationContext: PropagationContext,
-        emission: Emission<Action<EventT>>?,
     ) {
-        when (emission) {
+        val sourceEventStream = this@ExecutedEachEventStreamEffectVertex.sourceEventStream
+            ?: throw IllegalStateException("Vertex seems to be revoked")
+
+        when (val emission = sourceEventStream.vertex.ongoingEmission) {
             null -> {
                 val executedActionRevocable =
                     this.executedActionRevocable ?: throw AssertionError("There's no record of the revoked action")

@@ -15,6 +15,9 @@ class SingleEventStreamVertex<EventT>(
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
 ), EmissionSubscriber<EventT> {
+    private val sourceVertex: EventStreamVertex<EventT>
+        get() = sourceEventStream.vertex
+
     private var upstreamWeakSubscriberHandle: LiveEventStreamVertex.WeakSubscriberHandle? = null
 
     /**
@@ -22,9 +25,8 @@ class SingleEventStreamVertex<EventT>(
      */
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        when (emission) {
+        when (val emission = sourceVertex.ongoingEmission) {
             null -> {
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,
@@ -44,7 +46,6 @@ class SingleEventStreamVertex<EventT>(
     override fun initialize(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>? {
-        val sourceVertex = sourceEventStream.vertex
 
         upstreamWeakSubscriberHandle = sourceVertex.registerEmissionSubscriberWeakly(
             propagationContext = propagationContext,

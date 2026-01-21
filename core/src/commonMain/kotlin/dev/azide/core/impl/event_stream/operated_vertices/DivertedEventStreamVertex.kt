@@ -6,7 +6,6 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.cell.registerUpdateObserver
 import dev.azide.core.impl.cell.registerUpdateObserverOffline
@@ -63,11 +62,13 @@ class DivertedEventStreamVertex<EventT>(
          */
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ) {
+            val stableInnerSourceVertex = this@DivertedEventStreamVertex.stableInnerSourceVertex
+                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+
             exposeAndPropagateEmission(
                 propagationContext = propagationContext,
-                emission = emission,
+                emission = stableInnerSourceVertex.ongoingEmission,
             )
         }
     }
@@ -81,7 +82,7 @@ class DivertedEventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
         update: CellVertex.Update<EventStream<EventT>>?,
     ) {
-        when (update) {
+        when (val update = outerSourceVertex.ongoingUpdate) {
             null -> { // The outer source vertex update is revoked
                 // Forget the previous updated inner vertex
 

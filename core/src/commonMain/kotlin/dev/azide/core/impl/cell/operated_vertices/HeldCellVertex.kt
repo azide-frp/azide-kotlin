@@ -5,7 +5,6 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly
 
@@ -34,11 +33,10 @@ class HeldCellVertex<ValueT> private constructor(
      */
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<ValueT>?,
     ) {
         exposeAndPropagateUpdate(
             propagationContext = propagationContext,
-            update = when (emission) {
+            update = when (val emission = sourceEventStream.vertex.ongoingEmission) {
                 null -> null
                 else -> CellVertex.Update(
                     updatedValue = emission.emittedEvent,

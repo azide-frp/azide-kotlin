@@ -23,9 +23,8 @@ class SampledEachEventStreamVertex<EventT>(
      */
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<Moment<EventT>>?,
     ) {
-        when (emission) {
+        when (val emission = sourceVertex.ongoingEmission) {
             null -> {
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,

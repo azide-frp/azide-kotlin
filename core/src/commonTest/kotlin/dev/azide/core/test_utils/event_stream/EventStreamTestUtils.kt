@@ -217,10 +217,9 @@ internal object EventStreamTestUtils {
 
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: Emission<EventT>?,
         ) {
             receivedEmission = ReceivedEmission(
-                receivedEmission = emission,
+                receivedEmission = subjectVertex.ongoingEmission,
             )
         }
     }

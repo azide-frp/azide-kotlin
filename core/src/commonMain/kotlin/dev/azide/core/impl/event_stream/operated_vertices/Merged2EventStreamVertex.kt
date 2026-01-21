@@ -27,9 +27,8 @@ class Merged2EventStreamVertex<EventT>(
          */
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ) {
-            when (emission) {
+            when (val emission1 = sourceVertex1.ongoingEmission) {
                 null -> { // Emission revocation
                     val emission2 = sourceVertex2.ongoingEmission
 
@@ -42,7 +41,7 @@ class Merged2EventStreamVertex<EventT>(
                 else -> { // Initial emission / correction
                     exposeAndPropagateEmission(
                         propagationContext = propagationContext,
-                        emission = emission,
+                        emission = emission1,
                     )
                 }
             }
@@ -55,7 +54,6 @@ class Merged2EventStreamVertex<EventT>(
          */
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ) {
             val emission1 = sourceVertex1.ongoingEmission
 
@@ -63,9 +61,11 @@ class Merged2EventStreamVertex<EventT>(
                 return
             }
 
+            val emission2 = sourceVertex2.ongoingEmission
+
             exposeAndPropagateEmission(
                 propagationContext = propagationContext,
-                emission = emission,
+                emission = emission2,
             )
         }
     }

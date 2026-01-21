@@ -18,9 +18,8 @@ class FilteredEventStreamVertex<EventT>(
      */
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        when (emission) {
+        when (val emission = sourceVertex.ongoingEmission) {
             null -> {
                 exposeAndPropagateEmission(
                     propagationContext = propagationContext,

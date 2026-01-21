@@ -96,9 +96,8 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
 
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ) {
-            receivedEmissions.add(emission)
+            receivedEmissions.add(subjectVertex.ongoingEmission)
         }
     }
 

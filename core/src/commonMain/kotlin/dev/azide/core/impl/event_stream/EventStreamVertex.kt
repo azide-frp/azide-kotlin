@@ -35,7 +35,6 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
     interface EmissionSubscriber<in EventT> {
         fun handleEmission(
             propagationContext: Transactions.PropagationContext,
-            emission: Emission<EventT>?,
         )
     }
 
@@ -81,7 +80,6 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
         ): EventStreamVertex.SubscriberStatus {
             subscriber.handleEmission(
                 propagationContext = propagationContext,
-                emission = this@registerEmissionSubscriber.ongoingEmission,
             )
 
             return EventStreamVertex.SubscriberStatus.Reachable

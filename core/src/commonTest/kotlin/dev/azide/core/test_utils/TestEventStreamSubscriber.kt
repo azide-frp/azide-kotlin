@@ -19,9 +19,8 @@ class TestEventStreamSubscriber<EventT>(
 
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        receivedEmissions.add(emission)
+        receivedEmissions.add(subscribedEventStreamVertex.ongoingEmission)
     }
 
     fun getAndResetReceivedEmissions(): List<EventStreamVertex.Emission<EventT>?> = receivedEmissions.toList().also {
