@@ -1,11 +1,10 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.Cell
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.cell.registerUpdateObserver
@@ -58,12 +57,18 @@ class SwitchedCellVertex<ValueT>(
          * Handle the update of the inner source cell.
          */
         override fun handleUpdate(
-            propagationContext: Transactions.PropagationContext,
-            update: CellVertex.Update<ValueT>?,
+            propagationContext: PropagationContext,
         ) {
-            when (update) {
+            val stableInnerSourceVertex = this@SwitchedCellVertex.stableInnerSourceVertex
+                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+
+            val updatedInnerSourceVertex = this@SwitchedCellVertex.updatedInnerSourceVertex
+
+            val newInnerSourceVertex = updatedInnerSourceVertex ?: stableInnerSourceVertex
+
+            when (val update = newInnerSourceVertex.ongoingUpdate) {
                 null -> { // The inner source cell vertex update is revoked
-                    when (val updatedInnerSourceVertex = this@SwitchedCellVertex.updatedInnerSourceVertex) {
+                    when (updatedInnerSourceVertex) {
                         null -> { // The inner source cell vertex revoking the update is the _stable_ inner cell vertex
                             // Revoke the update
                             exposeAndPropagateUpdate(
@@ -99,10 +104,9 @@ class SwitchedCellVertex<ValueT>(
      * Handle the update of the outer source vertex.
      */
     override fun handleUpdate(
-        propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<Cell<ValueT>>?,
+        propagationContext: PropagationContext,
     ) {
-        when (update) {
+        when (val update = outerSourceVertex.ongoingUpdate) {
             null -> { // The outer source vertex update is revoked
                 // Unregister from the previous updated inner vertex (now revoked)
 
@@ -201,7 +205,7 @@ class SwitchedCellVertex<ValueT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
         mode: ActivationMode,
     ): CellVertex.Update<ValueT>? {
         if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamNewInnerObserverHandle != null) {
@@ -284,7 +288,7 @@ class SwitchedCellVertex<ValueT>(
     }
 
     override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): ValueT {
         val oldInnerSourceVertex = when (val oldInnerSourceVertex = this.stableInnerSourceVertex) {
             null -> {

@@ -29,7 +29,6 @@ sealed interface CellVertex<out ValueT> : Vertex {
     interface UpdateObserver<in ValueT> {
         fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
-            update: Update<ValueT>?,
         )
     }
 
@@ -86,7 +85,6 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateObserver(
         ): ObserverStatus {
             observer.handleUpdate(
                 propagationContext = propagationContext,
-                update = this@registerUpdateObserver.ongoingUpdate,
             )
 
             return ObserverStatus.Reachable

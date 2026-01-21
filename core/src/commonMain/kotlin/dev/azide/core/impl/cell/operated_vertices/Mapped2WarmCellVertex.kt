@@ -4,7 +4,6 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.cell.registerUpdateObserver
 
@@ -72,7 +71,6 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
      */
     override fun handleUpdate(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<Any?>?,
     ) {
         exposeAndPropagateTransformedUpdate(
             propagationContext = propagationContext,

@@ -251,10 +251,9 @@ internal object CellTestUtils {
 
         override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
-            update: Update<ValueT>?,
         ) {
             receivedUpdate = ReceivedUpdate(
-                receivedUpdate = update,
+                receivedUpdate = subjectVertex.ongoingUpdate,
             )
         }
     }

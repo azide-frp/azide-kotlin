@@ -80,7 +80,6 @@ class DivertedEventStreamVertex<EventT>(
      */
     override fun handleUpdate(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<EventStream<EventT>>?,
     ) {
         when (val update = outerSourceVertex.ongoingUpdate) {
             null -> { // The outer source vertex update is revoked

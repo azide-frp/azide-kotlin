@@ -4,7 +4,6 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.registerUpdateObserver
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
@@ -49,9 +48,8 @@ class ValuesEventStreamVertex<ValueT> private constructor(
      */
     override fun handleUpdate(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
-        when (update) {
+        when (val update = sourceVertex.ongoingUpdate) {
             null -> { // Update revocation
                 when (internalState) {
                     InternalState.Spawning -> { // Fall back to emitting the old value

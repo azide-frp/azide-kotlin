@@ -4,7 +4,6 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.registerUpdateObserverOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
@@ -92,9 +91,8 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
 
             override fun handleUpdate(
                 propagationContext: Transactions.PropagationContext,
-                update: CellVertex.Update<ValueT>?,
             ) {
-                receivedUpdates.add(update)
+                receivedUpdates.add(subjectVertex.ongoingUpdate)
             }
         }
 

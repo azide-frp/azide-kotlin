@@ -4,7 +4,6 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.registerUpdateObserverOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -20,9 +19,8 @@ class TestCellObserver<ValueT>(
 
     override fun handleUpdate(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
-        receivedUpdates.add(update)
+        receivedUpdates.add(observedCellVertex.ongoingUpdate)
     }
 
     fun getAndResetReceivedUpdates(): List<CellVertex.Update<ValueT>?> = receivedUpdates.toList().also {
