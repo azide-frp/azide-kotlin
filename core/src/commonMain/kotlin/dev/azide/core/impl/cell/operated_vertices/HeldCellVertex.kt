@@ -5,8 +5,8 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
-import dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
 
 class HeldCellVertex<ValueT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
@@ -15,7 +15,7 @@ class HeldCellVertex<ValueT> private constructor(
 ) : AbstractStatefulCellVertex<ValueT>(
     wrapUpContext = wrapUpContext,
     initialValue = initialValue,
-), BoundEmissionSubscriber {
+), BoundListener {
     companion object {
         fun <ValueT> start(
             wrapUpContext: Transactions.WrapUpContext,
@@ -50,10 +50,10 @@ class HeldCellVertex<ValueT> private constructor(
     ): CellVertex.Update<ValueT>? {
         val sourceVertex = sourceEventStream.vertex
 
-        sourceVertex.registerEmissionSubscriberWeakly(
+        sourceVertex.registerEmissionListenerWeakly(
             propagationContext = propagationContext,
             dependentVertex = this,
-            subscriber = this,
+            listener = this,
             mode = ActivationMode.Online,
         )
 

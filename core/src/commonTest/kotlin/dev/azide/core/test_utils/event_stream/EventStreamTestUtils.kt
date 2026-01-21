@@ -5,13 +5,13 @@ import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOnline
-import dev.azide.core.impl.event_stream.registerEmissionNotificationSubscriberOnline
+import dev.azide.core.impl.event_stream.registerBoundListenerOnline
+import dev.azide.core.impl.event_stream.registerListenerOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -66,10 +66,10 @@ internal object EventStreamTestUtils {
 
         val subjectVertex = subjectEventStream.vertex
 
-        // Register a subscriber, as event stream vertices aren't required to expose the emission otherwise
-        subjectVertex.registerEmissionNotificationSubscriberOnline(
+        // Register a listener, as event stream vertices aren't required to expose the emission otherwise
+        subjectVertex.registerListenerOnline(
             propagationContext = propagationContext,
-            subscriber = EmissionSubscriber.Noop,
+            listener = Listener.Noop,
         )
 
         val ongoingEmission = subjectVertex.ongoingEmission
@@ -103,7 +103,7 @@ internal object EventStreamTestUtils {
 
     class SubscribingVerifier<EventT>(
         private val subjectVertex: LiveEventStreamVertex<EventT>,
-    ) : BoundEmissionSubscriber {
+    ) : BoundListener {
         @JvmInline
         private value class ReceivedEmission<EventT>(
             val receivedEmission: Emission<EventT>?,
@@ -115,11 +115,11 @@ internal object EventStreamTestUtils {
          */
         private var receivedEmission: ReceivedEmission<EventT>? = null
 
-        private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
+        private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? =
             Transactions.executeWithResult { propagationContext ->
-                subjectVertex.registerBoundEmissionSubscriberOnline(
+                subjectVertex.registerBoundListenerOnline(
                     propagationContext = propagationContext,
-                    subscriber = this,
+                    listener = this,
                 )
             }
 
@@ -205,14 +205,14 @@ internal object EventStreamTestUtils {
         }
 
         fun stop() {
-            val upstreamSubscriberHandle =
-                this.upstreamSubscriberHandle ?: throw IllegalStateException("Verifier is already stopped")
+            val upstreamListenerHandle =
+                this.upstreamListenerHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterSubscriber(
-                handle = upstreamSubscriberHandle,
+            subjectVertex.unregisterListener(
+                handle = upstreamListenerHandle,
             )
 
-            this.upstreamSubscriberHandle = null
+            this.upstreamListenerHandle = null
         }
 
         override fun handleEmission(
@@ -309,18 +309,18 @@ internal object EventStreamTestUtils {
     }
 
     /**
-     * Register a no-op subscriber on the [subjectEventStream].
+     * Register a no-op listener on the [subjectEventStream].
      */
-    fun <EventT> registerNoopSubscriber(
+    fun <EventT> registerNoopListener(
         subjectEventStream: EventStream<EventT>,
     ) {
         val subjectVertex = subjectEventStream.vertex as? LiveEventStreamVertex<EventT>
             ?: throw IllegalStateException("Subject cell vertex is already frozen")
 
         Transactions.execute { propagationContext ->
-            subjectVertex.registerEmissionNotificationSubscriberOnline(
+            subjectVertex.registerListenerOnline(
                 propagationContext = propagationContext,
-                subscriber = EmissionSubscriber.Noop,
+                listener = Listener.Noop,
             )
         }
     }

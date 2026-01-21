@@ -5,7 +5,7 @@ import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
 
 abstract class AbstractStatelessEventStreamVertex<EventT> : AbstractLiveEventStreamVertex<EventT>() {
-    final override fun onFirstSubscriberRegistered(
+    final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ) {
@@ -29,7 +29,7 @@ abstract class AbstractStatelessEventStreamVertex<EventT> : AbstractLiveEventStr
         }
     }
 
-    final override fun onLastSubscriberUnregistered() {
+    final override fun onLastListenerUnregistered() {
         deactivate()
 
         clearExposedEmission()

@@ -7,17 +7,17 @@ import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOnline
+import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 
 class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
     initialSourceEventStream: EventStream<Action<EventT>>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), BoundEmissionSubscriber, EffectVertex, Revocable {
+), BoundListener, EffectVertex, Revocable {
     companion object {
         fun <EventT> startInternally(
             wrapUpContext: Transactions.WrapUpContext,
@@ -30,7 +30,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
     private var sourceEventStream: EventStream<Action<EventT>>? = initialSourceEventStream
 
-    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
+    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
 
     private var executedActionRevocable: Revocable? = null
 
@@ -84,13 +84,13 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
         val sourceEventStream = this@ExecutedEachEventStreamEffectVertex.sourceEventStream
             ?: throw IllegalStateException("Cannot cancel a revoked ExecutedEachEventStreamEffectVertex")
 
-        val upstreamSubscriberHandle = this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle
+        val upstreamListenerHandle = this@ExecutedEachEventStreamEffectVertex.upstreamListenerHandle
             ?: throw IllegalStateException("It seems as if the vertex wasn't wrapped up properly or is already cancelled")
 
-        this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle = null
+        this@ExecutedEachEventStreamEffectVertex.upstreamListenerHandle = null
 
-        sourceEventStream.vertex.unregisterSubscriber(
-            handle = upstreamSubscriberHandle,
+        sourceEventStream.vertex.unregisterListener(
+            handle = upstreamListenerHandle,
         )
 
         val executedActionRevocable = this@ExecutedEachEventStreamEffectVertex.executedActionRevocable
@@ -115,10 +115,10 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
                 val sourceVertex = sourceEventStream.vertex
 
                 // Re-attach to the source event stream
-                this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle =
-                    sourceVertex.registerBoundEmissionSubscriberOnline(
+                this@ExecutedEachEventStreamEffectVertex.upstreamListenerHandle =
+                    sourceVertex.registerBoundListenerOnline(
                         propagationContext = propagationContext,
-                        subscriber = this@ExecutedEachEventStreamEffectVertex,
+                        listener = this@ExecutedEachEventStreamEffectVertex,
                     )
 
                 sourceVertex.ongoingEmission?.let { sourceOngoingActionEmission ->
@@ -143,12 +143,12 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
         this@ExecutedEachEventStreamEffectVertex.sourceEventStream = null
 
-        val upstreamSubscriberHandle = this@ExecutedEachEventStreamEffectVertex.upstreamSubscriberHandle
+        val upstreamListenerHandle = this@ExecutedEachEventStreamEffectVertex.upstreamListenerHandle
 
         when {
-            upstreamSubscriberHandle != null -> {
-                sourceEventStream.vertex.unregisterSubscriber(
-                    handle = upstreamSubscriberHandle,
+            upstreamListenerHandle != null -> {
+                sourceEventStream.vertex.unregisterListener(
+                    handle = upstreamListenerHandle,
                 )
             }
 
@@ -187,9 +187,9 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
         val sourceVertex = sourceEventStream.vertex
 
-        upstreamSubscriberHandle = sourceVertex.registerBoundEmissionSubscriberOnline(
+        upstreamListenerHandle = sourceVertex.registerBoundListenerOnline(
             propagationContext = propagationContext,
-            subscriber = this,
+            listener = this,
         )
 
         return sourceVertex.ongoingEmission?.let { ongoingSourceActionEmission ->

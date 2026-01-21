@@ -12,7 +12,7 @@ import dev.azide.core.holding
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.sampleExternally
 import dev.azide.core.startForever
-import dev.azide.core.test_utils.TestEventStreamSubscriber
+import dev.azide.core.test_utils.TestEventStreamListener
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -102,17 +102,17 @@ class EventStream_executeEach_misc_tests {
 
         val subjectEffect = sourceEventStream.executeEach()
 
-        val subjectEventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+        val subjectEventStreamListener = TransactionTestUtils.executeInsideTransaction {
             val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
-            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+            val subjectEventStreamListener = subjectEventStream.subscribeForTesting()
 
             repeat(count) {
                 subjectEffectHandle.cancel.executeForTesting()
             }
 
-            subjectEventStreamSubscriber.verifyDoesNotExposeEmission()
+            subjectEventStreamListener.verifyDoesNotExposeEmission()
 
-            subjectEventStreamSubscriber
+            subjectEventStreamListener
         }
 
         val targetAction = TestTargetAction.of(result = 10)
@@ -120,12 +120,12 @@ class EventStream_executeEach_misc_tests {
         TransactionTestUtils.executeInsideTransaction {
             sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
 
-            subjectEventStreamSubscriber.verifyDoesNotExposeEmission() // ...because the effect is cancelled
+            subjectEventStreamListener.verifyDoesNotExposeEmission() // ...because the effect is cancelled
         }
 
         targetAction.verifyWasNotExecuted() // ...at any point
 
-        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
+        subjectEventStreamListener.verifyDidNotPropagateNorExposesEmission() //  ...at any point / now
     }
 
     @Test
@@ -135,7 +135,7 @@ class EventStream_executeEach_misc_tests {
 
     private fun test_executeEach_cancel_once(count: Int) {
         data class StartTransactionRecord(
-            val subjectEventStreamSubscriber: TestEventStreamSubscriber<Int>,
+            val subjectEventStreamListener: TestEventStreamListener<Int>,
             val subjectEffectHandle: Effect.Handle,
         )
 
@@ -145,15 +145,15 @@ class EventStream_executeEach_misc_tests {
 
         val startTransactionRecord = TransactionTestUtils.executeInsideTransaction {
             val (subjectEventStream, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
-            val subjectEventStreamSubscriber = subjectEventStream.subscribeForTesting()
+            val subjectEventStreamListener = subjectEventStream.subscribeForTesting()
 
             StartTransactionRecord(
-                subjectEventStreamSubscriber = subjectEventStreamSubscriber,
+                subjectEventStreamListener = subjectEventStreamListener,
                 subjectEffectHandle = subjectEffectHandle,
             )
         }
 
-        val subjectEventStreamSubscriber = startTransactionRecord.subjectEventStreamSubscriber
+        val subjectEventStreamListener = startTransactionRecord.subjectEventStreamListener
         val subjectEffectHandle = startTransactionRecord.subjectEffectHandle
 
         TransactionTestUtils.executeInsideTransaction {
@@ -168,7 +168,7 @@ class EventStream_executeEach_misc_tests {
             sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
         }
 
-        subjectEventStreamSubscriber.verifyDidNotPropagateNorExposesEmission() // ...at any point / now
+        subjectEventStreamListener.verifyDidNotPropagateNorExposesEmission() // ...at any point / now
 
         targetAction.verifyWasNotExecuted() // ...at any point
     }

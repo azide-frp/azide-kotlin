@@ -10,10 +10,10 @@ import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.cell.registerBoundUpdateObserver
 import dev.azide.core.impl.cell.registerBoundUpdateObserverOffline
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOffline
+import dev.azide.core.impl.event_stream.registerBoundListener
+import dev.azide.core.impl.event_stream.registerBoundListenerOffline
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
@@ -48,15 +48,15 @@ class DivertedEventStreamVertex<EventT>(
     private var updatedInnerSourceVertex: EventStreamVertex<EventT>? = null
 
     /**
-     * The handle to the subscriber registered in the stable inner event stream vertex.
+     * The handle to the listener registered in the stable inner event stream vertex.
      *
      * If the vertex is inactive: `null`
      *
      * If the vertex is active: a handle registered in [stableInnerSourceVertex]
      */
-    private var upstreamStableInnerSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
+    private var upstreamStableInnerListenerHandle: EventStreamVertex.ListenerHandle? = null
 
-    private val innerSourceSubscriber = object : BoundEmissionSubscriber {
+    private val innerSourceListener = object : BoundListener {
         /**
          * Handle the emission of the inner event stream.
          */
@@ -107,7 +107,7 @@ class DivertedEventStreamVertex<EventT>(
     override fun activateOnline(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>? {
-        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerSubscriberHandle != null) {
+        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
@@ -149,11 +149,11 @@ class DivertedEventStreamVertex<EventT>(
         this.stableInnerSourceVertex = stableInnerSourceVertex
         this.updatedInnerSourceVertex = updatedInnerSourceVertex
 
-        // Register the inner source vertex subscriber (to the stable inner source vertex)
+        // Register the inner source vertex listener (to the stable inner source vertex)
 
-        this.upstreamStableInnerSubscriberHandle = stableInnerSourceVertex.registerBoundEmissionSubscriber(
+        this.upstreamStableInnerListenerHandle = stableInnerSourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = innerSourceSubscriber,
+            listener = innerSourceListener,
             mode = ActivationMode.Online,
         )
 
@@ -163,7 +163,7 @@ class DivertedEventStreamVertex<EventT>(
     override fun activateOffline(
         propagationContext: Transactions.PropagationContext,
     ) {
-        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerSubscriberHandle != null) {
+        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
@@ -188,18 +188,18 @@ class DivertedEventStreamVertex<EventT>(
 
         this.stableInnerSourceVertex = newInnerSourceVertex
 
-        // Register the inner source vertex subscriber (to the new inner source vertex)
+        // Register the inner source vertex listener (to the new inner source vertex)
 
-        this.upstreamStableInnerSubscriberHandle = newInnerSourceVertex.registerBoundEmissionSubscriberOffline(
+        this.upstreamStableInnerListenerHandle = newInnerSourceVertex.registerBoundListenerOffline(
             propagationContext = propagationContext,
-            subscriber = innerSourceSubscriber,
+            listener = innerSourceListener,
         )
     }
 
     override fun deactivate() {
         val upstreamOuterObserverHandle = this.upstreamOuterObserverHandle
         val stableInnerSourceVertex = this.stableInnerSourceVertex
-        val upstreamStableInnerSubscriberHandle = this.upstreamStableInnerSubscriberHandle
+        val upstreamStableInnerListenerHandle = this.upstreamStableInnerListenerHandle
 
         if (upstreamOuterObserverHandle == null || stableInnerSourceVertex == null) {
             throw IllegalStateException("Vertex doesn't seem to be active")
@@ -213,17 +213,17 @@ class DivertedEventStreamVertex<EventT>(
 
         this.upstreamOuterObserverHandle = null
 
-        // Unregister the inner source vertex subscriber
+        // Unregister the inner source vertex listener
 
-        if (upstreamStableInnerSubscriberHandle != null) {
-            stableInnerSourceVertex.unregisterSubscriber(
-                handle = upstreamStableInnerSubscriberHandle,
+        if (upstreamStableInnerListenerHandle != null) {
+            stableInnerSourceVertex.unregisterListener(
+                handle = upstreamStableInnerListenerHandle,
             )
         }
 
         this.stableInnerSourceVertex = null
         this.updatedInnerSourceVertex = null
-        this.upstreamStableInnerSubscriberHandle = null
+        this.upstreamStableInnerListenerHandle = null
     }
 
     override fun postProcess(
@@ -242,21 +242,21 @@ class DivertedEventStreamVertex<EventT>(
             return
         }
 
-        val upstreamStableInnerSubscriberHandle =
-            upstreamStableInnerSubscriberHandle ?: throw AssertionError("Vertex doesn't seem to be active")
+        val upstreamStableInnerListenerHandle =
+            upstreamStableInnerListenerHandle ?: throw AssertionError("Vertex doesn't seem to be active")
 
-        stableInnerSourceVertex.unregisterSubscriber(
-            handle = upstreamStableInnerSubscriberHandle,
+        stableInnerSourceVertex.unregisterListener(
+            handle = upstreamStableInnerListenerHandle,
         )
 
         // In the post-processing phase, the offline activation mode has to be utilized
-        val newInnerSubscriberHandle = updatedInnerSourceVertex.registerBoundEmissionSubscriberOffline(
+        val newInnerListenerHandle = updatedInnerSourceVertex.registerBoundListenerOffline(
             propagationContext = propagationContext,
-            subscriber = innerSourceSubscriber,
+            listener = innerSourceListener,
         )
 
         this.stableInnerSourceVertex = updatedInnerSourceVertex
-        this.upstreamStableInnerSubscriberHandle = newInnerSubscriberHandle
+        this.upstreamStableInnerListenerHandle = newInnerListenerHandle
         this.updatedInnerSourceVertex = null
     }
 

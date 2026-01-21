@@ -3,15 +3,15 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundListener
 
 class FilteredEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<EventT>,
     private val predicate: (EventT) -> Boolean,
-) : AbstractSimpleStatelessEventStreamVertex<EventT>(), BoundEmissionSubscriber {
-    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
+) : AbstractSimpleStatelessEventStreamVertex<EventT>(), BoundListener {
+    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
@@ -56,13 +56,13 @@ class FilteredEventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ): EventStreamVertex.Emission<EventT>? {
-        if (upstreamSubscriberHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle = sourceVertex.registerBoundEmissionSubscriber(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = this,
+            listener = this,
             mode = mode,
         )
 
@@ -73,12 +73,12 @@ class FilteredEventStreamVertex<EventT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSubscriber(
+        sourceVertex.unregisterListener(
             handle = subscriptionHandle,
         )
 
-        this.upstreamSubscriberHandle = null
+        this.upstreamListenerHandle = null
     }
 }

@@ -4,9 +4,9 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundListener
 
 class Merged2EventStreamVertex<EventT>(
     private val sourceEventStream1: EventStream<EventT>,
@@ -18,10 +18,10 @@ class Merged2EventStreamVertex<EventT>(
     private val sourceVertex2: EventStreamVertex<EventT>
         get() = sourceEventStream2.vertex
 
-    private var upstreamSubscriberHandle1: EventStreamVertex.SubscriberHandle? = null
-    private var upstreamSubscriberHandle2: EventStreamVertex.SubscriberHandle? = null
+    private var upstreamListenerHandle1: EventStreamVertex.ListenerHandle? = null
+    private var upstreamListenerHandle2: EventStreamVertex.ListenerHandle? = null
 
-    val innerSubscriber1 = object : BoundEmissionSubscriber {
+    val innerListener1 = object : BoundListener {
         /**
          * Handle the emission of the first event stream.
          */
@@ -48,7 +48,7 @@ class Merged2EventStreamVertex<EventT>(
         }
     }
 
-    val innerSubscriber2 = object : BoundEmissionSubscriber {
+    val innerListener2 = object : BoundListener {
         /**
          * Handle the emission of the second event stream.
          */
@@ -74,19 +74,19 @@ class Merged2EventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<EventT>? {
-        if (upstreamSubscriberHandle1 != null || upstreamSubscriberHandle2 != null) {
+        if (upstreamListenerHandle1 != null || upstreamListenerHandle2 != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle1 = sourceVertex1.registerBoundEmissionSubscriber(
+        upstreamListenerHandle1 = sourceVertex1.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = innerSubscriber1,
+            listener = innerListener1,
             mode = mode,
         )
 
-        upstreamSubscriberHandle2 = sourceVertex2.registerBoundEmissionSubscriber(
+        upstreamListenerHandle2 = sourceVertex2.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = innerSubscriber2,
+            listener = innerListener2,
             mode = mode,
         )
 
@@ -95,21 +95,21 @@ class Merged2EventStreamVertex<EventT>(
 
     override fun deactivate() {
         val subscriptionHandle1 =
-            this.upstreamSubscriberHandle1 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle1 ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
         val subscriptionHandle2 =
-            this.upstreamSubscriberHandle2 ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle2 ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex1.unregisterSubscriber(
+        sourceVertex1.unregisterListener(
             handle = subscriptionHandle1,
         )
 
-        this.upstreamSubscriberHandle1 = null
+        this.upstreamListenerHandle1 = null
 
-        sourceVertex2.unregisterSubscriber(
+        sourceVertex2.unregisterListener(
             handle = subscriptionHandle2,
         )
 
-        this.upstreamSubscriberHandle2 = null
+        this.upstreamListenerHandle2 = null
     }
 }

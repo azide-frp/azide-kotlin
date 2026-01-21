@@ -9,7 +9,7 @@ abstract class AbstractStatefulEventStreamVertex<EventT>(
 ) : AbstractLiveEventStreamVertex<EventT>() {
     private var isInitialized = false
 
-    final override fun onFirstSubscriberRegistered(
+    final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ) {
@@ -24,7 +24,7 @@ abstract class AbstractStatefulEventStreamVertex<EventT>(
         )
     }
 
-    final override fun onLastSubscriberUnregistered() {
+    final override fun onLastListenerUnregistered() {
     }
 
     protected abstract fun initialize(

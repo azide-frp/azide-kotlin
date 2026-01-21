@@ -4,21 +4,21 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly
+import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
 
 class SingleEventStreamVertex<EventT>(
     wrapUpContext: Transactions.WrapUpContext,
     private val sourceEventStream: EventStream<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), BoundEmissionSubscriber {
+), BoundListener {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 
-    private var upstreamWeakSubscriberHandle: LiveEventStreamVertex.WeakSubscriberHandle? = null
+    private var upstreamWeakListenerHandle: LiveEventStreamVertex.WeakListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
@@ -47,10 +47,10 @@ class SingleEventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>? {
 
-        upstreamWeakSubscriberHandle = sourceVertex.registerEmissionSubscriberWeakly(
+        upstreamWeakListenerHandle = sourceVertex.registerEmissionListenerWeakly(
             propagationContext = propagationContext,
             dependentVertex = this,
-            subscriber = this,
+            listener = this,
             mode = ActivationMode.Online,
         )
 
@@ -58,11 +58,11 @@ class SingleEventStreamVertex<EventT>(
     }
 
     override fun transit() {
-        val upstreamWeakSubscriberHandle = this.upstreamWeakSubscriberHandle
+        val upstreamWeakListenerHandle = this.upstreamWeakListenerHandle
             ?: throw IllegalStateException("It looks as if the single emission already had place or the vertex wasn't initialized")
 
-        upstreamWeakSubscriberHandle.cancel()
+        upstreamWeakListenerHandle.cancel()
 
-        this.upstreamWeakSubscriberHandle = null
+        this.upstreamWeakListenerHandle = null
     }
 }

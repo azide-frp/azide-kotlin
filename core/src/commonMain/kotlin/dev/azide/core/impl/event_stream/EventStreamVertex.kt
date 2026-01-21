@@ -3,9 +3,9 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
-import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberHandle
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
+import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
+import dev.azide.core.impl.event_stream.EventStreamVertex.ListenerHandle
 import kotlin.jvm.JvmInline
 
 sealed interface EventStreamVertex<out EventT> : Vertex {
@@ -20,88 +20,88 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface EmissionSubscriber {
-        object Noop : EmissionSubscriber {
-            override fun handleEmission(
+    interface Listener {
+        object Noop : Listener {
+            override fun handle(
                 propagationContext: Transactions.PropagationContext,
-            ): SubscriberStatus = SubscriberStatus.Reachable
+            ): ListenerStatus = ListenerStatus.Reachable
         }
 
-        fun handleEmission(
+        fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): SubscriberStatus
+        ): ListenerStatus
     }
 
-    interface BoundEmissionSubscriber {
+    interface BoundListener {
         fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         )
     }
 
-    interface SubscriberHandle
+    interface ListenerHandle
 
-    enum class SubscriberStatus {
+    enum class ListenerStatus {
         Reachable, Unreachable,
     }
 
     val ongoingEmission: Emission<EventT>?
 
-    val subscriberCount: Int
+    val listenerCount: Int
 
-    fun registerEmissionSubscriber(
+    fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionSubscriber,
+        listener: Listener,
         mode: ActivationMode,
-    ): SubscriberHandle
+    ): ListenerHandle
 
-    fun unregisterSubscriber(
-        handle: SubscriberHandle,
+    fun unregisterListener(
+        handle: ListenerHandle,
     )
 }
 
-fun <EventT> EventStreamVertex<EventT>.registerEmissionNotificationSubscriberOnline(
+fun <EventT> EventStreamVertex<EventT>.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber,
-): SubscriberHandle = registerEmissionSubscriber(
+    listener: Listener,
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    subscriber = subscriber,
+    listener = listener,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriber(
+fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
     propagationContext: Transactions.PropagationContext,
-    subscriber: BoundEmissionSubscriber,
+    listener: BoundListener,
     mode: ActivationMode,
-): SubscriberHandle = registerEmissionSubscriber(
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    subscriber = object : EmissionSubscriber {
-        override fun handleEmission(
+    listener = object : Listener {
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): EventStreamVertex.SubscriberStatus {
-            subscriber.handleEmission(
+        ): EventStreamVertex.ListenerStatus {
+            listener.handleEmission(
                 propagationContext = propagationContext,
             )
 
-            return EventStreamVertex.SubscriberStatus.Reachable
+            return EventStreamVertex.ListenerStatus.Reachable
         }
     },
     mode = mode,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriberOnline(
+fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: BoundEmissionSubscriber,
-): SubscriberHandle = registerBoundEmissionSubscriber(
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
-    subscriber = subscriber,
+    listener = listener,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriberOffline(
+fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOffline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: BoundEmissionSubscriber,
-): SubscriberHandle = registerBoundEmissionSubscriber(
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
-    subscriber = subscriber,
+    listener = listener,
     mode = ActivationMode.Offline,
 )

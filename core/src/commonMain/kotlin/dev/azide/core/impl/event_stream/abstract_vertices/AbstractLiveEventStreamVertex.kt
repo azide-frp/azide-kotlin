@@ -5,17 +5,17 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
-import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberStatus
+import dev.azide.core.impl.event_stream.EventStreamVertex.Listener
+import dev.azide.core.impl.event_stream.EventStreamVertex.ListenerStatus
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveSubscriberHandle
+import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveListenerHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
-    private val _registeredSubscribers: MutableBag<EmissionSubscriber> = MutableBag()
+    private val _registeredListeners: MutableBag<Listener> = MutableBag()
 
-    override val subscriberCount: Int
-        get() = _registeredSubscribers.size
+    override val listenerCount: Int
+        get() = _registeredListeners.size
 
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
 
@@ -26,35 +26,35 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     final override val ongoingEmission: EventStreamVertex.Emission<EventT>?
         get() = _ongoingEmission
 
-    override fun registerEmissionSubscriber(
+    override fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionSubscriber,
+        listener: Listener,
         mode: Vertex.ActivationMode,
-    ): EventStreamVertex.SubscriberHandle {
-        val internalHandle = _registeredSubscribers.add(subscriber)
+    ): EventStreamVertex.ListenerHandle {
+        val internalHandle = _registeredListeners.add(listener)
 
-        if (_registeredSubscribers.size == 1) {
-            onFirstSubscriberRegistered(
+        if (_registeredListeners.size == 1) {
+            onFirstListenerRegistered(
                 propagationContext = propagationContext,
                 mode = mode,
             )
         }
 
-        return LiveSubscriberHandle(
+        return LiveListenerHandle(
             internalHandle = internalHandle,
         )
     }
 
-    override fun unregisterSubscriber(
-        handle: EventStreamVertex.SubscriberHandle,
+    override fun unregisterListener(
+        handle: EventStreamVertex.ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? LiveSubscriberHandle ?: throw IllegalArgumentException("Invalid handle")
+            handle as? LiveListenerHandle ?: throw IllegalArgumentException("Invalid handle")
 
-        _registeredSubscribers.remove(handleImpl.internalHandle)
+        _registeredListeners.remove(handleImpl.internalHandle)
 
-        if (_registeredSubscribers.size == 0) {
-            onLastSubscriberUnregistered()
+        if (_registeredListeners.size == 0) {
+            onLastListenerUnregistered()
         }
     }
 
@@ -67,8 +67,8 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         _isEnqueuedForCommitment = false
     }
 
-    protected val hasSubscribers: Boolean
-        get() = _registeredSubscribers.size > 0
+    protected val hasListeners: Boolean
+        get() = _registeredListeners.size > 0
 
     protected fun exposeAndPropagateEmission(
         propagationContext: Transactions.PropagationContext,
@@ -119,26 +119,26 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         try {
             _isPropagatingEmissionNotification = true
 
-            _registeredSubscribers.forEach { subscriber ->
-                val subscriberStatus = subscriber.handleEmission(
+            _registeredListeners.forEach { listener ->
+                val listenerStatus = listener.handle(
                     propagationContext = propagationContext,
                 )
 
-                // Remove the subscriber if it's unreachable
-                subscriberStatus == SubscriberStatus.Unreachable
+                // Remove the listener if it's unreachable
+                listenerStatus == ListenerStatus.Unreachable
             }
         } finally {
             _isPropagatingEmissionNotification = false
         }
     }
 
-    protected open fun onFirstSubscriberRegistered(
+    protected open fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ) {
     }
 
-    protected open fun onLastSubscriberUnregistered() {
+    protected open fun onLastListenerUnregistered() {
     }
 
     protected open fun transit() {

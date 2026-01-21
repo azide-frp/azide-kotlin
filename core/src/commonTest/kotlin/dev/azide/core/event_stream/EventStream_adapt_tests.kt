@@ -85,14 +85,14 @@ class EventStream_adapt_tests {
             ),
         )
 
-        val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
+        val eventStreamListener = TransactionTestUtils.executeInsideTransaction {
             subjectEventStream.subscribeForTesting()
         }
 
         customEventSource.notify(10)
 
         // Verify the effectiveness of the event delivery indirectly
-        eventStreamSubscriber.verifyPropagatedEmission(expectedEmittedEvent = 10)
-        eventStreamSubscriber.verifyDoesNotExposeEmission()
+        eventStreamListener.verifyPropagatedEmission(expectedEmittedEvent = 10)
+        eventStreamListener.verifyDoesNotExposeEmission()
     }
 }

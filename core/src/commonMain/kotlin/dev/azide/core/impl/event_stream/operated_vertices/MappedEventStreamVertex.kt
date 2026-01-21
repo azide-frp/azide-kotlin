@@ -4,18 +4,18 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundListener
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceEventStream: EventStream<EventT>,
     private val transform: (EventT) -> TransformedEventT,
-) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), BoundEmissionSubscriber {
+) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), BoundListener {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 
-    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
+    private var upstreamListenerHandle: EventStreamVertex.ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
@@ -46,13 +46,13 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<TransformedEventT>? {
-        if (upstreamSubscriberHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle = sourceVertex.registerBoundEmissionSubscriber(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = this,
+            listener = this,
             mode = mode,
         )
 
@@ -61,12 +61,12 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSubscriber(
+        sourceVertex.unregisterListener(
             handle = subscriptionHandle,
         )
 
-        this.upstreamSubscriberHandle = null
+        this.upstreamListenerHandle = null
     }
 }

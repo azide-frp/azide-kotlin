@@ -144,7 +144,7 @@ object Transactions {
         //
         // The part of the transaction when the vertices commit to the new state. The volatile state influences the
         // stable state, after which the volatile state is cleared. Accessing other vertices' state (stable or volatile)
-        // is prohibited, as it's undefined whether they are before or after their own commitment. Removing subscribers
+        // is prohibited, as it's undefined whether they are before or after their own commitment. Removing listeners
         // / observers and (in consequence) deactivation is allowed.
         // TODO: Figure out if upstream unregistration (e.g. of `EventStream.single`) shouldn't be moved to
         //  post-processing for consistency
