@@ -275,6 +275,22 @@ class Effect_adapt_tests {
 
     @Test
     fun test_cancelled() {
+        test_cancelled(
+            cancelCount = 1,
+        )
+    }
+
+
+    @Test
+    fun test_cancelled_twice() {
+        test_cancelled(
+            cancelCount = 2,
+        )
+    }
+
+    private fun test_cancelled(
+        cancelCount: Int,
+    ) {
         val customTimerManager = CustomTimerManager()
 
         val subjectEffect = Effect.adapt(
@@ -291,6 +307,7 @@ class Effect_adapt_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = ExpectedTestTargetImpact.None,
+            cancelCount = cancelCount,
         )
 
         assertEquals(
@@ -298,6 +315,7 @@ class Effect_adapt_tests {
             actual = customTimerManager.startedTimerCount,
         )
     }
+
 
     @Test
     fun test_cancelledRevoked() {
