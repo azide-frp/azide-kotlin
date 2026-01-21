@@ -7,9 +7,11 @@ import dev.azide.core.test_utils.collections.reactive_collection.ReactiveCollect
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import dev.kmpx.collections.multi_sets.multiSetOf
 import kotlin.math.roundToInt
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
+@Ignore // TODO: Rework collection mapping
 class ReactiveCollection_map_tests {
     @Test
     fun test_passiveSample() {

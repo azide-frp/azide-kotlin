@@ -6,6 +6,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeNotificationObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_collection.registerCollectionObserver
 
@@ -13,14 +14,13 @@ abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
     private val sourceVertex: TrackedCollectionVertex<ElementT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), TrackedCollectionVertex.CollectionChangeObserver<ElementT> {
+), CollectionChangeNotificationObserver {
     private var upstreamObserverHandle: CollectionObserverHandle? = null
 
-    final override fun handleChange(
+    override fun handleChangeNotification(
         propagationContext: PropagationContext,
-        change: CollectionChange<ElementT>?,
     ) {
-        when (change) {
+        when (val change = sourceVertex.ongoingChange) {
             null -> {
                 if (ongoingUpdate != null) {
                     exposeAndPropagateUpdate(
@@ -65,7 +65,7 @@ abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerCollectionObserver(
+        upstreamObserverHandle = sourceVertex.registerCollectionNotificationObserver(
             propagationContext = propagationContext,
             observer = this,
         )
