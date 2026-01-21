@@ -12,7 +12,7 @@ import dev.azide.core.pullInternallyWrappedUp
 
 class SampledEachEventStreamVertex<EventT>(
     private val sourceEventStream: EventStream<Moment<EventT>>,
-) : AbstractSimpleStatelessEventStreamVertex<EventT>(), EmissionSubscriber<Moment<EventT>> {
+) : AbstractSimpleStatelessEventStreamVertex<EventT>(), EmissionSubscriber {
     private val sourceVertex: EventStreamVertex<Moment<EventT>>
         get() = sourceEventStream.vertex
 

@@ -12,7 +12,7 @@ import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveSubscriberHand
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
-    private val _registeredSubscribers: MutableBag<EmissionNotificationSubscriber<EventT>> = MutableBag()
+    private val _registeredSubscribers: MutableBag<EmissionNotificationSubscriber> = MutableBag()
 
     override val subscriberCount: Int
         get() = _registeredSubscribers.size
@@ -28,7 +28,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
 
     override fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionNotificationSubscriber<EventT>,
+        subscriber: EmissionNotificationSubscriber,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.SubscriberHandle {
         val internalHandle = _registeredSubscribers.add(subscriber)
@@ -49,7 +49,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         handle: EventStreamVertex.SubscriberHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? LiveSubscriberHandle<EventT> ?: throw IllegalArgumentException("Invalid handle")
+            handle as? LiveSubscriberHandle ?: throw IllegalArgumentException("Invalid handle")
 
         _registeredSubscribers.remove(handleImpl.internalHandle)
 

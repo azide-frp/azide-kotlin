@@ -17,7 +17,7 @@ import dev.azide.core.impl.event_stream.registerEmissionSubscriberOffline
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
-) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex, UpdateObserver<EventStream<EventT>> {
+) : AbstractStatelessEventStreamVertex<EventT>(), PostProcessableVertex, UpdateObserver {
     /**
      * The outer vertex observer handle.
      *
@@ -56,7 +56,7 @@ class DivertedEventStreamVertex<EventT>(
      */
     private var upstreamStableInnerSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
-    private val innerSourceSubscriber = object : EmissionSubscriber<EventT> {
+    private val innerSourceSubscriber = object : EmissionSubscriber {
         /**
          * Handle the emission of the inner event stream.
          */

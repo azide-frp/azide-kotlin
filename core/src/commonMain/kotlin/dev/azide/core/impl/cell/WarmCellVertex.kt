@@ -7,7 +7,7 @@ import kotlin.jvm.JvmInline
 
 interface WarmCellVertex<out ValueT> : CellVertex<ValueT> {
     @JvmInline
-    value class WarmObserverHandle<ValueT>(
-        internal val internalHandle: MutableBag.Handle<UpdateNotificationObserver<ValueT>>,
+    value class WarmObserverHandle(
+        internal val internalHandle: MutableBag.Handle<UpdateNotificationObserver>,
     ) : ObserverHandle
 }

@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 
 class TestCellObserver<ValueT>(
     val observedCellVertex: CellVertex<ValueT>,
-) : UpdateObserver<ValueT> {
+) : UpdateObserver {
     interface Handle {
         fun cancel()
     }

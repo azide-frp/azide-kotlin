@@ -17,7 +17,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
     initialSourceEventStream: EventStream<Action<EventT>>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), EmissionSubscriber<Action<EventT>>, EffectVertex, Revocable {
+), EmissionSubscriber, EffectVertex, Revocable {
     companion object {
         fun <EventT> startInternally(
             wrapUpContext: Transactions.WrapUpContext,

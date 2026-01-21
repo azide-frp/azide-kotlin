@@ -103,7 +103,7 @@ internal object EventStreamTestUtils {
 
     class SubscribingVerifier<EventT>(
         private val subjectVertex: LiveEventStreamVertex<EventT>,
-    ) : EmissionSubscriber<EventT> {
+    ) : EmissionSubscriber {
         @JvmInline
         private value class ReceivedEmission<EventT>(
             val receivedEmission: Emission<EventT>?,

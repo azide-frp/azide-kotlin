@@ -20,13 +20,13 @@ sealed interface CellVertex<out ValueT> : Vertex {
         )
     }
 
-    interface UpdateNotificationObserver<in ValueT> {
+    interface UpdateNotificationObserver {
         fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus
     }
 
-    interface UpdateObserver<in ValueT> {
+    interface UpdateObserver {
         fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         )
@@ -42,7 +42,7 @@ sealed interface CellVertex<out ValueT> : Vertex {
 
     fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: UpdateNotificationObserver<ValueT>,
+        observer: UpdateNotificationObserver,
         mode: ActivationMode,
     ): ObserverHandle
 
@@ -57,7 +57,7 @@ sealed interface CellVertex<out ValueT> : Vertex {
 
 fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOnline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateNotificationObserver<ValueT>,
+    observer: UpdateNotificationObserver,
 ): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
     propagationContext = propagationContext,
     observer = observer,
@@ -66,7 +66,7 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOnline(
 
 fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOffline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateNotificationObserver<ValueT>,
+    observer: UpdateNotificationObserver,
 ): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
     propagationContext = propagationContext,
     observer = observer,
@@ -75,11 +75,11 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateNotificationObserverOffline(
 
 fun <ValueT> CellVertex<ValueT>.registerUpdateObserver(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateObserver<ValueT>,
+    observer: UpdateObserver,
     mode: ActivationMode,
 ): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
     propagationContext = propagationContext,
-    observer = object : UpdateNotificationObserver<ValueT> {
+    observer = object : UpdateNotificationObserver {
         override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus {
@@ -95,7 +95,7 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateObserver(
 
 fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOnline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateObserver<ValueT>,
+    observer: UpdateObserver,
 ): CellVertex.ObserverHandle = registerUpdateObserver(
     propagationContext = propagationContext,
     observer = observer,
@@ -104,7 +104,7 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOnline(
 
 fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOffline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateObserver<ValueT>,
+    observer: UpdateObserver,
 ): CellVertex.ObserverHandle = registerUpdateObserver(
     propagationContext = propagationContext,
     observer = observer,

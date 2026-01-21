@@ -11,7 +11,7 @@ import dev.azide.core.impl.event_stream.registerEmissionSubscriber
 class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceEventStream: EventStream<EventT>,
     private val transform: (EventT) -> TransformedEventT,
-) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), EmissionSubscriber<EventT> {
+) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), EmissionSubscriber {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 

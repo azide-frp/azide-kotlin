@@ -14,7 +14,7 @@ class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
 
     override fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EventStreamVertex.EmissionNotificationSubscriber<EventT>,
+        subscriber: EventStreamVertex.EmissionNotificationSubscriber,
         mode: Vertex.ActivationMode,
     ): TerminatedSubscriberHandle = TerminatedSubscriberHandle
 

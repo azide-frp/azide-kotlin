@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 
 class TestEventStreamSubscriber<EventT>(
     val subscribedEventStreamVertex: EventStreamVertex<EventT>,
-) : EmissionSubscriber<EventT> {
+) : EmissionSubscriber {
     interface Handle {
         fun cancel()
     }

@@ -13,7 +13,7 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), UpdateObserver<Any?> {
+), UpdateObserver {
     private var upstreamObserverHandle1: CellVertex.ObserverHandle? = null
     private var upstreamObserverHandle2: CellVertex.ObserverHandle? = null
 

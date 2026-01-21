@@ -10,7 +10,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStateles
 
 class UpdatedValuesEventStreamVertex<ValueT>(
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), UpdateObserver<ValueT> {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), UpdateObserver {
     private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
 
     /**

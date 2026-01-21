@@ -11,7 +11,7 @@ interface FrozenCellVertex<out ValueT> : CellVertex<ValueT> {
 
     override fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: UpdateNotificationObserver<ValueT>,
+        observer: UpdateNotificationObserver,
         mode: Vertex.ActivationMode,
     ): FrozenObserverHandle
 }

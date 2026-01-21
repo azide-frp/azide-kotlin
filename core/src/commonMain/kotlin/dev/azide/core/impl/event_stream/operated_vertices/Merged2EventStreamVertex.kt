@@ -21,7 +21,7 @@ class Merged2EventStreamVertex<EventT>(
     private var upstreamSubscriberHandle1: EventStreamVertex.SubscriberHandle? = null
     private var upstreamSubscriberHandle2: EventStreamVertex.SubscriberHandle? = null
 
-    val innerSubscriber1 = object : EmissionSubscriber<EventT> {
+    val innerSubscriber1 = object : EmissionSubscriber {
         /**
          * Handle the emission of the first event stream.
          */
@@ -48,7 +48,7 @@ class Merged2EventStreamVertex<EventT>(
         }
     }
 
-    val innerSubscriber2 = object : EmissionSubscriber<EventT> {
+    val innerSubscriber2 = object : EmissionSubscriber {
         /**
          * Handle the emission of the second event stream.
          */

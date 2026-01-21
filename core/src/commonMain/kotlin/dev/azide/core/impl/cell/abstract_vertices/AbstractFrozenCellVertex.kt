@@ -8,7 +8,7 @@ import dev.azide.core.impl.cell.FrozenCellVertex
 abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
     override fun registerUpdateNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: CellVertex.UpdateNotificationObserver<ValueT>,
+        observer: CellVertex.UpdateNotificationObserver,
         mode: Vertex.ActivationMode,
     ): FrozenCellVertex.FrozenObserverHandle = FrozenCellVertex.FrozenObserverHandle
 

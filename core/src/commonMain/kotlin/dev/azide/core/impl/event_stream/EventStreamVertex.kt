@@ -20,8 +20,8 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface EmissionNotificationSubscriber<in EventT> {
-        object Noop : EmissionNotificationSubscriber<Any?> {
+    interface EmissionNotificationSubscriber {
+        object Noop : EmissionNotificationSubscriber {
             override fun handleEmission(
                 propagationContext: Transactions.PropagationContext,
             ): SubscriberStatus = SubscriberStatus.Reachable
@@ -32,7 +32,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         ): SubscriberStatus
     }
 
-    interface EmissionSubscriber<in EventT> {
+    interface EmissionSubscriber {
         fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         )
@@ -50,7 +50,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
     fun registerEmissionNotificationSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionNotificationSubscriber<EventT>,
+        subscriber: EmissionNotificationSubscriber,
         mode: ActivationMode,
     ): SubscriberHandle
 
@@ -61,7 +61,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
 fun <EventT> EventStreamVertex<EventT>.registerEmissionNotificationSubscriberOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionNotificationSubscriber<EventT>,
+    subscriber: EmissionNotificationSubscriber,
 ): SubscriberHandle = registerEmissionNotificationSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
@@ -70,11 +70,11 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionNotificationSubscriberOnl
 
 fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber<EventT>,
+    subscriber: EmissionSubscriber,
     mode: ActivationMode,
 ): SubscriberHandle = registerEmissionNotificationSubscriber(
     propagationContext = propagationContext,
-    subscriber = object : EmissionNotificationSubscriber<EventT> {
+    subscriber = object : EmissionNotificationSubscriber {
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         ): EventStreamVertex.SubscriberStatus {
@@ -90,7 +90,7 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
 
 fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber<EventT>,
+    subscriber: EmissionSubscriber,
 ): SubscriberHandle = registerEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
@@ -99,7 +99,7 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOnline(
 
 fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOffline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber<EventT>,
+    subscriber: EmissionSubscriber,
 ): SubscriberHandle = registerEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,

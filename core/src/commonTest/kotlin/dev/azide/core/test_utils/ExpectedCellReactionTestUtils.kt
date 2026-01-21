@@ -20,7 +20,7 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<Cell<ValueT>>,
     ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, UpdateObserver<ValueT> {
+        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, UpdateObserver {
             private val subjectVertex: CellVertex<ValueT>
                 get() = subjectLazy.value.vertex
 

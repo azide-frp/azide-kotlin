@@ -10,7 +10,7 @@ import dev.azide.core.impl.event_stream.registerEmissionSubscriber
 class FilteredEventStreamVertex<EventT>(
     private val sourceVertex: EventStreamVertex<EventT>,
     private val predicate: (EventT) -> Boolean,
-) : AbstractSimpleStatelessEventStreamVertex<EventT>(), EmissionSubscriber<EventT> {
+) : AbstractSimpleStatelessEventStreamVertex<EventT>(), EmissionSubscriber {
     private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
 
     /**

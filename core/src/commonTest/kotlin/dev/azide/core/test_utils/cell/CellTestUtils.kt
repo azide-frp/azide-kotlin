@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object CellTestUtils {
-    private object NoopObserver : UpdateNotificationObserver<Any?> {
+    private object NoopObserver : UpdateNotificationObserver {
         override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus = ObserverStatus.Reachable
@@ -101,7 +101,7 @@ internal object CellTestUtils {
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,
-    ) : UpdateObserver<ValueT> {
+    ) : UpdateObserver {
         @JvmInline
         value class ReceivedUpdate<ValueT>(
             val receivedUpdate: Update<ValueT>?,

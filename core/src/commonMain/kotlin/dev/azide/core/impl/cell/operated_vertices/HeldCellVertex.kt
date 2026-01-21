@@ -15,7 +15,7 @@ class HeldCellVertex<ValueT> private constructor(
 ) : AbstractStatefulCellVertex<ValueT>(
     wrapUpContext = wrapUpContext,
     initialValue = initialValue,
-), EmissionSubscriber<ValueT> {
+), EmissionSubscriber {
     companion object {
         fun <ValueT> start(
             wrapUpContext: Transactions.WrapUpContext,

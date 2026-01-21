@@ -11,7 +11,7 @@ import dev.azide.core.impl.cell.registerUpdateObserver
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
-) : AbstractSimpleStatelessCellVertex<ValueT>(), UpdateObserver<Cell<ValueT>> {
+) : AbstractSimpleStatelessCellVertex<ValueT>(), UpdateObserver {
     /**
      * The outer vertex observer handle.
      *
@@ -52,7 +52,7 @@ class SwitchedCellVertex<ValueT>(
      */
     private var upstreamNewInnerObserverHandle: CellVertex.ObserverHandle? = null
 
-    private val innerSourceObserver = object : UpdateObserver<ValueT> {
+    private val innerSourceObserver = object : UpdateObserver {
         /**
          * Handle the update of the inner source cell.
          */

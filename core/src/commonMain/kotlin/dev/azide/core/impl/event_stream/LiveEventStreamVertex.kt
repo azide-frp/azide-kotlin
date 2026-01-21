@@ -14,8 +14,8 @@ import kotlin.jvm.JvmInline
 interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     class WeaklyReferencedEmissionNotificationSubscriber<EventT>(
         private val sourceEventStreamVertex: EventStreamVertex<EventT>,
-        emissionSubscriber: EmissionSubscriber<EventT>,
-    ) : EmissionNotificationSubscriber<EventT> {
+        emissionSubscriber: EmissionSubscriber,
+    ) : EmissionNotificationSubscriber {
         private val basicSubscriberWeakReference = PlatformWeakReference(emissionSubscriber)
 
         override fun handleEmission(
@@ -38,8 +38,8 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     }
 
     @JvmInline
-    value class LiveSubscriberHandle<EventT>(
-        val internalHandle: MutableBag.Handle<EmissionNotificationSubscriber<EventT>>,
+    value class LiveSubscriberHandle(
+        val internalHandle: MutableBag.Handle<EmissionNotificationSubscriber>,
     ) : EventStreamVertex.SubscriberHandle
 
     interface WeakSubscriberHandle {
@@ -47,7 +47,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     }
 }
 
-fun <EventT> EmissionSubscriber<EventT>.weaklyReferenced(
+fun <EventT> EmissionSubscriber.weaklyReferenced(
     sourceEventStreamVertex: EventStreamVertex<EventT>,
 ): LiveEventStreamVertex.WeaklyReferencedEmissionNotificationSubscriber<EventT> = LiveEventStreamVertex.WeaklyReferencedEmissionNotificationSubscriber(
     sourceEventStreamVertex = sourceEventStreamVertex,
@@ -64,7 +64,7 @@ fun <EventT> EmissionSubscriber<EventT>.weaklyReferenced(
 fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberWeakly(
     propagationContext: Transactions.PropagationContext,
     dependentVertex: Vertex,
-    subscriber: EmissionSubscriber<EventT>,
+    subscriber: EmissionSubscriber,
     mode: ActivationMode,
 ): LiveEventStreamVertex.WeakSubscriberHandle {
     val innerSubscriberHandle: EventStreamVertex.SubscriberHandle = registerEmissionNotificationSubscriber(

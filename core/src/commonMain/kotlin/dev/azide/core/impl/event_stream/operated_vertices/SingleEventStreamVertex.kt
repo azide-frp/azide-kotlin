@@ -14,7 +14,7 @@ class SingleEventStreamVertex<EventT>(
     private val sourceEventStream: EventStream<EventT>,
 ) : AbstractStatefulEventStreamVertex<EventT>(
     wrapUpContext = wrapUpContext,
-), EmissionSubscriber<EventT> {
+), EmissionSubscriber {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 

@@ -17,7 +17,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEvent
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), UpdateObserver<ValueT> {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), UpdateObserver {
     private enum class InternalState {
         Spawning, Spawned,
     }

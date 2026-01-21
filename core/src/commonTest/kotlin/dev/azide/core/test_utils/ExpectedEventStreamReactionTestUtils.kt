@@ -25,7 +25,7 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
-    ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier, EmissionSubscriber<EventT> {
+    ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier, EmissionSubscriber {
         private val subjectVertex: EventStreamVertex<EventT>
             get() = subjectLazy.value.vertex
 
