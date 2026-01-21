@@ -71,7 +71,7 @@ class SwitchedCellVertex<ValueT>(
                     when (updatedInnerSourceVertex) {
                         null -> { // The inner source cell vertex revoking the update is the _stable_ inner cell vertex
                             // Revoke the update
-                            exposeAndPropagateUpdate(
+                            exposeUpdateNotifyingListeners(
                                 propagationContext = propagationContext,
                                 update = null,
                             )
@@ -79,7 +79,7 @@ class SwitchedCellVertex<ValueT>(
 
                         else -> { // The inner source cell vertex revoking the update is the _updated_ inner cell vertex
                             // Correct the update, falling back to the old value of the updated inner cell
-                            exposeAndPropagateUpdate(
+                            exposeUpdateNotifyingListeners(
                                 propagationContext = propagationContext,
                                 update = CellVertex.Update(
                                     updatedValue = updatedInnerSourceVertex.getOldValue(propagationContext),
@@ -91,7 +91,7 @@ class SwitchedCellVertex<ValueT>(
 
                 else -> { // The inner source cell vertex has a proper update (potentially a correction)
                     // Propagate the update (potentially correcting the previous one)
-                    exposeAndPropagateUpdate(
+                    exposeUpdateNotifyingListeners(
                         propagationContext = propagationContext,
                         update = update,
                     )
@@ -138,14 +138,14 @@ class SwitchedCellVertex<ValueT>(
 
                 when (val ongoingStableInnerUpdate = stableInnerSourceVertex.ongoingUpdate) {
                     null -> { // The inner cell doesn't have an ongoing update, so revoke the update of this vertex
-                        exposeAndPropagateUpdate(
+                        exposeUpdateNotifyingListeners(
                             propagationContext = propagationContext,
                             update = null,
                         )
                     }
 
                     else -> { // The stable inner cell has an ongoing update, so let's use it for the correction
-                        exposeAndPropagateUpdate(
+                        exposeUpdateNotifyingListeners(
                             propagationContext = propagationContext,
                             update = ongoingStableInnerUpdate,
                         )
@@ -192,7 +192,7 @@ class SwitchedCellVertex<ValueT>(
 
                 // Propagate the update
 
-                exposeAndPropagateUpdate(
+                exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = CellVertex.Update(
                         updatedValue = handledUpdatedInnerSourceVertex.getNewValue(

@@ -24,7 +24,7 @@ class FilteredWarmTrackedSetVertex<ElementT>(
         when (val change = sourceVertex.ongoingChange) {
             null -> {
                 if (ongoingChange != null) {
-                    exposeAndPropagateChange(
+                    exposeChangeNotifyingListeners(
                         propagationContext = propagationContext,
                         change = null,
                     )
@@ -35,7 +35,7 @@ class FilteredWarmTrackedSetVertex<ElementT>(
                 when (val filteredChange = change.filter(predicate)) {
                     null -> {
                         if (ongoingChange != null) {
-                            exposeAndPropagateChange(
+                            exposeChangeNotifyingListeners(
                                 propagationContext = propagationContext,
                                 change = null,
                             )
@@ -43,7 +43,7 @@ class FilteredWarmTrackedSetVertex<ElementT>(
                     }
 
                     else -> {
-                        exposeAndPropagateChange(
+                        exposeChangeNotifyingListeners(
                             propagationContext = propagationContext,
                             change = filteredChange,
                         )

@@ -72,19 +72,19 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     override fun handleUpdate(
         propagationContext: Transactions.PropagationContext,
     ) {
-        exposeAndPropagateTransformedUpdate(
+        exposeTransformedUpdateNotifyingListeners(
             propagationContext = propagationContext,
         )
     }
 
-    private fun exposeAndPropagateTransformedUpdate(
+    private fun exposeTransformedUpdateNotifyingListeners(
         propagationContext: Transactions.PropagationContext,
     ) {
         val transformedUpdate = buildTransformedUpdate(
             propagationContext = propagationContext,
         )
 
-        exposeAndPropagateUpdate(
+        exposeUpdateNotifyingListeners(
             propagationContext = propagationContext,
             update = transformedUpdate,
         )

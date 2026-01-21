@@ -51,7 +51,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
                 executedActionRevocable.revoke()
                 this.executedActionRevocable = null
 
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
@@ -68,7 +68,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
 
                 this.executedActionRevocable = executedActionRevocable
 
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = Emission(
                         emittedEvent = emittedEvent,
@@ -101,7 +101,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
             this@ExecutedEachEventStreamEffectVertex.executedActionRevocable = null
 
             // Revoke the event we emitted earlier
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = null,
             )
@@ -122,7 +122,7 @@ class ExecutedEachEventStreamEffectVertex<EventT> private constructor(
                     )
 
                 sourceVertex.ongoingEmission?.let { sourceOngoingActionEmission ->
-                    exposeAndPropagateEmission(
+                    exposeEmissionNotifyingListeners(
                         propagationContext = propagationContext,
                         emission = processSourceActionEmission(
                             propagationContext = propagationContext,

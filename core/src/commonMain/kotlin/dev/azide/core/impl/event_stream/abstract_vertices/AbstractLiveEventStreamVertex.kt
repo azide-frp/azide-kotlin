@@ -19,7 +19,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
 
     private var _ongoingEmission: EventStreamVertex.Emission<EventT>? = null
 
-    private var _isPropagatingEmissionNotification = false
+    private var _isNotifyingListeners = false
 
     private var _isEnqueuedForCommitment = false
 
@@ -70,7 +70,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     protected val hasListeners: Boolean
         get() = _registeredListeners.size > 0
 
-    protected fun exposeAndPropagateEmission(
+    protected fun exposeEmissionNotifyingListeners(
         propagationContext: Transactions.PropagationContext,
         emission: EventStreamVertex.Emission<EventT>?,
     ) {
@@ -79,7 +79,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
             emission = emission,
         )
 
-        propagateEmissionNotification(
+        notifyListeners(
             propagationContext = propagationContext,
         )
     }
@@ -109,15 +109,15 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         _ongoingEmission = null
     }
 
-    private fun propagateEmissionNotification(
+    private fun notifyListeners(
         propagationContext: Transactions.PropagationContext,
     ) {
-        if (_isPropagatingEmissionNotification) {
+        if (_isNotifyingListeners) {
             throw CausalLoopException("Causal loop detected in event stream vertex: $this")
         }
 
         try {
-            _isPropagatingEmissionNotification = true
+            _isNotifyingListeners = true
 
             _registeredListeners.forEach { listener ->
                 val listenerStatus = listener.handle(
@@ -128,7 +128,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
                 listenerStatus == ListenerStatus.Unreachable
             }
         } finally {
-            _isPropagatingEmissionNotification = false
+            _isNotifyingListeners = false
         }
     }
 

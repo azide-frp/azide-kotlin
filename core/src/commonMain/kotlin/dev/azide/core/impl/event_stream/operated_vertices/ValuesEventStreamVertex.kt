@@ -57,7 +57,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
                             propagationContext = propagationContext,
                         )
 
-                        exposeAndPropagateEmission(
+                        exposeEmissionNotifyingListeners(
                             propagationContext = propagationContext,
                             emission = EventStreamVertex.Emission(
                                 emittedEvent = oldValue,
@@ -66,7 +66,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
                     }
 
                     InternalState.Spawned -> { // Just revoke the emission
-                        exposeAndPropagateEmission(
+                        exposeEmissionNotifyingListeners(
                             propagationContext = propagationContext,
                             emission = null,
                         )
@@ -75,7 +75,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
             }
 
             else -> { // Initial update or correction
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = EventStreamVertex.Emission(
                         emittedEvent = update.updatedValue,

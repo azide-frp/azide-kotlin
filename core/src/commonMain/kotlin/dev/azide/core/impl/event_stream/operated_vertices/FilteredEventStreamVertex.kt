@@ -21,7 +21,7 @@ class FilteredEventStreamVertex<EventT>(
     ) {
         when (val emission = sourceVertex.ongoingEmission) {
             null -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
@@ -31,7 +31,7 @@ class FilteredEventStreamVertex<EventT>(
                 when {
                     predicate(emission.emittedEvent) -> { // The predicate accepted the event
                         // We have to propagate the emission (it might be a correction)
-                        exposeAndPropagateEmission(
+                        exposeEmissionNotifyingListeners(
                             propagationContext = propagationContext,
                             emission = emission,
                         )
@@ -41,7 +41,7 @@ class FilteredEventStreamVertex<EventT>(
                         if (ongoingEmission != null) {
                             // If we previously propagated an emission (when the predicate accepted the event), we have
                             // to revoke it
-                            exposeAndPropagateEmission(
+                            exposeEmissionNotifyingListeners(
                                 propagationContext = propagationContext,
                                 emission = null,
                             )

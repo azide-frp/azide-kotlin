@@ -18,7 +18,7 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
                 throw IllegalStateException("Another emission is already ongoing.")
             }
 
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = Emission(
                     emittedEvent = emittedEvent,
@@ -33,7 +33,7 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
                 throw IllegalStateException("No ongoing emission to revoke.")
             }
 
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = null,
             )
@@ -47,7 +47,7 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
                 throw IllegalStateException("No ongoing emission to correct.")
             }
 
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = Emission(
                     emittedEvent = correctedEmittedEvent,

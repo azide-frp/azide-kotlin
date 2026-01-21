@@ -25,14 +25,14 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
     ) {
         when (val emission = sourceVertex.ongoingEmission) {
             null -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = emission.map { event: EventT ->
                         transform(event)

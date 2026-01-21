@@ -5,10 +5,8 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
-import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestInputStimulation
-import dev.azide.core.test_utils.event_stream.TestInputEventStream
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -24,7 +22,7 @@ class TestInputCell<ValueT>(
                 throw IllegalStateException("Another update is already ongoing")
             }
 
-            exposeAndPropagateUpdate(
+            exposeUpdateNotifyingListeners(
                 propagationContext = propagationContext,
                 update = Update(
                     updatedValue = newValue,
@@ -40,7 +38,7 @@ class TestInputCell<ValueT>(
                 throw IllegalStateException("No ongoing update to correct")
             }
 
-            exposeAndPropagateUpdate(
+            exposeUpdateNotifyingListeners(
                 propagationContext = propagationContext,
                 update = Update(
                     updatedValue = correctedNewValue,
@@ -55,7 +53,7 @@ class TestInputCell<ValueT>(
                 throw IllegalStateException("No ongoing update to revoke")
             }
 
-            exposeAndPropagateUpdate(
+            exposeUpdateNotifyingListeners(
                 propagationContext = propagationContext,
                 update = null,
             )

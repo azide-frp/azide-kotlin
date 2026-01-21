@@ -52,7 +52,7 @@ class TestInputReactiveSet<ElementT>(
                 throw IllegalStateException("No ongoing change to revoke")
             }
 
-            exposeAndPropagateChange(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
                 change = null,
             )
@@ -81,7 +81,7 @@ class TestInputReactiveSet<ElementT>(
                 throw IllegalArgumentException("Elements to remove contain elements not present in the set")
             }
 
-            exposeAndPropagateChange(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
                 change = SetChange(
                     addedElements = elementsToAdd,

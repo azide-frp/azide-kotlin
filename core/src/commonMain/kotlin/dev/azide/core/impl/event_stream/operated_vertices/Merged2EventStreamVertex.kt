@@ -32,14 +32,14 @@ class Merged2EventStreamVertex<EventT>(
                 null -> { // Emission revocation
                     val emission2 = sourceVertex2.ongoingEmission
 
-                    exposeAndPropagateEmission(
+                    exposeEmissionNotifyingListeners(
                         propagationContext = propagationContext,
                         emission = emission2,
                     )
                 }
 
                 else -> { // Initial emission / correction
-                    exposeAndPropagateEmission(
+                    exposeEmissionNotifyingListeners(
                         propagationContext = propagationContext,
                         emission = emission1,
                     )
@@ -63,7 +63,7 @@ class Merged2EventStreamVertex<EventT>(
 
             val emission2 = sourceVertex2.ongoingEmission
 
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = emission2,
             )

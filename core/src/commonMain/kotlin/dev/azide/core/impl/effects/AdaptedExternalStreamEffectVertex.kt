@@ -7,7 +7,6 @@ import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
-import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 
 class AdaptedExternalStreamEffectVertex<EventT> private constructor(
@@ -41,7 +40,7 @@ class AdaptedExternalStreamEffectVertex<EventT> private constructor(
 
     override fun handle(event: EventT) {
         Transactions.execute { propagationContext ->
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = EventStreamVertex.Emission(
                     emittedEvent = event,

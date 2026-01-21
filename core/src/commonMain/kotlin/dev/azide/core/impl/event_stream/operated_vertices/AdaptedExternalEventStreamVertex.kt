@@ -27,7 +27,7 @@ class AdaptedExternalEventStreamVertex<EventT>(
 
     override fun handle(event: EventT) {
         Transactions.execute { propagationContext ->
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = EventStreamVertex.Emission(
                     emittedEvent = event,

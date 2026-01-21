@@ -34,7 +34,7 @@ class HeldCellVertex<ValueT> private constructor(
     override fun handleEmission(
         propagationContext: Transactions.PropagationContext,
     ) {
-        exposeAndPropagateUpdate(
+        exposeUpdateNotifyingListeners(
             propagationContext = propagationContext,
             update = when (val emission = sourceEventStream.vertex.ongoingEmission) {
                 null -> null

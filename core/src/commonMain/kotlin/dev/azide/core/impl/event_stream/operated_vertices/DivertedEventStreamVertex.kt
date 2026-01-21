@@ -66,7 +66,7 @@ class DivertedEventStreamVertex<EventT>(
             val stableInnerSourceVertex = this@DivertedEventStreamVertex.stableInnerSourceVertex
                 ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-            exposeAndPropagateEmission(
+            exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
                 emission = stableInnerSourceVertex.ongoingEmission,
             )

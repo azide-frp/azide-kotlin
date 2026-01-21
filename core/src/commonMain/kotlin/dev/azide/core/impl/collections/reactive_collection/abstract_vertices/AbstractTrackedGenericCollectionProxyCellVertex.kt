@@ -23,7 +23,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
         when (val change = sourceVertex.ongoingChange) {
             null -> {
                 if (ongoingUpdate != null) {
-                    exposeAndPropagateUpdate(
+                    exposeUpdateNotifyingListeners(
                         propagationContext = propagationContext,
                         update = null,
                     )
@@ -39,7 +39,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
                 when (builtUpdate) {
                     null -> {
                         if (ongoingUpdate != null) {
-                            exposeAndPropagateUpdate(
+                            exposeUpdateNotifyingListeners(
                                 propagationContext = propagationContext,
                                 update = builtUpdate,
                             )
@@ -47,7 +47,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
                     }
 
                     else -> {
-                        exposeAndPropagateUpdate(
+                        exposeUpdateNotifyingListeners(
                             propagationContext = propagationContext,
                             update = builtUpdate,
                         )

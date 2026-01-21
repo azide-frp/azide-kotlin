@@ -21,14 +21,14 @@ class UpdatedValuesEventStreamVertex<ValueT>(
     ) {
         when (val update = sourceVertex.ongoingUpdate) {
             null -> { // Update revocation
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
             }
 
             else -> { // Initial update or correction
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = EventStreamVertex.Emission(
                         emittedEvent = update.updatedValue,

@@ -23,14 +23,14 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
     ) {
         when (val update = sourceVertex.ongoingUpdate) {
             null -> {
-                exposeAndPropagateUpdate(
+                exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateUpdate(
+                exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = update.map(transform),
                 )

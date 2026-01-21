@@ -70,7 +70,7 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
         _isEnqueuedForCommitment = false
     }
 
-    protected fun exposeAndPropagateChange(
+    protected fun exposeChangeNotifyingListeners(
         propagationContext: PropagationContext,
         change: SetChange<ElementT>?,
     ) {
@@ -79,7 +79,7 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
             change = change,
         )
 
-        propagateChange(
+        notifyListeners(
             propagationContext = propagationContext,
         )
     }
@@ -101,7 +101,7 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
         _ongoingChange = null
     }
 
-    private fun propagateChange(
+    private fun notifyListeners(
         propagationContext: PropagationContext,
     ) {
         _registeredListeners.forEach { listener ->

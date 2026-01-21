@@ -65,7 +65,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
     protected val hasListeners: Boolean
         get() = _registeredListeners.size > 0
 
-    protected fun exposeAndPropagateUpdate(
+    protected fun exposeUpdateNotifyingListeners(
         propagationContext: Transactions.PropagationContext,
         update: CellVertex.Update<ValueT>?,
     ) {
@@ -74,7 +74,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
             update = update,
         )
 
-        propagateUpdateNotification(
+        notifyListeners(
             propagationContext = propagationContext,
         )
     }
@@ -94,7 +94,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         _ongoingUpdate = null
     }
 
-    private fun propagateUpdateNotification(
+    private fun notifyListeners(
         propagationContext: Transactions.PropagationContext,
     ) {
         _registeredListeners.forEach { listener ->

@@ -26,14 +26,14 @@ class SampledEachEventStreamVertex<EventT>(
     ) {
         when (val emission = sourceVertex.ongoingEmission) {
             null -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = emission.map { eventMoment: Moment<EventT> ->
                         eventMoment.pullInternallyWrappedUp(
