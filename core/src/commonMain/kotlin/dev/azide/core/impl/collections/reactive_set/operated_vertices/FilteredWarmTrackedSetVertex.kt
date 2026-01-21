@@ -3,14 +3,15 @@ package dev.azide.core.impl.collections.reactive_set.operated_vertices
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 
 class FilteredWarmTrackedSetVertex<ElementT>(
     private val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
-) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), SetObserver<ElementT> {
+) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), SetChangeObserver<ElementT> {
     private var upstreamObserverHandle: TrackedSetVertex.SetObserverHandle? = null
 
     /**
@@ -59,7 +60,7 @@ class FilteredWarmTrackedSetVertex<ElementT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerSetObserver(
+        upstreamObserverHandle = sourceVertex.registerSetChangeObserver(
             propagationContext = propagationContext,
             observer = this,
         )
@@ -71,7 +72,7 @@ class FilteredWarmTrackedSetVertex<ElementT>(
         val upstreamObserverHandle =
             this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSetObserver(
+        sourceVertex.unregisterCollectionObserver(
             handle = upstreamObserverHandle,
         )
 

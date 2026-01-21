@@ -2,6 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 import kotlin.test.assertEquals
 
 class TestReactiveSetObservationTrait<ElementT> :
@@ -39,7 +40,7 @@ class TestReactiveSetObservationTrait<ElementT> :
             observedReactiveSetVertex = subjectVertex,
         )
 
-        subjectVertex.registerSetObserver(
+        subjectVertex.registerSetChangeObserver(
             propagationContext = propagationContext,
             observer = observer,
         )

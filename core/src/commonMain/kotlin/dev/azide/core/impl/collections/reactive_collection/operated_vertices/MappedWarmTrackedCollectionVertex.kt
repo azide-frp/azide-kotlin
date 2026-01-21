@@ -5,12 +5,13 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVert
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessWarmTrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.map
+import dev.azide.core.impl.collections.reactive_collection.registerCollectionObserver
 
 class MappedWarmTrackedCollectionVertex<ElementT, TransformedElementT>(
     private val sourceVertex: TrackedCollectionVertex<ElementT>,
     private val transform: (ElementT) -> TransformedElementT,
 ) : AbstractStatelessWarmTrackedCollectionVertex<TransformedElementT>(),
-    TrackedCollectionVertex.CollectionObserver<ElementT> {
+    TrackedCollectionVertex.CollectionChangeObserver<ElementT> {
     private var upstreamObserverHandle: TrackedCollectionVertex.CollectionObserverHandle? = null
 
     /**

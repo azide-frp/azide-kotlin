@@ -5,15 +5,16 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 
 abstract class AbstractTrackedSetProxyCellVertex<ElementT, ValueT>(
     private val sourceVertex: WarmTrackedSetVertex<ElementT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), SetObserver<ElementT> {
+), SetChangeObserver<ElementT> {
     private var upstreamObserverHandle: SetObserverHandle? = null
 
     final override fun handleChange(
@@ -65,7 +66,7 @@ abstract class AbstractTrackedSetProxyCellVertex<ElementT, ValueT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerSetObserver(
+        upstreamObserverHandle = sourceVertex.registerSetChangeObserver(
             propagationContext = propagationContext,
             observer = this,
         )
@@ -82,7 +83,7 @@ abstract class AbstractTrackedSetProxyCellVertex<ElementT, ValueT>(
         val upstreamObserverHandle =
             this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSetObserver(
+        sourceVertex.unregisterCollectionObserver(
             handle = upstreamObserverHandle,
         )
 

@@ -5,30 +5,31 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeNotificationObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeWarmCellVertex
-import dev.azide.core.impl.utils.weak_bag.MutableBag
+import dev.kmpx.collections.StableCollection
+import dev.kmpx.collections.lists.LinkedList
 import kotlin.jvm.JvmInline
 
 abstract class AbstractWarmTrackedCollectionVertex<ElementT>() : TrackedCollectionVertex<ElementT>,
     CommittableVertex {
     @JvmInline
-    private value class ObserverHandleImpl<ElementT>(
-        val internalHandle: MutableBag.Handle<CollectionObserver<ElementT>>,
+    private value class ObserverHandleImpl(
+        val internalHandle: StableCollection.Handle<CollectionChangeNotificationObserver>,
     ) : CollectionObserverHandle
 
-    private val _registeredObservers: MutableBag<CollectionObserver<ElementT>> = MutableBag()
+    private val _registeredObservers: LinkedList<CollectionChangeNotificationObserver> = LinkedList()
 
     private var _ongoingChange: CollectionChange<ElementT>? = null
 
     private var _isEnqueuedForCommitment = false
 
-    final override fun registerCollectionObserver(
+    final override fun registerCollectionNotificationObserver(
         propagationContext: Transactions.PropagationContext,
-        observer: CollectionObserver<ElementT>,
+        observer: CollectionChangeNotificationObserver,
     ): CollectionObserverHandle {
-        val internalHandle = _registeredObservers.add(observer)
+        val internalHandle = _registeredObservers.append(observer)
 
         if (_registeredObservers.size == 1) {
             onFirstObserverRegistered(
@@ -45,11 +46,11 @@ abstract class AbstractWarmTrackedCollectionVertex<ElementT>() : TrackedCollecti
         handle: CollectionObserverHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? ObserverHandleImpl<ElementT> ?: throw IllegalArgumentException("Invalid handle")
+            handle as? ObserverHandleImpl ?: throw IllegalArgumentException("Invalid handle")
 
-        _registeredObservers.remove(handleImpl.internalHandle)
+        _registeredObservers.removeVia(handleImpl.internalHandle)
 
-        if (_registeredObservers.size == 0) {
+        if (_registeredObservers.isEmpty()) {
             onLastObserverUnregistered()
         }
     }
@@ -79,9 +80,8 @@ abstract class AbstractWarmTrackedCollectionVertex<ElementT>() : TrackedCollecti
             change = change,
         )
 
-        propagateChange(
+        propagateChangeNotification(
             propagationContext = propagationContext,
-            change = change,
         )
     }
 
@@ -102,18 +102,13 @@ abstract class AbstractWarmTrackedCollectionVertex<ElementT>() : TrackedCollecti
         _ongoingChange = null
     }
 
-    private fun propagateChange(
+    private fun propagateChangeNotification(
         propagationContext: Transactions.PropagationContext,
-        change: CollectionChange<ElementT>?,
     ) {
         _registeredObservers.forEach { observer ->
-            observer.handleChange(
+            observer.handleChangeNotification(
                 propagationContext = propagationContext,
-                change = change,
             )
-
-            // Do not remove the observer
-            false
         }
     }
 

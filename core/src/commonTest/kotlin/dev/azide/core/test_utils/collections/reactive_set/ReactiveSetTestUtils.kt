@@ -4,9 +4,10 @@ import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_set.FrozenTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -21,7 +22,7 @@ internal object ReactiveSetTestUtils {
 
     class ObservingVerifier<ElementT>(
         private val subjectVertex: WarmTrackedSetVertex<ElementT>,
-    ) : SetObserver<ElementT> {
+    ) : SetChangeObserver<ElementT> {
         @JvmInline
         value class ReceivedChange<ElementT>(
             val receivedChange: SetChange<ElementT>?,
@@ -30,7 +31,7 @@ internal object ReactiveSetTestUtils {
         private var receivedChange: ReceivedChange<ElementT>? = null
 
         private var upstreamObserverHandle: SetObserverHandle? = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.registerSetObserver(
+            subjectVertex.registerSetChangeObserver(
                 propagationContext = propagationContext,
                 observer = this,
             )
@@ -173,7 +174,7 @@ internal object ReactiveSetTestUtils {
             val upstreamObserverHandle =
                 this.upstreamObserverHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterSetObserver(
+            subjectVertex.unregisterCollectionObserver(
                 handle = upstreamObserverHandle,
             )
 

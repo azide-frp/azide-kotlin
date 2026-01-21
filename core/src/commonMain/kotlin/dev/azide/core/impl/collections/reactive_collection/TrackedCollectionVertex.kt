@@ -1,9 +1,11 @@
 package dev.azide.core.impl.collections.reactive_collection
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
 
 interface TrackedCollectionVertex<out ElementT> : Vertex {
     interface CollectionChange<out ElementT> {
@@ -21,20 +23,26 @@ interface TrackedCollectionVertex<out ElementT> : Vertex {
         val removedElements: Collection<ElementT>
     }
 
-    interface GenericCollectionObserver<in ChangeT : CollectionChange<*>> {
+    interface CollectionChangeNotificationObserver {
+        fun handleChangeNotification(
+            propagationContext: PropagationContext,
+        )
+    }
+
+    interface GenericCollectionChangeObserver<in ChangeT : CollectionChange<*>> {
         fun handleChange(
-            propagationContext: Transactions.PropagationContext,
+            propagationContext: PropagationContext,
             change: ChangeT?,
         )
     }
 
-    typealias CollectionObserver<ElementT> = GenericCollectionObserver<CollectionChange<ElementT>>
+    typealias CollectionChangeObserver<ElementT> = GenericCollectionChangeObserver<CollectionChange<ElementT>>
 
     interface CollectionObserverHandle
 
-    fun registerCollectionObserver(
-        propagationContext: Transactions.PropagationContext,
-        observer: CollectionObserver<ElementT>,
+    fun registerCollectionNotificationObserver(
+        propagationContext: PropagationContext,
+        observer: CollectionChangeNotificationObserver,
     ): CollectionObserverHandle
 
     fun unregisterCollectionObserver(
@@ -44,11 +52,28 @@ interface TrackedCollectionVertex<out ElementT> : Vertex {
     val ongoingChange: CollectionChange<ElementT>?
 
     fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): Collection<ElementT>
 
     fun buildSizeVertex(): CellVertex<Int>
 }
+
+fun <ElementT> TrackedCollectionVertex<ElementT>.registerCollectionObserver(
+    propagationContext: PropagationContext,
+    observer: CollectionChangeObserver<ElementT>,
+): CollectionObserverHandle = registerCollectionNotificationObserver(
+    propagationContext,
+    object : TrackedCollectionVertex.CollectionChangeNotificationObserver {
+        override fun handleChangeNotification(
+            propagationContext: PropagationContext,
+        ) {
+            observer.handleChange(
+                propagationContext = propagationContext,
+                change = ongoingChange,
+            )
+        }
+    },
+)
 
 fun <ElementT, TransformedElementT> CollectionChange<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,

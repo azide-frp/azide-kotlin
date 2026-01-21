@@ -1,9 +1,13 @@
 package dev.azide.core.impl.collections.reactive_set
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.GenericCollectionChangeObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
 
 sealed interface TrackedSetVertex<out ElementT> : TrackedCollectionVertex<ElementT> {
     data class SetChange<out ElementT>(
@@ -41,18 +45,9 @@ sealed interface TrackedSetVertex<out ElementT> : TrackedCollectionVertex<Elemen
             get() = addedElements.size - removedElements.size
     }
 
-    typealias SetObserver<ElementT> = TrackedCollectionVertex.GenericCollectionObserver<SetChange<ElementT>>
+    typealias SetChangeObserver<ElementT> = GenericCollectionChangeObserver<SetChange<ElementT>>
 
-    interface SetObserverHandle : TrackedCollectionVertex.CollectionObserverHandle
-
-    fun registerSetObserver(
-        propagationContext: Transactions.PropagationContext,
-        observer: SetObserver<ElementT>,
-    ): SetObserverHandle
-
-    fun unregisterSetObserver(
-        handle: SetObserverHandle,
-    )
+    typealias SetObserverHandle = CollectionObserverHandle
 
     override val ongoingChange: SetChange<ElementT>?
 
@@ -61,6 +56,23 @@ sealed interface TrackedSetVertex<out ElementT> : TrackedCollectionVertex<Elemen
     ): CellVertex<Boolean>
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): Set<ElementT>
 }
+
+fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeObserver(
+    propagationContext: PropagationContext,
+    observer: SetChangeObserver<ElementT>,
+): SetObserverHandle = registerCollectionNotificationObserver(
+    propagationContext = propagationContext,
+    observer = object : TrackedCollectionVertex.CollectionChangeNotificationObserver {
+        override fun handleChangeNotification(
+            propagationContext: PropagationContext,
+        ) {
+            observer.handleChange(
+                propagationContext = propagationContext,
+                change = ongoingChange,
+            )
+        }
+    },
+)

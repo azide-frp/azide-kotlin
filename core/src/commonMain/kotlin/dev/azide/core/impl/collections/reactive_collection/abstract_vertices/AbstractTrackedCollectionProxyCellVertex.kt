@@ -1,6 +1,5 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
@@ -8,12 +7,13 @@ import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.registerCollectionObserver
 
 abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
     private val sourceVertex: TrackedCollectionVertex<ElementT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), TrackedCollectionVertex.CollectionObserver<ElementT> {
+), TrackedCollectionVertex.CollectionChangeObserver<ElementT> {
     private var upstreamObserverHandle: CollectionObserverHandle? = null
 
     final override fun handleChange(
