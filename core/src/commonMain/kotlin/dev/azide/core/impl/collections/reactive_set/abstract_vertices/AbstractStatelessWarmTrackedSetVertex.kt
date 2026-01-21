@@ -1,7 +1,7 @@
 package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.SetChange
 
 abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTrackedSetVertex<ElementT>() {
     final override fun onFirstObserverRegistered(

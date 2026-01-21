@@ -5,9 +5,8 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetContainsCellVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
 import dev.kmpx.collections.StableCollection
 import dev.kmpx.collections.lists.LinkedList
@@ -57,13 +56,6 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
 
     final override fun buildSizeVertex(): CellVertex<Int> = TrackedSetSizeWarmCellVertex(
         sourceVertex = this,
-    )
-
-    final override fun buildContainsVertex(
-        element: ElementT,
-    ): CellVertex<Boolean> = TrackedSetContainsCellVertex(
-        sourceVertex = this,
-        element = element,
     )
 
     final override val ongoingChange: SetChange<ElementT>?

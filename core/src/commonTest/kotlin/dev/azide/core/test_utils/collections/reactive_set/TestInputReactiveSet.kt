@@ -3,7 +3,7 @@ package dev.azide.core.test_utils.collections.reactive_set
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
+import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulWarmTrackedSetVertex
 import dev.azide.core.test_utils.TestInputStimulation
 

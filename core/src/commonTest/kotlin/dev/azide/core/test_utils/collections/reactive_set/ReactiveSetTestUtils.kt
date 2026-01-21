@@ -2,10 +2,10 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.FrozenTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
+import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.collections.reactive_set.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 import kotlin.jvm.JvmInline
@@ -30,7 +30,7 @@ internal object ReactiveSetTestUtils {
 
         private var receivedChange: ReceivedChange<ElementT>? = null
 
-        private var upstreamObserverHandle: SetObserverHandle? = Transactions.executeWithResult { propagationContext ->
+        private var upstreamObserverHandle: CollectionObserverHandle? = Transactions.executeWithResult { propagationContext ->
             subjectVertex.registerSetChangeObserver(
                 propagationContext = propagationContext,
                 observer = this,

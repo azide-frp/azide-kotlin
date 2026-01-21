@@ -1,8 +1,8 @@
 package dev.azide.core.impl.collections.reactive_set.utils
 
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.SetChange
 
-fun <ElementT> TrackedSetVertex.SetChange<ElementT>.applyTo(
+fun <ElementT> SetChange<ElementT>.applyTo(
     mutableSet: MutableSet<ElementT>,
 ) {
     for (removedElement in this.removedElements) {

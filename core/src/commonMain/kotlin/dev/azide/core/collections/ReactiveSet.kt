@@ -1,6 +1,7 @@
 package dev.azide.core.collections
 
 import dev.azide.core.Cell
+import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_set.PureTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredWarmTrackedSetVertex

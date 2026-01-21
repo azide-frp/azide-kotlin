@@ -2,9 +2,9 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.collections.reactive_set.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
 
 class TestReactiveSetObserver<ElementT>(

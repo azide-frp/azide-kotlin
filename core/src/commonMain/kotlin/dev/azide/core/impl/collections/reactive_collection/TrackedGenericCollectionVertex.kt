@@ -4,6 +4,7 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
 
 interface TrackedGenericCollectionVertex<out ContentT: Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
@@ -55,6 +56,13 @@ interface TrackedGenericCollectionVertex<out ContentT: Collection<*>, out Change
 
     fun buildSizeVertex(): CellVertex<Int>
 }
+
+fun <ElementT> TrackedCollectionVertex<ElementT>.buildContainsVertex(
+    element: ElementT,
+): CellVertex<Boolean> = TrackedCollectionContainsCellVertex(
+    sourceVertex = this,
+    element = element,
+)
 
 typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
 
