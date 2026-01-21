@@ -8,6 +8,7 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollect
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 
 abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
@@ -111,3 +112,5 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
 }
 
 typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, CollectionChange<ElementT>, ValueT>
+
+typealias AbstractTrackedSetProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Set<ElementT>, SetChange<ElementT>, ValueT>

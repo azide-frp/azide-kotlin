@@ -2,10 +2,9 @@ package dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedSetProxyCellVertex
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractTrackedSetProxyCellVertex
 
 class TrackedSetSizeWarmCellVertex<ElementT>(
     sourceVertex: WarmTrackedSetVertex<ElementT>,
