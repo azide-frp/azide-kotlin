@@ -182,10 +182,9 @@ internal object ReactiveSetTestUtils {
 
         override fun handleChange(
             propagationContext: Transactions.PropagationContext,
-            change: SetChange<ElementT>?,
         ) {
             receivedChange = ReceivedChange(
-                receivedChange = change,
+                receivedChange = subjectVertex.ongoingChange,
             )
         }
     }

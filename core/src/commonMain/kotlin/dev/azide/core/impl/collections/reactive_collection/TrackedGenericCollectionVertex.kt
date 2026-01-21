@@ -28,14 +28,11 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
         )
     }
 
-    interface GenericCollectionChangeObserver<in ChangeT : CollectionChange<*>> {
+    interface GenericCollectionChangeObserver {
         fun handleChange(
             propagationContext: PropagationContext,
-            change: ChangeT?,
         )
     }
-
-    typealias CollectionChangeObserver<ElementT> = GenericCollectionChangeObserver<CollectionChange<ElementT>>
 
     interface CollectionObserverHandle
 

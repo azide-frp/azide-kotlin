@@ -18,9 +18,8 @@ class TestReactiveSetObserver<ElementT>(
 
     override fun handleChange(
         propagationContext: Transactions.PropagationContext,
-        change: SetChange<ElementT>?,
     ) {
-        receivedChanges.add(change)
+        receivedChanges.add(observedReactiveSetVertex.ongoingChange)
     }
 
     fun resetReceivedChanges() {

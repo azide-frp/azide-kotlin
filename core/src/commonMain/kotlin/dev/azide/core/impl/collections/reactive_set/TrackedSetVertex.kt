@@ -8,7 +8,7 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollect
 
 typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
 
-typealias SetChangeObserver<ElementT> = GenericCollectionChangeObserver<SetChange<ElementT>>
+typealias SetChangeObserver<ElementT> = GenericCollectionChangeObserver
 
 data class SetChange<out ElementT>(
     override val addedElements: Set<ElementT>,
@@ -57,7 +57,6 @@ fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeObserver(
         ) {
             observer.handleChange(
                 propagationContext = propagationContext,
-                change = ongoingChange,
             )
         }
     },

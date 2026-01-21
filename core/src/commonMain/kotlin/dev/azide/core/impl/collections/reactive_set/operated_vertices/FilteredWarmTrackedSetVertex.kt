@@ -20,9 +20,8 @@ class FilteredWarmTrackedSetVertex<ElementT>(
      */
     override fun handleChange(
         propagationContext: PropagationContext,
-        change: SetChange<ElementT>?,
     ) {
-        when (change) {
+        when (val change = sourceVertex.ongoingChange) {
             null -> {
                 if (ongoingChange != null) {
                     exposeAndPropagateChange(
