@@ -1,8 +1,6 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.Moment
-import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.Listener
@@ -13,13 +11,10 @@ import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.impl.registerListenerOnline
-import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 internal object CellTestUtils {
     private object NoopListener : Listener {
@@ -30,73 +25,9 @@ internal object CellTestUtils {
 
     fun <ValueT> createInputCell(
         initialValue: ValueT,
-    ): dev.azide.core.test_utils.cell.TestInputCell<ValueT> = TestInputCell(
+    ): TestInputCell<ValueT> = TestInputCell(
         initialValue = initialValue,
     )
-
-    /**
-     * Spawn a stateful cell, not expecting it to update during spawn.
-     */
-    fun <ValueT : Any> spawnStatefulCell(
-        spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
-        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
-            propagationContext = propagationContext,
-        )
-
-        val ongoingUpdate = subjectCell.vertex.ongoingUpdate
-
-        assertNull(
-            actual = ongoingUpdate,
-            message = "Spawned subject cell has an ongoing update unexpectedly",
-        )
-
-        return@executeWithResult subjectCell
-    }
-
-    /**
-     * Spawn a stateful cell, expecting it to update during spawn to [expectedUpdatedValue].
-     */
-    fun <ValueT> spawnStatefulCellExpectingUpdate(
-        inputStimulation: TestInputStimulation? = null,
-        expectedOldValue: ValueT,
-        expectedUpdatedValue: ValueT,
-        spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
-        inputStimulation?.stimulate(
-            propagationContext = propagationContext,
-        )
-
-        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
-            propagationContext = propagationContext,
-        )
-
-        val subjectVertex = subjectCell.vertex
-
-        val sampledOldValue = subjectVertex.getOldValue(
-            propagationContext = propagationContext,
-        )
-
-        assertEquals(
-            expected = expectedOldValue,
-            actual = sampledOldValue,
-            message = "Spawned subject cell's old value did not match expected old value",
-        )
-
-        val ongoingUpdate = subjectVertex.ongoingUpdate
-
-        assertNotNull(
-            actual = ongoingUpdate,
-            message = "Spawned subject cell has no ongoing update unexpectedly",
-        )
-
-        assertEquals(
-            expected = expectedUpdatedValue,
-            actual = ongoingUpdate.updatedValue,
-        )
-
-        return@executeWithResult subjectCell
-    }
 
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
@@ -278,7 +209,6 @@ internal object CellTestUtils {
         expectedValue: ValueT,
     ) {
         val subjectVertex = subjectCell.vertex
-
 
         val passivelySampledValue = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldValue(

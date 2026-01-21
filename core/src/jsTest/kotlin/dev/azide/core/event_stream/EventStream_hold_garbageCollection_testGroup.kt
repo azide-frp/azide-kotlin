@@ -1,6 +1,7 @@
 package dev.azide.core.event_stream
 
-import dev.azide.core.hold
+import dev.azide.core.holding
+import dev.azide.core.pullExternally
 import dev.azide.core.test_utils.async.AsyncTest
 import dev.azide.core.test_utils.async.AsyncTestGroup
 import dev.azide.core.test_utils.cell.CellTestUtils
@@ -19,9 +20,7 @@ data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
             val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
             JsCellTestUtils.ensureCollectible {
-                CellTestUtils.spawnStatefulCell {
-                    sourceEventStream.hold(initialValue = 10)
-                }
+                sourceEventStream.holding(initialValue = 10).pullExternally()
             }
         }
     }
@@ -31,9 +30,7 @@ data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
             val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
             JsCellTestUtils.ensureCollectible {
-                val subjectCell = CellTestUtils.spawnStatefulCell {
-                    sourceEventStream.hold(initialValue = 10)
-                }
+                val subjectCell = sourceEventStream.holding(initialValue = 10).pullExternally()
 
                 CellTestUtils.registerNoopListener(
                     subjectCell = subjectCell,

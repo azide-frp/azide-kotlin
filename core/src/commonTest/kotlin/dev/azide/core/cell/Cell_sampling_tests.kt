@@ -1,24 +1,22 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.hold
+import dev.azide.core.holding
 import dev.azide.core.map
-import dev.azide.core.sample
-import dev.azide.core.test_utils.TestUtils
+import dev.azide.core.pullExternally
+import dev.azide.core.sampling
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-class Cell_sample_tests {
+class Cell_sampling_tests {
     @Test
     fun test_subjectConst() {
         val subjectCell = Cell.Const(10)
 
-        val sampledValue = TestUtils.pullSeparately {
-            subjectCell.sample()
-        }
+        val sampledValue = subjectCell.sampling.pullExternally()
 
         assertEquals(
             expected = 10,
@@ -32,9 +30,7 @@ class Cell_sample_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        val sampledValue = TestUtils.pullSeparately {
-            subjectCell.sample()
-        }
+        val sampledValue = subjectCell.sampling.pullExternally()
 
         assertEquals(
             expected = "10",
@@ -52,9 +48,7 @@ class Cell_sample_tests {
             subjectCell = subjectCell,
         )
 
-        val sampledValue = TestUtils.pullSeparately {
-            subjectCell.sample()
-        }
+        val sampledValue = subjectCell.sampling.pullExternally()
 
         assertEquals(
             expected = "10",
@@ -66,13 +60,12 @@ class Cell_sample_tests {
     fun test_subjectStateful() {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
 
-        val subjectCell = CellTestUtils.spawnStatefulCell {
-            sourceEventStream.hold(initialValue = 10)
-        }
+        val subjectCell = sourceEventStream.holding(
+            initialValue = 10,
+        ).pullExternally()
 
-        val sampledValue = TestUtils.pullSeparately {
-            subjectCell.sample()
-        }
+
+        val sampledValue = subjectCell.sampling.pullExternally()
 
         assertEquals(
             expected = 10,
