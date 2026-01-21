@@ -4,13 +4,13 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
+import dev.azide.core.impl.cell.CellVertex.Listener
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.WarmCellVertex.WarmObserverHandle
+import dev.azide.core.impl.cell.WarmCellVertex.WarmListenerHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, CommittableVertex {
-    private val _registeredObservers: MutableBag<UpdateObserver> = MutableBag()
+    private val _registeredListeners: MutableBag<Listener> = MutableBag()
 
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
 
@@ -19,35 +19,35 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
     final override val ongoingUpdate: CellVertex.Update<ValueT>?
         get() = _ongoingUpdate
 
-    final override fun registerUpdateObserver(
+    final override fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        observer: UpdateObserver,
+        listener: Listener,
         mode: Vertex.ActivationMode,
-    ): CellVertex.ObserverHandle {
-        val internalHandle = _registeredObservers.add(observer)
+    ): CellVertex.ListenerHandle {
+        val internalHandle = _registeredListeners.add(listener)
 
-        if (_registeredObservers.size == 1) {
-            onFirstObserverRegistered(
+        if (_registeredListeners.size == 1) {
+            onFirstListenerRegistered(
                 propagationContext = propagationContext,
                 mode = mode,
             )
         }
 
-        return WarmObserverHandle(
+        return WarmListenerHandle(
             internalHandle = internalHandle,
         )
     }
 
-    final override fun unregisterObserver(
-        handle: CellVertex.ObserverHandle,
+    final override fun unregisterListener(
+        handle: CellVertex.ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? WarmObserverHandle ?: throw IllegalArgumentException("Invalid handle")
+            handle as? WarmListenerHandle ?: throw IllegalArgumentException("Invalid handle")
 
-        _registeredObservers.remove(handleImpl.internalHandle)
+        _registeredListeners.remove(handleImpl.internalHandle)
 
-        if (_registeredObservers.size == 0) {
-            onLastObserverUnregistered()
+        if (_registeredListeners.size == 0) {
+            onLastListenerUnregistered()
         }
     }
 
@@ -62,8 +62,8 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         _isEnqueuedForCommitment = false
     }
 
-    protected val hasObservers: Boolean
-        get() = _registeredObservers.size > 0
+    protected val hasListeners: Boolean
+        get() = _registeredListeners.size > 0
 
     protected fun exposeAndPropagateUpdate(
         propagationContext: Transactions.PropagationContext,
@@ -97,13 +97,13 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
     private fun propagateUpdateNotification(
         propagationContext: Transactions.PropagationContext,
     ) {
-        _registeredObservers.forEach { observer ->
-            val observerStatus = observer.handleUpdate(
+        _registeredListeners.forEach { listener ->
+            val listenerStatus = listener.handle(
                 propagationContext = propagationContext,
             )
 
-            // Remove the observer if it's unreachable
-            observerStatus == CellVertex.ObserverStatus.Unreachable
+            // Remove the listener if it's unreachable
+            listenerStatus == CellVertex.ListenerStatus.Unreachable
         }
     }
 
@@ -117,13 +117,13 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         }
     }
 
-    protected open fun onFirstObserverRegistered(
+    protected open fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ) {
     }
 
-    protected open fun onLastObserverUnregistered() {
+    protected open fun onLastListenerUnregistered() {
     }
 
     protected open fun persist(

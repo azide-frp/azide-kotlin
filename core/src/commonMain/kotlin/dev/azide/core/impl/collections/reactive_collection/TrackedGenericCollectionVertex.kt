@@ -22,21 +22,21 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
         val removedElements: Collection<ElementT>
     }
 
-    interface CollectionChangeObserver {
-        fun handleChange(
+    interface Listener {
+        fun handle(
             propagationContext: PropagationContext,
         )
     }
 
-    interface CollectionObserverHandle
+    interface ListenerHandle
 
-    fun registerCollectionNotificationObserver(
+    fun registerListener(
         propagationContext: PropagationContext,
-        observer: CollectionChangeObserver,
-    ): CollectionObserverHandle
+        listener: Listener,
+    ): ListenerHandle
 
-    fun unregisterCollectionObserver(
-        handle: CollectionObserverHandle,
+    fun unregisterListener(
+        handle: ListenerHandle,
     )
 
     val ongoingChange: ChangeT?

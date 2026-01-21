@@ -3,9 +3,10 @@ package dev.azide.core.impl.cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.cell.CellVertex.ObserverStatus
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.ListenerStatus
+import dev.azide.core.impl.cell.CellVertex.Listener
+import dev.azide.core.impl.cell.CellVertex.BoundListener
+import dev.azide.core.impl.cell.CellVertex.ListenerHandle
 import kotlin.jvm.JvmInline
 
 sealed interface CellVertex<out ValueT> : Vertex {
@@ -20,34 +21,34 @@ sealed interface CellVertex<out ValueT> : Vertex {
         )
     }
 
-    interface UpdateObserver {
-        fun handleUpdate(
+    interface Listener {
+        fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): ObserverStatus
+        ): ListenerStatus
     }
 
-    interface BoundUpdateObserver {
+    interface BoundListener {
         fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         )
     }
 
-    interface ObserverHandle
+    interface ListenerHandle
 
-    enum class ObserverStatus {
+    enum class ListenerStatus {
         Reachable, Unreachable,
     }
 
     val ongoingUpdate: Update<ValueT>?
 
-    fun registerUpdateObserver(
+    fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        observer: UpdateObserver,
+        listener: Listener,
         mode: ActivationMode,
-    ): ObserverHandle
+    ): ListenerHandle
 
-    fun unregisterObserver(
-        handle: ObserverHandle,
+    fun unregisterListener(
+        handle: ListenerHandle,
     )
 
     fun getOldValue(
@@ -55,59 +56,59 @@ sealed interface CellVertex<out ValueT> : Vertex {
     ): ValueT
 }
 
-fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOnline(
+fun <ValueT> CellVertex<ValueT>.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateObserver,
-): CellVertex.ObserverHandle = registerUpdateObserver(
+    listener: Listener,
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    observer = observer,
+    listener = listener,
     mode = ActivationMode.Online,
 )
 
-fun <ValueT> CellVertex<ValueT>.registerUpdateObserverOffline(
+fun <ValueT> CellVertex<ValueT>.registerListenerOffline(
     propagationContext: Transactions.PropagationContext,
-    observer: UpdateObserver,
-): CellVertex.ObserverHandle = registerUpdateObserver(
+    listener: Listener,
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    observer = observer,
+    listener = listener,
     mode = ActivationMode.Offline,
 )
 
-fun <ValueT> CellVertex<ValueT>.registerBoundUpdateObserver(
+fun <ValueT> CellVertex<ValueT>.registerBoundListener(
     propagationContext: Transactions.PropagationContext,
-    observer: BoundUpdateObserver,
+    listener: BoundListener,
     mode: ActivationMode,
-): CellVertex.ObserverHandle = registerUpdateObserver(
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    observer = object : UpdateObserver {
-        override fun handleUpdate(
+    listener = object : Listener {
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): ObserverStatus {
-            observer.handleUpdate(
+        ): ListenerStatus {
+            listener.handleUpdate(
                 propagationContext = propagationContext,
             )
 
-            return ObserverStatus.Reachable
+            return ListenerStatus.Reachable
         }
     },
     mode = mode,
 )
 
-fun <ValueT> CellVertex<ValueT>.registerBoundUpdateObserverOnline(
+fun <ValueT> CellVertex<ValueT>.registerBoundListenerOnline(
     propagationContext: Transactions.PropagationContext,
-    observer: BoundUpdateObserver,
-): CellVertex.ObserverHandle = registerBoundUpdateObserver(
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
-    observer = observer,
+    listener = listener,
     mode = ActivationMode.Online,
 )
 
-fun <ValueT> CellVertex<ValueT>.registerBoundUpdateObserverOffline(
+fun <ValueT> CellVertex<ValueT>.registerBoundListenerOffline(
     propagationContext: Transactions.PropagationContext,
-    observer: BoundUpdateObserver,
-): CellVertex.ObserverHandle = registerBoundUpdateObserver(
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
-    observer = observer,
+    listener = listener,
     mode = ActivationMode.Offline,
 )
 

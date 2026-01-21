@@ -3,8 +3,8 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
-import dev.azide.core.impl.cell.registerBoundUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundListener
+import dev.azide.core.impl.cell.registerBoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -17,7 +17,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEvent
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), BoundUpdateObserver {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), BoundListener {
     private enum class InternalState {
         Spawning, Spawned,
     }
@@ -34,7 +34,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     private var internalState = InternalState.Spawning
 
-    private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
+    private var upstreamListenerHandle: CellVertex.ListenerHandle? = null
 
     init {
         // Enqueue for commitment to ensure we observe the internal state switches to "spawned"
@@ -89,13 +89,13 @@ class ValuesEventStreamVertex<ValueT> private constructor(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<ValueT>? {
-        if (upstreamObserverHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerBoundUpdateObserver(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -127,14 +127,14 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     }
 
     override fun deactivate() {
-        val upstreamObserverHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val upstreamListenerHandle =
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterObserver(
-            handle = upstreamObserverHandle,
+        sourceVertex.unregisterListener(
+            handle = upstreamListenerHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     override fun transit() {

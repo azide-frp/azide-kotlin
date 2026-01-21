@@ -35,7 +35,7 @@ data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
                     sourceEventStream.hold(initialValue = 10)
                 }
 
-                CellTestUtils.registerNoopObserver(
+                CellTestUtils.registerNoopListener(
                     subjectCell = subjectCell,
                 )
 

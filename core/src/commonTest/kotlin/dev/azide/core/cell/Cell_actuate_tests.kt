@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.impl.Revocable
-import dev.azide.core.test_utils.TestCellObserver
+import dev.azide.core.test_utils.TestCellListener
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.TransactionTestUtils
@@ -44,9 +44,9 @@ class Cell_actuate_tests {
 
         val subjectEffect = sourceCell.actuate()
 
-        val (subjectCellObserver, targetEffectStartExecutionRecord) = TransactionTestUtils.executeInsideTransaction {
+        val (subjectCellListener, targetEffectStartExecutionRecord) = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
-            val subjectCellObserver = subjectCell.observeForTesting()
+            val subjectCellListener = subjectCell.observeForTesting()
 
             val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
             val targetEffectOutcome = targetEffectStartExecutionRecord.result
@@ -56,15 +56,15 @@ class Cell_actuate_tests {
                 actual = targetEffectOutcome.result,
             )
 
-            subjectCellObserver.verifyDoesNotExposeUpdate()
+            subjectCellListener.verifyDoesNotExposeUpdate()
 
-            subjectCellObserver.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
+            subjectCellListener.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
 
-            Pair(subjectCellObserver, targetEffectStartExecutionRecord)
+            Pair(subjectCellListener, targetEffectStartExecutionRecord)
         }
 
-        subjectCellObserver.verifyDidNotPropagateNorExposesUpdate() //  ...at any point / now
-        subjectCellObserver.verifyOldValueInsideTransaction(expectedOldValue = 10)  // ...after the spawn transaction
+        subjectCellListener.verifyDidNotPropagateNorExposesUpdate() //  ...at any point / now
+        subjectCellListener.verifyOldValueInsideTransaction(expectedOldValue = 10)  // ...after the spawn transaction
 
         targetEffect.verifyWasNotStarted() // ...again
         targetEffectStartExecutionRecord.verifyWasNotRevoked() // ...at any point
@@ -85,7 +85,7 @@ class Cell_actuate_tests {
 
     private fun test_start_cancelledInstantly(count: Int) {
         data class StartTransactionRecord(
-            val subjectCellObserver: TestCellObserver<Int>,
+            val subjectCellListener: TestCellListener<Int>,
             val targetEffectStartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
             val targetEffectCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
         )
@@ -100,7 +100,7 @@ class Cell_actuate_tests {
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val (subjectCell, subjectEffectHandle) = subjectEffect.startForTestingCancellable()
-            val subjectCellObserver = subjectCell.observeForTesting()
+            val subjectCellListener = subjectCell.observeForTesting()
 
             val targetEffectStartExecutionRecord = targetEffect.verifyWasStartedOnce()
             val targetEffectOutcome = targetEffectStartExecutionRecord.result
@@ -111,19 +111,19 @@ class Cell_actuate_tests {
 
             val targetEffectCancelExecutionRecord = targetEffectOutcome.verifyWasCancelledOnce()
 
-            subjectCellObserver.verifyDoesNotExposeUpdate() // ...inside the spawn transaction
+            subjectCellListener.verifyDoesNotExposeUpdate() // ...inside the spawn transaction
 
-            subjectCellObserver.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
+            subjectCellListener.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
 
             StartTransactionRecord(
-                subjectCellObserver = subjectCellObserver,
+                subjectCellListener = subjectCellListener,
                 targetEffectStartExecutionRecord = targetEffectStartExecutionRecord,
                 targetEffectCancelExecutionRecord = targetEffectCancelExecutionRecord,
             )
         }
 
-        transactionRecord.subjectCellObserver.verifyDidNotPropagateNorExposesUpdate() //  ...at any point / now
-        transactionRecord.subjectCellObserver.verifyOldValueInsideTransaction(expectedOldValue = 10)  // ...after the spawn transaction
+        transactionRecord.subjectCellListener.verifyDidNotPropagateNorExposesUpdate() //  ...at any point / now
+        transactionRecord.subjectCellListener.verifyOldValueInsideTransaction(expectedOldValue = 10)  // ...after the spawn transaction
 
         targetEffect.verifyWasNotStarted() // ...again
 
@@ -204,7 +204,7 @@ class Cell_actuate_tests {
     @Test
     fun test_start_sourceUpdatesSimultaneously() {
         data class StartTransactionRecord(
-            val subjectCellObserver: TestCellObserver<Int>,
+            val subjectCellListener: TestCellListener<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
             val targetEffect1CancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
             val targetEffect2StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
@@ -221,7 +221,7 @@ class Cell_actuate_tests {
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val subjectCell = subjectEffect.startForTesting()
-            val subjectCellObserver = subjectCell.observeForTesting()
+            val subjectCellListener = subjectCell.observeForTesting()
 
             val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
             val targetEffect1Outcome = targetEffect1StartExecutionRecord.result
@@ -233,22 +233,22 @@ class Cell_actuate_tests {
             val targetEffect1CancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
             val targetEffect2StartExecutionRecord = targetEffect2.verifyWasStartedOnce()
 
-            subjectCellObserver.verifyPropagatedAndExposesUpdate(
+            subjectCellListener.verifyPropagatedAndExposesUpdate(
                 expectedUpdatedValue = 20,
             )
 
-            subjectCellObserver.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
+            subjectCellListener.verifyOldValue(expectedOldValue = 10) // ...inside the spawn transaction
 
             StartTransactionRecord(
-                subjectCellObserver = subjectCellObserver,
+                subjectCellListener = subjectCellListener,
                 targetEffect1StartExecutionRecord = targetEffect1StartExecutionRecord,
                 targetEffect1CancelExecutionRecord = targetEffect1CancelExecutionRecord,
                 targetEffect2StartExecutionRecord = targetEffect2StartExecutionRecord,
             )
         }
 
-        transactionRecord.subjectCellObserver.verifyDidNotPropagateNorExposesUpdate() // ...again / now
-        transactionRecord.subjectCellObserver.verifyOldValueInsideTransaction(expectedOldValue = 20)  // ...after the spawn transaction
+        transactionRecord.subjectCellListener.verifyDidNotPropagateNorExposesUpdate() // ...again / now
+        transactionRecord.subjectCellListener.verifyOldValueInsideTransaction(expectedOldValue = 20)  // ...after the spawn transaction
 
         targetEffect1.verifyWasNotStarted() // ...again
 
@@ -270,7 +270,7 @@ class Cell_actuate_tests {
     @Test
     fun test_start_sourceUpdatesSimultaneously_cancelledInstantly() {
         data class StartTransactionRecord(
-            val subjectCellObserver: TestCellObserver<Int>,
+            val subjectCellListener: TestCellListener<Int>,
             val targetEffect1StartExecutionRecord: TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<Int>>,
             val targetEffect1SubsequentCancelExecutionRecord: TestTargetAction.ExecutionRecord<Unit>,
         ) {
@@ -289,7 +289,7 @@ class Cell_actuate_tests {
 
         val transactionRecord = TransactionTestUtils.executeInsideTransaction {
             val (subjectCell: Cell<Int>, subjectEffectHandle: Effect.Handle) = subjectEffect.startForTestingCancellable()
-            val subjectCellObserver = subjectCell.observeForTesting()
+            val subjectCellListener = subjectCell.observeForTesting()
 
             val targetEffect1StartExecutionRecord = targetEffect1.verifyWasStartedOnce()
             val targetEffect1Outcome = targetEffect1StartExecutionRecord.result
@@ -298,7 +298,7 @@ class Cell_actuate_tests {
                 newValue = targetEffect2,
             ).stimulateForTesting()
 
-            subjectCellObserver.verifyPropagatedAndExposesUpdate(expectedUpdatedValue = 20)
+            subjectCellListener.verifyPropagatedAndExposesUpdate(expectedUpdatedValue = 20)
 
             val targetEffect1InitialCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce().apply {
                 verifyWasNotRevoked()
@@ -315,16 +315,16 @@ class Cell_actuate_tests {
 
             val targetEffect1SubsequentCancelExecutionRecord = targetEffect1Outcome.verifyWasCancelledOnce()
 
-            subjectCellObserver.verifyPropagatedAndExposesRevocation()
+            subjectCellListener.verifyPropagatedAndExposesRevocation()
 
             StartTransactionRecord(
-                subjectCellObserver = subjectCellObserver,
+                subjectCellListener = subjectCellListener,
                 targetEffect1StartExecutionRecord = targetEffect1StartExecutionRecord,
                 targetEffect1SubsequentCancelExecutionRecord = targetEffect1SubsequentCancelExecutionRecord,
             )
         }
 
-        val subjectCellObserver = transactionRecord.subjectCellObserver
+        val subjectCellListener = transactionRecord.subjectCellListener
         val targetEffect1StartExecutionRecord = transactionRecord.targetEffect1StartExecutionRecord
         val targetEffect1Outcome = transactionRecord.targetEffect1Outcome
 
@@ -335,7 +335,7 @@ class Cell_actuate_tests {
 
         targetEffect1Outcome.verifyWasNotCancelled() // ...again
 
-        subjectCellObserver.verifyOldValueInsideTransaction(expectedOldValue = 10)
+        subjectCellListener.verifyOldValueInsideTransaction(expectedOldValue = 10)
 
     }
 

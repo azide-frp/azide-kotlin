@@ -12,7 +12,7 @@ abstract class AbstractStatefulCellVertex<ValueT>(
 ) {
     private var isInitialized = false
 
-    final override fun onFirstObserverRegistered(
+    final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ) {
@@ -27,7 +27,7 @@ abstract class AbstractStatefulCellVertex<ValueT>(
         )
     }
 
-    final override fun onLastObserverUnregistered() {
+    final override fun onLastListenerUnregistered() {
     }
 
     protected abstract fun initialize(

@@ -48,7 +48,7 @@ class Cell_sample_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.registerNoopObserver(
+        CellTestUtils.registerNoopListener(
             subjectCell = subjectCell,
         )
 

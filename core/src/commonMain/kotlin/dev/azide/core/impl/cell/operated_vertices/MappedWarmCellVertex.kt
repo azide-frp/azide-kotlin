@@ -3,17 +3,17 @@ package dev.azide.core.impl.cell.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.cell.registerBoundUpdateObserver
+import dev.azide.core.impl.cell.registerBoundListener
 
 class MappedWarmCellVertex<ValueT, TransformedValueT>(
     private val sourceVertex: CellVertex<ValueT>,
     private val transform: (ValueT) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), BoundUpdateObserver {
-    private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
+), BoundListener {
+    private var upstreamListenerHandle: CellVertex.ListenerHandle? = null
 
     /**
      * Handle the update of the source cell.
@@ -42,13 +42,13 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ): CellVertex.Update<TransformedValueT>? {
-        if (upstreamObserverHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerBoundUpdateObserver(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -57,13 +57,13 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterObserver(
+        sourceVertex.unregisterListener(
             handle = subscriptionHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     override fun computeOldValue(

@@ -5,14 +5,14 @@ import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.UpdateObserver
-import dev.azide.core.impl.cell.CellVertex.ObserverHandle
-import dev.azide.core.impl.cell.CellVertex.ObserverStatus
+import dev.azide.core.impl.cell.CellVertex.Listener
+import dev.azide.core.impl.cell.CellVertex.ListenerHandle
+import dev.azide.core.impl.cell.CellVertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex.Update
-import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerUpdateObserverOnline
-import dev.azide.core.impl.cell.registerBoundUpdateObserverOnline
+import dev.azide.core.impl.cell.registerListenerOnline
+import dev.azide.core.impl.cell.registerBoundListenerOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
@@ -22,10 +22,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object CellTestUtils {
-    private object NoopObserver : UpdateObserver {
-        override fun handleUpdate(
+    private object NoopListener : Listener {
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): ObserverStatus = ObserverStatus.Reachable
+        ): ListenerStatus = ListenerStatus.Reachable
     }
 
     fun <ValueT> createInputCell(
@@ -101,7 +101,7 @@ internal object CellTestUtils {
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,
-    ) : BoundUpdateObserver {
+    ) : BoundListener {
         @JvmInline
         value class ReceivedUpdate<ValueT>(
             val receivedUpdate: Update<ValueT>?,
@@ -109,9 +109,9 @@ internal object CellTestUtils {
 
         private var receivedUpdate: ReceivedUpdate<ValueT>? = null
 
-        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerBoundUpdateObserverOnline(
+        private var upstreamListenerHandle: ListenerHandle? = subjectVertex.registerBoundListenerOnline(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
         )
 
         /**
@@ -239,14 +239,14 @@ internal object CellTestUtils {
         }
 
         fun stop() {
-            val upstreamObserverHandle =
-                this.upstreamObserverHandle ?: throw IllegalStateException("Verifier is already stopped")
+            val upstreamListenerHandle =
+                this.upstreamListenerHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterObserver(
-                handle = upstreamObserverHandle,
+            subjectVertex.unregisterListener(
+                handle = upstreamListenerHandle,
             )
 
-            this.upstreamObserverHandle = null
+            this.upstreamListenerHandle = null
         }
 
         override fun handleUpdate(
@@ -271,7 +271,7 @@ internal object CellTestUtils {
 
     /**
      * Verify that the [subjectCell] is still warm and samples to [expectedValue], both when it's not observed and when
-     * it is. This utility adds a temporary no-op observer to perform the active sampling.
+     * it is. This utility adds a temporary no-op listener to perform the active sampling.
      */
     fun <ValueT> verifyAtRest(
         subjectCell: Cell<ValueT>,
@@ -293,17 +293,17 @@ internal object CellTestUtils {
         )
 
         val activelySampledValue = Transactions.executeWithResult { propagationContext ->
-            val observerHandle = subjectVertex.registerUpdateObserverOnline(
+            val listenerHandle = subjectVertex.registerListenerOnline(
                 propagationContext = propagationContext,
-                observer = NoopObserver,
+                listener = NoopListener,
             )
 
             val sampledValue = subjectVertex.getOldValue(
                 propagationContext = propagationContext,
             )
 
-            subjectVertex.unregisterObserver(
-                handle = observerHandle,
+            subjectVertex.unregisterListener(
+                handle = listenerHandle,
             )
 
             sampledValue
@@ -382,15 +382,15 @@ internal object CellTestUtils {
     }
 
     /**
-     * Register a no-op observer on the [subjectCell].
+     * Register a no-op listener on the [subjectCell].
      */
-    fun <ValueT> registerNoopObserver(
+    fun <ValueT> registerNoopListener(
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            subjectCell.vertex.registerUpdateObserverOnline(
+            subjectCell.vertex.registerListenerOnline(
                 propagationContext = propagationContext,
-                observer = NoopObserver,
+                listener = NoopListener,
             )
         }
     }

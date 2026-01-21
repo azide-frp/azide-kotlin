@@ -55,8 +55,8 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> subscribeFo
 }
 
 context(transactionTestContext: TransactionTestContext) fun <EventT> EventStream<EventT>.subscribeForTesting(): TestEventStreamListener<EventT> {
-    val (testEventStreamObserver, _) = subscribeForTestingCancellable(cell = this)
-    return testEventStreamObserver
+    val (testEventStreamListener, _) = subscribeForTestingCancellable(cell = this)
+    return testEventStreamListener
 }
 
 fun <EventT> TestEventStreamListener<EventT>.verifyPropagatedAndExposesEmission(

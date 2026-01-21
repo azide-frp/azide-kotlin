@@ -170,7 +170,7 @@ class EventStream_loop_tests {
         // The source is still active (!). This indicates a memory leak, as the garbage collector sees all objects in
         // this cycle as reachable, while they don't have any use and there's no mechanism that will ever clean this
         // up (as long as the source event stream is reachable itself). A potential solution would be to use weak
-        // references to the target vertex in all listeners / observers.
+        // references to the target vertex in all listeners / listeners.
         assertEquals(
             expected = 1,
             actual = sourceVertex.listenerCount,

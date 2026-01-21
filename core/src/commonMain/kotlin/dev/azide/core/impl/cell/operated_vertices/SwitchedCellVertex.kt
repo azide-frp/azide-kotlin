@@ -4,22 +4,22 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.BoundUpdateObserver
+import dev.azide.core.impl.cell.CellVertex.BoundListener
 import dev.azide.core.impl.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue
-import dev.azide.core.impl.cell.registerBoundUpdateObserver
+import dev.azide.core.impl.cell.registerBoundListener
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
-) : AbstractSimpleStatelessCellVertex<ValueT>(), BoundUpdateObserver {
+) : AbstractSimpleStatelessCellVertex<ValueT>(), BoundListener {
     /**
-     * The outer vertex observer handle.
+     * The outer vertex listener handle.
      *
      * If the vertex is inactive: `null`
      *
-     * If the vertex is active: A handle to the observer registered in [outerSourceVertex].
+     * If the vertex is active: A handle to the listener registered in [outerSourceVertex].
      */
-    private var upstreamOuterObserverHandle: CellVertex.ObserverHandle? = null
+    private var upstreamOuterListenerHandle: CellVertex.ListenerHandle? = null
 
     /**
      * The stable cell vertex.
@@ -50,9 +50,9 @@ class SwitchedCellVertex<ValueT>(
      * - If [updatedInnerSourceVertex] is non-null: a handle registered in [updatedInnerSourceVertex]
      * - Else: a handle registered in [stableInnerSourceVertex]
      */
-    private var upstreamNewInnerObserverHandle: CellVertex.ObserverHandle? = null
+    private var upstreamNewInnerListenerHandle: CellVertex.ListenerHandle? = null
 
-    private val innerSourceObserver = object : BoundUpdateObserver {
+    private val innerSourceListener = object : BoundListener {
         /**
          * Handle the update of the inner source cell.
          */
@@ -113,12 +113,12 @@ class SwitchedCellVertex<ValueT>(
                 val updatedInnerSourceVertex = this.updatedInnerSourceVertex
                     ?: throw IllegalStateException("The outer source vertex doesn't seem to have updated")
 
-                val upstreamNewInnerObserverHandle = this.upstreamNewInnerObserverHandle ?: throw IllegalStateException(
+                val upstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle ?: throw IllegalStateException(
                     "Vertex doesn't seem to be active"
                 )
 
-                updatedInnerSourceVertex.unregisterObserver(
-                    handle = upstreamNewInnerObserverHandle,
+                updatedInnerSourceVertex.unregisterListener(
+                    handle = upstreamNewInnerListenerHandle,
                 )
 
                 // Forget the previous updated inner vertex
@@ -130,9 +130,9 @@ class SwitchedCellVertex<ValueT>(
                 val stableInnerSourceVertex =
                     this.stableInnerSourceVertex ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-                this.upstreamNewInnerObserverHandle = stableInnerSourceVertex.registerBoundUpdateObserver(
+                this.upstreamNewInnerListenerHandle = stableInnerSourceVertex.registerBoundListener(
                     propagationContext = propagationContext,
-                    observer = innerSourceObserver,
+                    listener = innerSourceListener,
                     mode = ActivationMode.Online,
                 )
 
@@ -175,18 +175,18 @@ class SwitchedCellVertex<ValueT>(
 
                 // Unsubscribe from the previous updated inner source vertex / stable source vertex
 
-                val previousUpstreamNewInnerObserverHandle = this.upstreamNewInnerObserverHandle
+                val previousUpstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle
                     ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-                previousNewInnerSourceVertex.unregisterObserver(
-                    handle = previousUpstreamNewInnerObserverHandle,
+                previousNewInnerSourceVertex.unregisterListener(
+                    handle = previousUpstreamNewInnerListenerHandle,
                 )
 
                 // Subscribe to the handled updated inner source vertex
 
-                this.upstreamNewInnerObserverHandle = handledUpdatedInnerSourceVertex.registerBoundUpdateObserver(
+                this.upstreamNewInnerListenerHandle = handledUpdatedInnerSourceVertex.registerBoundListener(
                     propagationContext = propagationContext,
-                    observer = innerSourceObserver,
+                    listener = innerSourceListener,
                     mode = ActivationMode.Online,
                 )
 
@@ -208,15 +208,15 @@ class SwitchedCellVertex<ValueT>(
         propagationContext: PropagationContext,
         mode: ActivationMode,
     ): CellVertex.Update<ValueT>? {
-        if (upstreamOuterObserverHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamNewInnerObserverHandle != null) {
+        if (upstreamOuterListenerHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamNewInnerListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        // Register the outer observer
+        // Register the outer listener
 
-        this.upstreamOuterObserverHandle = outerSourceVertex.registerBoundUpdateObserver(
+        this.upstreamOuterListenerHandle = outerSourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -243,11 +243,11 @@ class SwitchedCellVertex<ValueT>(
         this.stableInnerSourceVertex = stableInnerSourceVertex
         this.updatedInnerSourceVertex = updatedInnerSourceVertex
 
-        // Register the inner source vertex observer (to the new inner source vertex)
+        // Register the inner source vertex listener (to the new inner source vertex)
 
-        this.upstreamNewInnerObserverHandle = newInnerSourceVertex.registerBoundUpdateObserver(
+        this.upstreamNewInnerListenerHandle = newInnerSourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = innerSourceObserver,
+            listener = innerSourceListener,
             mode = mode,
         )
 
@@ -255,36 +255,36 @@ class SwitchedCellVertex<ValueT>(
     }
 
     override fun deactivate() {
-        val upstreamOuterObserverHandle = this.upstreamOuterObserverHandle
+        val upstreamOuterListenerHandle = this.upstreamOuterListenerHandle
         val stableInnerSourceVertex = this.stableInnerSourceVertex
-        val upstreamNewInnerObserverHandle = this.upstreamNewInnerObserverHandle
+        val upstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle
 
-        if (upstreamOuterObserverHandle == null || stableInnerSourceVertex == null) {
+        if (upstreamOuterListenerHandle == null || stableInnerSourceVertex == null) {
             throw IllegalStateException("Vertex doesn't seem to be active")
         }
 
-        // Unregister the outer source vertex observer
+        // Unregister the outer source vertex listener
 
-        outerSourceVertex.unregisterObserver(
-            handle = upstreamOuterObserverHandle,
+        outerSourceVertex.unregisterListener(
+            handle = upstreamOuterListenerHandle,
         )
 
-        this.upstreamOuterObserverHandle = null
+        this.upstreamOuterListenerHandle = null
 
-        // Unregister the inner source vertex observer
+        // Unregister the inner source vertex listener
 
         val updatedInnerSourceVertex = this.updatedInnerSourceVertex
         val newInnerSourceVertex = updatedInnerSourceVertex ?: stableInnerSourceVertex
 
-        if (upstreamNewInnerObserverHandle != null) {
-            newInnerSourceVertex.unregisterObserver(
-                handle = upstreamNewInnerObserverHandle,
+        if (upstreamNewInnerListenerHandle != null) {
+            newInnerSourceVertex.unregisterListener(
+                handle = upstreamNewInnerListenerHandle,
             )
         }
 
         this.stableInnerSourceVertex = null
         this.updatedInnerSourceVertex = null
-        this.upstreamNewInnerObserverHandle = null
+        this.upstreamNewInnerListenerHandle = null
     }
 
     override fun getOldValue(

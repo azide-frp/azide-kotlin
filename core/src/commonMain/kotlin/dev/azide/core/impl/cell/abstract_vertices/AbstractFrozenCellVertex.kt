@@ -6,16 +6,16 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.FrozenCellVertex
 
 abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
-    override fun registerUpdateObserver(
+    override fun registerListener(
         propagationContext: Transactions.PropagationContext,
-        observer: CellVertex.UpdateObserver,
+        listener: CellVertex.Listener,
         mode: Vertex.ActivationMode,
-    ): FrozenCellVertex.FrozenObserverHandle = FrozenCellVertex.FrozenObserverHandle
+    ): FrozenCellVertex.FrozenListenerHandle = FrozenCellVertex.FrozenListenerHandle
 
-    final override fun unregisterObserver(
-        handle: CellVertex.ObserverHandle,
+    final override fun unregisterListener(
+        handle: CellVertex.ListenerHandle,
     ) {
-        if (handle != FrozenCellVertex.FrozenObserverHandle) {
+        if (handle != FrozenCellVertex.FrozenListenerHandle) {
             throw IllegalArgumentException("Invalid handle")
         }
     }

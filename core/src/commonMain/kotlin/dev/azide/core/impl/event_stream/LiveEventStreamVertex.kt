@@ -84,10 +84,10 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
      *
      * Each vertex cleans the unreachable listeners on its own, but it does so only when it has something to propagate.
      * So most of the time, no significant amount of memory would leak if we didn't proactively unsubscribe as a part of
-     * the observer's finalization.
+     * the listener's finalization.
      *
      * In a corner case scenario when the source event stream emits rarely (or never), but it continuously gets new
-     * short-lived loose observers, the abandoned listener entries would constitute a significant memory leak.
+     * short-lived loose listeners, the abandoned listener entries would constitute a significant memory leak.
      */
     val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
         target = dependentVertex, finalizationCallback = {

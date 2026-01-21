@@ -2,11 +2,11 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.registerSetChangeObserver
+import dev.azide.core.impl.collections.reactive_set.registerSetChangeListener
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -21,7 +21,7 @@ internal object ReactiveSetTestUtils {
 
     class ObservingVerifier<ElementT>(
         private val subjectVertex: WarmTrackedSetVertex<ElementT>,
-    ) : CollectionChangeObserver {
+    ) : Listener {
         @JvmInline
         value class ReceivedChange<ElementT>(
             val receivedChange: SetChange<ElementT>?,
@@ -29,10 +29,10 @@ internal object ReactiveSetTestUtils {
 
         private var receivedChange: ReceivedChange<ElementT>? = null
 
-        private var upstreamObserverHandle: CollectionObserverHandle? = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.registerSetChangeObserver(
+        private var upstreamListenerHandle: ListenerHandle? = Transactions.executeWithResult { propagationContext ->
+            subjectVertex.registerSetChangeListener(
                 propagationContext = propagationContext,
-                observer = this,
+                listener = this,
             )
         }
 
@@ -170,17 +170,17 @@ internal object ReactiveSetTestUtils {
         }
 
         fun stop() {
-            val upstreamObserverHandle =
-                this.upstreamObserverHandle ?: throw IllegalStateException("Verifier is already stopped")
+            val upstreamListenerHandle =
+                this.upstreamListenerHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterCollectionObserver(
-                handle = upstreamObserverHandle,
+            subjectVertex.unregisterListener(
+                handle = upstreamListenerHandle,
             )
 
-            this.upstreamObserverHandle = null
+            this.upstreamListenerHandle = null
         }
 
-        override fun handleChange(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
             receivedChange = ReceivedChange(

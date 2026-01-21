@@ -4,7 +4,7 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
 abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTrackedSetVertex<ElementT>() {
-    final override fun onFirstObserverRegistered(
+    final override fun onFirstListenerRegistered(
         propagationContext: PropagationContext,
     ) {
         val changeOnActivation = activate(
@@ -17,7 +17,7 @@ abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTra
         )
     }
 
-    final override fun onLastObserverUnregistered() {
+    final override fun onLastListenerUnregistered() {
         deactivate()
 
         clearExposedChange()

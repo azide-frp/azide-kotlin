@@ -3,8 +3,8 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
@@ -14,43 +14,43 @@ import kotlin.jvm.JvmInline
 
 abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<ElementT>, CommittableVertex {
     @JvmInline
-    private value class ObserverHandleImpl(
-        val internalHandle: StableCollection.Handle<CollectionChangeObserver>,
-    ) : CollectionObserverHandle
+    private value class ListenerHandleImpl(
+        val internalHandle: StableCollection.Handle<Listener>,
+    ) : ListenerHandle
 
-    private val _registeredObservers: LinkedList<CollectionChangeObserver> = LinkedList()
+    private val _registeredListeners: LinkedList<Listener> = LinkedList()
 
     private var _ongoingChange: SetChange<ElementT>? = null
 
     private var _isEnqueuedForCommitment = false
 
-    override fun registerCollectionNotificationObserver(
+    override fun registerListener(
         propagationContext: PropagationContext,
-        observer: CollectionChangeObserver,
-    ): CollectionObserverHandle {
-        val internalHandle = _registeredObservers.append(observer)
+        listener: Listener,
+    ): ListenerHandle {
+        val internalHandle = _registeredListeners.append(listener)
 
-        if (_registeredObservers.size == 1) {
-            onFirstObserverRegistered(
+        if (_registeredListeners.size == 1) {
+            onFirstListenerRegistered(
                 propagationContext = propagationContext,
             )
         }
 
-        return ObserverHandleImpl(
+        return ListenerHandleImpl(
             internalHandle = internalHandle,
         )
     }
 
-    final override fun unregisterCollectionObserver(
-        handle: CollectionObserverHandle,
+    final override fun unregisterListener(
+        handle: ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
-            handle as? ObserverHandleImpl ?: throw IllegalArgumentException("Invalid handle")
+            handle as? ListenerHandleImpl ?: throw IllegalArgumentException("Invalid handle")
 
-        _registeredObservers.removeVia(handleImpl.internalHandle)
+        _registeredListeners.removeVia(handleImpl.internalHandle)
 
-        if (_registeredObservers.isEmpty()) {
-            onLastObserverUnregistered()
+        if (_registeredListeners.isEmpty()) {
+            onLastListenerUnregistered()
         }
     }
 
@@ -104,19 +104,19 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
     private fun propagateChange(
         propagationContext: PropagationContext,
     ) {
-        _registeredObservers.forEach { observer ->
-            observer.handleChange(
+        _registeredListeners.forEach { listener ->
+            listener.handle(
                 propagationContext = propagationContext,
             )
         }
     }
 
-    protected open fun onFirstObserverRegistered(
+    protected open fun onFirstListenerRegistered(
         propagationContext: PropagationContext,
     ) {
     }
 
-    protected open fun onLastObserverUnregistered() {
+    protected open fun onLastListenerUnregistered() {
     }
 
     protected open fun commit(

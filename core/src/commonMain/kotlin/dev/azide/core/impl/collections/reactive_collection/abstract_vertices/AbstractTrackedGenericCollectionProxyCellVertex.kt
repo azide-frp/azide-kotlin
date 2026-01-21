@@ -6,18 +6,18 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.Listener
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
 abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
-), CollectionChangeObserver {
-    private var upstreamObserverHandle: CollectionObserverHandle? = null
+), Listener {
+    private var upstreamListenerHandle: ListenerHandle? = null
 
-    override fun handleChange(
+    override fun handle(
         propagationContext: PropagationContext,
     ) {
         when (val change = sourceVertex.ongoingChange) {
@@ -61,13 +61,13 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
         propagationContext: PropagationContext,
         mode: Vertex.ActivationMode,
     ): CellVertex.Update<ValueT>? {
-        if (upstreamObserverHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerCollectionNotificationObserver(
+        upstreamListenerHandle = sourceVertex.registerListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
         )
 
         return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
@@ -79,14 +79,14 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     }
 
     final override fun deactivate() {
-        val upstreamObserverHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val upstreamListenerHandle =
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterCollectionObserver(
-            handle = upstreamObserverHandle,
+        sourceVertex.unregisterListener(
+            handle = upstreamListenerHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     final override fun computeOldValue(
