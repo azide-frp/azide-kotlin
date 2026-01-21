@@ -6,7 +6,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
 
-interface TrackedGenericCollectionVertex<out ContentT: Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
+interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
         companion object {
             fun <ElementT> of(
@@ -23,7 +23,7 @@ interface TrackedGenericCollectionVertex<out ContentT: Collection<*>, out Change
     }
 
     interface CollectionChangeNotificationObserver {
-        fun handleChangeNotification(
+        fun handleChange(
             propagationContext: PropagationContext,
         )
     }

@@ -21,7 +21,7 @@ sealed interface CellVertex<out ValueT> : Vertex {
     }
 
     interface UpdateNotificationObserver<in ValueT> {
-        fun handleUpdateNotification(
+        fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus
     }
@@ -81,7 +81,7 @@ fun <ValueT> CellVertex<ValueT>.registerUpdateObserver(
 ): CellVertex.ObserverHandle = registerUpdateNotificationObserver(
     propagationContext = propagationContext,
     observer = object : UpdateNotificationObserver<ValueT> {
-        override fun handleUpdateNotification(
+        override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus {
             observer.handleUpdate(

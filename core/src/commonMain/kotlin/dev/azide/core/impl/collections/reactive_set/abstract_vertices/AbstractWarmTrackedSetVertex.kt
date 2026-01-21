@@ -105,7 +105,7 @@ abstract class AbstractWarmTrackedSetVertex<ElementT>() : WarmTrackedSetVertex<E
         propagationContext: PropagationContext,
     ) {
         _registeredObservers.forEach { observer ->
-            observer.handleChangeNotification(
+            observer.handleChange(
                 propagationContext = propagationContext,
             )
         }

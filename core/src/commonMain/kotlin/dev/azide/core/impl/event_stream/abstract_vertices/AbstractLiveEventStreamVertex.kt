@@ -120,7 +120,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
             _isPropagatingEmissionNotification = true
 
             _registeredSubscribers.forEach { subscriber ->
-                val subscriberStatus = subscriber.handleEmissionNotification(
+                val subscriberStatus = subscriber.handleEmission(
                     propagationContext = propagationContext,
                 )
 

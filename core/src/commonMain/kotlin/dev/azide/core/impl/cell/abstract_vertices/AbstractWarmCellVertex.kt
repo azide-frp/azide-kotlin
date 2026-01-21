@@ -98,7 +98,7 @@ abstract class AbstractWarmCellVertex<ValueT>() : WarmCellVertex<ValueT>, Commit
         propagationContext: Transactions.PropagationContext,
     ) {
         _registeredObservers.forEach { observer ->
-            val observerStatus = observer.handleUpdateNotification(
+            val observerStatus = observer.handleUpdate(
                 propagationContext = propagationContext,
             )
 

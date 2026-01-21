@@ -18,7 +18,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     ) : EmissionNotificationSubscriber<EventT> {
         private val basicSubscriberWeakReference = PlatformWeakReference(emissionSubscriber)
 
-        override fun handleEmissionNotification(
+        override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         ): SubscriberStatus {
             when (val basicSubscriber = basicSubscriberWeakReference.get()) {

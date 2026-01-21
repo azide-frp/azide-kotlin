@@ -23,7 +23,7 @@ import kotlin.test.assertNull
 
 internal object CellTestUtils {
     private object NoopObserver : UpdateNotificationObserver<Any?> {
-        override fun handleUpdateNotification(
+        override fun handleUpdate(
             propagationContext: Transactions.PropagationContext,
         ): ObserverStatus = ObserverStatus.Reachable
     }

@@ -52,7 +52,7 @@ fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeObserver(
 ): CollectionObserverHandle = registerCollectionNotificationObserver(
     propagationContext = propagationContext,
     observer = object : TrackedGenericCollectionVertex.CollectionChangeNotificationObserver {
-        override fun handleChangeNotification(
+        override fun handleChange(
             propagationContext: PropagationContext,
         ) {
             observer.handleChange(

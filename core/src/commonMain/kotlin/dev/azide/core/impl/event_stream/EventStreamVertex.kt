@@ -22,12 +22,12 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
     interface EmissionNotificationSubscriber<in EventT> {
         object Noop : EmissionNotificationSubscriber<Any?> {
-            override fun handleEmissionNotification(
+            override fun handleEmission(
                 propagationContext: Transactions.PropagationContext,
             ): SubscriberStatus = SubscriberStatus.Reachable
         }
 
-        fun handleEmissionNotification(
+        fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         ): SubscriberStatus
     }
@@ -76,7 +76,7 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
 ): SubscriberHandle = registerEmissionNotificationSubscriber(
     propagationContext = propagationContext,
     subscriber = object : EmissionNotificationSubscriber<EventT> {
-        override fun handleEmissionNotification(
+        override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         ): EventStreamVertex.SubscriberStatus {
             subscriber.handleEmission(

@@ -17,7 +17,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
 ), CollectionChangeNotificationObserver {
     private var upstreamObserverHandle: CollectionObserverHandle? = null
 
-    override fun handleChangeNotification(
+    override fun handleChange(
         propagationContext: PropagationContext,
     ) {
         when (val change = sourceVertex.ongoingChange) {
