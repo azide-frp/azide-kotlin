@@ -5,7 +5,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.registerEmissionSubscriberWeakly
 
 class HeldCellVertex<ValueT> private constructor(
@@ -15,7 +15,7 @@ class HeldCellVertex<ValueT> private constructor(
 ) : AbstractStatefulCellVertex<ValueT>(
     wrapUpContext = wrapUpContext,
     initialValue = initialValue,
-), EmissionSubscriber {
+), BoundEmissionSubscriber {
     companion object {
         fun <ValueT> start(
             wrapUpContext: Transactions.WrapUpContext,

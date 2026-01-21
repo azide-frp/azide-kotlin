@@ -4,14 +4,14 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceEventStream: EventStream<EventT>,
     private val transform: (EventT) -> TransformedEventT,
-) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), EmissionSubscriber {
+) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), BoundEmissionSubscriber {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 
@@ -50,7 +50,7 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle = sourceVertex.registerEmissionSubscriber(
+        upstreamSubscriberHandle = sourceVertex.registerBoundEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = this,
             mode = mode,

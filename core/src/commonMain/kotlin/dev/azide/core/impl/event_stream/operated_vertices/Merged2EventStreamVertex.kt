@@ -4,9 +4,9 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
-import dev.azide.core.impl.event_stream.registerEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriber
 
 class Merged2EventStreamVertex<EventT>(
     private val sourceEventStream1: EventStream<EventT>,
@@ -21,7 +21,7 @@ class Merged2EventStreamVertex<EventT>(
     private var upstreamSubscriberHandle1: EventStreamVertex.SubscriberHandle? = null
     private var upstreamSubscriberHandle2: EventStreamVertex.SubscriberHandle? = null
 
-    val innerSubscriber1 = object : EmissionSubscriber {
+    val innerSubscriber1 = object : BoundEmissionSubscriber {
         /**
          * Handle the emission of the first event stream.
          */
@@ -48,7 +48,7 @@ class Merged2EventStreamVertex<EventT>(
         }
     }
 
-    val innerSubscriber2 = object : EmissionSubscriber {
+    val innerSubscriber2 = object : BoundEmissionSubscriber {
         /**
          * Handle the emission of the second event stream.
          */
@@ -78,13 +78,13 @@ class Merged2EventStreamVertex<EventT>(
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle1 = sourceVertex1.registerEmissionSubscriber(
+        upstreamSubscriberHandle1 = sourceVertex1.registerBoundEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = innerSubscriber1,
             mode = mode,
         )
 
-        upstreamSubscriberHandle2 = sourceVertex2.registerEmissionSubscriber(
+        upstreamSubscriberHandle2 = sourceVertex2.registerBoundEmissionSubscriber(
             propagationContext = propagationContext,
             subscriber = innerSubscriber2,
             mode = mode,

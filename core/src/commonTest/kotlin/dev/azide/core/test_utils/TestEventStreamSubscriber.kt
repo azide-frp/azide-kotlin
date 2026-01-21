@@ -3,14 +3,14 @@ package dev.azide.core.test_utils
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
-import dev.azide.core.impl.event_stream.registerEmissionSubscriberOnline
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
+import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class TestEventStreamSubscriber<EventT>(
     val subscribedEventStreamVertex: EventStreamVertex<EventT>,
-) : EmissionSubscriber {
+) : BoundEmissionSubscriber {
     interface Handle {
         fun cancel()
     }
@@ -37,7 +37,7 @@ context(transactionTestContext: TransactionTestContext) fun <EventT> subscribeFo
         subscribedEventStreamVertex = vertex,
     )
 
-    val subscriberHandle = vertex.registerEmissionSubscriberOnline(
+    val subscriberHandle = vertex.registerBoundEmissionSubscriberOnline(
         propagationContext = transactionTestContext.propagationContext,
         subscriber = subscriber,
     )

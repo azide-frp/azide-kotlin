@@ -5,12 +5,12 @@ import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
-import dev.azide.core.impl.event_stream.registerEmissionSubscriberOnline
+import dev.azide.core.impl.event_stream.registerBoundEmissionSubscriberOnline
 import dev.azide.core.impl.event_stream.registerEmissionNotificationSubscriberOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestInputStimulation
@@ -69,7 +69,7 @@ internal object EventStreamTestUtils {
         // Register a subscriber, as event stream vertices aren't required to expose the emission otherwise
         subjectVertex.registerEmissionNotificationSubscriberOnline(
             propagationContext = propagationContext,
-            subscriber = EmissionNotificationSubscriber.Noop,
+            subscriber = EmissionSubscriber.Noop,
         )
 
         val ongoingEmission = subjectVertex.ongoingEmission
@@ -103,7 +103,7 @@ internal object EventStreamTestUtils {
 
     class SubscribingVerifier<EventT>(
         private val subjectVertex: LiveEventStreamVertex<EventT>,
-    ) : EmissionSubscriber {
+    ) : BoundEmissionSubscriber {
         @JvmInline
         private value class ReceivedEmission<EventT>(
             val receivedEmission: Emission<EventT>?,
@@ -117,7 +117,7 @@ internal object EventStreamTestUtils {
 
         private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? =
             Transactions.executeWithResult { propagationContext ->
-                subjectVertex.registerEmissionSubscriberOnline(
+                subjectVertex.registerBoundEmissionSubscriberOnline(
                     propagationContext = propagationContext,
                     subscriber = this,
                 )
@@ -320,7 +320,7 @@ internal object EventStreamTestUtils {
         Transactions.execute { propagationContext ->
             subjectVertex.registerEmissionNotificationSubscriberOnline(
                 propagationContext = propagationContext,
-                subscriber = EmissionNotificationSubscriber.Noop,
+                subscriber = EmissionSubscriber.Noop,
             )
         }
     }

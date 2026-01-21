@@ -5,14 +5,14 @@ import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
+import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberStatus
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveSubscriberHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
 abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
-    private val _registeredSubscribers: MutableBag<EmissionNotificationSubscriber> = MutableBag()
+    private val _registeredSubscribers: MutableBag<EmissionSubscriber> = MutableBag()
 
     override val subscriberCount: Int
         get() = _registeredSubscribers.size
@@ -26,9 +26,9 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     final override val ongoingEmission: EventStreamVertex.Emission<EventT>?
         get() = _ongoingEmission
 
-    override fun registerEmissionNotificationSubscriber(
+    override fun registerEmissionSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionNotificationSubscriber,
+        subscriber: EmissionSubscriber,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.SubscriberHandle {
         val internalHandle = _registeredSubscribers.add(subscriber)

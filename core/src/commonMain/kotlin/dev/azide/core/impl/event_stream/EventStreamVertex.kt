@@ -3,8 +3,8 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.event_stream.EventStreamVertex.BoundEmissionSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionSubscriber
-import dev.azide.core.impl.event_stream.EventStreamVertex.EmissionNotificationSubscriber
 import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberHandle
 import kotlin.jvm.JvmInline
 
@@ -20,8 +20,8 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface EmissionNotificationSubscriber {
-        object Noop : EmissionNotificationSubscriber {
+    interface EmissionSubscriber {
+        object Noop : EmissionSubscriber {
             override fun handleEmission(
                 propagationContext: Transactions.PropagationContext,
             ): SubscriberStatus = SubscriberStatus.Reachable
@@ -32,7 +32,7 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         ): SubscriberStatus
     }
 
-    interface EmissionSubscriber {
+    interface BoundEmissionSubscriber {
         fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         )
@@ -48,9 +48,9 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
     val subscriberCount: Int
 
-    fun registerEmissionNotificationSubscriber(
+    fun registerEmissionSubscriber(
         propagationContext: Transactions.PropagationContext,
-        subscriber: EmissionNotificationSubscriber,
+        subscriber: EmissionSubscriber,
         mode: ActivationMode,
     ): SubscriberHandle
 
@@ -61,20 +61,20 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
 
 fun <EventT> EventStreamVertex<EventT>.registerEmissionNotificationSubscriberOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionNotificationSubscriber,
-): SubscriberHandle = registerEmissionNotificationSubscriber(
+    subscriber: EmissionSubscriber,
+): SubscriberHandle = registerEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
+fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriber(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber,
+    subscriber: BoundEmissionSubscriber,
     mode: ActivationMode,
-): SubscriberHandle = registerEmissionNotificationSubscriber(
+): SubscriberHandle = registerEmissionSubscriber(
     propagationContext = propagationContext,
-    subscriber = object : EmissionNotificationSubscriber {
+    subscriber = object : EmissionSubscriber {
         override fun handleEmission(
             propagationContext: Transactions.PropagationContext,
         ): EventStreamVertex.SubscriberStatus {
@@ -88,19 +88,19 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriber(
     mode = mode,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOnline(
+fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriberOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber,
-): SubscriberHandle = registerEmissionSubscriber(
+    subscriber: BoundEmissionSubscriber,
+): SubscriberHandle = registerBoundEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerEmissionSubscriberOffline(
+fun <EventT> EventStreamVertex<EventT>.registerBoundEmissionSubscriberOffline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: EmissionSubscriber,
-): SubscriberHandle = registerEmissionSubscriber(
+    subscriber: BoundEmissionSubscriber,
+): SubscriberHandle = registerBoundEmissionSubscriber(
     propagationContext = propagationContext,
     subscriber = subscriber,
     mode = ActivationMode.Offline,
