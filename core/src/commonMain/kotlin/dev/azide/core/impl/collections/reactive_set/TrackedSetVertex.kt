@@ -2,14 +2,15 @@ package dev.azide.core.impl.collections.reactive_set
 
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.GenericCollectionChangeObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChangeObserver
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
 
-sealed interface TrackedSetVertex<out ElementT> : TrackedCollectionVertex<ElementT> {
+sealed interface TrackedSetVertex<out ElementT> : TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>> {
     data class SetChange<out ElementT>(
         override val addedElements: Set<ElementT>,
         override val removedElements: Set<ElementT>,
@@ -65,7 +66,7 @@ fun <ElementT> TrackedSetVertex<ElementT>.registerSetChangeObserver(
     observer: SetChangeObserver<ElementT>,
 ): SetObserverHandle = registerCollectionNotificationObserver(
     propagationContext = propagationContext,
-    observer = object : TrackedCollectionVertex.CollectionChangeNotificationObserver {
+    observer = object : TrackedGenericCollectionVertex.CollectionChangeNotificationObserver {
         override fun handleChangeNotification(
             propagationContext: PropagationContext,
         ) {

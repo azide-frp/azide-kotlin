@@ -3,11 +3,9 @@ package dev.azide.core.impl.collections.reactive_collection
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 
-interface TrackedCollectionVertex<out ElementT> : Vertex {
+interface TrackedGenericCollectionVertex<out ContentT: Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
         companion object {
             fun <ElementT> of(
@@ -49,31 +47,16 @@ interface TrackedCollectionVertex<out ElementT> : Vertex {
         handle: CollectionObserverHandle,
     )
 
-    val ongoingChange: CollectionChange<ElementT>?
+    val ongoingChange: ChangeT?
 
     fun getOldContentView(
         propagationContext: PropagationContext,
-    ): Collection<ElementT>
+    ): ContentT
 
     fun buildSizeVertex(): CellVertex<Int>
 }
 
-fun <ElementT> TrackedCollectionVertex<ElementT>.registerCollectionObserver(
-    propagationContext: PropagationContext,
-    observer: CollectionChangeObserver<ElementT>,
-): CollectionObserverHandle = registerCollectionNotificationObserver(
-    propagationContext,
-    object : TrackedCollectionVertex.CollectionChangeNotificationObserver {
-        override fun handleChangeNotification(
-            propagationContext: PropagationContext,
-        ) {
-            observer.handleChange(
-                propagationContext = propagationContext,
-                change = ongoingChange,
-            )
-        }
-    },
-)
+typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
 
 fun <ElementT, TransformedElementT> CollectionChange<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,

@@ -4,14 +4,13 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeNotificationObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_collection.registerCollectionObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 
-abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
-    private val sourceVertex: TrackedCollectionVertex<ElementT>,
+abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
+    private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
 ), CollectionChangeNotificationObserver {
@@ -101,12 +100,14 @@ abstract class AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT>(
         )
     }
 
-    abstract fun buildUpdate(
+    protected abstract fun buildUpdate(
         propagationContext: PropagationContext,
-        sourceChange: CollectionChange<ElementT>,
+        sourceChange: ChangeT,
     ): CellVertex.Update<ValueT>?
 
-    abstract fun computeOldValue(
-        oldContentView: Collection<ElementT>,
+    protected abstract fun computeOldValue(
+        oldContentView: ContentT,
     ): ValueT
 }
+
+typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, CollectionChange<ElementT>, ValueT>

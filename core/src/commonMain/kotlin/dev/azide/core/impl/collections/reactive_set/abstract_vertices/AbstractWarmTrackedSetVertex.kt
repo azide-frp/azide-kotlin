@@ -3,8 +3,8 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChangeNotificationObserver
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetContainsCellVertex

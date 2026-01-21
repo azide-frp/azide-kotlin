@@ -2,10 +2,9 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionObserverHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChangeNotificationObserver
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
 import dev.azide.core.impl.collections.reactive_set.FrozenTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex.SetObserverHandle
 
 abstract class AbstractFrozenTrackedSetVertex<ElementT> : FrozenTrackedSetVertex<ElementT> {
@@ -13,7 +12,7 @@ abstract class AbstractFrozenTrackedSetVertex<ElementT> : FrozenTrackedSetVertex
 
     override fun registerCollectionNotificationObserver(
         propagationContext: PropagationContext,
-        observer: TrackedCollectionVertex.CollectionChangeNotificationObserver,
+        observer: CollectionChangeNotificationObserver,
     ): CollectionObserverHandle = NoopSetObserverHandle
 
     final override fun unregisterCollectionObserver(

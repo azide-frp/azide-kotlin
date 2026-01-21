@@ -3,18 +3,19 @@ package dev.azide.core.impl.collections.reactive_collection.operated_vertices.he
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
 import dev.azide.core.impl.collections.reactive_collection.sizeDelta
 
-class TrackedCollectionSizeWarmCellVertex<ElementT>(
-    sourceVertex: TrackedCollectionVertex<ElementT>,
-) : AbstractTrackedCollectionProxyCellVertex<ElementT, Int>(
+// TODO: Figure out if this should be used
+class TrackedCollectionSizeWarmCellVertex(
+    sourceVertex: TrackedCollectionVertex<*>,
+) : AbstractTrackedCollectionProxyCellVertex<Any?, Int>(
     sourceVertex = sourceVertex,
 ) {
     override fun buildUpdate(
         propagationContext: PropagationContext,
-        sourceChange: CollectionChange<ElementT>,
+        sourceChange: CollectionChange<*>,
     ): CellVertex.Update<Int>? {
         val sizeDelta = sourceChange.sizeDelta
 
@@ -36,6 +37,6 @@ class TrackedCollectionSizeWarmCellVertex<ElementT>(
     }
 
     override fun computeOldValue(
-        oldContentView: Collection<ElementT>,
+        oldContentView: Collection<*>,
     ): Int = oldContentView.size
 }
