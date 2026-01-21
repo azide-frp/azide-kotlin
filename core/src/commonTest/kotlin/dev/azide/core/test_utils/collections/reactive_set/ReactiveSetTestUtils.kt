@@ -3,7 +3,6 @@ package dev.azide.core.test_utils.collections.reactive_set
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionObserverHandle
-import dev.azide.core.impl.collections.reactive_set.FrozenTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.SetChangeObserver
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
@@ -226,33 +225,6 @@ internal object ReactiveSetTestUtils {
             expected = expectedElements,
             actual = sampledElements,
             message = "Warm subject reactive set's elements did not match expected elements",
-        )
-    }
-
-    /**
-     * Verify that the [subjectReactiveSet] is frozen.
-     */
-    fun <ElementT> verifyFrozen(
-        subjectReactiveSet: ReactiveSet<ElementT>,
-        expectedFrozenElements: Set<ElementT>,
-    ) {
-        val subjectVertex = subjectReactiveSet.vertex
-
-        assertIs<FrozenTrackedSetVertex<ElementT>>(
-            value = subjectVertex,
-            message = "Subject reactive set vertex is not frozen as expected",
-        )
-
-        val sampledElements = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.getOldContentView(
-                propagationContext = propagationContext,
-            ).toSet()
-        }
-
-        assertEquals(
-            expected = expectedFrozenElements,
-            actual = sampledElements,
-            message = "Frozen subject reactive set's elements did not match expected elements",
         )
     }
 
