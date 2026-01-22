@@ -2,7 +2,6 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
@@ -15,10 +14,9 @@ import kotlin.test.assertIs
 internal object ReactiveSetTestUtils {
     fun <ElementT> createInputReactiveSet(
         initialElements: Set<ElementT>,
-    ): TestInputReactiveSet<ElementT> =
-        TestInputReactiveSet(
-            initialElements = initialElements,
-        )
+    ): TestInputReactiveSet<ElementT> = TestInputReactiveSet(
+        initialElements = initialElements,
+    )
 
     class ObservingVerifier<ElementT>(
         private val subjectVertex: WarmTrackedSetVertex<ElementT>,
