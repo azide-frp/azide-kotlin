@@ -71,7 +71,7 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedTestTarget
             resetStartRecords()
 
             return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -92,7 +92,7 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceButNotCancelled(): Ex
             resetStartRecords()
 
             return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -117,7 +117,7 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndCancelledOnce(): E
             resetStartRecords()
 
             return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -142,7 +142,7 @@ fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsNotCancelled(): Expe
             resetCancellationRecords()
 
             return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+                override fun verifyPostPropagation() {
                     verifyWasNotCancelled()
                 }
             }
@@ -167,7 +167,7 @@ fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsCancelledOnce(): Exp
             resetCancellationRecords()
 
             return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+                override fun verifyPostPropagation() {
                     verifyWasCancelledOnce()
                 }
             }

@@ -144,7 +144,7 @@ fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedNTimes(
         resetExecutionRecords()
 
         return object : TargetImpactVerifier {
-            override fun verifyPostTransaction() {
+            override fun verifyPostPropagation() {
                 val effectiveExecutionRecords = getAndResetExecutionRecords().filter {
                     !it.wasRevoked
                 }

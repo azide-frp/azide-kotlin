@@ -15,7 +15,7 @@ data object EffectTestUtils {
         val subject = Transactions.executeWithResult { propagationContext ->
             val subject = propagate(propagationContext)
 
-            targetImpactVerifier.verifyPostTransaction()
+            targetImpactVerifier.verifyPostPropagation()
 
             return@executeWithResult subject
         }
