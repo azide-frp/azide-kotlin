@@ -6,4 +6,6 @@ pluginManagement {
 
 include(
     "core",
+    "dom",
+    "dom:example",
 )

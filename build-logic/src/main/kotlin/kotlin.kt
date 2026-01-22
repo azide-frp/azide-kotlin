@@ -12,6 +12,12 @@ private val enabledExperimentalCompilerFeatures = listOf(
     ExperimentalLanguageFeature.NestedTypeAliases,
 )
 
+fun KotlinMultiplatformExtension.configureKotlinCompilerOptions() {
+    compilerOptions {
+        experimentalLanguageFeatures.addAll(enabledExperimentalCompilerFeatures)
+    }
+}
+
 fun KotlinMultiplatformExtension.configureKotlin() {
     jvm()
 
@@ -22,7 +28,5 @@ fun KotlinMultiplatformExtension.configureKotlin() {
 
     jvmToolchain(usedJvmToolchainVersion)
 
-    compilerOptions {
-        experimentalLanguageFeatures.addAll(enabledExperimentalCompilerFeatures)
-    }
+    configureKotlinCompilerOptions()
 }
