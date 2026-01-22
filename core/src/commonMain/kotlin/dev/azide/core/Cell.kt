@@ -155,6 +155,12 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
+fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> = TODO()
+
+fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
+    transform: (ValueT) -> Action<TransformedValueT>,
+): Effect<Cell<TransformedValueT>> = map(transform).executeEvery()
+
 fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
     vertex.getOldValue(
         propagationContext = propagationContext,
