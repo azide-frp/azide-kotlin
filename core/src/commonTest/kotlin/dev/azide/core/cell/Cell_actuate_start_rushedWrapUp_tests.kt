@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
@@ -12,7 +12,6 @@ import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.effects.EffectTestUtils_start_rushedWrapUp
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -66,7 +65,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsStartedOnceButNotCancelled(),
             ),

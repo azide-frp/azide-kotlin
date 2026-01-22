@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x5
 import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetAction
@@ -26,7 +26,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
             subjectEffect = subjectEffect,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         EventStream_executeEach_testUtils.verifyEffectNotOngoing(
@@ -57,7 +57,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         EventStream_executeEach_testUtils.verifyEffectNotOngoing(
@@ -121,7 +121,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsNotExecuted(),
             ),

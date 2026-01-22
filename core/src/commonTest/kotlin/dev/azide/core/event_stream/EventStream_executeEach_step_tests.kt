@@ -7,7 +7,7 @@ import dev.azide.core.executeEach
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.effects.EffectTestUtils_step
 import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
@@ -133,7 +133,7 @@ class EventStream_executeEach_step_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsExecutedOnce(),
             ),

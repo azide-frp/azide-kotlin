@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.effects
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.TestStimulationSlot3
 
@@ -11,7 +11,7 @@ data object EffectTestUtils_startRevoked {
     fun <SubjectT> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedTargetImpact: ExpectedTestTargetImpact,
+        expectedTargetImpact: ExpectedImpact,
     ) {
         EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,

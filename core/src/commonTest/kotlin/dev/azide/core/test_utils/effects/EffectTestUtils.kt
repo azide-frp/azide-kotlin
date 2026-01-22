@@ -2,11 +2,11 @@ package dev.azide.core.test_utils.effects
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.ExpectedTestSubjectState
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 
 data object EffectTestUtils {
     fun <SubjectT> executeTransactionWithImpactAndNewStateVerification(
-        expectedTargetImpact: ExpectedTestTargetImpact,
+        expectedTargetImpact: ExpectedImpact,
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,
         propagate: (Transactions.PropagationContext) -> SubjectT,
     ): SubjectT {

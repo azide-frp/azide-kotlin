@@ -7,7 +7,7 @@ import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.installLater
@@ -18,7 +18,7 @@ data object EffectTestUtils_start_rushedWrapUp {
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
-        expectedTargetImpact: ExpectedTestTargetImpact,
+        expectedTargetImpact: ExpectedImpact,
     ) {
         EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,

@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.effects
 
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestInputStimulation
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
@@ -14,7 +14,7 @@ data object EffectTestUtils_step {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestInputStimulation,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
-        expectedTargetImpact: ExpectedTestTargetImpact,
+        expectedTargetImpact: ExpectedImpact,
     ) {
         EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,

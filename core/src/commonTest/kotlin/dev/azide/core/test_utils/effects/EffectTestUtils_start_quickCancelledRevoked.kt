@@ -5,7 +5,7 @@ import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation4
 import dev.azide.core.test_utils.TestStimulationSlot4
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
@@ -18,7 +18,7 @@ data object EffectTestUtils_start_quickCancelledRevoked {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation4? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
-        expectedTargetImpact: ExpectedTestTargetImpact,
+        expectedTargetImpact: ExpectedImpact,
     ): SubjectT = EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
            expectedTargetImpact = expectedTargetImpact,
            expectedNewState = expectedSubjectTransition.expectedNewState,
