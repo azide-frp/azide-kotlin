@@ -3,14 +3,14 @@ package dev.azide.core.test_utils
 interface ExpectedTestTargetImpact {
     data object None : ExpectedTestTargetImpact {
         override fun prepareImpactVerifier(): TargetImpactVerifier = object : TargetImpactVerifier {
-            override fun verifyPostTransaction() {
+            override fun verifyPostPropagation() {
                 // There are no expectations
             }
         }
     }
 
     interface TargetImpactVerifier {
-        fun verifyPostTransaction()
+        fun verifyPostPropagation()
     }
 
     companion object {
@@ -21,8 +21,8 @@ interface ExpectedTestTargetImpact {
                 val subVerifiers = expectedStimulations.map { it.prepareImpactVerifier() }
 
                 return object : TargetImpactVerifier {
-                    override fun verifyPostTransaction() {
-                        subVerifiers.forEach { it.verifyPostTransaction() }
+                    override fun verifyPostPropagation() {
+                        subVerifiers.forEach { it.verifyPostPropagation() }
                     }
                 }
             }
