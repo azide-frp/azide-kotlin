@@ -91,6 +91,10 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.map(
     }
 }
 
+fun <ResultT> Effect<*>.mapTo(
+    result: ResultT,
+): Effect<ResultT> = map { result }
+
 @JvmName("joinOfAction")
 @OptIn(ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType

@@ -17,7 +17,6 @@ import dev.azide.core.impl.event_stream.operated_vertices.SampledEachEventStream
 import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
-import kotlin.jvm.JvmName
 
 interface EventStream<out EventT> {
     val vertex: EventStreamVertex<EventT>
