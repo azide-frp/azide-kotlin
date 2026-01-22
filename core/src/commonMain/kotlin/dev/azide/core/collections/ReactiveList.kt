@@ -3,6 +3,7 @@ package dev.azide.core.collections
 import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import kotlin.jvm.JvmName
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
@@ -29,8 +30,10 @@ fun <ElementT, TransformedElementT> ReactiveList<ElementT>.map(
 fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sorted(): ReactiveList<ElementT> =
     TODO()
 
+@JvmName("sortedSortableValue")
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue<ElementT, SortKeyT>>.sorted(): ReactiveList<ElementT> =
     TODO()
 
+@JvmName("sortedReactiveSortableValue")
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sorted(): ReactiveList<ElementT> =
     TODO()
