@@ -2,15 +2,15 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulWarmReactiveSetVertex
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulWarmTrackedSetVertex
 import dev.azide.core.test_utils.TestInputStimulation
 
 class TestInputReactiveSet<ElementT>(
     initialElements: Set<ElementT>,
 ) : ReactiveSet<ElementT> {
-    private val _vertex = object : AbstractStatefulWarmReactiveSetVertex<ElementT>(
+    private val _vertex = object : AbstractStatefulWarmTrackedSetVertex<ElementT>(
         initialElements = initialElements.toMutableSet(),
     ) {
         fun change(
@@ -52,7 +52,7 @@ class TestInputReactiveSet<ElementT>(
                 throw IllegalStateException("No ongoing change to revoke")
             }
 
-            exposeAndPropagateChange(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
                 change = null,
             )
@@ -81,7 +81,7 @@ class TestInputReactiveSet<ElementT>(
                 throw IllegalArgumentException("Elements to remove contain elements not present in the set")
             }
 
-            exposeAndPropagateChange(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
                 change = SetChange(
                     addedElements = elementsToAdd,
@@ -131,7 +131,7 @@ class TestInputReactiveSet<ElementT>(
         }
     }
 
-    override val vertex: ReactiveSetVertex<ElementT>
+    override val trackedVertex: TrackedSetVertex<ElementT>
         get() = _vertex
 }
 

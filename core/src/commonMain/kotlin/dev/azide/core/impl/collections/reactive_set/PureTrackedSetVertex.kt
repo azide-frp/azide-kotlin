@@ -1,11 +1,11 @@
 package dev.azide.core.impl.collections.reactive_set
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractFrozenReactiveSetVertex
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractFrozenTrackedSetVertex
 
-class PureReactiveSetVertex<ElementT>(
+class PureTrackedSetVertex<ElementT>(
     val elements: Set<ElementT>,
-) : AbstractFrozenReactiveSetVertex<ElementT>() {
+) : AbstractFrozenTrackedSetVertex<ElementT>() {
     override fun getOldContentView(
         propagationContext: Transactions.PropagationContext,
     ): Set<ElementT> = elements

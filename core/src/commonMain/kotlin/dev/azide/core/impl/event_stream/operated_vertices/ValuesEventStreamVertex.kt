@@ -3,7 +3,9 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
@@ -16,7 +18,7 @@ import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEvent
 class ValuesEventStreamVertex<ValueT> private constructor(
     propagationContext: Transactions.PropagationContext,
     private val sourceVertex: CellVertex<ValueT>,
-) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), WarmCellVertex.BasicObserver<ValueT> {
+) : AbstractSimpleStatelessEventStreamVertex<ValueT>(), BoundListener {
     private enum class InternalState {
         Spawning, Spawned,
     }
@@ -33,7 +35,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     private var internalState = InternalState.Spawning
 
-    private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     init {
         // Enqueue for commitment to ensure we observe the internal state switches to "spawned"
@@ -45,11 +47,10 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     /**
      * Handle the emission of the source cell vertex.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
-        when (update) {
+        when (val update = sourceVertex.ongoingUpdate) {
             null -> { // Update revocation
                 when (internalState) {
                     InternalState.Spawning -> { // Fall back to emitting the old value
@@ -57,7 +58,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
                             propagationContext = propagationContext,
                         )
 
-                        exposeAndPropagateEmission(
+                        exposeEmissionNotifyingListeners(
                             propagationContext = propagationContext,
                             emission = EventStreamVertex.Emission(
                                 emittedEvent = oldValue,
@@ -66,7 +67,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
                     }
 
                     InternalState.Spawned -> { // Just revoke the emission
-                        exposeAndPropagateEmission(
+                        exposeEmissionNotifyingListeners(
                             propagationContext = propagationContext,
                             emission = null,
                         )
@@ -75,7 +76,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
             }
 
             else -> { // Initial update or correction
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = EventStreamVertex.Emission(
                         emittedEvent = update.updatedValue,
@@ -89,13 +90,13 @@ class ValuesEventStreamVertex<ValueT> private constructor(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<ValueT>? {
-        if (upstreamObserverHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerObserver(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -127,14 +128,14 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     }
 
     override fun deactivate() {
-        val upstreamObserverHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val upstreamListenerHandle =
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterObserver(
-            handle = upstreamObserverHandle,
+        sourceVertex.unregisterListener(
+            handle = upstreamListenerHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     override fun transit() {

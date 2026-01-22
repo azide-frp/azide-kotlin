@@ -34,8 +34,17 @@ class Cell_actuate_start_quickCancelled_tests {
         )
     }
 
+    @Test
+    fun test_start_quickCancelled_twice() {
+        test_start_quickCancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            cancelCount = 2,
+        )
+    }
+
     private fun test_start_quickCancelled(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        cancelCount: Int = 1,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
@@ -54,6 +63,7 @@ class Cell_actuate_start_quickCancelled_tests {
             expectedTargetImpact = ExpectedTestTargetImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
             ),
+            cancelCount = cancelCount,
         )
 
         Cell_actuate_testUtils.verifyEffectNotOngoing(

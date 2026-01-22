@@ -2,10 +2,11 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.cell.registerObserverOnline
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex.BasicSubscriber
-import dev.azide.core.impl.event_stream.registerSubscriberOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import kotlin.test.assertEquals
@@ -26,31 +27,31 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
-    ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier, BasicSubscriber<EventT> {
+    ): TestSubjectReactionVerifier = object : TestSubjectReactionVerifier, BoundListener {
         private val subjectVertex: EventStreamVertex<EventT>
             get() = subjectLazy.value.vertex
 
-        private var subscriberHandle: EventStreamVertex.SubscriberHandle? = null
+        private var listenerHandle: ListenerHandle? = null
 
         private var initialEmission: EventStreamVertex.Emission<EventT>? = null
 
         private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
 
         override fun install() {
-            if (subscriberHandle != null) {
+            if (listenerHandle != null) {
                 throw IllegalStateException("Event stream verifier is already installed")
             }
 
-            subscriberHandle = subjectVertex.registerSubscriberOnline(
+            listenerHandle = subjectVertex.registerBoundListenerOnline(
                 propagationContext = propagationContext,
-                subscriber = this,
+                listener = this,
             )
 
             initialEmission = subjectVertex.ongoingEmission
         }
 
         override fun verifyReaction() {
-            if (subscriberHandle == null) {
+            if (listenerHandle == null) {
                 throw IllegalStateException("A non-installed verifier cannot be used for verification")
             }
 
@@ -84,22 +85,21 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
         }
 
         override fun uninstall() {
-            val subscriberHandle = this.subscriberHandle
+            val listenerHandle = this.listenerHandle
                 ?: throw IllegalStateException("Cannot uninstall a non-installed event stream verifier")
 
-            subjectVertex.unregisterSubscriber(
-                handle = subscriberHandle,
+            subjectVertex.unregisterListener(
+                handle = listenerHandle,
             )
 
-            this.subscriberHandle = null
+            this.listenerHandle = null
             this.initialEmission = null
         }
 
-        override fun handleEmission(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
         ) {
-            receivedEmissions.add(emission)
+            receivedEmissions.add(subjectVertex.ongoingEmission)
         }
     }
 

@@ -7,7 +7,7 @@ import dev.azide.core.test_utils.prepareReactionVerifierInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object StatefulTestUtils_reaction {
+data object TestUtils_reaction {
     fun <SubjectT> executeReactionTransaction(
         subject: SubjectT,
         slottedInputStimulation: TestSlottedStimulation2,

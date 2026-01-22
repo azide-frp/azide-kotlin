@@ -13,6 +13,7 @@ import dev.azide.core.impl.event_stream.operated_vertices.AdaptedExternalEventSt
 import dev.azide.core.impl.event_stream.operated_vertices.FilteredEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.MappedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.Merged2EventStreamVertex
+import dev.azide.core.impl.event_stream.operated_vertices.SampledEachEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.SingleEventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
@@ -99,9 +100,7 @@ fun <EventT, TransformedEventT> EventStream<EventT>.map(
 ): EventStream<TransformedEventT> = EventStream.Ordinary(
     vertex = MappedEventStreamVertex(
         sourceEventStream = this@map,
-        transform = { _, event ->
-            transform(event)
-        },
+        transform = transform,
     ),
 )
 
@@ -111,18 +110,11 @@ fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNull(
 
 fun <EventT, TransformedEventT> EventStream<EventT>.mapAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT,
-): EventStream<TransformedEventT> = EventStream.Ordinary(
-    vertex = MappedEventStreamVertex(
-        sourceEventStream = this@mapAt,
-        transform = { propagationContext, event ->
-            MomentContext.wrapUp(
-                propagationContext,
-            ) {
-                transform(event)
-            }
-        },
-    ),
-)
+): EventStream<TransformedEventT> = sampleEachOf { event: EventT ->
+    Moment.decontextualize {
+        transform(event)
+    }
+}
 
 fun <EventT, TransformedEventT : Any> EventStream<EventT>.mapNotNullAt(
     transform: context(MomentContext) (EventT) -> TransformedEventT?,
@@ -147,14 +139,10 @@ fun <EventT> EventStream<EventT>.filterAt(
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.single(): EventStream<EventT> =
     EventStream.Ordinary(
-        vertex = when (val sourceVertex = this.vertex) {
-            is LiveEventStreamVertex -> SingleEventStreamVertex(
-                propagationContext = momentContext.propagationContext,
-                sourceVertex = sourceVertex,
-            )
-
-            is TerminatedEventStreamVertex -> TerminatedEventStreamVertex()
-        }
+        vertex = SingleEventStreamVertex(
+            wrapUpContext = momentContext.wrapUpContext,
+            sourceEventStream = this,
+        ),
     )
 
 context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.take(
@@ -207,6 +195,16 @@ context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.acc
     )
 }
 
+fun <EventT> EventStream<Moment<EventT>>.sampleEach(): EventStream<EventT> = EventStream.Ordinary(
+    vertex = SampledEachEventStreamVertex(
+        sourceEventStream = this,
+    ),
+)
+
+fun <EventT, TransformedEventT> EventStream<EventT>.sampleEachOf(
+    transform: (EventT) -> Moment<TransformedEventT>,
+): EventStream<TransformedEventT> = map(transform).sampleEach()
+
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
     object : AbstractPrimitiveEffect<ExecutedEachEventStreamEffectVertex<EventT>, EventStream<EventT>>() {
         override fun startInternally(
@@ -234,152 +232,6 @@ fun EventStream<Trigger>.triggerEachForever(): Trigger = executeEachForever().ma
 fun <EventT, TransformedEventT> EventStream<EventT>.executeEachOf(
     transform: (EventT) -> Action<TransformedEventT>,
 ): Effect<EventStream<TransformedEventT>> = map(transform).executeEach()
-
-@JvmName("actuateSchedule")
-fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
-    override val launchImpl: Action<Effect.Handle> = run {
-        // Define the launching action of the schedule
-
-        val newSchedules: EventStream<Schedule> = this@actuate.updatedValues
-
-        this@actuate.sampling.joinOf { initialInnerSchedule: Schedule ->
-            // Launch the initial schedule
-            initialInnerSchedule.launch.joinOf { initialInnerScheduleHandle: Effect.Handle ->
-                EventStream.loopedInAction { loopedNewInnerScheduleHandles: EventStream<Effect.Handle> ->
-                    // Hold the handles to the new started schedules, as we need the handle to the currently active
-                    // schedule to cancel it later
-                    loopedNewInnerScheduleHandles.holding(
-                        initialValue = initialInnerScheduleHandle,
-                    ).joinOf { currentScheduleHandle: Cell<Effect.Handle> ->
-                        // Define the transition effect that cancels the old schedule and starts the new one whenever a
-                        // new schedule arrives
-                        val transitionEffect: Effect<EventStream<Effect.Handle>> =
-                            newSchedules.executeEachOf { updatedSchedule: Schedule ->
-                                currentScheduleHandle.sampling.joinOf { currentScheduleHandleNow: Effect.Handle ->
-                                    // Cancel the old schedule...
-                                    currentScheduleHandleNow.cancel.joinOf {
-                                        // ...and immediately start the new one
-                                        updatedSchedule.launch
-                                    }
-
-                                    // Note that in the corner case, if the source schedule cell updates at the moment
-                                    // the outer schedule launches, these three actions happen simultaneously: the
-                                    // initial schedule starts, is immediately cancelled, and the updated schedule
-                                    // starts.
-                                }
-                            }
-
-                        // Start the transition effect
-                        transitionEffect.start.joinOf { transitionEffectOutcome ->
-                            val newInnerScheduleHandles = transitionEffectOutcome.result
-                            val transitionEffectHandle = transitionEffectOutcome.handle
-
-                            val cancelCurrentScheduleTrigger: Trigger =
-                                currentScheduleHandle.sampling.joinOf { currentScheduleHandleNow: Effect.Handle ->
-                                    currentScheduleHandleNow.cancel
-                                }
-
-                            // Build the handle to the outer schedule (the one we're defining)
-                            Effect.Handle.of(
-                                cancelOnce = Triggers.combine(
-                                    // Canceling the transition effect...
-                                    transitionEffectHandle.cancel,
-                                    // ...and the currently active inner schedule
-                                    cancelCurrentScheduleTrigger,
-                                ),
-                            ).map { outerEffectHandle ->
-                                LoopClosure(
-                                    result = outerEffectHandle,
-                                    loopedValue = newInnerScheduleHandles, // Close the loop
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@JvmName("actuateEffect")
-fun <ResultT> Cell<Effect<ResultT>>.actuate(): Effect<Cell<ResultT>> = object : Effect<Cell<ResultT>> {
-    override val start = run {
-        // Define the starting action of the effect
-
-        val newInnerEffects: EventStream<Effect<ResultT>> = this@actuate.updatedValues
-
-        this@actuate.sampling.joinOf { initialInnerEffect: Effect<ResultT> ->
-            // Start the initial effect
-            initialInnerEffect.start.joinOf { initialEffectOutcome ->
-                val initialResult: ResultT = initialEffectOutcome.result
-                val initialEffectHandle: Effect.Handle = initialEffectOutcome.handle
-
-                EventStream.loopedInAction { loopedNewInnerEffectHandles: EventStream<Effect.Handle> ->
-                    // Hold the handles to the new started effects, as we need the handle to the currently active
-                    // effect to cancel it later
-                    loopedNewInnerEffectHandles.holding(
-                        initialValue = initialEffectHandle,
-                    ).joinOf { currentInnerEffectHandle: Cell<Effect.Handle> ->
-                        // Define the transition effect that cancels the old effect and starts the new one whenever a
-                        // new effect arrives
-                        val transitionEffect: Effect<EventStream<Effect.Outcome<ResultT>>> =
-                            newInnerEffects.executeEachOf { newInnerEffect: Effect<ResultT> ->
-                                currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
-                                    // Cancel the old effect...
-                                    currentInnerEffectHandleNow.cancel.joinOf {
-                                        // ...and immediately start the new one
-                                        newInnerEffect.start
-                                    }
-
-                                    // Note that in the corner case, if the source effect cell updates at the moment
-                                    // the outer effect starts, these three actions happen simultaneously: the initial
-                                    // effect starts, is immediately cancelled, and the updated effect starts.
-                                }
-                            }
-
-                        // Start the transition effect
-                        transitionEffect.start.joinOf { transitionEffectOutcome ->
-                            val newInnerEffectOutcomes: EventStream<Effect.Outcome<ResultT>> =
-                                transitionEffectOutcome.result
-                            val transitionEffectHandle = transitionEffectOutcome.handle
-
-                            val newInnerEffectResults = newInnerEffectOutcomes.map { it.result }
-                            val newInnerEffectHandles = newInnerEffectOutcomes.map { it.handle }
-
-                            val cancelCurrentInnerEffectTrigger: Trigger =
-                                currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
-                                    currentInnerEffectHandleNow.cancel
-                                }
-
-                            // Build the handle to the outer effect (the one we're defining)
-                            Effect.Handle.of(
-                                cancelOnce = Triggers.combine(
-                                    // Canceling the transition effect...
-                                    transitionEffectHandle.cancel,
-                                    // ...and the currently active inner effect
-                                    cancelCurrentInnerEffectTrigger,
-                                ),
-                            ).joinOf { outerEffectHandle ->
-                                newInnerEffectResults.holding(
-                                    initialValue = initialResult,
-                                ).map { outerEffectResult: Cell<ResultT> ->
-                                    LoopClosure(
-                                        // Return the outer effect's result with the corresponding handle
-                                        result = Effect.Outcome.of(
-                                            result = outerEffectResult,
-                                            handle = outerEffectHandle,
-                                        ),
-                                        loopedValue = newInnerEffectHandles, // Close the loop
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 fun <T1, T2> EventStream<Pair<T1, T2>>.split(): Pair<EventStream<T1>, EventStream<T2>> = Pair(
     first = this.map { it.first },

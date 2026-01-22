@@ -19,6 +19,7 @@ data object EffectTestUtils_start_quickCancelled {
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedTestTargetImpact,
+        cancelCount: Int = 1,
     ): SubjectT = EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
         expectedTargetImpact = expectedTargetImpact,
         expectedNewState = expectedSubjectTransition.expectedNewState,
@@ -36,7 +37,7 @@ data object EffectTestUtils_start_quickCancelled {
         )
 
         val subject = effectOutcome.result
-        val effectHandle = effectOutcome.handle
+        val subjectEffectHandle = effectOutcome.handle
 
         slottedInputStimulation?.stimulate(
             propagationContext = propagationContext,
@@ -57,9 +58,11 @@ data object EffectTestUtils_start_quickCancelled {
         )
 
         // 2. Cancel the effect
-        val (_: Unit, _: Revocable) = effectHandle.cancel.executeInternallyWrappedUp(
-            propagationContext = propagationContext,
-        )
+        repeat(cancelCount) {
+            val (_: Unit, _: Revocable) = subjectEffectHandle.cancel.executeInternallyWrappedUp(
+                propagationContext = propagationContext,
+            )
+        }
 
         slottedInputStimulation?.stimulate(
             propagationContext = propagationContext,

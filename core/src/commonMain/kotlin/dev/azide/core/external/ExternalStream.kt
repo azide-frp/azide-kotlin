@@ -2,7 +2,7 @@ package dev.azide.core.external
 
 /**
  * An external entity which conceptually resembles an [dev.azide.core.EventStream], i.e. is a source of events occurring in time. The
- * events emitted by the source should not depend on registration/unregistration of subscribers; they should occur
+ * events emitted by the source should not depend on registration/unregistration of listeners; they should occur
  * naturally on their own. If this isn't the case, consider using [ExternalStreamEffect] instead.
  */
 interface ExternalStream<EventT> {

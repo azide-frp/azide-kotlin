@@ -2,11 +2,12 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.FrozenReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetChange
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetObserver
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex.SetObserverHandle
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
+import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
+import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -20,8 +21,8 @@ internal object ReactiveSetTestUtils {
         )
 
     class ObservingVerifier<ElementT>(
-        private val subjectVertex: WarmReactiveSetVertex<ElementT>,
-    ) : SetObserver<ElementT> {
+        private val subjectVertex: WarmTrackedSetVertex<ElementT>,
+    ) : BoundListener {
         @JvmInline
         value class ReceivedChange<ElementT>(
             val receivedChange: SetChange<ElementT>?,
@@ -29,10 +30,10 @@ internal object ReactiveSetTestUtils {
 
         private var receivedChange: ReceivedChange<ElementT>? = null
 
-        private var upstreamObserverHandle: SetObserverHandle? = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.registerSetObserver(
+        private var upstreamListenerHandle: ListenerHandle? = Transactions.executeWithResult { propagationContext ->
+            subjectVertex.registerBoundListenerOnline(
                 propagationContext = propagationContext,
-                observer = this,
+                listener = this,
             )
         }
 
@@ -115,7 +116,7 @@ internal object ReactiveSetTestUtils {
             expectedChangedElements: Set<ElementT>,
             verifyReceivedChange: (ReceivedChange<ElementT>?) -> Unit,
         ) {
-            assertIs<WarmReactiveSetVertex<ElementT>>(
+            assertIs<WarmTrackedSetVertex<ElementT>>(
                 value = subjectVertex,
                 message = "Subject reactive set vertex is already frozen",
             )
@@ -170,22 +171,21 @@ internal object ReactiveSetTestUtils {
         }
 
         fun stop() {
-            val upstreamObserverHandle =
-                this.upstreamObserverHandle ?: throw IllegalStateException("Verifier is already stopped")
+            val upstreamListenerHandle =
+                this.upstreamListenerHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterSetObserver(
-                handle = upstreamObserverHandle,
+            subjectVertex.unregisterListener(
+                handle = upstreamListenerHandle,
             )
 
-            this.upstreamObserverHandle = null
+            this.upstreamListenerHandle = null
         }
 
-        override fun handleChange(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-            change: SetChange<ElementT>?,
         ) {
             receivedChange = ReceivedChange(
-                receivedChange = change,
+                receivedChange = subjectVertex.ongoingChange,
             )
         }
     }
@@ -193,7 +193,7 @@ internal object ReactiveSetTestUtils {
     fun <ElementT> observeForVerification(
         subjectReactiveSet: ReactiveSet<ElementT>,
     ): ObservingVerifier<ElementT> {
-        val subjectVertex = subjectReactiveSet.vertex as? WarmReactiveSetVertex<ElementT>
+        val subjectVertex = subjectReactiveSet.trackedVertex as? WarmTrackedSetVertex<ElementT>
             ?: throw IllegalStateException("Subject reactive set vertex is already frozen")
 
         return ObservingVerifier(
@@ -208,9 +208,9 @@ internal object ReactiveSetTestUtils {
         subjectReactiveSet: ReactiveSet<ElementT>,
         expectedElements: Set<ElementT>,
     ) {
-        val subjectVertex = subjectReactiveSet.vertex
+        val subjectVertex = subjectReactiveSet.trackedVertex
 
-        assertIs<WarmReactiveSetVertex<ElementT>>(
+        assertIs<WarmTrackedSetVertex<ElementT>>(
             value = subjectVertex,
             message = "Subject reactive set vertex is not warm as expected",
         )
@@ -225,33 +225,6 @@ internal object ReactiveSetTestUtils {
             expected = expectedElements,
             actual = sampledElements,
             message = "Warm subject reactive set's elements did not match expected elements",
-        )
-    }
-
-    /**
-     * Verify that the [subjectReactiveSet] is frozen.
-     */
-    fun <ElementT> verifyFrozen(
-        subjectReactiveSet: ReactiveSet<ElementT>,
-        expectedFrozenElements: Set<ElementT>,
-    ) {
-        val subjectVertex = subjectReactiveSet.vertex
-
-        assertIs<FrozenReactiveSetVertex<ElementT>>(
-            value = subjectVertex,
-            message = "Subject reactive set vertex is not frozen as expected",
-        )
-
-        val sampledElements = Transactions.executeWithResult { propagationContext ->
-            subjectVertex.getOldContentView(
-                propagationContext = propagationContext,
-            ).toSet()
-        }
-
-        assertEquals(
-            expected = expectedFrozenElements,
-            actual = sampledElements,
-            message = "Frozen subject reactive set's elements did not match expected elements",
         )
     }
 

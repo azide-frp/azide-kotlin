@@ -1,41 +1,41 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
+import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberWeakly
+import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
 
 class SingleEventStreamVertex<EventT>(
-    propagationContext: Transactions.PropagationContext,
-    sourceVertex: EventStreamVertex<EventT>,
-) : AbstractStatefulEventStreamVertex<EventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
-    private var upstreamWeakSubscriberHandle: LiveEventStreamVertex.WeakSubscriberHandle? =
-        sourceVertex.registerSubscriberWeakly(
-            propagationContext = propagationContext,
-            dependentVertex = this,
-            subscriber = this,
-            mode = ActivationMode.Online,
-        )
+    wrapUpContext: Transactions.WrapUpContext,
+    private val sourceEventStream: EventStream<EventT>,
+) : AbstractStatefulEventStreamVertex<EventT>(
+    wrapUpContext = wrapUpContext,
+), BoundListener {
+    private val sourceVertex: EventStreamVertex<EventT>
+        get() = sourceEventStream.vertex
+
+    private var upstreamWeakListenerHandle: LiveEventStreamVertex.WeakListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        when (emission) {
+        when (val emission = sourceVertex.ongoingEmission) {
             null -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = emission,
                 )
@@ -43,21 +43,26 @@ class SingleEventStreamVertex<EventT>(
         }
     }
 
-    init {
-        sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-            exposeEmission(
-                propagationContext = propagationContext,
-                emission = sourceOngoingEmission,
-            )
-        }
+    override fun initialize(
+        propagationContext: Transactions.PropagationContext,
+    ): EventStreamVertex.Emission<EventT>? {
+
+        upstreamWeakListenerHandle = sourceVertex.registerEmissionListenerWeakly(
+            propagationContext = propagationContext,
+            dependentVertex = this,
+            listener = this,
+            mode = ActivationMode.Online,
+        )
+
+        return sourceVertex.ongoingEmission
     }
 
     override fun transit() {
-        val upstreamWeakSubscriberHandle = this.upstreamWeakSubscriberHandle
-            ?: throw IllegalStateException("It looks as if the single emission already had place")
+        val upstreamWeakListenerHandle = this.upstreamWeakListenerHandle
+            ?: throw IllegalStateException("It looks as if the single emission already had place or the vertex wasn't initialized")
 
-        upstreamWeakSubscriberHandle.cancel()
+        upstreamWeakListenerHandle.cancel()
 
-        this.upstreamWeakSubscriberHandle = null
+        this.upstreamWeakListenerHandle = null
     }
 }

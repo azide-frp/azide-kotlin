@@ -3,25 +3,24 @@ package dev.azide.core.test_utils
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerObserverOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class TestCellObserver<ValueT>(
+class TestCellListener<ValueT>(
     val observedCellVertex: CellVertex<ValueT>,
-) : WarmCellVertex.BasicObserver<ValueT> {
+) : BoundListener {
     interface Handle {
         fun cancel()
     }
 
     private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
-        receivedUpdates.add(update)
+        receivedUpdates.add(observedCellVertex.ongoingUpdate)
     }
 
     fun getAndResetReceivedUpdates(): List<CellVertex.Update<ValueT>?> = receivedUpdates.toList().also {
@@ -34,24 +33,24 @@ class TestCellObserver<ValueT>(
 }
 
 @Deprecated("Switch to the new test utils")
-context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTestingCancellable(): Pair<TestCellObserver<ValueT>, TestCellObserver.Handle> {
+context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTestingCancellable(): Pair<TestCellListener<ValueT>, TestCellListener.Handle> {
     val vertex = vertex
 
-    val observer = TestCellObserver(
+    val listener = TestCellListener(
         observedCellVertex = vertex,
     )
 
-    val observerHandle = vertex.registerObserverOnline(
+    val listenerHandle = vertex.registerBoundListenerOnline(
         propagationContext = transactionTestContext.propagationContext,
-        observer = observer,
+        listener = listener,
     )
 
     return Pair(
-        observer,
-        object : TestCellObserver.Handle {
+        listener,
+        object : TestCellListener.Handle {
             override fun cancel() {
-                vertex.unregisterObserver(
-                    handle = observerHandle,
+                vertex.unregisterListener(
+                    handle = listenerHandle,
                 )
             }
         },
@@ -59,12 +58,12 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT
 }
 
 @Deprecated("Switch to the new test utils")
-context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTesting(): TestCellObserver<ValueT> {
-    val (testCellObserver, _) = this.observeForTestingCancellable()
-    return testCellObserver
+context(transactionTestContext: TransactionTestContext) fun <ValueT> Cell<ValueT>.observeForTesting(): TestCellListener<ValueT> {
+    val (testCellListener, _) = this.observeForTestingCancellable()
+    return testCellListener
 }
 
-fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesUpdate(
+fun <ValueT> TestCellListener<ValueT>.verifyPropagatedAndExposesUpdate(
     expectedUpdatedValue: ValueT,
 ) {
     val expectedUpdate = CellVertex.Update(
@@ -96,7 +95,7 @@ fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesUpdate(
     )
 }
 
-fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesRevocation() {
+fun <ValueT> TestCellListener<ValueT>.verifyPropagatedAndExposesRevocation() {
     val receivedUpdates = getAndResetReceivedUpdates()
 
     assertEquals(
@@ -120,7 +119,7 @@ fun <ValueT> TestCellObserver<ValueT>.verifyPropagatedAndExposesRevocation() {
     )
 }
 
-fun <ValueT> TestCellObserver<ValueT>.verifyDoesNotExposeUpdate() {
+fun <ValueT> TestCellListener<ValueT>.verifyDoesNotExposeUpdate() {
     val exposedUpdate = observedCellVertex.ongoingUpdate
 
     assertNull(
@@ -129,7 +128,7 @@ fun <ValueT> TestCellObserver<ValueT>.verifyDoesNotExposeUpdate() {
     )
 }
 
-fun <ValueT> TestCellObserver<ValueT>.verifyDidNotPropagateNorExposesUpdate() {
+fun <ValueT> TestCellListener<ValueT>.verifyDidNotPropagateNorExposesUpdate() {
     val receivedUpdates = getAndResetReceivedUpdates()
 
     assertEquals(
@@ -141,7 +140,7 @@ fun <ValueT> TestCellObserver<ValueT>.verifyDidNotPropagateNorExposesUpdate() {
     verifyDoesNotExposeUpdate()
 }
 
-context(transactionTestContext: TransactionTestContext) fun <ValueT> TestCellObserver<ValueT>.verifyOldValue(
+context(transactionTestContext: TransactionTestContext) fun <ValueT> TestCellListener<ValueT>.verifyOldValue(
     expectedOldValue: ValueT,
 ) {
     val oldValue = observedCellVertex.getOldValue(
@@ -154,7 +153,7 @@ context(transactionTestContext: TransactionTestContext) fun <ValueT> TestCellObs
     )
 }
 
-fun <ValueT> TestCellObserver<ValueT>.verifyOldValueInsideTransaction(
+fun <ValueT> TestCellListener<ValueT>.verifyOldValueInsideTransaction(
     expectedOldValue: ValueT,
 ) {
     TransactionTestUtils.executeInsideTransaction {

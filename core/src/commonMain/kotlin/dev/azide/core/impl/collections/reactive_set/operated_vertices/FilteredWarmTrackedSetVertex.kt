@@ -1,28 +1,30 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices
 
-import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.ReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.WarmReactiveSetVertex
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmReactiveSetVertex
+import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_set.SetChange
+import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
+import dev.azide.core.impl.registerBoundListener
 
-class FilteredWarmReactiveSetVertex<ElementT>(
-    private val sourceVertex: ReactiveSetVertex<ElementT>,
+class FilteredWarmTrackedSetVertex<ElementT>(
+    private val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
-) : AbstractStatelessWarmReactiveSetVertex<ElementT>(), ReactiveSetVertex.SetObserver<ElementT> {
-    private var upstreamObserverHandle: ReactiveSetVertex.SetObserverHandle? = null
+) : AbstractStatelessWarmTrackedSetVertex<ElementT>(), Vertex.BoundListener {
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
      * Handle the change of the source reactive set.
      */
-    override fun handleChange(
-        propagationContext: Transactions.PropagationContext,
-        change: ReactiveSetVertex.SetChange<ElementT>?,
+    override fun handle(
+        propagationContext: PropagationContext,
     ) {
-        when (change) {
+        when (val change = sourceVertex.ongoingChange) {
             null -> {
                 if (ongoingChange != null) {
-                    exposeAndPropagateChange(
+                    exposeChangeNotifyingListeners(
                         propagationContext = propagationContext,
                         change = null,
                     )
@@ -33,7 +35,7 @@ class FilteredWarmReactiveSetVertex<ElementT>(
                 when (val filteredChange = change.filter(predicate)) {
                     null -> {
                         if (ongoingChange != null) {
-                            exposeAndPropagateChange(
+                            exposeChangeNotifyingListeners(
                                 propagationContext = propagationContext,
                                 change = null,
                             )
@@ -41,7 +43,7 @@ class FilteredWarmReactiveSetVertex<ElementT>(
                     }
 
                     else -> {
-                        exposeAndPropagateChange(
+                        exposeChangeNotifyingListeners(
                             propagationContext = propagationContext,
                             change = filteredChange,
                         )
@@ -52,33 +54,35 @@ class FilteredWarmReactiveSetVertex<ElementT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-    ): ReactiveSetVertex.SetChange<ElementT>? {
-        if (upstreamObserverHandle != null) {
+        propagationContext: PropagationContext,
+        mode: Vertex.ActivationMode,
+    ): SetChange<ElementT>? {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerSetObserver(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
+            mode = mode,
         )
 
         return sourceVertex.ongoingChange?.filter(predicate)
     }
 
     override fun deactivate() {
-        val upstreamObserverHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val upstreamListenerHandle =
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSetObserver(
-            handle = upstreamObserverHandle,
+        sourceVertex.unregisterListener(
+            handle = upstreamListenerHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        propagationContext: PropagationContext,
     ): Set<ElementT> {
         val oldContentView = sourceVertex.getOldContentView(
             propagationContext = propagationContext,

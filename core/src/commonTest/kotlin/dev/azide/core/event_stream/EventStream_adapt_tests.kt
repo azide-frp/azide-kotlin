@@ -1,17 +1,13 @@
 package dev.azide.core.event_stream
 
-import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.EventStream
+import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStream
-import dev.azide.core.hold
-import dev.azide.core.test_utils.TransactionTestUtils
-import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.subscribeForTesting
-import dev.azide.core.test_utils.verifyDoesNotExposeEmission
-import dev.azide.core.test_utils.verifyPropagatedAndExposesEmission
-import dev.azide.core.test_utils.verifyPropagatedEmission
+import dev.azide.core.holding
+import dev.azide.core.pullExternally
+import dev.azide.core.sampleExternally
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @Suppress("ClassName")
 class EventStream_adapt_tests {
@@ -85,14 +81,16 @@ class EventStream_adapt_tests {
             ),
         )
 
-        val eventStreamSubscriber = TransactionTestUtils.executeInsideTransaction {
-            subjectEventStream.subscribeForTesting()
-        }
+        val verificationCell = subjectEventStream.holding(
+            initialValue = 0,
+        ).pullExternally()
 
         customEventSource.notify(10)
 
         // Verify the effectiveness of the event delivery indirectly
-        eventStreamSubscriber.verifyPropagatedEmission(expectedEmittedEvent = 10)
-        eventStreamSubscriber.verifyDoesNotExposeEmission()
+        assertEquals(
+            expected = 10,
+            actual = verificationCell.sampleExternally(),
+        )
     }
 }

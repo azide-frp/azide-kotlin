@@ -1,11 +1,12 @@
 package dev.azide.core.impl.collections.reactive_collection
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.collections.reactive_collection.ReactiveCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
 
-interface ReactiveCollectionVertex<out ElementT> : Vertex {
+interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
         companion object {
             fun <ElementT> of(
@@ -21,34 +22,23 @@ interface ReactiveCollectionVertex<out ElementT> : Vertex {
         val removedElements: Collection<ElementT>
     }
 
-    interface GenericCollectionObserver<in ChangeT : CollectionChange<*>> {
-        fun handleChange(
-            propagationContext: Transactions.PropagationContext,
-            change: ChangeT?,
-        )
-    }
-
-    typealias CollectionObserver<ElementT> = GenericCollectionObserver<CollectionChange<ElementT>>
-
-    interface CollectionObserverHandle
-
-    fun registerCollectionObserver(
-        propagationContext: Transactions.PropagationContext,
-        observer: CollectionObserver<ElementT>,
-    ): CollectionObserverHandle
-
-    fun unregisterCollectionObserver(
-        handle: CollectionObserverHandle,
-    )
-
-    val ongoingChange: CollectionChange<ElementT>?
+    val ongoingChange: ChangeT?
 
     fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
-    ): Collection<ElementT>
+        propagationContext: PropagationContext,
+    ): ContentT
 
     fun buildSizeVertex(): CellVertex<Int>
 }
+
+fun <ElementT> TrackedCollectionVertex<ElementT>.buildContainsVertex(
+    element: ElementT,
+): CellVertex<Boolean> = TrackedCollectionContainsCellVertex(
+    sourceVertex = this,
+    element = element,
+)
+
+typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
 
 fun <ElementT, TransformedElementT> CollectionChange<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,

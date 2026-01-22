@@ -2,9 +2,11 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerObserverOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -20,31 +22,31 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<Cell<ValueT>>,
     ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, WarmCellVertex.BasicObserver<ValueT> {
+        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, BoundListener {
             private val subjectVertex: CellVertex<ValueT>
                 get() = subjectLazy.value.vertex
 
-            private var observerHandle: CellVertex.ObserverHandle? = null
+            private var listenerHandle: ListenerHandle? = null
 
             private var initialUpdate: CellVertex.Update<ValueT>? = null
 
             private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
             override fun install() {
-                if (observerHandle != null) {
+                if (listenerHandle != null) {
                     throw IllegalStateException("Cell verifier is already installed")
                 }
 
-                observerHandle = subjectVertex.registerObserverOnline(
+                listenerHandle = subjectVertex.registerBoundListenerOnline(
                     propagationContext = propagationContext,
-                    observer = this,
+                    listener = this,
                 )
 
                 initialUpdate = subjectVertex.ongoingUpdate
             }
 
             override fun verifyReaction() {
-                if (observerHandle == null) {
+                if (listenerHandle == null) {
                     throw IllegalStateException("A non-installed verifier cannot be used for verification")
                 }
 
@@ -78,22 +80,21 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
             }
 
             override fun uninstall() {
-                val observerHandle =
-                    this.observerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
+                val listenerHandle =
+                    this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
 
-                subjectVertex.unregisterObserver(
-                    handle = observerHandle,
+                subjectVertex.unregisterListener(
+                    handle = listenerHandle,
                 )
 
-                this.observerHandle = null
+                this.listenerHandle = null
                 this.initialUpdate = null
             }
 
-            override fun handleUpdate(
+            override fun handle(
                 propagationContext: Transactions.PropagationContext,
-                update: CellVertex.Update<ValueT>?,
             ) {
-                receivedUpdates.add(update)
+                receivedUpdates.add(subjectVertex.ongoingUpdate)
             }
         }
 

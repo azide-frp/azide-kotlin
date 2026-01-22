@@ -21,20 +21,20 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class EventStream_executeEach_step_tests {
     @Test
-    fun test_step_sourceEmitsSimultaneously_subscribed() {
-        test_step_sourceEmitsSimultaneously(
+    fun test_step_sourceEmits_subscribed() {
+        test_step_sourceEmits(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_step_sourceEmitsSimultaneously_nonSubscribed() {
-        test_step_sourceEmitsSimultaneously(
+    fun test_step_sourceEmits_nonSubscribed() {
+        test_step_sourceEmits(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
 
-    private fun test_step_sourceEmitsSimultaneously(
+    private fun test_step_sourceEmits(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
@@ -59,20 +59,20 @@ class EventStream_executeEach_step_tests {
     }
 
     @Test
-    fun test_step_sourceEmitsRevokedSimultaneously_subscribed() {
-        test_step_sourceEmitsRevokedSimultaneously(
+    fun test_step_sourceEmitsRevoked_subscribed() {
+        test_step_sourceEmitsRevoked(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_step_sourceEmitsRevokedSimultaneously_nonSubscribed() {
-        test_step_sourceEmitsRevokedSimultaneously(
+    fun test_step_sourceEmitsRevoked_nonSubscribed() {
+        test_step_sourceEmitsRevoked(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
 
-    private fun test_step_sourceEmitsRevokedSimultaneously(
+    private fun test_step_sourceEmitsRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
@@ -97,20 +97,20 @@ class EventStream_executeEach_step_tests {
     }
 
     @Test
-    fun test_step_sourceEmitsCorrectedSimultaneously_subscribed() {
-        test_step_sourceEmitsCorrectedSimultaneously(
+    fun test_step_sourceEmitsCorrected_subscribed() {
+        test_step_sourceEmitsCorrected(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_step_sourceEmitsCorrectedSimultaneously_nonSubscribed() {
-        test_step_sourceEmitsCorrectedSimultaneously(
+    fun test_step_sourceEmitsCorrected_nonSubscribed() {
+        test_step_sourceEmitsCorrected(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
 
-    private fun test_step_sourceEmitsCorrectedSimultaneously(
+    private fun test_step_sourceEmitsCorrected(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
         val targetAction1 = TestTargetAction.of(result = 10)

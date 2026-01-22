@@ -6,6 +6,8 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.effects.AbstractPrimitiveEffect
 import dev.azide.core.impl.effects.AdaptedExternalStreamEffectVertex
+import kotlin.experimental.ExperimentalTypeInference
+import kotlin.jvm.JvmName
 
 interface Effect<ResultT> {
     interface Outcome<ResultT> {
@@ -89,6 +91,27 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.map(
     }
 }
 
+@JvmName("joinOfAction")
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
+fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
+    transform: (ResultT) -> Action<TransformedResultT>,
+): Effect<TransformedResultT> = object : Effect<TransformedResultT> {
+    override val start: Action<Effect.Outcome<TransformedResultT>> =
+        this@joinOf.start.joinOf { outcome: Effect.Outcome<ResultT> ->
+            val transformedAction: Action<TransformedResultT> = transform(outcome.result)
+
+            transformedAction.map { transformedResult: TransformedResultT ->
+                Effect.Outcome.of(
+                    result = transformedResult,
+                    handle = outcome.handle,
+                )
+            }
+        }
+}
+
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
 fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
     transform: (ResultT) -> Effect<TransformedResultT>,
 ): Effect<TransformedResultT> = object : Effect<TransformedResultT> {

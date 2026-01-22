@@ -3,25 +3,24 @@ package dev.azide.core.test_utils
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberOnline
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class TestEventStreamSubscriber<EventT>(
+class TestEventStreamListener<EventT>(
     val subscribedEventStreamVertex: EventStreamVertex<EventT>,
-) : LiveEventStreamVertex.BasicSubscriber<EventT> {
+) : BoundListener {
     interface Handle {
         fun cancel()
     }
 
     private val receivedEmissions = mutableListOf<EventStreamVertex.Emission<EventT>?>()
 
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        receivedEmissions.add(emission)
+        receivedEmissions.add(subscribedEventStreamVertex.ongoingEmission)
     }
 
     fun getAndResetReceivedEmissions(): List<EventStreamVertex.Emission<EventT>?> = receivedEmissions.toList().also {
@@ -31,36 +30,36 @@ class TestEventStreamSubscriber<EventT>(
 
 context(transactionTestContext: TransactionTestContext) fun <EventT> subscribeForTestingCancellable(
     cell: EventStream<EventT>,
-): Pair<TestEventStreamSubscriber<EventT>, TestEventStreamSubscriber.Handle> {
+): Pair<TestEventStreamListener<EventT>, TestEventStreamListener.Handle> {
     val vertex = cell.vertex
 
-    val subscriber = TestEventStreamSubscriber(
+    val listener = TestEventStreamListener(
         subscribedEventStreamVertex = vertex,
     )
 
-    val subscriberHandle = vertex.registerSubscriberOnline(
+    val listenerHandle = vertex.registerBoundListenerOnline(
         propagationContext = transactionTestContext.propagationContext,
-        subscriber = subscriber,
+        listener = listener,
     )
 
     return Pair(
-        subscriber,
-        object : TestEventStreamSubscriber.Handle {
+        listener,
+        object : TestEventStreamListener.Handle {
             override fun cancel() {
-                vertex.unregisterSubscriber(
-                    handle = subscriberHandle,
+                vertex.unregisterListener(
+                    handle = listenerHandle,
                 )
             }
         },
     )
 }
 
-context(transactionTestContext: TransactionTestContext) fun <EventT> EventStream<EventT>.subscribeForTesting(): TestEventStreamSubscriber<EventT> {
-    val (testEventStreamObserver, _) = subscribeForTestingCancellable(cell = this)
-    return testEventStreamObserver
+context(transactionTestContext: TransactionTestContext) fun <EventT> EventStream<EventT>.subscribeForTesting(): TestEventStreamListener<EventT> {
+    val (testEventStreamListener, _) = subscribeForTestingCancellable(cell = this)
+    return testEventStreamListener
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmission(
+fun <EventT> TestEventStreamListener<EventT>.verifyPropagatedAndExposesEmission(
     expectedEmittedEvent: EventT,
 ) {
     verifyPropagatedEmission(
@@ -72,7 +71,7 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesEmissio
     )
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedEmission(
+fun <EventT> TestEventStreamListener<EventT>.verifyPropagatedEmission(
     expectedEmittedEvent: EventT,
 ) {
     val expectedEmission = EventStreamVertex.Emission(
@@ -96,7 +95,7 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedEmission(
     )
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyExposesEmission(
+fun <EventT> TestEventStreamListener<EventT>.verifyExposesEmission(
     expectedExposedEvent: EventT,
 ) {
     val exposedEmission = subscribedEventStreamVertex.ongoingEmission
@@ -110,7 +109,7 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyExposesEmission(
     )
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesRevocation() {
+fun <EventT> TestEventStreamListener<EventT>.verifyPropagatedAndExposesRevocation() {
     val receivedEmissions = getAndResetReceivedEmissions()
 
     assertEquals(
@@ -134,7 +133,7 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyPropagatedAndExposesRevocat
     )
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyDoesNotExposeEmission() {
+fun <EventT> TestEventStreamListener<EventT>.verifyDoesNotExposeEmission() {
     val exposedEmission = subscribedEventStreamVertex.ongoingEmission
 
     assertNull(
@@ -143,7 +142,7 @@ fun <EventT> TestEventStreamSubscriber<EventT>.verifyDoesNotExposeEmission() {
     )
 }
 
-fun <EventT> TestEventStreamSubscriber<EventT>.verifyDidNotPropagateNorExposesEmission() {
+fun <EventT> TestEventStreamListener<EventT>.verifyDidNotPropagateNorExposesEmission() {
     val receivedEmissions = getAndResetReceivedEmissions()
 
     assertEquals(

@@ -44,7 +44,7 @@ class EventStream_loop_tests {
             )
         }
 
-        EventStreamTestUtils.registerNoopSubscriber(
+        EventStreamTestUtils.registerNoopListener(
             subjectEventStream = loopedEventStream,
         )
     }
@@ -62,7 +62,7 @@ class EventStream_loop_tests {
             )
         }
 
-        EventStreamTestUtils.registerNoopSubscriber(
+        EventStreamTestUtils.registerNoopListener(
             subjectEventStream = loopedEventStream,
         )
     }
@@ -91,12 +91,12 @@ class EventStream_loop_tests {
 
         assertEquals(
             expected = 1,
-            actual = sourceVertex.subscriberCount,
+            actual = sourceVertex.listenerCount,
         )
 
         assertEquals(
             expected = 2,
-            actual = subjectVertex.subscriberCount,
+            actual = subjectVertex.listenerCount,
         )
 
         assertIs<CausalLoopException>(
@@ -113,12 +113,12 @@ class EventStream_loop_tests {
         // The source is still active (!)
         assertEquals(
             expected = 1,
-            actual = sourceVertex.subscriberCount,
+            actual = sourceVertex.listenerCount,
         )
 
         assertEquals(
             expected = 1,
-            actual = subjectVertex.subscriberCount,
+            actual = subjectVertex.listenerCount,
         )
     }
 
@@ -148,12 +148,12 @@ class EventStream_loop_tests {
 
         assertEquals(
             expected = 1,
-            actual = sourceVertex.subscriberCount,
+            actual = sourceVertex.listenerCount,
         )
 
         assertEquals(
             expected = 2,
-            actual = subjectVertex.subscriberCount,
+            actual = subjectVertex.listenerCount,
         )
 
         assertIs<CausalLoopException>(
@@ -170,15 +170,15 @@ class EventStream_loop_tests {
         // The source is still active (!). This indicates a memory leak, as the garbage collector sees all objects in
         // this cycle as reachable, while they don't have any use and there's no mechanism that will ever clean this
         // up (as long as the source event stream is reachable itself). A potential solution would be to use weak
-        // references to the target vertex in all subscribers / observers.
+        // references to the target vertex in all listeners / listeners.
         assertEquals(
             expected = 1,
-            actual = sourceVertex.subscriberCount,
+            actual = sourceVertex.listenerCount,
         )
 
         assertEquals(
             expected = 1,
-            actual = subjectVertex.subscriberCount,
+            actual = subjectVertex.listenerCount,
         )
     }
 }

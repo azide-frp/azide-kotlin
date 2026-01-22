@@ -5,17 +5,17 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
-import dev.azide.core.impl.event_stream.registerSubscriberWeakly
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
 
 class HeldCellVertex<ValueT> private constructor(
     wrapUpContext: Transactions.WrapUpContext,
-    sourceEventStream: EventStream<ValueT>,
+    private val sourceEventStream: EventStream<ValueT>,
     initialValue: ValueT,
 ) : AbstractStatefulCellVertex<ValueT>(
+    wrapUpContext = wrapUpContext,
     initialValue = initialValue,
-), LiveEventStreamVertex.BasicSubscriber<ValueT> {
+), BoundListener {
     companion object {
         fun <ValueT> start(
             wrapUpContext: Transactions.WrapUpContext,
@@ -31,13 +31,12 @@ class HeldCellVertex<ValueT> private constructor(
     /**
      * Handle the source event stream vertex emission.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<ValueT>?,
     ) {
-        exposeAndPropagateUpdate(
+        exposeUpdateNotifyingListeners(
             propagationContext = propagationContext,
-            update = when (emission) {
+            update = when (val emission = sourceEventStream.vertex.ongoingEmission) {
                 null -> null
                 else -> CellVertex.Update(
                     updatedValue = emission.emittedEvent,
@@ -46,25 +45,22 @@ class HeldCellVertex<ValueT> private constructor(
         )
     }
 
-    init {
-        wrapUpContext.enqueueForWrapUp { propagationContext ->
-            val sourceVertex = sourceEventStream.vertex
+    override fun initialize(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<ValueT>? {
+        val sourceVertex = sourceEventStream.vertex
 
-            sourceVertex.registerSubscriberWeakly(
-                propagationContext = propagationContext,
-                dependentVertex = this,
-                subscriber = this,
-                mode = ActivationMode.Online,
+        sourceVertex.registerEmissionListenerWeakly(
+            propagationContext = propagationContext,
+            dependentVertex = this,
+            listener = this,
+            mode = ActivationMode.Online,
+        )
+
+        return sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
+            CellVertex.Update(
+                updatedValue = sourceOngoingEmission.emittedEvent,
             )
-
-            sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->
-                exposeUpdate(
-                    propagationContext = propagationContext,
-                    update = CellVertex.Update(
-                        updatedValue = sourceOngoingEmission.emittedEvent,
-                    ),
-                )
-            }
         }
     }
 }

@@ -5,7 +5,7 @@ import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 
 abstract class AbstractStatelessCellVertex<ValueT> : AbstractWarmCellVertex<ValueT>() {
-    final override fun onFirstObserverRegistered(
+    final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ) {
@@ -29,7 +29,7 @@ abstract class AbstractStatelessCellVertex<ValueT> : AbstractWarmCellVertex<Valu
         }
     }
 
-    final override fun onLastObserverUnregistered() {
+    final override fun onLastListenerUnregistered() {
         deactivate()
 
         clearExposedUpdate()

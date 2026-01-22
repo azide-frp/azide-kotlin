@@ -1,106 +1,38 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.Moment
-import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.CellVertex.Observer
-import dev.azide.core.impl.cell.CellVertex.ObserverHandle
-import dev.azide.core.impl.cell.CellVertex.ObserverStatus
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.registerObserverOnline
-import dev.azide.core.pullInternallyWrappedUp
+import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.impl.registerListenerOnline
 import dev.azide.core.test_utils.TestInputStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 internal object CellTestUtils {
-    private object NoopObserver : Observer<Any?> {
-        override fun handleUpdateWithStatus(
+    private object NoopListener : Listener {
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-            update: Update<Any?>?,
-        ): ObserverStatus = ObserverStatus.Reachable
+        ): ListenerStatus = ListenerStatus.Reachable
     }
 
     fun <ValueT> createInputCell(
         initialValue: ValueT,
-    ): dev.azide.core.test_utils.cell.TestInputCell<ValueT> = TestInputCell(
+    ): TestInputCell<ValueT> = TestInputCell(
         initialValue = initialValue,
     )
-
-    /**
-     * Spawn a stateful cell, not expecting it to update during spawn.
-     */
-    fun <ValueT : Any> spawnStatefulCell(
-        spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
-        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
-            propagationContext = propagationContext,
-        )
-
-        val ongoingUpdate = subjectCell.vertex.ongoingUpdate
-
-        assertNull(
-            actual = ongoingUpdate,
-            message = "Spawned subject cell has an ongoing update unexpectedly",
-        )
-
-        return@executeWithResult subjectCell
-    }
-
-    /**
-     * Spawn a stateful cell, expecting it to update during spawn to [expectedUpdatedValue].
-     */
-    fun <ValueT> spawnStatefulCellExpectingUpdate(
-        inputStimulation: TestInputStimulation? = null,
-        expectedOldValue: ValueT,
-        expectedUpdatedValue: ValueT,
-        spawn: context(MomentContext) () -> Cell<ValueT>,
-    ): Cell<ValueT> = Transactions.executeWithResult { propagationContext ->
-        inputStimulation?.stimulate(
-            propagationContext = propagationContext,
-        )
-
-        val subjectCell = Moment.decontextualize(spawn).pullInternallyWrappedUp(
-            propagationContext = propagationContext,
-        )
-
-        val subjectVertex = subjectCell.vertex
-
-        val sampledOldValue = subjectVertex.getOldValue(
-            propagationContext = propagationContext,
-        )
-
-        assertEquals(
-            expected = expectedOldValue,
-            actual = sampledOldValue,
-            message = "Spawned subject cell's old value did not match expected old value",
-        )
-
-        val ongoingUpdate = subjectVertex.ongoingUpdate
-
-        assertNotNull(
-            actual = ongoingUpdate,
-            message = "Spawned subject cell has no ongoing update unexpectedly",
-        )
-
-        assertEquals(
-            expected = expectedUpdatedValue,
-            actual = ongoingUpdate.updatedValue,
-        )
-
-        return@executeWithResult subjectCell
-    }
 
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,
-    ) : WarmCellVertex.BasicObserver<ValueT> {
+    ) : BoundListener {
         @JvmInline
         value class ReceivedUpdate<ValueT>(
             val receivedUpdate: Update<ValueT>?,
@@ -108,9 +40,9 @@ internal object CellTestUtils {
 
         private var receivedUpdate: ReceivedUpdate<ValueT>? = null
 
-        private var upstreamObserverHandle: ObserverHandle? = subjectVertex.registerObserverOnline(
+        private var upstreamListenerHandle: ListenerHandle? = subjectVertex.registerBoundListenerOnline(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
         )
 
         /**
@@ -238,22 +170,21 @@ internal object CellTestUtils {
         }
 
         fun stop() {
-            val upstreamObserverHandle =
-                this.upstreamObserverHandle ?: throw IllegalStateException("Verifier is already stopped")
+            val upstreamListenerHandle =
+                this.upstreamListenerHandle ?: throw IllegalStateException("Verifier is already stopped")
 
-            subjectVertex.unregisterObserver(
-                handle = upstreamObserverHandle,
+            subjectVertex.unregisterListener(
+                handle = upstreamListenerHandle,
             )
 
-            this.upstreamObserverHandle = null
+            this.upstreamListenerHandle = null
         }
 
-        override fun handleUpdate(
+        override fun handle(
             propagationContext: Transactions.PropagationContext,
-            update: Update<ValueT>?,
         ) {
             receivedUpdate = ReceivedUpdate(
-                receivedUpdate = update,
+                receivedUpdate = subjectVertex.ongoingUpdate,
             )
         }
     }
@@ -271,14 +202,13 @@ internal object CellTestUtils {
 
     /**
      * Verify that the [subjectCell] is still warm and samples to [expectedValue], both when it's not observed and when
-     * it is. This utility adds a temporary no-op observer to perform the active sampling.
+     * it is. This utility adds a temporary no-op listener to perform the active sampling.
      */
     fun <ValueT> verifyAtRest(
         subjectCell: Cell<ValueT>,
         expectedValue: ValueT,
     ) {
         val subjectVertex = subjectCell.vertex
-
 
         val passivelySampledValue = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldValue(
@@ -293,17 +223,17 @@ internal object CellTestUtils {
         )
 
         val activelySampledValue = Transactions.executeWithResult { propagationContext ->
-            val observerHandle = subjectVertex.registerObserverOnline(
+            val listenerHandle = subjectVertex.registerListenerOnline(
                 propagationContext = propagationContext,
-                observer = NoopObserver,
+                listener = NoopListener,
             )
 
             val sampledValue = subjectVertex.getOldValue(
                 propagationContext = propagationContext,
             )
 
-            subjectVertex.unregisterObserver(
-                handle = observerHandle,
+            subjectVertex.unregisterListener(
+                handle = listenerHandle,
             )
 
             sampledValue
@@ -382,15 +312,15 @@ internal object CellTestUtils {
     }
 
     /**
-     * Register a no-op observer on the [subjectCell].
+     * Register a no-op listener on the [subjectCell].
      */
-    fun <ValueT> registerNoopObserver(
+    fun <ValueT> registerNoopListener(
         subjectCell: Cell<ValueT>,
     ) {
         Transactions.execute { propagationContext ->
-            subjectCell.vertex.registerObserverOnline(
+            subjectCell.vertex.registerListenerOnline(
                 propagationContext = propagationContext,
-                observer = NoopObserver,
+                listener = NoopListener,
             )
         }
     }

@@ -35,7 +35,7 @@ data object EventStream_single_garbageCollection_testGroup : AsyncTestGroup() {
                     sourceEventStream.single()
                 }
 
-                EventStreamTestUtils.registerNoopSubscriber(
+                EventStreamTestUtils.registerNoopListener(
                     subjectEventStream = subjectEventStream,
                 )
 

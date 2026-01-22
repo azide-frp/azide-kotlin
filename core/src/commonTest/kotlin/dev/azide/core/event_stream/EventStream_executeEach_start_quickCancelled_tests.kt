@@ -34,8 +34,17 @@ class EventStream_executeEach_start_quickCancelled_tests {
         )
     }
 
+    @Test
+    fun test_start_quickCancelled_twice() {
+        test_start_quickCancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            cancelCount = 2,
+        )
+    }
+
     private fun test_start_quickCancelled(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        cancelCount: Int = 1,
     ) {
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
 
@@ -46,6 +55,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedTestTargetImpact.None,
+            cancelCount = cancelCount,
         )
 
         EventStream_executeEach_testUtils.verifyEffectNotOngoing(

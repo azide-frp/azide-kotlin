@@ -36,8 +36,17 @@ class EventStream_executeEach_cancelled_tests {
         )
     }
 
+    @Test
+    fun test_cancelled_twice() {
+        test_cancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            cancelCount = 2,
+        )
+    }
+
     private fun test_cancelled(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        cancelCount: Int = 1,
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
@@ -52,6 +61,7 @@ class EventStream_executeEach_cancelled_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            cancelCount = cancelCount,
         )
 
         EventStream_executeEach_testUtils.verifyEffectNotOngoing(

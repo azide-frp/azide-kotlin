@@ -3,8 +3,9 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.event_stream.EventStreamVertex.Subscriber
-import dev.azide.core.impl.event_stream.EventStreamVertex.SubscriberHandle
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.Listener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import kotlin.jvm.JvmInline
 
 sealed interface EventStreamVertex<out EventT> : Vertex {
@@ -19,55 +20,52 @@ sealed interface EventStreamVertex<out EventT> : Vertex {
         )
     }
 
-    interface Subscriber<in EventT> {
-        object Noop : Subscriber<Any?> {
-            override fun handleEmissionWithStatus(
-                propagationContext: Transactions.PropagationContext,
-                emission: Emission<Any?>?,
-            ): SubscriberStatus = SubscriberStatus.Reachable
-        }
-
-        fun handleEmissionWithStatus(
-            propagationContext: Transactions.PropagationContext,
-            emission: EventStreamVertex.Emission<EventT>?,
-        ): SubscriberStatus
-    }
-
-    interface SubscriberHandle
-
-    enum class SubscriberStatus {
-        Reachable, Unreachable,
-    }
-
     val ongoingEmission: Emission<EventT>?
-
-    val subscriberCount: Int
-
-    fun registerSubscriber(
-        propagationContext: Transactions.PropagationContext,
-        subscriber: Subscriber<EventT>,
-        mode: ActivationMode,
-    ): SubscriberHandle
-
-    fun unregisterSubscriber(
-        handle: SubscriberHandle,
-    )
 }
 
-fun <EventT> EventStreamVertex<EventT>.registerSubscriberOnline(
+fun <EventT> EventStreamVertex<EventT>.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
-    subscriber: Subscriber<EventT>,
-): SubscriberHandle = registerSubscriber(
+    listener: Listener,
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    subscriber = subscriber,
+    listener = listener,
     mode = ActivationMode.Online,
 )
 
-fun <EventT> EventStreamVertex<EventT>.registerSubscriberOffline(
+fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
     propagationContext: Transactions.PropagationContext,
-    subscriber: Subscriber<EventT>,
-): SubscriberHandle = registerSubscriber(
+    listener: BoundListener,
+    mode: ActivationMode,
+): ListenerHandle = registerListener(
     propagationContext = propagationContext,
-    subscriber = subscriber,
+    listener = object : Listener {
+        override fun handle(
+            propagationContext: Transactions.PropagationContext,
+        ): Vertex.ListenerStatus {
+            listener.handle(
+                propagationContext = propagationContext,
+            )
+
+            return Vertex.ListenerStatus.Reachable
+        }
+    },
+    mode = mode,
+)
+
+fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOnline(
+    propagationContext: Transactions.PropagationContext,
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
+    propagationContext = propagationContext,
+    listener = listener,
+    mode = ActivationMode.Online,
+)
+
+fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOffline(
+    propagationContext: Transactions.PropagationContext,
+    listener: BoundListener,
+): ListenerHandle = registerBoundListener(
+    propagationContext = propagationContext,
+    listener = listener,
     mode = ActivationMode.Offline,
 )

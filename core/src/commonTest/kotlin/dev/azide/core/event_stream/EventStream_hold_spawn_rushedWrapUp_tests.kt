@@ -8,7 +8,6 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn_rushedWrapUp
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -20,7 +19,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
         StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
-            subjectMoment = subjectMoment,
+            subjectSpawnMoment = subjectMoment,
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
                 expectedUnaffectedValue = 0,
             ),
@@ -28,7 +27,6 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
     }
 
     @Test
-    @Ignore // FIXME: Make this pass
     fun test_spawn_rushedWrapUp_sourceEmitsSimultaneously() {
         TestSlotDispatcher1x3.entries.forEach { dispatcher ->
             test_spawn_rushedWrapUp_sourceEmitsSimultaneously(
@@ -45,7 +43,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
         StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
-            subjectMoment = subjectMoment,
+            subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),

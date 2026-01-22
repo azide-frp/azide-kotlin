@@ -4,38 +4,38 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
-import dev.azide.core.impl.event_stream.LiveEventStreamVertex
+import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
+import dev.azide.core.impl.event_stream.registerBoundListener
 
 class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceEventStream: EventStream<EventT>,
-    private val transform: (Transactions.PropagationContext, EventT) -> TransformedEventT,
-) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), LiveEventStreamVertex.BasicSubscriber<EventT> {
+    private val transform: (EventT) -> TransformedEventT,
+) : AbstractSimpleStatelessEventStreamVertex<TransformedEventT>(), BoundListener {
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 
-    private var upstreamSubscriberHandle: EventStreamVertex.SubscriberHandle? = null
+    private var upstreamListenerHandle: Vertex.ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
      */
-    override fun handleEmission(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        emission: EventStreamVertex.Emission<EventT>?,
     ) {
-        when (emission) {
+        when (val emission = sourceVertex.ongoingEmission) {
             null -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
                     emission = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateEmission(
+                exposeEmissionNotifyingListeners(
                     propagationContext = propagationContext,
-                    emission = emission.map {
-                        transform(propagationContext, it)
+                    emission = emission.map { event: EventT ->
+                        transform(event)
                     },
                 )
             }
@@ -46,29 +46,27 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): EventStreamVertex.Emission<TransformedEventT>? {
-        if (upstreamSubscriberHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamSubscriberHandle = sourceVertex.registerSubscriber(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            subscriber = this,
+            listener = this,
             mode = mode,
         )
 
-        return sourceVertex.ongoingEmission?.map {
-            transform(propagationContext, it)
-        }
+        return sourceVertex.ongoingEmission?.map(transform)
     }
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamSubscriberHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterSubscriber(
+        sourceVertex.unregisterListener(
             handle = subscriptionHandle,
         )
 
-        this.upstreamSubscriberHandle = null
+        this.upstreamListenerHandle = null
     }
 }

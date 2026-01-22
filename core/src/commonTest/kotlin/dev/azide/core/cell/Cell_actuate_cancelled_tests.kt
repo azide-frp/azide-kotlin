@@ -36,8 +36,17 @@ class Cell_actuate_cancelled_tests {
         )
     }
 
+    @Test
+    fun test_cancelled_twice() {
+        test_cancelled(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            cancelCount = 2,
+        )
+    }
+
     private fun test_cancelled(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        cancelCount: Int = 1,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
@@ -58,6 +67,7 @@ class Cell_actuate_cancelled_tests {
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1StartRecord.expectIsCancelledOnce(),
+            cancelCount = cancelCount,
         )
 
         Cell_actuate_testUtils.verifyEffectNotOngoing(

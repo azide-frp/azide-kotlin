@@ -2,35 +2,36 @@ package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
+import dev.azide.core.impl.registerBoundListener
 
 class MappedWarmCellVertex<ValueT, TransformedValueT>(
     private val sourceVertex: CellVertex<ValueT>,
     private val transform: (ValueT) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), WarmCellVertex.BasicObserver<ValueT> {
-    private var upstreamObserverHandle: CellVertex.ObserverHandle? = null
+), BoundListener {
+    private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
      * Handle the update of the source cell.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<ValueT>?,
     ) {
-        when (update) {
+        when (val update = sourceVertex.ongoingUpdate) {
             null -> {
-                exposeAndPropagateUpdate(
+                exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = null,
                 )
             }
 
             else -> {
-                exposeAndPropagateUpdate(
+                exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = update.map(transform),
                 )
@@ -42,13 +43,13 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,
     ): CellVertex.Update<TransformedValueT>? {
-        if (upstreamObserverHandle != null) {
+        if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        upstreamObserverHandle = sourceVertex.registerObserver(
+        upstreamListenerHandle = sourceVertex.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -57,13 +58,13 @@ class MappedWarmCellVertex<ValueT, TransformedValueT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamObserverHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        sourceVertex.unregisterObserver(
+        sourceVertex.unregisterListener(
             handle = subscriptionHandle,
         )
 
-        this.upstreamObserverHandle = null
+        this.upstreamListenerHandle = null
     }
 
     override fun computeOldValue(

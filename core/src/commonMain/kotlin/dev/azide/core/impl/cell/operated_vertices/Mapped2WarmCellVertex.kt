@@ -2,9 +2,11 @@ package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
+import dev.azide.core.impl.registerBoundListener
 
 class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex1: CellVertex<ValueT1>,
@@ -12,31 +14,31 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
     cacheType = CacheType.Momentary,
-), WarmCellVertex.BasicObserver<Any?> {
-    private var upstreamObserverHandle1: CellVertex.ObserverHandle? = null
-    private var upstreamObserverHandle2: CellVertex.ObserverHandle? = null
+), BoundListener {
+    private var upstreamListenerHandle1: ListenerHandle? = null
+    private var upstreamListenerHandle2: ListenerHandle? = null
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): CellVertex.Update<TransformedValueT>? {
-        if (upstreamObserverHandle1 != null) {
+        if (upstreamListenerHandle1 != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        if (upstreamObserverHandle2 != null) {
+        if (upstreamListenerHandle2 != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
-        this.upstreamObserverHandle1 = sourceVertex1.registerObserver(
+        this.upstreamListenerHandle1 = sourceVertex1.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
-        this.upstreamObserverHandle2 = sourceVertex2.registerObserver(
+        this.upstreamListenerHandle2 = sourceVertex2.registerBoundListener(
             propagationContext = propagationContext,
-            observer = this,
+            listener = this,
             mode = mode,
         )
 
@@ -46,45 +48,44 @@ class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
     }
 
     override fun deactivate() {
-        // Unregister each observer if the respective source vertex is warm and actually gave us a handle
+        // Unregister each listener if the respective source vertex is warm and actually gave us a handle
 
-        this.upstreamObserverHandle1?.let { upstreamObserverHandle1 ->
-            sourceVertex1.unregisterObserver(
-                handle = upstreamObserverHandle1,
+        this.upstreamListenerHandle1?.let { upstreamListenerHandle1 ->
+            sourceVertex1.unregisterListener(
+                handle = upstreamListenerHandle1,
             )
         }
 
-        this.upstreamObserverHandle1 = null
+        this.upstreamListenerHandle1 = null
 
-        this.upstreamObserverHandle2?.let { upstreamObserverHandle2 ->
-            sourceVertex2.unregisterObserver(
-                handle = upstreamObserverHandle2,
+        this.upstreamListenerHandle2?.let { upstreamListenerHandle2 ->
+            sourceVertex2.unregisterListener(
+                handle = upstreamListenerHandle2,
             )
         }
 
-        this.upstreamObserverHandle2 = null
+        this.upstreamListenerHandle2 = null
     }
 
     /**
      * Handle an update of one of the source vertices.
      */
-    override fun handleUpdate(
+    override fun handle(
         propagationContext: Transactions.PropagationContext,
-        update: CellVertex.Update<Any?>?,
     ) {
-        exposeAndPropagateTransformedUpdate(
+        exposeTransformedUpdateNotifyingListeners(
             propagationContext = propagationContext,
         )
     }
 
-    private fun exposeAndPropagateTransformedUpdate(
+    private fun exposeTransformedUpdateNotifyingListeners(
         propagationContext: Transactions.PropagationContext,
     ) {
         val transformedUpdate = buildTransformedUpdate(
             propagationContext = propagationContext,
         )
 
-        exposeAndPropagateUpdate(
+        exposeUpdateNotifyingListeners(
             propagationContext = propagationContext,
             update = transformedUpdate,
         )
