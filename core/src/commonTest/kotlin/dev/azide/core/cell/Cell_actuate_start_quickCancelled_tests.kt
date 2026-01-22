@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetEffect
@@ -60,7 +60,7 @@ class Cell_actuate_start_quickCancelled_tests {
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
             ),
             cancelCount = cancelCount,
@@ -112,7 +112,7 @@ class Cell_actuate_start_quickCancelled_tests {
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
             ),
@@ -164,7 +164,7 @@ class Cell_actuate_start_quickCancelled_tests {
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
             ),
@@ -218,7 +218,7 @@ class Cell_actuate_start_quickCancelled_tests {
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
                 targetEffect3.expectIsNotStarted(),

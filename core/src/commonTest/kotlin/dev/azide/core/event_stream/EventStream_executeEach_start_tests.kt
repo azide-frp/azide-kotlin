@@ -5,7 +5,7 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetAction
@@ -46,7 +46,7 @@ class EventStream_executeEach_start_tests {
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
     }
 
@@ -169,7 +169,7 @@ class EventStream_executeEach_start_tests {
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsExecutedOnce(),
             ),

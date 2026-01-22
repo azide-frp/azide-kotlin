@@ -7,7 +7,7 @@ import dev.azide.core.executeEach
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetAction
@@ -207,7 +207,7 @@ class EventStream_executeEach_cancelled_tests {
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsNotExecuted(),
             ),

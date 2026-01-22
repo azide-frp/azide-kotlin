@@ -5,14 +5,13 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effects.EffectTestUtils_start_rushedWrapUp
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.expectIsExecutedOnce
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -26,7 +25,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
         EffectTestUtils_start_rushedWrapUp.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
     }
 

@@ -6,7 +6,7 @@ import dev.azide.core.actuate
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
@@ -61,7 +61,7 @@ class Cell_actuate_step_tests {
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsCancelledOnce(),
                 targetEffect2.expectIsStartedOnceButNotCancelled(),
             ),
@@ -108,7 +108,7 @@ class Cell_actuate_step_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsNotCancelled(),
                 targetEffect2.expectIsNotStarted(),
             ),
@@ -158,7 +158,7 @@ class Cell_actuate_step_tests {
                 expectedOldValue = 10,
                 expectedNewValue = 30,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
                 targetEffect3.expectIsStartedOnceButNotCancelled(),

@@ -3,7 +3,7 @@ package dev.azide.core.test_utils
 import dev.azide.core.Action
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.ExpectedTestTargetImpact.TargetImpactVerifier
+import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -126,12 +126,12 @@ fun TestTargetAction.ExecutionRecord<*>.verifyWasNotRevoked() {
     )
 }
 
-fun <ResultT> TestTargetAction<ResultT>.expectIsNotExecuted(): ExpectedTestTargetImpact = expectIsExecutedNTimes(
+fun <ResultT> TestTargetAction<ResultT>.expectIsNotExecuted(): ExpectedImpact = expectIsExecutedNTimes(
     expectedExecutionCount = 0,
     message = "Expected no executions of the target action.",
 )
 
-fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedOnce(): ExpectedTestTargetImpact = expectIsExecutedNTimes(
+fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedOnce(): ExpectedImpact = expectIsExecutedNTimes(
     expectedExecutionCount = 1,
     message = "Expected a single execution of the target action during the stimulation.",
 )
@@ -139,11 +139,11 @@ fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedOnce(): ExpectedTestTarg
 fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedNTimes(
     expectedExecutionCount: Int,
     message: String,
-): ExpectedTestTargetImpact = object : ExpectedTestTargetImpact {
-    override fun prepareImpactVerifier(): TargetImpactVerifier {
+): ExpectedImpact = object : ExpectedImpact {
+    override fun prepareImpactVerifier(): ImpactVerifier {
         resetExecutionRecords()
 
-        return object : TargetImpactVerifier {
+        return object : ImpactVerifier {
             override fun verifyPostPropagation() {
                 val effectiveExecutionRecords = getAndResetExecutionRecords().filter {
                     !it.wasRevoked
