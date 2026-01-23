@@ -60,7 +60,6 @@ class TestInputReactiveList<ElementT>(
         }
     }
 
-
     fun change(
         description: ChangeDescription<ElementT>,
     ): TestInputStimulation = object : TestInputStimulation {
@@ -80,7 +79,6 @@ class TestInputReactiveList<ElementT>(
             TODO()
         }
     }
-
 
     fun revokeChange(): TestInputStimulation {
         TODO()

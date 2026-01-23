@@ -1,7 +1,8 @@
 package dev.azide.core.impl
 
-import dev.kmpx.collections.lists.linkedListOf
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Transactions.PropagationContext.ExternalExecutionCallback
+import dev.kmpx.collections.lists.linkedListOf
 
 object Transactions {
     interface WrapUpContext {
@@ -38,14 +39,18 @@ object Transactions {
     }
 
     interface PropagationContext {
+        typealias PostProcessingCallback = () -> Unit
+
+        typealias CommitmentCallback = () -> Unit
+
         typealias ExternalExecutionCallback = () -> Unit
 
-        fun enqueueForPostProcessing(
-            vertex: PostProcessableVertex,
-        )
+        fun enqueueCallbackForPostProcessing(
+            callback: PostProcessingCallback,
+        ): Revocable
 
-        fun enqueueForCommitment(
-            vertex: CommittableVertex,
+        fun enqueueCallbackForCommitment(
+            callback: CommitmentCallback,
         )
 
         fun enqueueForExecution(
@@ -54,8 +59,7 @@ object Transactions {
     }
 
     enum class TransactionState {
-        Open,
-        Closed,
+        Open, Closed,
     }
 
     fun execute(
@@ -77,27 +81,35 @@ object Transactions {
             }
         }
 
-        val verticesToPostProcess = arrayListOf<PostProcessableVertex>()
+        val enqueuedPostProcessingCallbacks = linkedListOf<PropagationContext.PostProcessingCallback>()
 
-        val verticesToCommit = arrayListOf<CommittableVertex>()
+        val enqueuedCommitmentCallbacks = arrayListOf<PropagationContext.CommitmentCallback>()
 
         val callbacksToExecuteExternally = linkedListOf<ExternalExecutionCallback>()
 
         val propagationContext = object : PropagationContext {
-            override fun enqueueForPostProcessing(
-                vertex: PostProcessableVertex,
-            ) {
+            override fun enqueueCallbackForPostProcessing(
+                callback: PropagationContext.PostProcessingCallback,
+            ): Revocable {
                 ensureIsOpen()
 
-                verticesToPostProcess.add(vertex)
+                val innerHandle = enqueuedPostProcessingCallbacks.append(callback)
+
+                return object : Revocable {
+                    override fun revoke() {
+                        ensureIsOpen()
+
+                        enqueuedPostProcessingCallbacks.removeVia(innerHandle)
+                    }
+                }
             }
 
-            override fun enqueueForCommitment(
-                vertex: CommittableVertex,
+            override fun enqueueCallbackForCommitment(
+                callback: PropagationContext.CommitmentCallback,
             ) {
                 ensureIsOpen()
 
-                verticesToCommit.add(vertex)
+                enqueuedCommitmentCallbacks.add(callback)
             }
 
             override fun enqueueForExecution(
@@ -134,10 +146,8 @@ object Transactions {
         // Enqueueing for commitment is still possible. Enqueueing for further post-processing is prohibited. Enqueueing
         // side effects is not expected or needed.
 
-        verticesToPostProcess.forEach { vertex ->
-            vertex.postProcess(
-                propagationContext = propagationContext,
-            )
+        enqueuedPostProcessingCallbacks.forEach { callback ->
+            callback()
         }
 
         // ## Commitment phase
@@ -149,8 +159,8 @@ object Transactions {
         // TODO: Figure out if upstream unregistration (e.g. of `EventStream.single`) shouldn't be moved to
         //  post-processing for consistency
 
-        verticesToCommit.forEach { vertex ->
-            vertex.commit()
+        enqueuedCommitmentCallbacks.forEach { callback ->
+            callback()
         }
 
         // ## Side effect execution phase
@@ -162,5 +172,23 @@ object Transactions {
         state = TransactionState.Closed
 
         return result
+    }
+}
+
+fun PropagationContext.enqueueForPostProcessing(
+    vertex: PostProcessableVertex,
+) {
+    this.enqueueCallbackForPostProcessing {
+        vertex.postProcess(
+            propagationContext = this,
+        )
+    }
+}
+
+fun PropagationContext.enqueueForCommitment(
+    vertex: CommittableVertex,
+) {
+    this.enqueueCallbackForCommitment {
+        vertex.commit()
     }
 }
