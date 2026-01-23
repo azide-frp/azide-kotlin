@@ -2,10 +2,8 @@ package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeWarmCellVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
 abstract class AbstractTrackedGeneticCollectionVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>>() :
@@ -14,10 +12,6 @@ abstract class AbstractTrackedGeneticCollectionVertex<ContentT : Collection<*>, 
     private var _ongoingChange: ChangeT? = null
 
     private var _isEnqueuedForCommitment = false
-
-    final override fun buildSizeVertex(): CellVertex<Int> = TrackedCollectionSizeWarmCellVertex(
-        sourceVertex = this,
-    )
 
     final override val ongoingChange: ChangeT?
         get() = _ongoingChange

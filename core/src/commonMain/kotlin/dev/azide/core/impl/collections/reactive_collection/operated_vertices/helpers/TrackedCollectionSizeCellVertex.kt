@@ -5,10 +5,8 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
-import dev.azide.core.impl.collections.reactive_collection.sizeDelta
 
-// TODO: Figure out if this should be used
-class TrackedCollectionSizeWarmCellVertex(
+class TrackedCollectionSizeCellVertex(
     sourceVertex: TrackedCollectionVertex<*>,
 ) : AbstractTrackedCollectionProxyCellVertex<Any?, Int>(
     sourceVertex = sourceVertex,
