@@ -2,7 +2,7 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.utils.applyTo
+import dev.azide.core.impl.collections.reactive_set.applyTo
 
 abstract class AbstractStatefulTrackedSetVertex<ElementT>(
     initialElements: MutableSet<ElementT>,

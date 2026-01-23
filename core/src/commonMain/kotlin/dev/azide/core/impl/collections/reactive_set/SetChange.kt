@@ -35,4 +35,17 @@ data class SetChange<out ElementT>(
 
     val sizeDelta: Int
         get() = addedElements.size - removedElements.size
+
+}
+
+fun <ElementT> SetChange<ElementT>.applyTo(
+    mutableSet: MutableSet<ElementT>,
+) {
+    for (removedElement in this.removedElements) {
+        mutableSet.remove(removedElement)
+    }
+
+    for (addedElement in this.addedElements) {
+        mutableSet.add(addedElement)
+    }
 }
