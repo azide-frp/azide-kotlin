@@ -4,9 +4,9 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.utils.applyTo
 
-abstract class AbstractStatefulWarmTrackedSetVertex<ElementT>(
+abstract class AbstractStatefulTrackedSetVertex<ElementT>(
     initialElements: MutableSet<ElementT>,
-) : AbstractWarmTrackedSetVertex<ElementT>() {
+) : AbstractTrackedSetVertex<ElementT>() {
     private var _stableElements: MutableSet<ElementT> = initialElements
 
     final override fun commit(

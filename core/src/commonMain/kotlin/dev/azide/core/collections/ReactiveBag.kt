@@ -6,7 +6,7 @@ import dev.azide.core.Effect
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredWarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredTrackedSetVertex
 
 interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
@@ -33,7 +33,7 @@ fun <ElementT> ReactiveBag<ElementT>.contains(
 fun <ElementT> ReactiveBag<ElementT>.filter(
     predicate: (ElementT) -> Boolean,
 ): ReactiveBag<ElementT> = ReactiveBag.Ordinary(
-    trackedVertex = FilteredWarmTrackedSetVertex(
+    trackedVertex = FilteredTrackedSetVertex(
         this@filter.trackedVertex,
         predicate,
     ),

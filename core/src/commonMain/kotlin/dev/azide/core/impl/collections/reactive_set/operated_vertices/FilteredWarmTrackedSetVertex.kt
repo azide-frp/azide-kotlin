@@ -5,7 +5,7 @@ import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.Abs
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 
-class FilteredWarmTrackedSetVertex<ElementT>(
+class FilteredTrackedSetVertex<ElementT>(
     override val sourceVertex: TrackedSetVertex<ElementT>,
     private val predicate: (ElementT) -> Boolean,
 ) : AbstractTransformativeTrackedSetVertex<ElementT>() {

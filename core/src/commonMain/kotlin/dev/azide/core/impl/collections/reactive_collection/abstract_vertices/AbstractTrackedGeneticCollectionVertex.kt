@@ -66,4 +66,4 @@ abstract class AbstractTrackedGeneticCollectionVertex<ContentT : Collection<*>, 
     }
 }
 
-typealias AbstractWarmTrackedSetVertex<ElementT> = AbstractTrackedGeneticCollectionVertex<Set<ElementT>, SetChange<ElementT>>
+typealias AbstractTrackedSetVertex<ElementT> = AbstractTrackedGeneticCollectionVertex<Set<ElementT>, SetChange<ElementT>>

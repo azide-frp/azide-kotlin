@@ -4,8 +4,8 @@ import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.registerBoundListenerOnline
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
@@ -19,7 +19,7 @@ internal object ReactiveSetTestUtils {
     )
 
     class ObservingVerifier<ElementT>(
-        private val subjectVertex: WarmTrackedSetVertex<ElementT>,
+        private val subjectVertex: TrackedSetVertex<ElementT>,
     ) : BoundListener {
         @JvmInline
         value class ReceivedChange<ElementT>(
@@ -114,7 +114,7 @@ internal object ReactiveSetTestUtils {
             expectedChangedElements: Set<ElementT>,
             verifyReceivedChange: (ReceivedChange<ElementT>?) -> Unit,
         ) {
-            assertIs<WarmTrackedSetVertex<ElementT>>(
+            assertIs<TrackedSetVertex<ElementT>>(
                 value = subjectVertex,
                 message = "Subject reactive set vertex is already frozen",
             )
@@ -191,7 +191,7 @@ internal object ReactiveSetTestUtils {
     fun <ElementT> observeForVerification(
         subjectReactiveSet: ReactiveSet<ElementT>,
     ): ObservingVerifier<ElementT> {
-        val subjectVertex = subjectReactiveSet.trackedVertex as? WarmTrackedSetVertex<ElementT>
+        val subjectVertex = subjectReactiveSet.trackedVertex as? TrackedSetVertex<ElementT>
             ?: throw IllegalStateException("Subject reactive set vertex is already frozen")
 
         return ObservingVerifier(
@@ -208,7 +208,7 @@ internal object ReactiveSetTestUtils {
     ) {
         val subjectVertex = subjectReactiveSet.trackedVertex
 
-        assertIs<WarmTrackedSetVertex<ElementT>>(
+        assertIs<TrackedSetVertex<ElementT>>(
             value = subjectVertex,
             message = "Subject reactive set vertex is not warm as expected",
         )
