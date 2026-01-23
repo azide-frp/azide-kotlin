@@ -7,6 +7,7 @@ import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
 import dev.azide.core.impl.AbstractLiveVertex
+import dev.azide.core.impl.enqueueForCommitment
 
 abstract class AbstractWarmTrackedSetVertex<ElementT>() : AbstractLiveVertex(), WarmTrackedSetVertex<ElementT>,
     CommittableVertex {

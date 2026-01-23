@@ -5,6 +5,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.AbstractLiveVertex
+import dev.azide.core.impl.enqueueForCommitment
 
 abstract class AbstractWarmCellVertex<ValueT>() : AbstractLiveVertex(), WarmCellVertex<ValueT>, CommittableVertex {
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null

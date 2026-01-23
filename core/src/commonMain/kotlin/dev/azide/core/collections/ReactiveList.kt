@@ -3,11 +3,7 @@ package dev.azide.core.collections
 import dev.azide.core.Schedule
 import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
-import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.effects.AbstractPrimitiveSchedule
-import dev.azide.core.impl.effects.AdaptedExternalScheduleVertex
 import kotlin.jvm.JvmName
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
@@ -52,9 +48,4 @@ fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValu
 
 fun <ElementT> ReactiveList<ElementT>.syncing(
     externalMutableList: MutableList<ElementT>,
-): Schedule = object : AbstractPrimitiveSchedule<AdaptedExternalScheduleVertex>() {
-    override fun startInternally(
-        propagationContext: PropagationContext,
-        wrapUpContext: Transactions.WrapUpContext,
-    ): AdaptedExternalScheduleVertex = TODO()
-}
+): Schedule = TODO()
