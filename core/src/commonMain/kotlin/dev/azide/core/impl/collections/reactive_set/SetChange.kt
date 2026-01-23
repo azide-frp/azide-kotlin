@@ -33,9 +33,8 @@ data class SetChange<out ElementT>(
         removedElements = removedElements.filterTo(mutableSetOf(), predicate),
     )
 
-    val sizeDelta: Int
+    override val sizeDelta: Int
         get() = addedElements.size - removedElements.size
-
 }
 
 fun <ElementT> SetChange<ElementT>.applyTo(

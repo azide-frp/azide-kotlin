@@ -3,6 +3,7 @@ package dev.azide.core.collections
 import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveCollection.Companion.map
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.buildSizeVertex
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.TrackedCollectionSumCellVertex
 
 interface ReactiveCollection<out ElementT> {

@@ -3,10 +3,8 @@ package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
 import dev.azide.core.impl.enqueueForCommitment
 
 abstract class AbstractTrackedSetVertex<ElementT>() : AbstractLiveVertex(), TrackedSetVertex<ElementT>,
@@ -14,10 +12,6 @@ abstract class AbstractTrackedSetVertex<ElementT>() : AbstractLiveVertex(), Trac
     private var _ongoingChange: SetChange<ElementT>? = null
 
     private var _isEnqueuedForCommitment = false
-
-    final override fun buildSizeVertex(): CellVertex<Int> = TrackedSetSizeWarmCellVertex(
-        sourceVertex = this,
-    )
 
     final override val ongoingChange: SetChange<ElementT>?
         get() = _ongoingChange

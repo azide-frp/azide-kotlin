@@ -5,21 +5,15 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
+import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeCellVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
 interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
-        companion object {
-            fun <ElementT> of(
-                addedElements: Collection<ElementT>,
-                removedElements: Collection<ElementT>,
-            ): CollectionChange<ElementT> = object : CollectionChange<ElementT> {
-                override val addedElements: Collection<ElementT> = addedElements
-                override val removedElements: Collection<ElementT> = removedElements
-            }
-        }
+        val sizeDelta: Int
 
         val addedElements: Collection<ElementT>
+
         val removedElements: Collection<ElementT>
     }
 
@@ -29,8 +23,12 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
         propagationContext: PropagationContext,
     ): ContentT
 
-    fun buildSizeVertex(): CellVertex<Int>
 }
+
+fun <ContentT : Collection<*>, ChangeT : CollectionChange<*>> TrackedGenericCollectionVertex<ContentT, ChangeT>.buildSizeVertex(): CellVertex<Int> =
+    TrackedCollectionSizeCellVertex(
+        sourceVertex = this@buildSizeVertex,
+    )
 
 typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
 
