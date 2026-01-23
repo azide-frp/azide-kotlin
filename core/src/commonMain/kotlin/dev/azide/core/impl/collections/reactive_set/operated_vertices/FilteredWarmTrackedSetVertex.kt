@@ -5,7 +5,7 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessWarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 import dev.azide.core.impl.registerBoundListener
 
