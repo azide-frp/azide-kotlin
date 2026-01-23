@@ -1,0 +1,14 @@
+package dev.azide.core.impl.collections.reactive_collection
+
+import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractFrozenTrackedGenericCollectionVertex
+
+class PureTrackedGenericCollectionVertex<ContentT: Collection<*>>(
+    val elements: ContentT,
+) : AbstractFrozenTrackedGenericCollectionVertex<ContentT>() {
+    override fun getOldContentView(
+        propagationContext: Transactions.PropagationContext,
+    ): ContentT = elements
+}
+
+typealias PureTrackedSetVertex<ElementT> = PureTrackedGenericCollectionVertex<Set<ElementT>>
