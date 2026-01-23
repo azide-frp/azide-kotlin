@@ -1,15 +1,15 @@
 package dev.azide.core.impl.collections.reactive_set.abstract_vertices
 
+import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.WarmTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.helpers.TrackedSetSizeWarmCellVertex
-import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.enqueueForCommitment
 
-abstract class AbstractWarmTrackedSetVertex<ElementT>() : AbstractLiveVertex(), WarmTrackedSetVertex<ElementT>,
+abstract class AbstractTrackedSetVertex<ElementT>() : AbstractLiveVertex(), TrackedSetVertex<ElementT>,
     CommittableVertex {
     private var _ongoingChange: SetChange<ElementT>? = null
 

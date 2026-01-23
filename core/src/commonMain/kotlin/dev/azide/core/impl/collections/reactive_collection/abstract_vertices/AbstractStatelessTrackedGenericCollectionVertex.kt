@@ -36,4 +36,4 @@ abstract class AbstractStatelessTrackedGenericCollectionVertex<ContentT : Collec
     abstract fun deactivate()
 }
 
-typealias AbstractStatelessWarmTrackedSetVertex<ElementT> = AbstractStatelessTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
+typealias AbstractStatelessTrackedSetVertex<ElementT> = AbstractStatelessTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
