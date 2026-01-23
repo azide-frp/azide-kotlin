@@ -1,9 +1,6 @@
 package dev.azide.core.impl.collections.reactive_set
 
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
-
-typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
 
 data class SetChange<out ElementT>(
     override val addedElements: Set<ElementT>,

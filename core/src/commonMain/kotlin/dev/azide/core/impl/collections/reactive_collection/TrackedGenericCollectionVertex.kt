@@ -5,6 +5,7 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
+import dev.azide.core.impl.collections.reactive_set.SetChange
 
 interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
     interface CollectionChange<out ElementT> {
@@ -31,20 +32,15 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
     fun buildSizeVertex(): CellVertex<Int>
 }
 
+typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
+
+typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
+
 fun <ElementT> TrackedCollectionVertex<ElementT>.buildContainsVertex(
     element: ElementT,
 ): CellVertex<Boolean> = TrackedCollectionContainsCellVertex(
     sourceVertex = this,
     element = element,
-)
-
-typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
-
-fun <ElementT, TransformedElementT> CollectionChange<ElementT>.map(
-    transform: (ElementT) -> TransformedElementT,
-): CollectionChange<TransformedElementT> = CollectionChange.of(
-    addedElements = addedElements.map(transform),
-    removedElements = removedElements.map(transform),
 )
 
 // TODO: Make this an abstract property
