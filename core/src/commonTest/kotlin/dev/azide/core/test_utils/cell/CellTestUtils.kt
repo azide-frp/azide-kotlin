@@ -8,7 +8,6 @@ import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.impl.registerListenerOnline
 import dev.azide.core.test_utils.TestInputStimulation
@@ -104,7 +103,7 @@ internal object CellTestUtils {
             expectedOldValue: ValueT,
             expectedReceivedUpdate: ReceivedUpdate<ValueT>?,
         ) {
-            assertIs<WarmCellVertex<ValueT>>(
+            assertIs<CellVertex<ValueT>>(
                 value = subjectVertex,
                 message = "Subject cell vertex is already frozen",
             )

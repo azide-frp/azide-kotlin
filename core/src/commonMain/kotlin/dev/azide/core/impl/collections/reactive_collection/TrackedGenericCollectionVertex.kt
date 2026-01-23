@@ -22,7 +22,6 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
     fun getOldContentView(
         propagationContext: PropagationContext,
     ): ContentT
-
 }
 
 fun <ContentT : Collection<*>, ChangeT : CollectionChange<*>> TrackedGenericCollectionVertex<ContentT, ChangeT>.buildSizeVertex(): CellVertex<Int> =
@@ -40,7 +39,3 @@ fun <ElementT> TrackedCollectionVertex<ElementT>.buildContainsVertex(
     sourceVertex = this,
     element = element,
 )
-
-// TODO: Make this an abstract property
-val <ElementT> CollectionChange<ElementT>.sizeDelta: Int
-    get() = addedElements.size - removedElements.size

@@ -3,11 +3,10 @@ package dev.azide.core.impl.cell.abstract_vertices
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
 import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.enqueueForCommitment
 
-abstract class AbstractWarmCellVertex<ValueT>() : AbstractLiveVertex(), WarmCellVertex<ValueT>, CommittableVertex {
+abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<ValueT>, CommittableVertex {
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
 
     private var _isEnqueuedForCommitment = false
