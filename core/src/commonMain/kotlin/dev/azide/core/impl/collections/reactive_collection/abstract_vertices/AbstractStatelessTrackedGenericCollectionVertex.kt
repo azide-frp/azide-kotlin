@@ -1,11 +1,12 @@
-package dev.azide.core.impl.collections.reactive_set.abstract_vertices
+package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
-abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTrackedSetVertex<ElementT>() {
+abstract class AbstractStatelessTrackedGenericCollectionVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>> :
+    AbstractTrackedGeneticCollectionVertex<ContentT, ChangeT>() {
     final override fun onFirstListenerRegistered(
         propagationContext: PropagationContext,
         mode: ActivationMode,
@@ -30,7 +31,9 @@ abstract class AbstractStatelessWarmTrackedSetVertex<ElementT> : AbstractWarmTra
     abstract fun activate(
         propagationContext: PropagationContext,
         mode: ActivationMode,
-    ): SetChange<ElementT>?
+    ): ChangeT?
 
     abstract fun deactivate()
 }
+
+typealias AbstractStatelessWarmTrackedSetVertex<ElementT> = AbstractStatelessTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
