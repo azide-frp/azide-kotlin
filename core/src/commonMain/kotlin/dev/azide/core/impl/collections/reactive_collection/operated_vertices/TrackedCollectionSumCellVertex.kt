@@ -5,7 +5,6 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
-import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedGenericCollectionProxyCellVertex
 
 class TrackedCollectionSumCellVertex(
     sourceVertex: TrackedCollectionVertex<Int>,

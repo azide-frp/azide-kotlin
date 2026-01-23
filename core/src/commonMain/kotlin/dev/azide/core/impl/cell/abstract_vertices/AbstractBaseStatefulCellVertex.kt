@@ -5,7 +5,7 @@ import dev.azide.core.impl.cell.CellVertex
 
 abstract class AbstractBaseStatefulCellVertex<ValueT>(
     initialValue: ValueT,
-) : AbstractWarmCellVertex<ValueT>() {
+) : AbstractCellVertex<ValueT>() {
     private var _stableValue: ValueT = initialValue
 
 

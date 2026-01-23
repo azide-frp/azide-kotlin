@@ -8,7 +8,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.registerBoundListener
 
-class Mapped2WarmCellVertex<ValueT1, ValueT2, TransformedValueT>(
+class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex1: CellVertex<ValueT1>,
     private val sourceVertex2: CellVertex<ValueT2>,
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
