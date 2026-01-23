@@ -30,6 +30,10 @@ class ChildNodesDomList(
         val oldNode =
             getOrNull(index) ?: throw IndexOutOfBoundsException("Index $index is out of bounds for list of size $size")
 
+        if (node.contains(element) && oldNode != element) {
+            throw IllegalStateException("Cannot insert a node that is already a child of this node")
+        }
+
         node.replaceChild(
             oldNode,
             element,
@@ -48,6 +52,10 @@ class ChildNodesDomList(
             throw IndexOutOfBoundsException("Index $index is out of bounds for list of size $size")
         }
 
+        if (node.contains(element)) {
+            throw IllegalStateException("Cannot insert a node that is already a child of this node")
+        }
+
         node.insertBefore(
             element,
             nextNode,
@@ -64,6 +72,10 @@ class ChildNodesDomList(
     }
 
     override fun add(element: Node): Boolean {
+        if (node.contains(element)) {
+            throw IllegalStateException("Cannot insert a node that is already a child of this node")
+        }
+
         node.appendChild(element)
 
         return true
