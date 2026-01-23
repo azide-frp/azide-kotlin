@@ -29,8 +29,8 @@ data class SetChange<out ElementT>(
     fun filter(
         predicate: (ElementT) -> Boolean,
     ): SetChange<ElementT>? = of(
-        addedElements = addedElements.filterTo(mutableSetOf(), predicate),
-        removedElements = removedElements.filterTo(mutableSetOf(), predicate),
+        addedElements = addedElements.filterToSet(predicate),
+        removedElements = removedElements.filterToSet(predicate),
     )
 
     override val sizeDelta: Int
@@ -48,3 +48,7 @@ fun <ElementT> SetChange<ElementT>.applyTo(
         mutableSet.add(addedElement)
     }
 }
+
+private fun <ElementT> Iterable<ElementT>.filterToSet(
+    predicate: (ElementT) -> Boolean,
+): Set<ElementT> = filterTo(mutableSetOf(), predicate)
