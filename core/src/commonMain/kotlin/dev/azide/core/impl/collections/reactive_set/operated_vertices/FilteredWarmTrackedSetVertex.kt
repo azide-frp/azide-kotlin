@@ -1,8 +1,8 @@
 package dev.azide.core.impl.collections.reactive_set.operated_vertices
 
+import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTransformativeTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.utils.LazyFilteredSet
 
 class FilteredWarmTrackedSetVertex<ElementT>(
