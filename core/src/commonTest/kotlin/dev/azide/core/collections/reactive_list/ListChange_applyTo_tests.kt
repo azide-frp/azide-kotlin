@@ -2,13 +2,11 @@ package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
-import dev.azide.core.impl.collections.reactive_list.filter
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Suppress("ClassName")
-class ListChange_tests {
+class ListChange_applyTo_tests {
     @Test
     fun test_applyTo_toEmpty() {
         val mutableList = mutableListOf<Int>()
@@ -107,6 +105,7 @@ class ListChange_tests {
         )
     }
 
+    @Suppress("RemoveExplicitTypeArguments")
     @Test
     fun test_applyTo_nonEmpty_removedOnly_multipleParts() {
         val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60, 70, 80)
