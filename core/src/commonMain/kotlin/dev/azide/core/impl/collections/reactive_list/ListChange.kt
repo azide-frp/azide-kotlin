@@ -74,28 +74,38 @@ data class ListChange<out ElementT>(
  * @return A pair containing the filtered [ListChange.Part] (or null if no elements remain) and the extra shift in
  * indices introduced by the filtering of this part.
  */
-fun <ElementT> ListChange.Part<ElementT>.filter(
-    oldContentView: List<ElementT>,
-    shift: Int,
+private fun <ElementT> ListChange.Part<ElementT>.filter(
+    filterMask: CountingBooleanList,
+    previousPartLastIndexExclusive: Int,
+    accumulatedShift: Int,
     predicate: (ElementT) -> Boolean,
 ): Pair<ListChange.Part<ElementT>?, Int> {
-    val shiftedFirstIndexInclusive = firstIndexInclusive - shift
-    val shiftedLastIndexExclusive = lastIndexExclusive - shift
-
-    val removedElements: List<ElementT> = oldContentView.subList(
-        fromIndex = shiftedFirstIndexInclusive,
-        toIndex = shiftedLastIndexExclusive,
+    // TODO: Optimize this
+    val baseShift = filterMask.count(
+        firstIndexInclusive = previousPartLastIndexExclusive,
+        lastIndexExclusive = firstIndexInclusive,
+        element = false,
     )
 
-    val extraShift = removedElements.count { !predicate(it) }
+    // TODO: Optimize this
+    val extraShift = filterMask.count(
+        firstIndexInclusive = firstIndexInclusive,
+        lastIndexExclusive = lastIndexExclusive,
+        element = false,
+    )
+
+    val totalShift = baseShift + extraShift
+
+    val shiftedFirstIndexInclusive = firstIndexInclusive - (accumulatedShift + baseShift)
+    val shiftedLastIndexExclusive = lastIndexExclusive - (accumulatedShift + totalShift)
 
     return Pair(
         ListChange.Part.of(
             firstIndexInclusive = shiftedFirstIndexInclusive,
-            lastIndexExclusive = shiftedLastIndexExclusive - extraShift,
-            newElements = newElements.filter(predicate)
+            lastIndexExclusive = shiftedLastIndexExclusive,
+            newElements = newElements.filter(predicate),
         ),
-        extraShift,
+        totalShift,
     )
 }
 
@@ -103,17 +113,19 @@ fun <ElementT> ListChange.Part<ElementT>.filter(
  * Filters this [ListChange] based on the given [predicate], adjusting indices accordingly.
  */
 fun <ElementT> ListChange<ElementT>.filter(
-    oldContentView: List<ElementT>,
+    filterMask: CountingBooleanList,
     predicate: (ElementT) -> Boolean,
 ): ListChange<ElementT>? {
     var accumulatedShift = 0
+    var previousPartLastIndexExclusive = 0
 
     val resultParts = mutableListOf<ListChange.Part<ElementT>>()
 
     parts.forEach { part ->
-        val (filteredPart, extraShift) = part.filter(
-            oldContentView = oldContentView,
-            shift = accumulatedShift,
+        val (filteredPart, totalPartShift) = part.filter(
+            filterMask = filterMask,
+            previousPartLastIndexExclusive = previousPartLastIndexExclusive,
+            accumulatedShift = accumulatedShift,
             predicate = predicate,
         )
 
@@ -121,13 +133,28 @@ fun <ElementT> ListChange<ElementT>.filter(
             resultParts.add(filteredPart)
         }
 
-        accumulatedShift += extraShift
+        accumulatedShift += totalPartShift
+        previousPartLastIndexExclusive = part.lastIndexExclusive
     }
 
     return ListChange.of(
         parts = resultParts,
     )
 }
+
+private fun <ElementT, TransformedElementT> ListChange.Part<ElementT>.map(
+    transform: (ElementT) -> TransformedElementT,
+): ListChange.Part<TransformedElementT> = ListChange.Part(
+    firstIndexInclusive = firstIndexInclusive,
+    lastIndexExclusive = lastIndexExclusive,
+    newElements = newElements.map(transform),
+)
+
+fun <ElementT, TransformedElementT> ListChange<ElementT>.map(
+    transform: (ElementT) -> TransformedElementT,
+): ListChange<TransformedElementT> = ListChange(
+    parts = parts.map { it.map(transform) },
+)
 
 fun <ElementT> ListChange.Part<ElementT>.applyTo(
     mutableList: MutableList<ElementT>,
@@ -175,3 +202,14 @@ fun <ElementT> ListChange<ElementT>.applyTo(
         part.applyTo(mutableList = mutableList)
     }
 }
+
+private typealias CountingBooleanList = List<Boolean>
+
+private fun CountingBooleanList.count(
+    firstIndexInclusive: Int,
+    lastIndexExclusive: Int,
+    element: Boolean,
+): Int = subList(
+    fromIndex = firstIndexInclusive,
+    toIndex = lastIndexExclusive,
+).count { it == element }
