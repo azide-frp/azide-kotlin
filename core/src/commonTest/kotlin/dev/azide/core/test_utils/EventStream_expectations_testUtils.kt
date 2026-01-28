@@ -111,7 +111,7 @@ abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStream
 }
 
 @Suppress("ClassName")
-object ExpectedEventStreamReaction_testUtils {
+object EventStream_expectations_testUtils {
     fun <EventT> expectEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedEmittedEvent: EventT,

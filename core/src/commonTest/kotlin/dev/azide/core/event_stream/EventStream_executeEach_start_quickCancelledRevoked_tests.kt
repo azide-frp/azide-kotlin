@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
+import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
@@ -46,7 +46,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         val subjectEventStream = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
 
@@ -90,7 +90,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 10,
             ),
@@ -137,7 +137,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
@@ -185,7 +185,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),

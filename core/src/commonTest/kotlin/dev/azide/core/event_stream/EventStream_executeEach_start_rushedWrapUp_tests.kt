@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
+import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetAction
@@ -24,7 +24,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
         Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
     }
@@ -50,7 +50,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
+            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
