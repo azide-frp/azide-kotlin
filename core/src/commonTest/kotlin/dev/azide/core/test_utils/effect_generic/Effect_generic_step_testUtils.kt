@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object EffectTestUtils_step {
+data object Effect_generic_step_testUtils {
     fun <SubjectT> executeStepTransaction(
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
@@ -16,7 +16,7 @@ data object EffectTestUtils_step {
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->

@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
@@ -6,25 +6,24 @@ import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestSlottedStimulation2
-import dev.azide.core.test_utils.TestStimulationSlot2
+import dev.azide.core.test_utils.TestSlottedStimulation3
+import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object EffectTestUtils_cancelled {
+data object Effect_generic_cancelledRevoked_testUtils {
     fun <SubjectT> executeCancelTransaction(
         subjectOutcome: Effect.Outcome<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        slottedInputStimulation: TestSlottedStimulation2? = null,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
-        cancelCount: Int = 1,
     ) {
         val subject = subjectOutcome.result
-        val subjectEffectHandle = subjectOutcome.handle
+        val subjectHandle = subjectOutcome.handle
 
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
@@ -44,19 +43,25 @@ data object EffectTestUtils_cancelled {
             // 0. Pre-stimulation
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot0,
+                slot = TestStimulationSlot3.Slot0,
             )
 
             // 1. Cancel the effect
-            repeat(cancelCount) {
-                val (_: Unit, _: Revocable) = subjectEffectHandle.cancel.executeInternallyWrappedUp(
-                    propagationContext = propagationContext,
-                )
-            }
+            val (_: Unit, cancelRevocable: Revocable) = subjectHandle.cancel.executeInternallyWrappedUp(
+                propagationContext = propagationContext,
+            )
 
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot1,
+                slot = TestStimulationSlot3.Slot1,
+            )
+
+            // 2. Revoke the effect's cancellation
+            cancelRevocable.revoke()
+
+            slottedInputStimulation?.stimulate(
+                propagationContext = propagationContext,
+                slot = TestStimulationSlot3.Slot2,
             )
 
             // Verify the old state again (to ensure its stability)

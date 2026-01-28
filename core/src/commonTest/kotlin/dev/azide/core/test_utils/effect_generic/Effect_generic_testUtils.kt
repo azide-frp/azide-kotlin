@@ -1,10 +1,11 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.ExpectedImpact
 
-data object EffectTestUtils {
+@Suppress("ClassName")
+data object Effect_generic_testUtils {
     fun <SubjectT> executeTransactionWithImpactAndNewStateVerification(
         expectedTargetImpact: ExpectedImpact,
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,

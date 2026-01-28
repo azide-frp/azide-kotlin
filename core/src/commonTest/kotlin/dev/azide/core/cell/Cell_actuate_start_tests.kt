@@ -13,8 +13,8 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effects.EffectTestUtils_start
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
@@ -47,7 +47,7 @@ class Cell_actuate_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start.executeStartTransaction(
+        Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
@@ -88,7 +88,7 @@ class Cell_actuate_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start.executeStartTransaction(
+        Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -136,7 +136,7 @@ class Cell_actuate_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start.executeStartTransaction(
+        Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -184,7 +184,7 @@ class Cell_actuate_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_start.executeStartTransaction(
+        Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

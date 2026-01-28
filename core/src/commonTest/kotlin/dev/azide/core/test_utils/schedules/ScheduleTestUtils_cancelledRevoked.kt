@@ -6,8 +6,8 @@ import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 @Suppress("ClassName")
 data object ScheduleTestUtils_cancelledRevoked {
@@ -16,7 +16,7 @@ data object ScheduleTestUtils_cancelledRevoked {
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils_cancelledRevoked.executeCancelTransaction(
+        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedInputStimulation = slottedInputStimulation,

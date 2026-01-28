@@ -1,27 +1,26 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestSlottedStimulation5
-import dev.azide.core.test_utils.TestStimulationSlot5
+import dev.azide.core.test_utils.TestSlottedStimulation4
+import dev.azide.core.test_utils.TestStimulationSlot4
 
 @Suppress("ClassName")
-data object EffectTestUtils_startRevoked_quickCancelledRevoked {
+data object Effect_generic_startRevoked_quickCancelled_testUtils {
     fun <SubjectT> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
-        slottedInputStimulation: TestSlottedStimulation5? = null,
+        slottedInputStimulation: TestSlottedStimulation4? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = null,
         ) { propagationContext ->
             // 0. Pre-stimulation
-
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot5.Slot0,
+                slot = TestStimulationSlot4.Slot0,
             )
 
             // 1. Start the effect
@@ -34,34 +33,29 @@ data object EffectTestUtils_startRevoked_quickCancelledRevoked {
 
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot5.Slot1,
+                slot = TestStimulationSlot4.Slot1,
             )
 
             // 2. Cancel the effect
-            val (_: Unit, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUp(
+            val (_, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot5.Slot2,
+                slot = TestStimulationSlot4.Slot2,
             )
 
-            // 3. Revoke the effect's cancellation
-            cancelRevocable.revoke()
-
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot5.Slot3,
-            )
-
-            // 4. Revoke the effect's start
+            // 3. Revoke the effect's start
             startRevocable.revoke()
 
             slottedInputStimulation?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot5.Slot4,
+                slot = TestStimulationSlot4.Slot3,
             )
+
+            // Extra: Revoke the effect's cancellation
+            cancelRevocable.revoke()
 
             subject
         }

@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
@@ -7,13 +7,13 @@ import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.TestStimulationSlot3
 
 @Suppress("ClassName")
-data object EffectTestUtils_startRevoked {
+data object Effect_generic_startRevoked_testUtils {
     fun <SubjectT> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = null,
         ) { propagationContext ->

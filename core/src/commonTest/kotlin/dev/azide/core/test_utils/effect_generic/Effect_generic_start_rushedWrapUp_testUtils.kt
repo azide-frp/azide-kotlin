@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.impl.Transactions.WrapUpContext
@@ -13,14 +13,14 @@ import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.installLater
 
 @Suppress("ClassName")
-data object EffectTestUtils_start_rushedWrapUp {
+data object Effect_generic_start_rushedWrapUp_testUtils {
     fun <SubjectT> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
