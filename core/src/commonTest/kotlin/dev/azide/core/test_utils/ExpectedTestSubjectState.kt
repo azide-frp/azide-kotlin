@@ -19,17 +19,6 @@ interface ExpectedTestSubjectState<in SubjectT> {
 
 interface ExpectedTestSubjectTransition<in SubjectT> {
     companion object {
-        @Suppress("TestFunctionName")
-        fun <SubjectT> ExpectedTestSubjectTransition(
-            expectedOldState: ExpectedTestSubjectState<SubjectT>,
-            expectedReaction: ExpectedTestSubjectReaction<SubjectT>,
-            expectedNewState: ExpectedTestSubjectState<SubjectT>,
-        ): ExpectedTestSubjectTransition<SubjectT> = ExpectedTestSubjectTransitionImpl(
-            expectedOldState = expectedOldState,
-            expectedReaction = expectedReaction,
-            expectedNewState = expectedNewState,
-        )
-
         val None: ExpectedTestSubjectTransition<Any> = ExpectedTestSubjectTransitionImpl(
             expectedOldState = ExpectedTestSubjectState.None,
             expectedReaction = ExpectedTestSubjectReaction.None,
