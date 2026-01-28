@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropaga
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
@@ -29,10 +29,10 @@ class Cell_sampleEvery_reaction_tests {
     private fun test_step_sourceUpdates(
         dispatcher: TestSlotDispatcher1x2,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -62,10 +62,10 @@ class Cell_sampleEvery_reaction_tests {
     private fun test_step_sourceUpdatesRevoked(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -95,11 +95,11 @@ class Cell_sampleEvery_reaction_tests {
     private fun test_step_sourceUpdatesCorrected(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
-        val helperCell3 = CellTestUtils.createInputCell(initialValue = 30)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
+        val helperCell3 = TestInputCell(initialValue = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 

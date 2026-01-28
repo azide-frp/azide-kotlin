@@ -9,19 +9,19 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropaga
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class Cell_sampleEvery_spawn_tests {
     @Test
     fun test_spawn() {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
+        val helperCell1 = TestInputCell(initialValue = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -47,10 +47,10 @@ class Cell_sampleEvery_spawn_tests {
     private fun test_spawn_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -80,10 +80,10 @@ class Cell_sampleEvery_spawn_tests {
     private fun test_spawn_sourceEmitsRevokedSimultaneously(
         dispatcher: TestSlotDispatcher2x3,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -113,11 +113,11 @@ class Cell_sampleEvery_spawn_tests {
     private fun test_spawn_sourceEmitsCorrectedSimultaneously(
         dispatcher: TestSlotDispatcher2x3,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
-        val helperCell3 = CellTestUtils.createInputCell(initialValue = 30)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
+        val helperCell3 = TestInputCell(initialValue = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 

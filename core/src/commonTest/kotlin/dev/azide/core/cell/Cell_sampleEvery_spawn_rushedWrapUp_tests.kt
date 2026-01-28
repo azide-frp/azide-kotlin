@@ -7,7 +7,7 @@ import dev.azide.core.sampling
 import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.Cell_spawn_rushedWrapUp_testUtils
 import kotlin.test.Test
 
@@ -15,9 +15,9 @@ import kotlin.test.Test
 class Cell_sampleEvery_spawn_rushedWrapUp_tests {
     @Test
     fun test_spawn_rushedWrapUp() {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
+        val helperCell1 = TestInputCell(initialValue = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
@@ -43,10 +43,10 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
     private fun test_spawn_rushedWrapUp_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 

@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x5
 import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_quickCancelledRevoked_testUtils
@@ -22,7 +22,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -56,7 +56,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -93,7 +93,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -131,7 +131,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 

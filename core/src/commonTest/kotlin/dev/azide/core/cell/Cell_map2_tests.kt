@@ -3,17 +3,18 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class Cell_map2_tests {
     @Test
     fun test_passiveSample() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -32,7 +33,7 @@ class Cell_map2_tests {
 
     @Test
     fun test_passiveSample_singleSourceConst() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
@@ -78,7 +79,7 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_sharedSource() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -101,11 +102,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_onlySource1() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -128,11 +129,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_onlySource2() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -159,7 +160,7 @@ class Cell_map2_tests {
             constValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -182,11 +183,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_singleSource_revoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -211,11 +212,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_singleSource_corrected() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -246,11 +247,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_bothSources() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -278,11 +279,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_bothSources_oneRevoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -311,11 +312,11 @@ class Cell_map2_tests {
 
     @Test
     fun test_update_bothSources_bothRevoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 

@@ -2,7 +2,7 @@ package dev.azide.core.cell
 
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.values
 import kotlin.test.Test
@@ -11,7 +11,7 @@ import kotlin.test.Test
 class Cell_values_tests {
     @Test
     fun test_spawn() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -23,7 +23,7 @@ class Cell_values_tests {
 
     @Test
     fun test_spawn_sourceUpdatesSimultaneously() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -36,7 +36,7 @@ class Cell_values_tests {
 
     @Test
     fun test_sourceUpdates() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -53,7 +53,7 @@ class Cell_values_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -72,7 +72,7 @@ class Cell_values_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 

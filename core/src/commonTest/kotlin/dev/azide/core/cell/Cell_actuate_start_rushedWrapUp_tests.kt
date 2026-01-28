@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
@@ -20,7 +20,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
     fun test_start() {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -50,7 +50,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 

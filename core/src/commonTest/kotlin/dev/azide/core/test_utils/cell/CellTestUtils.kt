@@ -22,12 +22,6 @@ internal object CellTestUtils {
         ): ListenerStatus = ListenerStatus.Reachable
     }
 
-    fun <ValueT> createInputCell(
-        initialValue: ValueT,
-    ): TestInputCell<ValueT> = TestInputCell(
-        initialValue = initialValue,
-    )
-
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
         private val subjectVertex: CellVertex<ValueT>,

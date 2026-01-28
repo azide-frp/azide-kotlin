@@ -9,11 +9,11 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropaga
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -30,7 +30,7 @@ class EventStream_sampleEach_reaction_tests {
     private fun test_step_sourceEmits(
         dispatcher: TestSlotDispatcher1x2,
     ) {
-        val helperCell = CellTestUtils.createInputCell(initialValue = 10)
+        val helperCell = TestInputCell(initialValue = 10)
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
 
@@ -59,7 +59,7 @@ class EventStream_sampleEach_reaction_tests {
     private fun test_step_sourceEmitsRevoked(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val helperCell = CellTestUtils.createInputCell(initialValue = 10)
+        val helperCell = TestInputCell(initialValue = 10)
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
 
@@ -88,8 +88,8 @@ class EventStream_sampleEach_reaction_tests {
     private fun test_step_sourceEmitsCorrected(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val helperCell1 = CellTestUtils.createInputCell(initialValue = 10)
-        val helperCell2 = CellTestUtils.createInputCell(initialValue = 20)
+        val helperCell1 = TestInputCell(initialValue = 10)
+        val helperCell2 = TestInputCell(initialValue = 20)
 
         val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
 
