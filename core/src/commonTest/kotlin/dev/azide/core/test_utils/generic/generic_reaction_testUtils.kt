@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.stateful
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation2
@@ -7,13 +7,13 @@ import dev.azide.core.test_utils.prepareReactionVerifierInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object TestUtils_reaction {
+data object generic_reaction_testUtils {
     fun <SubjectT> executeReactionTransaction(
         subject: SubjectT,
         slottedInputStimulation: TestSlottedStimulation2,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
     ) {
-        StatefulTestUtils.executeTransactionWithNewStateVerification(
+        generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation

@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn
+import dev.azide.core.test_utils.generic.generic_spawn_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -27,7 +27,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
@@ -56,7 +56,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
@@ -89,7 +89,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
@@ -123,7 +123,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = helperCell2.sampling,

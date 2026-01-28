@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.stateful
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Moment
 import dev.azide.core.pullInternallyWrappedUp
@@ -9,13 +9,13 @@ import dev.azide.core.test_utils.prepareReactionVerifierInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object StatefulTestUtils_spawn {
+data object generic_spawn_testUtils {
     fun <SubjectT> executeSpawnTransaction(
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
     ) {
-        StatefulTestUtils.executeTransactionWithNewStateVerification(
+        generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation

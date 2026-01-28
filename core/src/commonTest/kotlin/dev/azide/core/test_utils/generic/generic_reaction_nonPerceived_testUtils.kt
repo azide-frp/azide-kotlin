@@ -1,17 +1,17 @@
-package dev.azide.core.test_utils.stateful
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
-data object StatefulTestUtils_reaction_nonPerceived {
+data object generic_reaction_nonPerceived_testUtils {
     fun <SubjectT> executeReactionTransaction(
         subject: SubjectT,
         inputStimulation: TestStimulation,
         expectedOldState: ExpectedTestSubjectState<SubjectT>,
         expectedNewState: ExpectedTestSubjectState<SubjectT>,
     ) {
-        StatefulTestUtils.executeTransactionWithNewStateVerification(
+        generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedNewState,
         ) { propagationContext ->
             expectedOldState.verifyStableState(

@@ -7,7 +7,7 @@ import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn_nonPerceived
+import dev.azide.core.test_utils.generic.generic_spawn_nonPerceived_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -22,7 +22,7 @@ class EventStream_hold_spawn_nonObserved_tests {
             expectedStableValue = 0,
         )
 
-        StatefulTestUtils_spawn_nonPerceived.executeSpawnTransaction(
+        generic_spawn_nonPerceived_testUtils.executeSpawnTransaction(
             subjectMoment = subjectMoment,
             expectedOldState = expectedUnaffectedState,
             expectedNewState = expectedUnaffectedState,
@@ -45,7 +45,7 @@ class EventStream_hold_spawn_nonObserved_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn_nonPerceived.executeSpawnTransaction(
+        generic_spawn_nonPerceived_testUtils.executeSpawnTransaction(
             subjectMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,

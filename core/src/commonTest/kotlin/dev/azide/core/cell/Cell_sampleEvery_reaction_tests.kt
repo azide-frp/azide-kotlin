@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.stateful.TestUtils_reaction
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -38,7 +38,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectCell,
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
@@ -71,7 +71,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
@@ -105,7 +105,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = helperCell2.sampling,

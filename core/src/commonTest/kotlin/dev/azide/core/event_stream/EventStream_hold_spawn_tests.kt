@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn
+import dev.azide.core.test_utils.generic.generic_spawn_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -22,7 +22,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 0,
@@ -46,7 +46,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
@@ -74,7 +74,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = 10,
@@ -102,7 +102,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = 10,

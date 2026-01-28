@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.stateful
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions.WrapUpContext
@@ -11,13 +11,13 @@ import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.installLater
 
 @Suppress("ClassName")
-data object StatefulTestUtils_spawn_rushedWrapUp {
+data object generic_spawn_rushedWrapUp_testUtils {
     fun <SubjectT : Any> executeSpawnTransaction(
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
     ) {
-        StatefulTestUtils.executeTransactionWithNewStateVerification(
+        generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation

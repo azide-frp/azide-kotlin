@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.stateful
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Moment
 import dev.azide.core.pullInternallyWrappedUp
@@ -7,14 +7,14 @@ import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
 
 @Suppress("ClassName")
-data object StatefulTestUtils_spawn_nonPerceived {
+data object generic_spawn_nonPerceived_testUtils {
     fun <SubjectT> executeSpawnTransaction(
         subjectMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedOldState: ExpectedTestSubjectState<SubjectT>,
         expectedNewState: ExpectedTestSubjectState<SubjectT>,
     ) {
-        StatefulTestUtils.executeTransactionWithNewStateVerification(
+        generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation

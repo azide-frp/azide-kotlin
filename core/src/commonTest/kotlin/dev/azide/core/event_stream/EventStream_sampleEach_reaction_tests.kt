@@ -13,7 +13,7 @@ import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.stateful.TestUtils_reaction
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -36,7 +36,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = helperCell.sampling,
@@ -65,7 +65,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = helperCell.sampling,
@@ -95,7 +95,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        TestUtils_reaction.executeReactionTransaction(
+        generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = helperCell1.sampling,

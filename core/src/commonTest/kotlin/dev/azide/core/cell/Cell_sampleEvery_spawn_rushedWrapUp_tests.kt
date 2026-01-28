@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn_rushedWrapUp
+import dev.azide.core.test_utils.generic.generic_spawn_rushedWrapUp_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -23,7 +23,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
+        generic_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
@@ -52,7 +52,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
+        generic_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
