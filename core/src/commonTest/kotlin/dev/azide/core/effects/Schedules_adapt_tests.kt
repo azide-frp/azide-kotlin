@@ -7,12 +7,12 @@ import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_cancelledRevoked_testUtils
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_startRevoked_quickCancelledRevoked_testUtils
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_startRevoked_quickCancelled_testUtils
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_startRevoked_testUtils
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_start_quickCancelledRevoked_testUtils
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_start_quickCancelled_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_startRevoked_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_start_quickCancelled_testUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -75,7 +75,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -101,7 +101,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -127,7 +127,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_generic_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -153,7 +153,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -179,7 +179,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -265,7 +265,7 @@ class Schedules_adapt_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             expectedTargetImpact = ExpectedImpact.None,
         )
