@@ -6,30 +6,22 @@ import dev.azide.core.actuate
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.TestInputCellTag
+import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation5
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class Cell_actuate_startRevoked_quickCancelledRevoked_sourceUpdatesRevoked_tests {
-    private enum class MyStimulationTag : TestStimulationTag {
-        SourceCellUpdates, SourceCellRevokesUpdate,
-    }
-
-    private val sourceCellUpdatesRevokedStimulationSequence = TestStimulationScenario.of(
-        MyStimulationTag.SourceCellUpdates,
-        MyStimulationTag.SourceCellRevokesUpdate,
-    )
+    private data object SourceEffectCellTag : TestInputCellTag
 
     private val slottedStimulationBank = TestStimulationBank.build(
-        sourceCellUpdatesRevokedStimulationSequence,
+        TestInputCellTag.revokedUpdateScenario(inputCellTag = SourceEffectCellTag),
     ).distribute(
         slotCount = TestSlotCount.Count5,
     )
@@ -58,11 +50,9 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_sourceUpdatesRevoked_tests
         Effect_Cell_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = TestStimulationMap.of(
-                    MyStimulationTag.SourceCellUpdates to sourceCell.update(
-                        newValue = targetEffect2,
-                    ),
-                    MyStimulationTag.SourceCellRevokesUpdate to sourceCell.revokeUpdate(),
+                stimulationMap = sourceCell.revokingUpdate(
+                    tag = SourceEffectCellTag,
+                    newValue = targetEffect2,
                 ),
             ).asTestSlottedStimulation5,
             expectedTargetImpact = ExpectedImpact.combine(

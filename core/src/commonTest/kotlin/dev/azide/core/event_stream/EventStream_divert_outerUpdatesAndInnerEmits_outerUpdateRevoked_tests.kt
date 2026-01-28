@@ -6,35 +6,32 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropaga
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.TestInputCellTag
+import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
+import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
-    private enum class MyStimulationTag : TestStimulationTag {
-        OuterCellUpdates, OuterCellRevokesUpdate, InnerEventStreamEmits,
-    }
+    private data object SourceOuterCellTag : TestInputCellTag
 
-    private val outerCellUpdatesRevokedStimulationSequence = TestStimulationScenario.of(
-        MyStimulationTag.OuterCellUpdates,
-        MyStimulationTag.OuterCellRevokesUpdate,
-    )
-
-    private val innerEventStreamEmitsStimulationSequence = TestStimulationScenario.of(
-        MyStimulationTag.InnerEventStreamEmits,
-    )
+    private data object SourceInnerEventStreamTag : TestInputEventStreamTag
 
     private val slottedStimulationBank = TestStimulationBank.build(
-        outerCellUpdatesRevokedStimulationSequence,
-        innerEventStreamEmitsStimulationSequence,
+        TestInputCellTag.revokedUpdateScenario(
+            inputCellTag = SourceOuterCellTag,
+        ),
+        TestInputEventStreamTag.emissionScenario(
+            inputEventStreamTag = SourceInnerEventStreamTag,
+        ),
     ).distribute(
         slotCount = TestSlotCount.Count2,
     )
@@ -64,12 +61,13 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = TestStimulationMap.of(
-                    MyStimulationTag.OuterCellUpdates to outerSourceCell.update(
+                stimulationMap = TestStimulationMap.union(
+                    outerSourceCell.revokingUpdate(
+                        tag = SourceOuterCellTag,
                         newValue = laterInnerSourceEventStream,
                     ),
-                    MyStimulationTag.OuterCellRevokesUpdate to outerSourceCell.revokeUpdate(),
-                    MyStimulationTag.InnerEventStreamEmits to earlierInnerSourceEventStream.emit(
+                    earlierInnerSourceEventStream.emitting(
+                        tag = SourceInnerEventStreamTag,
                         emittedEvent = 11,
                     ),
                 ),
@@ -113,12 +111,13 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = TestStimulationMap.of(
-                    MyStimulationTag.OuterCellUpdates to outerSourceCell.update(
+                stimulationMap = TestStimulationMap.union(
+                    outerSourceCell.revokingUpdate(
+                        tag = SourceOuterCellTag,
                         newValue = laterInnerSourceEventStream,
                     ),
-                    MyStimulationTag.OuterCellRevokesUpdate to outerSourceCell.revokeUpdate(),
-                    MyStimulationTag.InnerEventStreamEmits to laterInnerSourceEventStream.emit(
+                    laterInnerSourceEventStream.emitting(
+                        tag = SourceInnerEventStreamTag,
                         emittedEvent = 21,
                     ),
                 ),

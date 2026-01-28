@@ -7,6 +7,7 @@ import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -99,6 +100,34 @@ class TestInputCell<ValueT>(
     override val vertex: CellVertex<ValueT>
         get() = _vertex
 }
+
+fun <ValueT> TestInputCell<ValueT>.updating(
+    tag: TestInputCellTag,
+    newValue: ValueT,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputCellStimulationTag.Update(inputTag = tag) to update(newValue = newValue),
+)
+
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+    tag: TestInputCellTag,
+    newValue: ValueT,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputCellStimulationTag.Update(inputTag = tag) to update(newValue = newValue),
+    TestInputCellStimulationTag.UpdateRevocation(inputTag = tag) to revokeUpdate(),
+)
+
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+    tag: TestInputCellTag,
+    intermediateNewValue: ValueT,
+    correctedNewValue: ValueT,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputCellStimulationTag.Update(inputTag = tag) to update(
+        newValue = intermediateNewValue,
+    ),
+    TestInputCellStimulationTag.UpdateRevocation(inputTag = tag) to correctUpdate(
+        correctedNewValue = correctedNewValue,
+    ),
+)
 
 fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
     newValue: ValueT,
