@@ -6,7 +6,7 @@ import dev.azide.core.holding
 import dev.azide.core.pullExternally
 import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.generic.generic_reaction_nonPerceived_testUtils
+import dev.azide.core.test_utils.cell.Cell_reaction_nonPerceived_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -19,15 +19,15 @@ class EventStream_hold_reaction_nonObserved_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        generic_reaction_nonPerceived_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_nonPerceived_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ),
-            expectedOldState = Cell_expectations_testUtils.expectStableValue(
+            expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedStableValue = 0,
             ),
-            expectedNewState = Cell_expectations_testUtils.expectStableValue(
+            expectedNewSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedStableValue = 10,
             ),
         )

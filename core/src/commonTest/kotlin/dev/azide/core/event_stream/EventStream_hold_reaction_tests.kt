@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -35,12 +35,12 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),
@@ -65,12 +65,12 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 0,
             ),
@@ -95,13 +95,13 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 0,
                 expectedNewValue = 20,

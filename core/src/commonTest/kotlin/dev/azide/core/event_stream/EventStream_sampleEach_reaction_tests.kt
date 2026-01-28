@@ -13,7 +13,7 @@ import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -36,12 +36,12 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectEventStream,
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = helperCell.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
         )
@@ -65,12 +65,12 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectEventStream,
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = helperCell.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
@@ -95,13 +95,13 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectEventStream,
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = helperCell1.sampling,
                 correctedEmittedEvent = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),

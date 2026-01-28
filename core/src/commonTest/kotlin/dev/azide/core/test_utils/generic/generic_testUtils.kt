@@ -3,6 +3,7 @@ package dev.azide.core.test_utils.generic
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.ExpectedTestSubjectState
 
+@Suppress("ClassName")
 data object generic_testUtils {
     fun <SubjectT> executeTransactionWithNewStateVerification(
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,

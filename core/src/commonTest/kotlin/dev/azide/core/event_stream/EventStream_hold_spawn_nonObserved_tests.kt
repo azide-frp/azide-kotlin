@@ -7,7 +7,7 @@ import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.generic.generic_spawn_nonPerceived_testUtils
+import dev.azide.core.test_utils.cell.Cell_spawn_nonPerceived_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -22,10 +22,10 @@ class EventStream_hold_spawn_nonObserved_tests {
             expectedStableValue = 0,
         )
 
-        generic_spawn_nonPerceived_testUtils.executeSpawnTransaction(
-            subjectMoment = subjectMoment,
-            expectedOldState = expectedUnaffectedState,
-            expectedNewState = expectedUnaffectedState,
+        Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
+            expectedOldSubjectValue = expectedUnaffectedState,
+            expectedNewSubjectValue = expectedUnaffectedState,
         )
     }
 
@@ -45,15 +45,15 @@ class EventStream_hold_spawn_nonObserved_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        generic_spawn_nonPerceived_testUtils.executeSpawnTransaction(
-            subjectMoment = subjectMoment,
+        Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedOldState = Cell_expectations_testUtils.expectStableValue(
+            expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedStableValue = 0,
             ),
-            expectedNewState = Cell_expectations_testUtils.expectStableValue(
+            expectedNewSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedStableValue = 10,
             ),
         )

@@ -7,7 +7,7 @@ import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.generic.generic_spawn_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.cell.Cell_spawn_rushedWrapUp_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -18,9 +18,9 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        generic_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
-            subjectSpawnMoment = subjectMoment,
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -42,12 +42,12 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        generic_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
-            subjectSpawnMoment = subjectMoment,
+        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),

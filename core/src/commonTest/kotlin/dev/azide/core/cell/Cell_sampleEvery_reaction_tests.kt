@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -38,12 +38,12 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -71,12 +71,12 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -105,13 +105,13 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        generic_reaction_testUtils.executeReactionTransaction(
-            subject = subjectCell,
+        Cell_reaction_testUtils.executeReactionTransaction(
+            subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

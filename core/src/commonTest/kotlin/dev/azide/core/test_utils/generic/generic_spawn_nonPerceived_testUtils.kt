@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.TestStimulationSlot2
 @Suppress("ClassName")
 data object generic_spawn_nonPerceived_testUtils {
     fun <SubjectT> executeSpawnTransaction(
-        subjectMoment: Moment<SubjectT>,
+        subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedOldState: ExpectedTestSubjectState<SubjectT>,
         expectedNewState: ExpectedTestSubjectState<SubjectT>,
@@ -24,7 +24,7 @@ data object generic_spawn_nonPerceived_testUtils {
             )
 
             // 1. Spawn the subject
-            val subject = subjectMoment.pullInternallyWrappedUp(
+            val subject = subjectSpawnMoment.pullInternallyWrappedUp(
                 propagationContext = propagationContext,
             )
 

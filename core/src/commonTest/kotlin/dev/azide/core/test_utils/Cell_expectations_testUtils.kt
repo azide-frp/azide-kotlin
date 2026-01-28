@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 
 interface ExpectedCellUpdate<ValueT> : ExpectedTestSubjectReaction<Cell<ValueT>>
 
-interface ExpectedCellState<ValueT> : ExpectedTestSubjectState<Cell<ValueT>>
+interface ExpectedCellValue<ValueT> : ExpectedTestSubjectState<Cell<ValueT>>
 
 interface ExpectedCellValueTransition<ValueT> : ExpectedTestSubjectTransition<Cell<ValueT>>
 
@@ -102,13 +102,13 @@ private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedCellUpdate<V
     abstract val expectedEffectiveUpdate: CellVertex.Update<ValueT>?
 }
 
-abstract class AbstractExpectedCellTransition<ValueT> : ExpectedCellValueTransition<ValueT> {
-    final override val expectedOldState: ExpectedCellState<ValueT>
+abstract class AbstractExpectedCellValueTransition<ValueT> : ExpectedCellValueTransition<ValueT> {
+    final override val expectedOldState: ExpectedCellValue<ValueT>
         get() = Cell_expectations_testUtils.expectStableValue(
             expectedStableValue = expectedOldValue,
         )
 
-    final override val expectedNewState: ExpectedCellState<ValueT>
+    final override val expectedNewState: ExpectedCellValue<ValueT>
         get() = Cell_expectations_testUtils.expectStableValue(
             expectedStableValue = expectedNewValue,
         )
@@ -124,7 +124,7 @@ object Cell_expectations_testUtils {
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedOldValue: ValueT,
         expectedNewValue: ValueT,
-    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
+    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellValueTransition<ValueT>() {
         override val expectedOldValue: ValueT = expectedOldValue
 
         override val expectedNewValue: ValueT = expectedNewValue
@@ -138,7 +138,7 @@ object Cell_expectations_testUtils {
     fun <ValueT> expectNoTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUnaffectedValue: ValueT,
-    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
+    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellValueTransition<ValueT>() {
         override val expectedOldValue: ValueT = expectedUnaffectedValue
 
         override val expectedNewValue: ValueT = expectedUnaffectedValue
@@ -150,7 +150,7 @@ object Cell_expectations_testUtils {
 
     fun <ValueT> expectStableValue(
         expectedStableValue: ValueT,
-    ): ExpectedCellState<ValueT> = object : ExpectedCellState<ValueT> {
+    ): ExpectedCellValue<ValueT> = object : ExpectedCellValue<ValueT> {
         override fun verifyStableState(
             propagationContext: Transactions.PropagationContext,
             subject: Cell<ValueT>,
