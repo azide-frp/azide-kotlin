@@ -2,10 +2,9 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
@@ -14,16 +13,10 @@ import kotlin.test.assertTrue
 
 typealias ExpectedEventStreamReaction<EventT> = ExpectedTestSubjectReaction<EventStream<EventT>>
 
-typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransitionImpl<EventStream<EventT>>
+typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>>
 
-val <EventT> ExpectedEventStreamReaction<EventT>.asExpectedTransition: ExpectedEventStreamTransition<EventT>
-    get() = ExpectedEventStreamTransition(
-        expectedOldState = ExpectedTestSubjectState.None,
-        expectedReaction = this,
-        expectedNewState = ExpectedTestSubjectState.None,
-    )
-
-private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {
+abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT>,
+    ExpectedEventStreamTransition<EventT> {
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
@@ -103,6 +96,15 @@ private abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEve
         }
     }
 
+    final override val expectedOldState: ExpectedTestSubjectState<EventStream<EventT>>
+        get() = ExpectedTestSubjectState.None
+
+    final override val expectedReaction: ExpectedTestSubjectReaction<EventStream<EventT>>
+        get() = this
+
+    final override val expectedNewState: ExpectedTestSubjectState<EventStream<EventT>>
+        get() = ExpectedTestSubjectState.None
+
     abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
 
     abstract val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>?
@@ -119,8 +121,7 @@ object ExpectedEventStreamReactionTestUtils {
         override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT> = EventStreamVertex.Emission(
             emittedEvent = expectedEmittedEvent,
         )
-    }.asExpectedTransition
-
+    }
 
     fun <EventT> expectNoEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
@@ -128,5 +129,5 @@ object ExpectedEventStreamReactionTestUtils {
         override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>? = null
 
         override val intermediatePropagationTolerance = intermediatePropagationTolerance
-    }.asExpectedTransition
+    }
 }
