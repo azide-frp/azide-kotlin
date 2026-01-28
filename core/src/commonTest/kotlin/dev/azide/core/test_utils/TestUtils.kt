@@ -9,7 +9,7 @@ import dev.azide.core.pullInternallyWrappedUp
 
 internal object TestUtils {
     fun stimulateSeparately(
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
     ) {
         Transactions.execute { propagationContext ->
             inputStimulation.stimulate(
@@ -30,7 +30,7 @@ internal object TestUtils {
 
     fun <ResultT> pullSeparately(
         moment: Moment<ResultT>,
-        inputStimulation: TestInputStimulation? = null,
+        inputStimulation: TestStimulation? = null,
     ): ResultT = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,
@@ -43,7 +43,7 @@ internal object TestUtils {
 
     fun <ResultT> executeSeparately(
         action: Action<ResultT>,
-        inputStimulation: TestInputStimulation? = null,
+        inputStimulation: TestStimulation? = null,
     ): ResultT = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
             propagationContext = propagationContext,

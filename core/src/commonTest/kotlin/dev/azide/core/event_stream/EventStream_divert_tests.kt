@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
 import dev.azide.core.EventStream
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -60,7 +60,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 innerEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -81,7 +81,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 innerEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -146,7 +146,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyDoesNotEmitEffectively(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -178,7 +178,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyEmitsAsExpected(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -273,7 +273,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -305,7 +305,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = intermediateInnerSourceEventStream,
                 ),
@@ -337,7 +337,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -362,7 +362,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -387,7 +387,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -413,7 +413,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -446,7 +446,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -472,7 +472,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 earlierInnerSourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -498,7 +498,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -524,7 +524,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -553,7 +553,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -608,7 +608,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 // B updates to A2, but C2 shouldn't even be subscribed to B during the propagation phase. _But_ when C2
                 // eventually activates, it should correctly subscribe to C2 for the sake of future transactions (_not_
                 // to C1, as it would if it was activated mid-transaction).

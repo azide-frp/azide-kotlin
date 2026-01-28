@@ -5,7 +5,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulTrackedSetVertex
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 
 class TestInputReactiveSet<ElementT>(
     initialElements: Set<ElementT>,
@@ -94,7 +94,7 @@ class TestInputReactiveSet<ElementT>(
     fun change(
         elementsToAdd: Set<ElementT>,
         elementsToRemove: Set<ElementT>,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -109,7 +109,7 @@ class TestInputReactiveSet<ElementT>(
     fun correctChange(
         correctedElementsToAdd: Set<ElementT>,
         correctedElementsToRemove: Set<ElementT>,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -121,7 +121,7 @@ class TestInputReactiveSet<ElementT>(
         }
     }
 
-    fun revokeChange(): TestInputStimulation = object : TestInputStimulation {
+    fun revokeChange(): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -138,7 +138,7 @@ class TestInputReactiveSet<ElementT>(
 fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
     elementsToAdd: Set<ElementT>,
     elementsToRemove: Set<ElementT>,
-): TestInputStimulation = TestInputStimulation.combine(
+): TestStimulation = TestStimulation.combine(
     change(
         elementsToAdd = elementsToAdd,
         elementsToRemove = elementsToRemove,
@@ -151,7 +151,7 @@ fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
     intermediateElementsToRemove: Set<ElementT>,
     correctedElementsToAdd: Set<ElementT>,
     correctedElementsToRemove: Set<ElementT>,
-) = TestInputStimulation.combine(
+) = TestStimulation.combine(
     change(
         elementsToAdd = intermediateElementsToAdd,
         elementsToRemove = intermediateElementsToRemove,

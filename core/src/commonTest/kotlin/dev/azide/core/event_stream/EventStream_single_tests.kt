@@ -1,7 +1,7 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.single
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
 
@@ -67,7 +67,7 @@ class EventStream_single_tests {
         // Verify that the subject does not emit when the source emission is revoked
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -99,7 +99,7 @@ class EventStream_single_tests {
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -138,7 +138,7 @@ class EventStream_single_tests {
         // Verify that the subject emits the corrected event from the source for the single emission
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -164,7 +164,7 @@ class EventStream_single_tests {
 
         // Verify that the subject emits the corrected event from the source for the single emission (at spawn)
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),

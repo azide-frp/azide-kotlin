@@ -4,11 +4,11 @@ import dev.azide.core.Action
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Transactions
 
-interface TestInputStimulation {
+interface TestStimulation {
     companion object {
         fun executing(
             action: Action<*>,
-        ): TestInputStimulation = object : TestInputStimulation {
+        ): TestStimulation = object : TestStimulation {
             override fun stimulate(propagationContext: Transactions.PropagationContext) {
                 action.executeInternallyWrappedUp(
                     propagationContext = propagationContext,
@@ -17,12 +17,12 @@ interface TestInputStimulation {
         }
 
         fun combine(
-            stimulations: Iterable<TestInputStimulation>,
-        ): TestInputStimulation = combine(*stimulations.toList().toTypedArray())
+            stimulations: Iterable<TestStimulation>,
+        ): TestStimulation = combine(*stimulations.toList().toTypedArray())
 
         fun combine(
-            vararg stimulations: TestInputStimulation,
-        ): TestInputStimulation = object : TestInputStimulation {
+            vararg stimulations: TestStimulation,
+        ): TestStimulation = object : TestStimulation {
             override fun stimulate(
                 propagationContext: Transactions.PropagationContext,
             ) {

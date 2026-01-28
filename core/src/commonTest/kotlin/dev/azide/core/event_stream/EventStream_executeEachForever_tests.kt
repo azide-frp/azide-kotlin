@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.executeEachForever
 import dev.azide.core.map
 import dev.azide.core.test_utils.MockExternalTrigger
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
@@ -48,7 +48,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect).map { 10 },
                 ),
@@ -74,7 +74,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1).map { 10 },
                 ),

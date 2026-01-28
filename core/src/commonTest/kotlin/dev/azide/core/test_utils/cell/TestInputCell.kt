@@ -6,7 +6,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -62,7 +62,7 @@ class TestInputCell<ValueT>(
 
     fun update(
         newValue: ValueT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -75,7 +75,7 @@ class TestInputCell<ValueT>(
 
     fun correctUpdate(
         correctedNewValue: ValueT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -86,7 +86,7 @@ class TestInputCell<ValueT>(
         }
     }
 
-    fun revokeUpdate(): TestInputStimulation = object : TestInputStimulation {
+    fun revokeUpdate(): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {

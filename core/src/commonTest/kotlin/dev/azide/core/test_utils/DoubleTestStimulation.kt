@@ -3,11 +3,11 @@ package dev.azide.core.test_utils
 import dev.azide.core.impl.Transactions
 
 data class DoubleTestStimulation(
-    val firstStimulation: TestInputStimulation,
-    val secondStimulation: TestInputStimulation,
+    val firstStimulation: TestStimulation,
+    val secondStimulation: TestStimulation,
 ) {
-    fun joint(): TestInputStimulation {
-        return object : TestInputStimulation {
+    fun joint(): TestStimulation {
+        return object : TestStimulation {
             override fun stimulate(
                 propagationContext: Transactions.PropagationContext,
             ) {

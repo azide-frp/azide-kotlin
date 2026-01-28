@@ -7,6 +7,7 @@ import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.TestStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -40,7 +41,7 @@ internal object ReactiveSetTestUtils {
          * [expectedChangedElements].
          */
         fun verifyChangesAsExpected(
-            inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedOldElements: Set<ElementT>,
             expectedChangedElements: Set<ElementT>,
         ) {
@@ -68,7 +69,7 @@ internal object ReactiveSetTestUtils {
          * reactiveSet's vertex during the transaction (even if it's later corrected), the verification will fail.
          */
         fun verifyDoesNotChangeAtAll(
-            inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedUnaffectedElements: Set<ElementT>,
         ) {
             verifyTransaction(
@@ -90,7 +91,7 @@ internal object ReactiveSetTestUtils {
          * propagated by the subject reactive set's vertex during the transaction, the verification will fail.
          */
         fun verifyDoesNotChangeEffectively(
-            inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedUnaffectedElements: Set<ElementT>,
         ) {
             verifyTransaction(
@@ -109,7 +110,7 @@ internal object ReactiveSetTestUtils {
         }
 
         private fun verifyTransaction(
-            inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedOldElements: Set<ElementT>,
             expectedChangedElements: Set<ElementT>,
             verifyReceivedChange: (ReceivedChange<ElementT>?) -> Unit,
@@ -232,7 +233,7 @@ internal object ReactiveSetTestUtils {
      */
     fun <ElementT> verifyChangesAsExpected(
         subjectReactiveSet: ReactiveSet<ElementT>,
-        inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedOldElements: Set<ElementT>,
         expectedChangedElements: Set<ElementT>,
     ) {
@@ -255,7 +256,7 @@ internal object ReactiveSetTestUtils {
      */
     fun <ElementT> verifyDoesNotChangeAtAll(
         subjectReactiveSet: ReactiveSet<ElementT>,
-        inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedUnaffectedElements: Set<ElementT>,
     ) {
         val observingVerifier = observeForVerification(
@@ -276,7 +277,7 @@ internal object ReactiveSetTestUtils {
      */
     fun <ElementT> verifyDoesNotChangeEffectively(
         subjectReactiveSet: ReactiveSet<ElementT>,
-        inputStimulation: dev.azide.core.test_utils.TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedUnaffectedElements: Set<ElementT>,
     ) {
         val observingVerifier = observeForVerification(

@@ -2,7 +2,7 @@ package dev.azide.core.collections.reactive_set
 
 import dev.azide.core.collections.contains
 import dev.azide.core.collections.filter
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import kotlin.test.Test
@@ -128,7 +128,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7),
                     elementsToRemove = setOf(1, 3),
@@ -150,7 +150,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7),
                     elementsToRemove = setOf(1, 5),
@@ -172,7 +172,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(1, 5),
@@ -194,7 +194,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(1, 5),
@@ -219,7 +219,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(1, 5),
@@ -245,7 +245,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6),
                     elementsToRemove = setOf(1, -2, 3, 5),
@@ -270,7 +270,7 @@ class ReactiveSet_contains_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7, 8),
                     elementsToRemove = setOf(1, -2),

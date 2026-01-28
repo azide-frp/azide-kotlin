@@ -3,7 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.Action
 import dev.azide.core.Trigger
 import dev.azide.core.test_utils.MockExternalTrigger
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.triggerEachForever
@@ -45,7 +45,7 @@ class EventStream_triggerEachForever_tests {
         )
 
         TestUtils.stimulateSeparately(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect),
                 ),
@@ -70,7 +70,7 @@ class EventStream_triggerEachForever_tests {
         )
 
         TestUtils.stimulateSeparately(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1),
                 ),

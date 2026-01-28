@@ -4,7 +4,7 @@ import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 
 class TestInputReactiveList<ElementT>(
@@ -62,7 +62,7 @@ class TestInputReactiveList<ElementT>(
 
     fun change(
         description: ChangeDescription<ElementT>,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -72,7 +72,7 @@ class TestInputReactiveList<ElementT>(
 
     fun correctChange(
         correctedDescription: ChangeDescription<ElementT>,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -80,7 +80,7 @@ class TestInputReactiveList<ElementT>(
         }
     }
 
-    fun revokeChange(): TestInputStimulation {
+    fun revokeChange(): TestStimulation {
         TODO()
     }
 

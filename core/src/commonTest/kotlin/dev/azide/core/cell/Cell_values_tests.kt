@@ -1,6 +1,6 @@
 package dev.azide.core.cell
 
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -63,7 +63,7 @@ class Cell_values_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell.update(newValue = 20),
                 sourceCell.revokeUpdate(),
             ),
@@ -82,7 +82,7 @@ class Cell_values_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell.update(newValue = 20),
                 sourceCell.correctUpdate(correctedNewValue = 21),
             ),

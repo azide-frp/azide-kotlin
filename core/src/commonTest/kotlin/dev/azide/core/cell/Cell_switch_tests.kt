@@ -1,7 +1,7 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
 import kotlin.test.Test
@@ -138,7 +138,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 innerSourceCell.update(
                     newValue = 11,
                 ),
@@ -162,7 +162,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 innerSourceCell.update(
                     newValue = 11,
                 ),
@@ -237,7 +237,7 @@ class Cell_switch_tests {
         )
 
         observingVerifier.verifyDoesNotUpdateEffectively(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -274,7 +274,7 @@ class Cell_switch_tests {
         )
 
         observingVerifier.verifyUpdatesAsExpected(
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -391,7 +391,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -431,7 +431,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = intermediateInnerSourceCell,
                 ),
@@ -470,7 +470,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -501,7 +501,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -532,7 +532,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -566,7 +566,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -607,7 +607,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -638,7 +638,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),

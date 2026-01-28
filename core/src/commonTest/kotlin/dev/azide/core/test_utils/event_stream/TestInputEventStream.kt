@@ -6,7 +6,7 @@ import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 
 class TestInputEventStream<EventT>() : EventStream<EventT> {
     private val _vertex = object : AbstractLiveEventStreamVertex<EventT>() {
@@ -58,7 +58,7 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
 
     fun emit(
         emittedEvent: EventT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -69,8 +69,8 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
         }
     }
 
-    fun revokeEmission(): TestInputStimulation = object :
-        TestInputStimulation {
+    fun revokeEmission(): TestStimulation = object :
+        TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -82,7 +82,7 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
 
     fun correctEmission(
         correctedEmittedEvent: EventT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {

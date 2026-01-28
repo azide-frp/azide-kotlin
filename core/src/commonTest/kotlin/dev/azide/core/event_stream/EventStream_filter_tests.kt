@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.EventStream
 import dev.azide.core.filter
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
 
@@ -56,7 +56,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -73,7 +73,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -90,7 +90,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -110,7 +110,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -129,7 +129,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -148,7 +148,7 @@ class EventStream_filter_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = -11,
                 ),

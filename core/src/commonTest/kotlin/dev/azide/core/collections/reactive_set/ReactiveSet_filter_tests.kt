@@ -2,7 +2,7 @@ package dev.azide.core.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.collections.filter
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import kotlin.test.Test
 
@@ -114,7 +114,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeEffectively(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(-2, 5),
@@ -137,7 +137,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeAtAll(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(-6, -7),
                     elementsToRemove = setOf(-2),
@@ -160,7 +160,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeAtAll(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(-6, -7),
                     elementsToRemove = setOf(-2, -4),
@@ -186,7 +186,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(-6, -7),
                     elementsToRemove = setOf(-2, -4),
@@ -213,7 +213,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeEffectively(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(-2, 5),
@@ -239,7 +239,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7),
                     elementsToRemove = setOf(-2, 5),

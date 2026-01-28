@@ -1,7 +1,7 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.EventStream
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import kotlin.test.Test
 
@@ -57,7 +57,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -81,7 +81,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -102,7 +102,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream2.emit(
                     emittedEvent = 21,
                 ),
@@ -123,7 +123,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -148,7 +148,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -173,7 +173,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -198,7 +198,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -222,7 +222,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream2.emit(
                     emittedEvent = 21,
                 ),
@@ -246,7 +246,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -273,7 +273,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
@@ -300,7 +300,7 @@ class EventStream_merge2_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream1.emit(
                     emittedEvent = 11,
                 ),
