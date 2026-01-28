@@ -401,39 +401,6 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_outerUpdatesAndNewInnerEmits_outerUpdateRevoked() {
-        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
-
-        val laterInnerSourceEventStream = TestInputEventStream<Int>()
-
-        val outerSourceCell = TestInputCell(
-            initialValue = earlierInnerSourceEventStream,
-        )
-
-        val subjectEventStream = Cell.divert(outerSourceCell)
-
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
-                ),
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
-                ),
-                outerSourceCell.revokeUpdate(),
-            ),
-        )
-
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 22,
-            ),
-        )
-    }
-
-    @Test
     fun test_outerUpdatesAndOldInnerEmits_outerFirst() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
@@ -508,35 +475,6 @@ class EventStream_divert_tests {
                 ),
                 earlierInnerSourceEventStream.revokeEmission(),
             ),
-        )
-    }
-
-    @Test
-    fun test_outerUpdatesAndOldInnerEmits_outerUpdateRevoked() {
-        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
-
-        val laterInnerSourceEventStream = TestInputEventStream<Int>()
-
-        val outerSourceCell = TestInputCell(
-            initialValue = earlierInnerSourceEventStream,
-        )
-
-        val subjectEventStream = Cell.divert(outerSourceCell)
-
-        EventStreamTestUtils.verifyEmitsAsExpected(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
-                ),
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                // Revoke the outer update after the old inner update, to verify that the vertex falls back to the
-                // up-to-date value of the stable inner cell
-                outerSourceCell.revokeUpdate(),
-            ),
-            expectedEmittedEvent = 11,
         )
     }
 

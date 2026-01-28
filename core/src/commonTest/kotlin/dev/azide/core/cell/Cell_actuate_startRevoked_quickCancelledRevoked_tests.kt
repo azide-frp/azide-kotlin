@@ -10,7 +10,6 @@ import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import kotlin.test.Test
@@ -65,43 +64,6 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
         Effect_Cell_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
-                newValue = targetEffect2,
-            ).bind(dispatcher),
-            expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsNotStarted(),
-                targetEffect2.expectIsNotStarted(),
-            ),
-        )
-
-        Cell_actuate_testUtils.verifyEffectNotOngoing(
-            sourceCell = sourceCell,
-        )
-    }
-
-    @Test
-    fun test_startRevoked_quickCancelledRevoked_sourceUpdatesRevokedSimultaneously_observed() {
-        TestSlotDispatcher2x5.entries.forEach { dispatcher ->
-            test_startRevoked_quickCancelledRevoked_sourceUpdatesRevokedSimultaneously(
-                dispatcher = dispatcher,
-            )
-        }
-    }
-
-    private fun test_startRevoked_quickCancelledRevoked_sourceUpdatesRevokedSimultaneously(
-        dispatcher: TestSlotDispatcher2x5,
-    ) {
-        val targetEffect1 = TestTargetEffect.pure(result = 10)
-        val targetEffect2 = TestTargetEffect.pure(result = 20)
-
-        val sourceCell = TestInputCell(
-            initialValue = targetEffect1,
-        )
-
-        val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
-
-        Effect_Cell_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
             expectedTargetImpact = ExpectedImpact.combine(

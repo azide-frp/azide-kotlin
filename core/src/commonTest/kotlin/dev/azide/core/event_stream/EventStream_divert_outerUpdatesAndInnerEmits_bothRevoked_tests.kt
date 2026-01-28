@@ -1,0 +1,140 @@
+package dev.azide.core.event_stream
+
+import dev.azide.core.Cell
+import dev.azide.core.test_utils.EventStream_expectations_testUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
+import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
+import kotlin.test.Test
+
+@Suppress("ClassName")
+class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
+    private enum class MyStimulationTag : TestStimulationTag {
+        OuterCellUpdates, OuterCellRevokesUpdate, InnerEventStreamEmits, InnerEventStreamRevokesEmission,
+    }
+
+    private val outerCellUpdatesRevokedStimulationSequence = TestStimulationScenario.of(
+        MyStimulationTag.OuterCellUpdates,
+        MyStimulationTag.OuterCellRevokesUpdate,
+    )
+
+    private val innerEventStreamEmitsRevokedStimulationSequence = TestStimulationScenario.of(
+        MyStimulationTag.InnerEventStreamEmits,
+        MyStimulationTag.InnerEventStreamRevokesEmission,
+    )
+
+    private val slottedStimulationBank = TestStimulationBank.build(
+        outerCellUpdatesRevokedStimulationSequence,
+        innerEventStreamEmitsRevokedStimulationSequence,
+    ).distribute(
+        slotCount = TestSlotCount.Count2,
+    )
+
+    @Test
+    fun test_outerUpdatesAndOldInnerEmits_bothRevoked() {
+        slottedStimulationBank.forEach {
+            test_outerUpdatesAndOldInnerEmits_bothRevoked(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_outerUpdatesAndOldInnerEmits_bothRevoked(
+        slottedStimulationScenario: TestSlottedStimulationScenario<TestSlotCount.Count2>,
+    ) {
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
+
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
+
+        val outerSourceCell = TestInputCell(
+            initialValue = earlierInnerSourceEventStream,
+        )
+
+        val subjectEventStream = Cell.divert(outerSourceCell)
+
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
+            slottedInputStimulation = slottedStimulationScenario.bind(
+                stimulationMap = TestStimulationMap.of(
+                    MyStimulationTag.OuterCellUpdates to outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    MyStimulationTag.OuterCellRevokesUpdate to outerSourceCell.revokeUpdate(),
+                    MyStimulationTag.InnerEventStreamEmits to earlierInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    MyStimulationTag.InnerEventStreamRevokesEmission to earlierInnerSourceEventStream.revokeEmission(),
+                ),
+            ).asTestSlottedStimulation2,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+            ),
+        )
+
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
+            slottedInputStimulation = laterInnerSourceEventStream.emit(
+                emittedEvent = 22,
+            ).bind(TestSlotDispatcher1x2.Case1),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
+        )
+    }
+
+    @Test
+    fun test_outerUpdatesAndNewInnerEmits_bothRevoked() {
+        slottedStimulationBank.forEach {
+            test_outerUpdatesAndNewInnerEmits_bothRevoked(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_outerUpdatesAndNewInnerEmits_bothRevoked(
+        slottedStimulationScenario: TestSlottedStimulationScenario<TestSlotCount.Count2>,
+    ) {
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
+
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
+
+        val outerSourceCell = TestInputCell(
+            initialValue = earlierInnerSourceEventStream,
+        )
+
+        val subjectEventStream = Cell.divert(outerSourceCell)
+
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
+            slottedInputStimulation = slottedStimulationScenario.bind(
+                stimulationMap = TestStimulationMap.of(
+                    MyStimulationTag.OuterCellUpdates to outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    MyStimulationTag.OuterCellRevokesUpdate to outerSourceCell.revokeUpdate(),
+                    MyStimulationTag.InnerEventStreamEmits to laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    MyStimulationTag.InnerEventStreamRevokesEmission to laterInnerSourceEventStream.revokeEmission(),
+                ),
+            ).asTestSlottedStimulation2,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
+        )
+
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
+            slottedInputStimulation = laterInnerSourceEventStream.emit(
+                emittedEvent = 22,
+            ).bind(TestSlotDispatcher1x2.Case1),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
+        )
+    }
+}
