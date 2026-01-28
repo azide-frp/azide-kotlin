@@ -52,12 +52,12 @@ class Cell_actuate_step_tests {
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -99,12 +99,12 @@ class Cell_actuate_step_tests {
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).joint(),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -147,13 +147,13 @@ class Cell_actuate_step_tests {
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).joint(),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

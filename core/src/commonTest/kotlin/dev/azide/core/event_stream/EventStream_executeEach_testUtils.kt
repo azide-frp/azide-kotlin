@@ -20,12 +20,12 @@ data object EventStream_executeEach_testUtils {
         val targetAction = TestTargetAction.Companion.of(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = subjectEventStream,
+            subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }
@@ -36,12 +36,12 @@ data object EventStream_executeEach_testUtils {
         val targetAction = TestTargetAction.of(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = Unit,
+            subjectEventStream = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedSubjectEmission = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }
@@ -53,12 +53,12 @@ data object EventStream_executeEach_testUtils {
         val targetAction = TestTargetAction.of(result = 0)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = subjectEventStream,
+            subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 0,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),

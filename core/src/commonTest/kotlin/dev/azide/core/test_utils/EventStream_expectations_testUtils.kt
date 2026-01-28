@@ -12,7 +12,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 interface ExpectedEventStreamEmission<EventT> : ExpectedTestSubjectReaction<EventStream<EventT>>,
-    ExpectedTestSubjectTransition<EventStream<EventT>>
+    ExpectedTestSubjectTransition<EventStream<EventT>> {
+        object   None : AbstractExpectedEventStreamReaction<Any?>() {
+            override val intermediatePropagationTolerance: IntermediatePropagationTolerance
+                get() = TODO("Not yet implemented")
+            override val expectedEffectiveEmission: EventStreamVertex.Emission<Any?>?
+                get() = TODO("Not yet implemented")
+
+
+        }
+    }
 
 abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamEmission<EventT> {
     final override fun prepareReactionVerifier(

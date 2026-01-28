@@ -43,9 +43,9 @@ class EventStream_executeEach_start_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
     }
@@ -79,12 +79,12 @@ class EventStream_executeEach_start_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
@@ -120,12 +120,12 @@ class EventStream_executeEach_start_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }
@@ -160,13 +160,13 @@ class EventStream_executeEach_start_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(

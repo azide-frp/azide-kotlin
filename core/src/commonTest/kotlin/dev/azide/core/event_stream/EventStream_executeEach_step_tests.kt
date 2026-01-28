@@ -46,12 +46,12 @@ class EventStream_executeEach_step_tests {
         val subjectEventStream = subjectEffect.startExternally().result
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = subjectEventStream,
+            subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
@@ -84,12 +84,12 @@ class EventStream_executeEach_step_tests {
         val subjectEventStream = subjectEffect.startExternally().result
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = subjectEventStream,
+            subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).joint(),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
@@ -123,13 +123,13 @@ class EventStream_executeEach_step_tests {
         val subjectEventStream = subjectEffect.startExternally().result
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
-            subject = subjectEventStream,
+            subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).joint(),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),

@@ -48,9 +48,9 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
@@ -94,12 +94,12 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 20,
@@ -148,12 +148,12 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -202,13 +202,13 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

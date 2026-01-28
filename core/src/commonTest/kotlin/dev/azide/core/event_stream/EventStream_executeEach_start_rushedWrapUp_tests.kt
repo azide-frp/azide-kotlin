@@ -23,8 +23,8 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            subjectEventStreamEffect = subjectEffect,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
     }
@@ -46,11 +46,11 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),

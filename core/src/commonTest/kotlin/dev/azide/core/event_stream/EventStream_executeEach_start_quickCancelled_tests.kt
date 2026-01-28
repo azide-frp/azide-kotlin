@@ -51,9 +51,9 @@ class EventStream_executeEach_start_quickCancelled_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         val subjectEventStream = Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
             cancelCount = cancelCount,
         )
@@ -93,12 +93,12 @@ class EventStream_executeEach_start_quickCancelled_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         val subjectEventStream = Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
@@ -137,12 +137,12 @@ class EventStream_executeEach_start_quickCancelled_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         val subjectEventStream = Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
 
@@ -182,13 +182,13 @@ class EventStream_executeEach_start_quickCancelled_tests {
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         val subjectEventStream = Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsNotExecuted(),

@@ -22,12 +22,12 @@ data object Cell_actuate_testUtils {
         val targetEffect = TestTargetEffect.pure(result = -1)
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = preStimulationValue,
             ),
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
@@ -40,12 +40,12 @@ data object Cell_actuate_testUtils {
         val targetEffect = TestTargetEffect.pure(result = -1)
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = Unit,
+            subjectCell = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+            expectedSubjectValueTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
         )
     }
@@ -59,12 +59,12 @@ data object Cell_actuate_testUtils {
         val targetEffect = TestTargetEffect.pure(result = 0)
 
         Effect_Cell_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = preStimulationValue,
                 expectedNewValue = 0,
             ),

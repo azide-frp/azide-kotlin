@@ -53,12 +53,12 @@ data object Effect_generic_startRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_EventStream_startRevoked_testUtils {
     fun <EventT> executeStartTransaction(
-        subjectEffect: Effect<EventStream<EventT>>,
+        subjectEventStreamEffect: Effect<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEffect = subjectEventStreamEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,
         )
@@ -68,12 +68,12 @@ data object Effect_EventStream_startRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_Cell_startRevoked_testUtils {
     fun <ValueT> executeStartTransaction(
-        subjectEffect: Effect<Cell<ValueT>>,
+        subjectCellEffect: Effect<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEffect = subjectCellEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,
         )

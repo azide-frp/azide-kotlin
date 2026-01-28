@@ -29,7 +29,7 @@ class Cell_actuate_startRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -59,7 +59,7 @@ class Cell_actuate_startRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
@@ -92,7 +92,7 @@ class Cell_actuate_startRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
@@ -126,7 +126,7 @@ class Cell_actuate_startRevoked_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_startRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,

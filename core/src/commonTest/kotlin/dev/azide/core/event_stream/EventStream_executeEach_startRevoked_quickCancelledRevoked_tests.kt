@@ -25,7 +25,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
 
@@ -53,7 +53,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
@@ -84,7 +84,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
@@ -116,7 +116,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,

@@ -55,9 +55,9 @@ class Cell_actuate_start_quickCancelled_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -104,12 +104,12 @@ class Cell_actuate_start_quickCancelled_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -156,12 +156,12 @@ class Cell_actuate_start_quickCancelled_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -209,13 +209,13 @@ class Cell_actuate_start_quickCancelled_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(

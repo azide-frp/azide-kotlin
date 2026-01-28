@@ -53,17 +53,17 @@ data object Effect_generic_step_testUtils {
 @Suppress("ClassName")
 data object Effect_EventStream_step_testUtils {
     fun <SubjectT> executeStepTransaction(
-        subject: SubjectT,
+        subjectEventStream: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestStimulation,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectEmission: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_step_testUtils.executeStepTransaction(
-            subject = subject,
+            subject = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = inputStimulation,
-            expectedSubjectTransition = expectedSubjectTransition,
+            expectedSubjectTransition = expectedSubjectEmission,
             expectedTargetImpact = expectedTargetImpact,
         )
     }
@@ -72,17 +72,17 @@ data object Effect_EventStream_step_testUtils {
 @Suppress("ClassName")
 data object Effect_Cell_step_testUtils {
     fun <SubjectT> executeStepTransaction(
-        subject: SubjectT,
+        subjectCell: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestStimulation,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectValueTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_step_testUtils.executeStepTransaction(
-            subject = subject,
+            subject = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = inputStimulation,
-            expectedSubjectTransition = expectedSubjectTransition,
+            expectedSubjectTransition = expectedSubjectValueTransition,
             expectedTargetImpact = expectedTargetImpact,
         )
     }

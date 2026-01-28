@@ -27,8 +27,8 @@ class Cell_actuate_start_rushedWrapUp_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
-            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
+            subjectCellEffect = subjectEffect,
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
@@ -57,11 +57,11 @@ class Cell_actuate_start_rushedWrapUp_tests {
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
         Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),

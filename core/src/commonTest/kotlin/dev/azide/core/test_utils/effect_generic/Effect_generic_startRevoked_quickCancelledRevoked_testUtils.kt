@@ -73,12 +73,12 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils {
     fun <EventT> executeStartTransaction(
-        subjectEffect: Effect<EventStream<EventT>>,
+        subjectEventStreamEffect: Effect<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation5? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEffect = subjectEventStreamEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,
         )
@@ -88,12 +88,12 @@ data object Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_Cell_startRevoked_quickCancelledRevoked_testUtils {
     fun <ValueT> executeStartTransaction(
-        subjectEffect: Effect<Cell<ValueT>>,
+        subjectCellEffect: Effect<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation5? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+            subjectEffect = subjectCellEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,
         )

@@ -5,6 +5,8 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Revocable
+import dev.azide.core.test_utils.ExpectedCellValueTransition
+import dev.azide.core.test_utils.ExpectedEventStreamEmission
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
@@ -82,17 +84,17 @@ data object Effect_generic_cancelledRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_EventStream_cancelledRevoked_testUtils {
     fun <EventT> executeCancelTransaction(
-        subjectOutcome: Effect.Outcome<EventStream<EventT>>,
+        subjectEffectOutcome: Effect.Outcome<EventStream<EventT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<EventStream<EventT>>,
+        expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+            subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectTransition,
+            expectedSubjectTransition = expectedSubjectEmission,
             expectedTargetImpact = expectedTargetImpact,
         )
     }
@@ -101,17 +103,17 @@ data object Effect_EventStream_cancelledRevoked_testUtils {
 @Suppress("ClassName")
 data object Effect_Cell_cancelledRevoked_testUtils {
     fun <ValueT> executeCancelTransaction(
-        subjectOutcome: Effect.Outcome<Cell<ValueT>>,
+        subjectEffectOutcome: Effect.Outcome<Cell<ValueT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<Cell<ValueT>>,
+        expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+            subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectTransition,
+            expectedSubjectTransition = expectedSubjectValueTransition,
             expectedTargetImpact = expectedTargetImpact,
         )
     }
