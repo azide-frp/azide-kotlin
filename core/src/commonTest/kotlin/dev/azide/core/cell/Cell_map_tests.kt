@@ -32,15 +32,15 @@ class Cell_map_tests {
     }
 
     @Test
-    fun test_update() {
+    fun test_sourceUpdates() {
         TestSlotDispatcher1x2.entries.forEach { dispatcher ->
-            test_update(
+            test_sourceUpdates(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_update(
+    private fun test_sourceUpdates(
         dispatcher: TestSlotDispatcher1x2,
     ) {
         val sourceCell = TestInputCell(
@@ -62,15 +62,15 @@ class Cell_map_tests {
     }
 
     @Test
-    fun test_update_revoked() {
+    fun test_sourceUpdates_revoked() {
         TestSlotDispatcher2x2.entries.forEach { dispatcher ->
-            test_update_revoked(
+            test_sourceUpdates_revoked(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_update_revoked(
+    private fun test_sourceUpdates_revoked(
         dispatcher: TestSlotDispatcher2x2,
     ) {
         val sourceCell = TestInputCell(
@@ -92,15 +92,15 @@ class Cell_map_tests {
     }
 
     @Test
-    fun test_update_corrected() {
+    fun test_sourceUpdates_corrected() {
         TestSlotDispatcher2x2.entries.forEach { dispatcher ->
-            test_update_corrected(
+            test_sourceUpdates_corrected(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_update_corrected(
+    private fun test_sourceUpdates_corrected(
         dispatcher: TestSlotDispatcher2x2,
     ) {
         val sourceCell = TestInputCell(
