@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
@@ -28,7 +28,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
         Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
@@ -61,7 +61,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),

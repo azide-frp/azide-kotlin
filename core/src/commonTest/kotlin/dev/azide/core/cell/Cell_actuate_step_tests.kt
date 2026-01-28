@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetEffect
@@ -57,7 +57,7 @@ class Cell_actuate_step_tests {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -104,7 +104,7 @@ class Cell_actuate_step_tests {
             inputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).joint(),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -153,7 +153,7 @@ class Cell_actuate_step_tests {
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).joint(),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

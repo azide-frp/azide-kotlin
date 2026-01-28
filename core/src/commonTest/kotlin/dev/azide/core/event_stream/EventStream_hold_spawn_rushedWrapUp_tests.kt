@@ -3,7 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
@@ -20,7 +20,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -47,7 +47,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),

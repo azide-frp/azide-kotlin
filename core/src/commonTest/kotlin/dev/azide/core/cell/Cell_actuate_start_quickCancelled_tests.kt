@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
@@ -57,7 +57,7 @@ class Cell_actuate_start_quickCancelled_tests {
         val subjectCell = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -109,7 +109,7 @@ class Cell_actuate_start_quickCancelled_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -161,7 +161,7 @@ class Cell_actuate_start_quickCancelled_tests {
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -215,7 +215,7 @@ class Cell_actuate_start_quickCancelled_tests {
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(

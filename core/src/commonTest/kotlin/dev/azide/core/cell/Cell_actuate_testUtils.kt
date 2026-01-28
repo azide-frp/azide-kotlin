@@ -2,7 +2,7 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.sampleExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
@@ -27,7 +27,7 @@ data object Cell_actuate_testUtils {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = preStimulationValue,
             ),
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
@@ -64,7 +64,7 @@ data object Cell_actuate_testUtils {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = preStimulationValue,
                 expectedNewValue = 0,
             ),

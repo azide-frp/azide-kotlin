@@ -3,7 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
@@ -24,7 +24,7 @@ class EventStream_hold_spawn_tests {
 
         StatefulTestUtils_spawn.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -51,7 +51,7 @@ class EventStream_hold_spawn_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),
@@ -79,7 +79,7 @@ class EventStream_hold_spawn_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 0,
             ),
@@ -108,7 +108,7 @@ class EventStream_hold_spawn_tests {
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 0,
                 expectedNewValue = 20,

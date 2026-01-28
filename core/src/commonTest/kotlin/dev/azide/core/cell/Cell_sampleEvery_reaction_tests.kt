@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.pullExternally
 import dev.azide.core.sampleEvery
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
@@ -43,7 +43,7 @@ class Cell_sampleEvery_reaction_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -76,7 +76,7 @@ class Cell_sampleEvery_reaction_tests {
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -111,7 +111,7 @@ class Cell_sampleEvery_reaction_tests {
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

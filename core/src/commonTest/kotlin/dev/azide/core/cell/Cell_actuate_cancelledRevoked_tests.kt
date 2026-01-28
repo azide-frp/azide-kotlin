@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
@@ -56,7 +56,7 @@ class Cell_actuate_cancelledRevoked_tests {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1StartRecord.expectIsNotCancelled(),
@@ -109,7 +109,7 @@ class Cell_actuate_cancelledRevoked_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 20,
@@ -167,7 +167,7 @@ class Cell_actuate_cancelledRevoked_tests {
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -226,7 +226,7 @@ class Cell_actuate_cancelledRevoked_tests {
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

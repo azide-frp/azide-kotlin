@@ -2,16 +2,12 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.Moment
-import dev.azide.core.holding
 import dev.azide.core.sampleEvery
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn_rushedWrapUp
 import kotlin.test.Test
 
@@ -29,7 +25,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
             subjectSpawnMoment = subjectSpawnMoment,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
             ),
         )
@@ -61,7 +57,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),

@@ -1,7 +1,6 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Cell
-import dev.azide.core.event_stream.EventStream_hold_reaction_nonObserved_tests
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.Vertex.BoundListener
@@ -15,7 +14,7 @@ typealias ExpectedCellReaction<ValueT> = ExpectedTestSubjectReaction<Cell<ValueT
 
 typealias ExpectedCellState<ValueT> = ExpectedTestSubjectState<Cell<ValueT>>
 
-typealias ExpectedCellTransition<ValueT> = ExpectedTestSubjectTransition<Cell<ValueT>>
+typealias ExpectedCellValueTransition<ValueT> = ExpectedTestSubjectTransition<Cell<ValueT>>
 
 private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReaction<ValueT> {
     final override fun prepareReactionVerifier(
@@ -103,14 +102,14 @@ private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReacti
     abstract val expectedEffectiveUpdate: CellVertex.Update<ValueT>?
 }
 
-abstract class AbstractExpectedCellTransition<ValueT> : ExpectedCellTransition<ValueT> {
+abstract class AbstractExpectedCellTransition<ValueT> : ExpectedCellValueTransition<ValueT> {
     final override val expectedOldState: ExpectedCellState<ValueT>
-        get() = ExpectedCellReactionTestUtils.expectStableValue(
+        get() = Cell_expectations_testUtils.expectStableValue(
             expectedStableValue = expectedOldValue,
         )
 
     final override val expectedNewState: ExpectedCellState<ValueT>
-        get() = ExpectedCellReactionTestUtils.expectStableValue(
+        get() = Cell_expectations_testUtils.expectStableValue(
             expectedStableValue = expectedNewValue,
         )
 
@@ -119,12 +118,13 @@ abstract class AbstractExpectedCellTransition<ValueT> : ExpectedCellTransition<V
     abstract val expectedNewValue: ValueT
 }
 
-object ExpectedCellReactionTestUtils {
+@Suppress("ClassName")
+object Cell_expectations_testUtils {
     fun <ValueT> expectTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedOldValue: ValueT,
         expectedNewValue: ValueT,
-    ): ExpectedCellTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
+    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
         override val expectedOldValue: ValueT = expectedOldValue
 
         override val expectedNewValue: ValueT = expectedNewValue
@@ -138,7 +138,7 @@ object ExpectedCellReactionTestUtils {
     fun <ValueT> expectNoTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUnaffectedValue: ValueT,
-    ): ExpectedCellTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
+    ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellTransition<ValueT>() {
         override val expectedOldValue: ValueT = expectedUnaffectedValue
 
         override val expectedNewValue: ValueT = expectedUnaffectedValue
@@ -165,7 +165,7 @@ object ExpectedCellReactionTestUtils {
         }
     }
 
-    fun <ValueT> expectUpdate(
+    private fun <ValueT> expectUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUpdatedValue: ValueT,
     ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
@@ -177,7 +177,7 @@ object ExpectedCellReactionTestUtils {
         )
     }
 
-    fun <ValueT> expectNoUpdate(
+    private fun <ValueT> expectNoUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
     ): ExpectedCellReaction<ValueT> = object : AbstractExpectedCellReaction<ValueT>() {
         override val expectedEffectiveUpdate: CellVertex.Update<ValueT>? = null

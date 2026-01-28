@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
 import dev.azide.core.pullExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
@@ -40,7 +40,7 @@ class EventStream_hold_reaction_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),
@@ -70,7 +70,7 @@ class EventStream_hold_reaction_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 0,
             ),
@@ -101,7 +101,7 @@ class EventStream_hold_reaction_tests {
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectTransition = Cell_expectations_testUtils.expectTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 0,
                 expectedNewValue = 20,
