@@ -88,3 +88,37 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_start_rushedWrapUp_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_start_rushedWrapUp_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

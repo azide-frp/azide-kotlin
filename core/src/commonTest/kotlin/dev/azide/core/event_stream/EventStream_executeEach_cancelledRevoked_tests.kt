@@ -6,13 +6,13 @@ import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
@@ -46,7 +46,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
@@ -89,7 +89,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
@@ -138,7 +138,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -187,7 +187,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(

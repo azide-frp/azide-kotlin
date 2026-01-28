@@ -10,16 +10,16 @@ import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.external.ExternalTrigger
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelled_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelledRevoked_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelled_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_cancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_startRevoked_quickCancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_startRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_quickCancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -76,7 +76,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
@@ -115,7 +115,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
@@ -154,7 +154,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
@@ -178,7 +178,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -200,7 +200,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -222,7 +222,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -300,7 +300,7 @@ class Effect_adapt_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,
@@ -328,7 +328,7 @@ class Effect_adapt_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,

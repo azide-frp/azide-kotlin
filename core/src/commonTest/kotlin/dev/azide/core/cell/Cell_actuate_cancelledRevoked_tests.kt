@@ -14,7 +14,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_Cell_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotCancelled
@@ -53,7 +53,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
@@ -103,7 +103,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -161,7 +161,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -219,7 +219,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

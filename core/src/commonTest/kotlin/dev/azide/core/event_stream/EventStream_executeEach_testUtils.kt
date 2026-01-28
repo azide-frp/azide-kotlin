@@ -5,7 +5,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetAction
-import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.expectIsExecutedOnce
@@ -19,7 +19,7 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetAction = TestTargetAction.Companion.of(result = -1)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
@@ -35,7 +35,7 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetAction = TestTargetAction.of(result = -1)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
@@ -52,7 +52,7 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetAction = TestTargetAction.of(result = 0)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(

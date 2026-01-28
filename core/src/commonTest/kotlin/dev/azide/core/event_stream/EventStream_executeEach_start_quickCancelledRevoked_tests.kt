@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
@@ -43,7 +43,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = EventStream_expectations_testUtils.expectNoEmission(),
@@ -84,7 +84,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
@@ -131,7 +131,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -178,7 +178,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(

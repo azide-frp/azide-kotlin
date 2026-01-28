@@ -47,3 +47,33 @@ data object Effect_generic_startRevoked_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_startRevoked_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_startRevoked_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

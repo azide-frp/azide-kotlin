@@ -80,3 +80,41 @@ data object Effect_generic_start_quickCancelled_testUtils {
         subject
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_start_quickCancelled_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+        cancelCount: Int = 1,
+    ): SubjectT = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        subjectEffect = subjectEffect,
+        subjectPerceptionStrategy = subjectPerceptionStrategy,
+        slottedInputStimulation = slottedInputStimulation,
+        expectedSubjectTransition = expectedSubjectTransition,
+        expectedTargetImpact = expectedTargetImpact,
+        cancelCount = cancelCount,
+    )
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_start_quickCancelled_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+        cancelCount: Int = 1,
+    ): SubjectT = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        subjectEffect = subjectEffect,
+        subjectPerceptionStrategy = subjectPerceptionStrategy,
+        slottedInputStimulation = slottedInputStimulation,
+        expectedSubjectTransition = expectedSubjectTransition,
+        expectedTargetImpact = expectedTargetImpact,
+        cancelCount = cancelCount,
+    )
+}

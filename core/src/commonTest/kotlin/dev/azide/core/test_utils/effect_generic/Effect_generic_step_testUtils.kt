@@ -49,3 +49,41 @@ data object Effect_generic_step_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_step_testUtils {
+    fun <SubjectT> executeStepTransaction(
+        subject: SubjectT,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        inputStimulation: TestStimulation,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_step_testUtils.executeStepTransaction(
+            subject = subject,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            inputStimulation = inputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_step_testUtils {
+    fun <SubjectT> executeStepTransaction(
+        subject: SubjectT,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        inputStimulation: TestStimulation,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_step_testUtils.executeStepTransaction(
+            subject = subject,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            inputStimulation = inputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

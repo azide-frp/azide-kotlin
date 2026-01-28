@@ -60,3 +60,41 @@ data object Effect_generic_start_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_start_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_start_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_start_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_start_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

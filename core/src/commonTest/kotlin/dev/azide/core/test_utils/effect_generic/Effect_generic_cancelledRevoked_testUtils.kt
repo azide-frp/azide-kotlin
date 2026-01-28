@@ -76,3 +76,41 @@ data object Effect_generic_cancelledRevoked_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_cancelledRevoked_testUtils {
+    fun <SubjectT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_cancelledRevoked_testUtils {
+    fun <SubjectT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

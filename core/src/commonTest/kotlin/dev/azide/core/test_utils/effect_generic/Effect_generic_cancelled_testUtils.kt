@@ -3,9 +3,9 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Revocable
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
@@ -69,5 +69,47 @@ data object Effect_generic_cancelled_testUtils {
 
             subject
         }
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_EventStream_cancelled_testUtils {
+    fun <SubjectT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+        cancelCount: Int = 1,
+    ) {
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+            cancelCount = cancelCount,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_cancelled_testUtils {
+    fun <SubjectT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedTargetImpact: ExpectedImpact,
+        cancelCount: Int = 1,
+    ) {
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+            cancelCount = cancelCount,
+        )
     }
 }

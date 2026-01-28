@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import kotlin.test.Test
@@ -26,7 +26,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
                 expectedUnaffectedValue = 10,
@@ -56,7 +56,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,

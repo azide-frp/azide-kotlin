@@ -67,3 +67,33 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
         }
     }
 }
+
+@Suppress("ClassName")
+data object Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation5? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}
+
+@Suppress("ClassName")
+data object Effect_Cell_startRevoked_quickCancelledRevoked_testUtils {
+    fun <SubjectT> executeStartTransaction(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation5? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+            subjectEffect = subjectEffect,
+            slottedInputStimulation = slottedInputStimulation,
+            expectedTargetImpact = expectedTargetImpact,
+        )
+    }
+}

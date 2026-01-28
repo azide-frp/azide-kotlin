@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetAction
-import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
@@ -45,7 +45,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.emit(
@@ -83,7 +83,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.revokingEmission(
@@ -122,7 +122,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.executeStepTransaction(
             subject = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.correctingEmission(

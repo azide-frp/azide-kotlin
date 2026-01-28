@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_Cell_start_quickCancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
@@ -54,7 +54,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = Cell_expectations_testUtils.expectNoTransition(
@@ -103,7 +103,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -155,7 +155,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -208,7 +208,7 @@ class Cell_actuate_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
