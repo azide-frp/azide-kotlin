@@ -25,10 +25,10 @@ class EventStream_hold_reaction_nonObserved_tests {
                 emittedEvent = 10,
             ),
             expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
-                expectedStableValue = 0,
+                expectedValue = 0,
             ),
             expectedNewSubjectValue = Cell_expectations_testUtils.expectStableValue(
-                expectedStableValue = 10,
+                expectedValue = 10,
             ),
         )
     }

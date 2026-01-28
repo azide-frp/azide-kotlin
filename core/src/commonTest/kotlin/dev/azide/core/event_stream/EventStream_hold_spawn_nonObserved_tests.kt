@@ -19,7 +19,7 @@ class EventStream_hold_spawn_nonObserved_tests {
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
         val expectedUnaffectedState = Cell_expectations_testUtils.expectStableValue(
-            expectedStableValue = 0,
+            expectedValue = 0,
         )
 
         Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
@@ -51,10 +51,10 @@ class EventStream_hold_spawn_nonObserved_tests {
                 emittedEvent = 10,
             ).bind(dispatcher),
             expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
-                expectedStableValue = 0,
+                expectedValue = 0,
             ),
             expectedNewSubjectValue = Cell_expectations_testUtils.expectStableValue(
-                expectedStableValue = 10,
+                expectedValue = 10,
             ),
         )
     }

@@ -105,12 +105,12 @@ private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedCellUpdate<V
 abstract class AbstractExpectedCellValueTransition<ValueT> : ExpectedCellValueTransition<ValueT> {
     final override val expectedOldState: ExpectedCellValue<ValueT>
         get() = Cell_expectations_testUtils.expectStableValue(
-            expectedStableValue = expectedOldValue,
+            expectedValue = expectedOldValue,
         )
 
     final override val expectedNewState: ExpectedCellValue<ValueT>
         get() = Cell_expectations_testUtils.expectStableValue(
-            expectedStableValue = expectedNewValue,
+            expectedValue = expectedNewValue,
         )
 
     abstract val expectedOldValue: ValueT
@@ -149,14 +149,14 @@ object Cell_expectations_testUtils {
     }
 
     fun <ValueT> expectStableValue(
-        expectedStableValue: ValueT,
+        expectedValue: ValueT,
     ): ExpectedCellValue<ValueT> = object : ExpectedCellValue<ValueT> {
         override fun verifyStableState(
             propagationContext: Transactions.PropagationContext,
             subject: Cell<ValueT>,
         ) {
             assertEquals(
-                expected = expectedStableValue,
+                expected = expectedValue,
                 actual = subject.vertex.getOldValue(
                     propagationContext = propagationContext,
                 ),
