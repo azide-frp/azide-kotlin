@@ -27,7 +27,7 @@ data object Cell_actuate_testUtils {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = preStimulationValue,
             ),
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
@@ -64,7 +64,7 @@ data object Cell_actuate_testUtils {
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = preStimulationValue,
                 expectedNewValue = 0,
             ),

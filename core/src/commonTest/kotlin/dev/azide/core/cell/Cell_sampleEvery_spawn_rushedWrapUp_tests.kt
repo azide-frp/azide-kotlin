@@ -25,7 +25,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
             subjectCellSpawnMoment = subjectSpawnMoment,
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
         )
@@ -57,7 +57,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),

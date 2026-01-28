@@ -43,7 +43,7 @@ class Cell_sampleEvery_reaction_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -76,7 +76,7 @@ class Cell_sampleEvery_reaction_tests {
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -111,7 +111,7 @@ class Cell_sampleEvery_reaction_tests {
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

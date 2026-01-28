@@ -28,7 +28,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
         Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectCellEffect = subjectEffect,
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
@@ -61,7 +61,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),

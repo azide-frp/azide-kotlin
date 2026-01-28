@@ -120,7 +120,7 @@ abstract class AbstractExpectedCellValueTransition<ValueT> : ExpectedCellValueTr
 
 @Suppress("ClassName")
 object Cell_expectations_testUtils {
-    fun <ValueT> expectTransition(
+    fun <ValueT> expectValueTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedOldValue: ValueT,
         expectedNewValue: ValueT,
@@ -135,7 +135,7 @@ object Cell_expectations_testUtils {
         )
     }
 
-    fun <ValueT> expectNoTransition(
+    fun <ValueT> expectNoValueTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUnaffectedValue: ValueT,
     ): ExpectedCellValueTransition<ValueT> = object : AbstractExpectedCellValueTransition<ValueT>() {

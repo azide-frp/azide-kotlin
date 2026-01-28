@@ -20,7 +20,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
             subjectCellSpawnMoment = subjectMoment,
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -47,7 +47,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectValueTransition = Cell_expectations_testUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),
