@@ -1,6 +1,8 @@
 package dev.azide.core.test_utils.effect_generic
 
+import dev.azide.core.Cell
 import dev.azide.core.Effect
+import dev.azide.core.EventStream
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
@@ -79,11 +81,11 @@ data object Effect_generic_cancelledRevoked_testUtils {
 
 @Suppress("ClassName")
 data object Effect_EventStream_cancelledRevoked_testUtils {
-    fun <SubjectT> executeCancelTransaction(
-        subjectOutcome: Effect.Outcome<SubjectT>,
+    fun <EventT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<EventStream<EventT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<EventStream<EventT>>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
@@ -98,11 +100,11 @@ data object Effect_EventStream_cancelledRevoked_testUtils {
 
 @Suppress("ClassName")
 data object Effect_Cell_cancelledRevoked_testUtils {
-    fun <SubjectT> executeCancelTransaction(
-        subjectOutcome: Effect.Outcome<SubjectT>,
+    fun <ValueT> executeCancelTransaction(
+        subjectOutcome: Effect.Outcome<Cell<ValueT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<Cell<ValueT>>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(

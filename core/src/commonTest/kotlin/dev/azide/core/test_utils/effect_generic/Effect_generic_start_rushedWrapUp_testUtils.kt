@@ -1,6 +1,8 @@
 package dev.azide.core.test_utils.effect_generic
 
+import dev.azide.core.Cell
 import dev.azide.core.Effect
+import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions.WrapUpContext
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
@@ -91,10 +93,10 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
 
 @Suppress("ClassName")
 data object Effect_EventStream_start_rushedWrapUp_testUtils {
-    fun <SubjectT> executeStartTransaction(
-        subjectEffect: Effect<SubjectT>,
+    fun <EventT> executeStartTransaction(
+        subjectEffect: Effect<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<EventStream<EventT>>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
@@ -108,10 +110,10 @@ data object Effect_EventStream_start_rushedWrapUp_testUtils {
 
 @Suppress("ClassName")
 data object Effect_Cell_start_rushedWrapUp_testUtils {
-    fun <SubjectT> executeStartTransaction(
-        subjectEffect: Effect<SubjectT>,
+    fun <ValueT> executeStartTransaction(
+        subjectEffect: Effect<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<Cell<ValueT>>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(

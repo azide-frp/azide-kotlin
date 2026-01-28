@@ -1,16 +1,15 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectState
+import dev.azide.core.test_utils.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_generic_testUtils {
     fun <SubjectT> executeTransactionWithImpactAndNewStateVerification(
         expectedTargetImpact: ExpectedImpact,
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,
-        propagate: (PropagationContext) -> SubjectT,
+        propagate: (Transactions.PropagationContext) -> SubjectT,
     ): SubjectT {
         val targetImpactVerifier = expectedTargetImpact.prepareImpactVerifier()
 
