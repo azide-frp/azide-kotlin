@@ -6,6 +6,7 @@ import dev.azide.core.impl.AbstractGuardedRevocable
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.enqueueForCommitment
 
 abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
     /**
@@ -66,6 +67,11 @@ abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
         )
     }
 
+    /**
+     * This method is executed only once per transaction, even if the outer trigger is executed multiple times (unless
+     * all the outer executions are revoked, in which case the [Revocable] returned by this method is revoked, and a new
+     * execution happens on the next outer trigger execution).
+     */
     abstract fun executeInternallyOnce(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,

@@ -3,9 +3,8 @@ package dev.azide.core
 import dev.azide.core.Triggers.merging
 import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.effects.AbstractPrimitiveEffect
-import dev.azide.core.impl.effects.AdaptedExternalStreamEffectVertex
+import dev.azide.core.impl.effects.AbstractProcessEffect
+import dev.azide.core.impl.effects.AdaptedExternalStreamEffectProcessVertex
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
 
@@ -57,17 +56,14 @@ interface Effect<ResultT> {
         fun <EventT> adapt(
             externalStreamEffect: ExternalStreamEffect<EventT>,
         ): Effect<EventStream<EventT>> =
-            object : AbstractPrimitiveEffect<AdaptedExternalStreamEffectVertex<EventT>, EventStream<EventT>>() {
-                override fun startInternally(
-                    propagationContext: PropagationContext,
-                    wrapUpContext: Transactions.WrapUpContext,
-                ): AdaptedExternalStreamEffectVertex<EventT> = AdaptedExternalStreamEffectVertex.start(
-                    propagationContext = propagationContext,
-                    externalStreamEffectVertex = externalStreamEffect,
-                )
+            object : AbstractProcessEffect<AdaptedExternalStreamEffectProcessVertex<EventT>, EventStream<EventT>>() {
+                override fun buildProcessVertex(): AdaptedExternalStreamEffectProcessVertex<EventT> =
+                    AdaptedExternalStreamEffectProcessVertex(
+                        externalStreamEffectVertex = externalStreamEffect,
+                    )
 
                 override fun wrap(
-                    effectVertex: AdaptedExternalStreamEffectVertex<EventT>,
+                    effectVertex: AdaptedExternalStreamEffectProcessVertex<EventT>,
                 ): EventStream<EventT> = EventStream.Ordinary(
                     vertex = effectVertex,
                 )
@@ -90,6 +86,10 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.map(
         )
     }
 }
+
+fun <ResultT> Effect<*>.mapTo(
+    result: ResultT,
+): Effect<ResultT> = map { result }
 
 @JvmName("joinOfAction")
 @OptIn(ExperimentalTypeInference::class)

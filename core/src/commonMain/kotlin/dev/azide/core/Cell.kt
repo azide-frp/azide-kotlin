@@ -3,9 +3,8 @@ package dev.azide.core
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
-import dev.azide.core.impl.cell.WarmCellVertex
-import dev.azide.core.impl.cell.operated_vertices.Mapped2WarmCellVertex
-import dev.azide.core.impl.cell.operated_vertices.MappedWarmCellVertex
+import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
+import dev.azide.core.impl.cell.operated_vertices.MappedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
 import dev.azide.core.impl.event_stream.operated_vertices.DivertedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.UpdatedValuesEventStreamVertex
@@ -37,7 +36,7 @@ interface Cell<out ValueT> {
             cell2: Cell<ValueT2>,
             transform: (ValueT1, ValueT2) -> ResultT,
         ): Cell<ResultT> = Ordinary(
-            vertex = Mapped2WarmCellVertex(
+            vertex = Mapped2CellVertex(
                 sourceVertex1 = cell1.vertex,
                 sourceVertex2 = cell2.vertex,
                 transform = transform,
@@ -100,7 +99,7 @@ val <ValueT> Cell<ValueT>.values: Moment<EventStream<ValueT>>
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): EventStream<ValueT> {
-            val sourceVertex = vertex as? WarmCellVertex ?: return EventStream.Never
+            val sourceVertex = vertex as? CellVertex ?: return EventStream.Never
 
             val valuesEventStreamVertex = ValuesEventStreamVertex.start(
                 propagationContext = propagationContext,
@@ -131,7 +130,7 @@ context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT
 fun <ValueT, TransformedValueT> Cell<ValueT>.map(
     transform: (ValueT) -> TransformedValueT,
 ): Cell<TransformedValueT> = Cell.Ordinary(
-    vertex = MappedWarmCellVertex(
+    vertex = MappedCellVertex(
         sourceVertex = this@map.vertex,
         transform = transform,
     ),
@@ -154,6 +153,12 @@ fun <ValueT> Cell<Moment<ValueT>>.sampleEvery(): Moment<Cell<ValueT>> = sampling
 fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
+
+fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> = TODO()
+
+fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
+    transform: (ValueT) -> Action<TransformedValueT>,
+): Effect<Cell<TransformedValueT>> = map(transform).executeEvery()
 
 fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
     vertex.getOldValue(

@@ -7,6 +7,7 @@ import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.getNewValue
+import dev.azide.core.impl.enqueueForPostProcessing
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener

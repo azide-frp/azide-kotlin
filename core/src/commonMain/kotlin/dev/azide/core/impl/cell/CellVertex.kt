@@ -4,7 +4,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
 import kotlin.jvm.JvmInline
 
-sealed interface CellVertex<out ValueT> : Vertex {
+interface CellVertex<out ValueT> : Vertex {
     @JvmInline
     value class Update<out ValueT>(
         val updatedValue: ValueT,

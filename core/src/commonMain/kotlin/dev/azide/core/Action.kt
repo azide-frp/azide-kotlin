@@ -1,5 +1,6 @@
 package dev.azide.core
 
+import dev.azide.core.external.ExternalAllocator
 import dev.azide.core.external.ExternalTrigger
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
@@ -86,6 +87,18 @@ interface Action<out ResultT> {
                 revocable = propagationContext.enqueueForExecution {
                     externalTrigger.executeExternally()
                 },
+            )
+        }
+
+        fun <ObjectT> alloc(
+            externalAllocator: ExternalAllocator<ObjectT>,
+        ): Action<ObjectT> = object : Action<ObjectT> {
+            override fun executeInternally(
+                propagationContext: Transactions.PropagationContext,
+                wrapUpContext: Transactions.WrapUpContext,
+            ): Outcome<ObjectT> = Outcome.of(
+                result = externalAllocator.allocateExternally(),
+                revocable = Revocable.Noop,
             )
         }
 
@@ -282,6 +295,16 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
         )
     }
 }
+
+fun <ResultT> Action<Effect<ResultT>>.starting(): Effect<ResultT> = object : Effect<ResultT> {
+    override val start: Action<Effect.Outcome<ResultT>> = this@starting.joinOf { effect: Effect<ResultT> ->
+        effect.start
+    }
+}
+
+fun <ResultT, TransformedResultT> Action<ResultT>.startingOf(
+    selector: (ResultT) -> Effect<TransformedResultT>,
+): Effect<TransformedResultT> = map(selector).starting()
 
 @OptIn(ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType

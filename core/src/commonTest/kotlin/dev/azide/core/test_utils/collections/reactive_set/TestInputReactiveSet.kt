@@ -2,15 +2,15 @@ package dev.azide.core.test_utils.collections.reactive_set
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_set.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
-import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulWarmTrackedSetVertex
+import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulTrackedSetVertex
 import dev.azide.core.test_utils.TestInputStimulation
 
 class TestInputReactiveSet<ElementT>(
     initialElements: Set<ElementT>,
 ) : ReactiveSet<ElementT> {
-    private val _vertex = object : AbstractStatefulWarmTrackedSetVertex<ElementT>(
+    private val _vertex = object : AbstractStatefulTrackedSetVertex<ElementT>(
         initialElements = initialElements.toMutableSet(),
     ) {
         fun change(

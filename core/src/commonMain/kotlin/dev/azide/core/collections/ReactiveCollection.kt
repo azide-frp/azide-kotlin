@@ -3,6 +3,7 @@ package dev.azide.core.collections
 import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveCollection.Companion.map
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.buildSizeVertex
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.TrackedCollectionSumCellVertex
 
 interface ReactiveCollection<out ElementT> {
@@ -27,3 +28,11 @@ fun ReactiveCollection<Int>.sum(): Cell<Int> = Cell.Ordinary(
 fun <ElementT> ReactiveCollection<ElementT>.sumOf(
     selector: (ElementT) -> Int,
 ): Cell<Int> = map(selector).sum()
+
+fun <ElementT, KeyT> ReactiveCollection<ElementT>.associateBy(
+    keySelector: (ElementT) -> KeyT,
+): ReactiveMap<KeyT, ElementT> = TODO()
+
+fun <ElementT, ValueT> ReactiveCollection<ElementT>.associateWith(
+    valueSelector: (ElementT) -> ValueT,
+): ReactiveMap<ElementT, ValueT> = TODO()

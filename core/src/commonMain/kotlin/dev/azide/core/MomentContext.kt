@@ -1,5 +1,6 @@
 package dev.azide.core
 
+import dev.azide.core.impl.MomentContextImpl
 import dev.azide.core.impl.Transactions
 
 interface MomentContext {

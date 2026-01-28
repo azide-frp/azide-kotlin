@@ -6,7 +6,7 @@ import dev.azide.core.actuate
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetEffect
@@ -14,8 +14,8 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effects.EffectTestUtils_cancelled
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotStarted
 import kotlin.test.Test
@@ -60,7 +60,7 @@ class Cell_actuate_cancelled_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        EffectTestUtils_cancelled.executeCancelTransaction(
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
@@ -111,7 +111,7 @@ class Cell_actuate_cancelled_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        EffectTestUtils_cancelled.executeCancelTransaction(
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -121,7 +121,7 @@ class Cell_actuate_cancelled_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
             )
@@ -168,7 +168,7 @@ class Cell_actuate_cancelled_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        EffectTestUtils_cancelled.executeCancelTransaction(
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -178,7 +178,7 @@ class Cell_actuate_cancelled_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
             ),
@@ -226,7 +226,7 @@ class Cell_actuate_cancelled_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        EffectTestUtils_cancelled.executeCancelTransaction(
+        Effect_generic_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
@@ -237,7 +237,7 @@ class Cell_actuate_cancelled_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1StartRecord.expectIsCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
                 targetEffect3.expectIsNotStarted(),

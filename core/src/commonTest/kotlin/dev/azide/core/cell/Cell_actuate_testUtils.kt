@@ -6,8 +6,8 @@ import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.effects.EffectTestUtils_step
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 
@@ -21,7 +21,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        EffectTestUtils_step.executeStepTransaction(
+        Effect_generic_step_testUtils.executeStepTransaction(
             subject = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -39,7 +39,7 @@ data object Cell_actuate_testUtils {
     ) {
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        EffectTestUtils_step.executeStepTransaction(
+        Effect_generic_step_testUtils.executeStepTransaction(
             subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -58,7 +58,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = 0)
 
-        EffectTestUtils_step.executeStepTransaction(
+        Effect_generic_step_testUtils.executeStepTransaction(
             subject = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(

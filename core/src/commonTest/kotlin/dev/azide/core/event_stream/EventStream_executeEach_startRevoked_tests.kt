@@ -4,12 +4,12 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_testUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
@@ -24,9 +24,9 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
     }
 
@@ -48,12 +48,12 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
     }
 
@@ -75,7 +75,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
@@ -103,13 +103,13 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetAction1.expectIsNotExecuted(),
                 targetAction2.expectIsNotExecuted(),
             ),

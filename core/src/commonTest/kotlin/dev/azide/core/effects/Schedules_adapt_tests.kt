@@ -7,15 +7,14 @@ import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
-import dev.azide.core.test_utils.effects.EffectTestUtils_cancelledRevoked
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelled
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
-import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelled
-import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
-import kotlin.test.Ignore
+import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelled_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -78,11 +77,11 @@ class Schedules_adapt_tests {
             ),
         )
 
-        EffectTestUtils_start_quickCancelled.executeStartTransaction(
+        Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(
@@ -106,11 +105,11 @@ class Schedules_adapt_tests {
             ),
         )
 
-        EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(
@@ -134,9 +133,9 @@ class Schedules_adapt_tests {
             ),
         )
 
-        EffectTestUtils_startRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(
@@ -160,9 +159,9 @@ class Schedules_adapt_tests {
             ),
         )
 
-        EffectTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(
@@ -186,9 +185,9 @@ class Schedules_adapt_tests {
             ),
         )
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(
@@ -272,11 +271,11 @@ class Schedules_adapt_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        EffectTestUtils_cancelledRevoked.executeCancelTransaction(
+        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectTransition = ExpectedTestSubjectTransition.None,
-            expectedTargetImpact = ExpectedTestTargetImpact.None,
+            expectedTargetImpact = ExpectedImpact.None,
         )
 
         assertEquals(

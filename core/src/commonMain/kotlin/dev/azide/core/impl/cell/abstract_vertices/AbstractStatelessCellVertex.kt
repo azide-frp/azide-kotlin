@@ -4,7 +4,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 
-abstract class AbstractStatelessCellVertex<ValueT> : AbstractWarmCellVertex<ValueT>() {
+abstract class AbstractStatelessCellVertex<ValueT> : AbstractCellVertex<ValueT>() {
     final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
         mode: ActivationMode,

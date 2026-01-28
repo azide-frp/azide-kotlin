@@ -3,25 +3,21 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.sampleExternally
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestTargetImpact
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effects.EffectTestUtils_start_quickCancelledRevoked
-import dev.azide.core.test_utils.effects.EffectTestUtils_step
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -51,7 +47,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectCell = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
@@ -97,7 +93,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectCell = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
@@ -108,7 +104,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsStartedOnceButNotCancelled(),
             ),
@@ -151,7 +147,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectCell = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -161,7 +157,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceButNotCancelled(),
                 targetEffect2.expectIsNotStarted(),
             ),
@@ -205,7 +201,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = EffectTestUtils_start_quickCancelledRevoked.executeStartTransaction(
+        val subjectCell = Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
@@ -217,7 +213,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
                 expectedOldValue = 10,
                 expectedNewValue = 30,
             ),
-            expectedTargetImpact = ExpectedTestTargetImpact.combine(
+            expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect2.expectIsNotStarted(),
                 targetEffect3.expectIsStartedOnceButNotCancelled(),

@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Effect
-import dev.azide.core.test_utils.ExpectedTestTargetImpact.TargetImpactVerifier
+import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
 import kotlin.test.assertEquals
 
 abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
@@ -65,13 +65,13 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
     abstract fun buildResult(): ResultT
 }
 
-fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedTestTargetImpact =
-    object : ExpectedTestTargetImpact {
-        override fun prepareImpactVerifier(): TargetImpactVerifier {
+fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedImpact =
+    object : ExpectedImpact {
+        override fun prepareImpactVerifier(): ImpactVerifier {
             resetStartRecords()
 
-            return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+            return object : ImpactVerifier {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -86,13 +86,13 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedTestTarget
         }
     }
 
-fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceButNotCancelled(): ExpectedTestTargetImpact =
-    object : ExpectedTestTargetImpact {
-        override fun prepareImpactVerifier(): TargetImpactVerifier {
+fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceButNotCancelled(): ExpectedImpact =
+    object : ExpectedImpact {
+        override fun prepareImpactVerifier(): ImpactVerifier {
             resetStartRecords()
 
-            return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+            return object : ImpactVerifier {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -111,13 +111,13 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceButNotCancelled(): Ex
         }
     }
 
-fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndCancelledOnce(): ExpectedTestTargetImpact =
-    object : ExpectedTestTargetImpact {
-        override fun prepareImpactVerifier(): TargetImpactVerifier {
+fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndCancelledOnce(): ExpectedImpact =
+    object : ExpectedImpact {
+        override fun prepareImpactVerifier(): ImpactVerifier {
             resetStartRecords()
 
-            return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+            return object : ImpactVerifier {
+                override fun verifyPostPropagation() {
                     val effectiveStartRecords = getAndResetStartRecords().filter {
                         !it.wasRevoked
                     }
@@ -136,13 +136,13 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndCancelledOnce(): E
         }
     }
 
-fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsNotCancelled(): ExpectedTestTargetImpact =
-    object : ExpectedTestTargetImpact {
-        override fun prepareImpactVerifier(): TargetImpactVerifier {
+fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsNotCancelled(): ExpectedImpact =
+    object : ExpectedImpact {
+        override fun prepareImpactVerifier(): ImpactVerifier {
             resetCancellationRecords()
 
-            return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+            return object : ImpactVerifier {
+                override fun verifyPostPropagation() {
                     verifyWasNotCancelled()
                 }
             }
@@ -161,13 +161,13 @@ private fun <ResultT> TestTargetEffect.StartRecord<ResultT>.verifyWasNotCancelle
     )
 }
 
-fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsCancelledOnce(): ExpectedTestTargetImpact =
-    object : ExpectedTestTargetImpact {
-        override fun prepareImpactVerifier(): TargetImpactVerifier {
+fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsCancelledOnce(): ExpectedImpact =
+    object : ExpectedImpact {
+        override fun prepareImpactVerifier(): ImpactVerifier {
             resetCancellationRecords()
 
-            return object : TargetImpactVerifier {
-                override fun verifyPostTransaction() {
+            return object : ImpactVerifier {
+                override fun verifyPostPropagation() {
                     verifyWasCancelledOnce()
                 }
             }
