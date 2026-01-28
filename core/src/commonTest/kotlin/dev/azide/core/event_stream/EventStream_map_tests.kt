@@ -9,7 +9,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class EventStream_map_tests {
     @Test
-    fun test_emission() {
+    fun test_sourceEmits() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
@@ -24,7 +24,7 @@ class EventStream_map_tests {
     }
 
     @Test
-    fun test_emission_revoked() {
+    fun test_sourceEmits_revoked() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
@@ -41,7 +41,7 @@ class EventStream_map_tests {
     }
 
     @Test
-    fun test_emission_corrected() {
+    fun test_sourceEmits_corrected() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }

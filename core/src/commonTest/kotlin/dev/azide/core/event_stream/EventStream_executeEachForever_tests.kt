@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 @Suppress("ClassName")
 class EventStream_executeEachForever_tests {
     @Test
-    fun test_executeEachForever_sourceEmission() {
+    fun test_sourceEmits() {
         val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
@@ -38,7 +38,7 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmission_revoked() {
+    fun test_sourceEmits_revoked() {
         val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
@@ -63,7 +63,7 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmission_corrected() {
+    fun test_sourceEmits_corrected() {
         val mockSideEffect1 = MockExternalTrigger()
         val mockSideEffect2 = MockExternalTrigger()
 
@@ -96,7 +96,7 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmitsOnStart() {
+    fun test_sourceEmitsOnStart() {
         val mockSideEffect = MockExternalTrigger()
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()

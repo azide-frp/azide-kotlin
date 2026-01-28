@@ -9,7 +9,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class EventStream_single_tests {
     @Test
-    fun test_emission_afterSpawn() {
+    fun test_sourceEmits_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
@@ -35,7 +35,7 @@ class EventStream_single_tests {
     }
 
     @Test
-    fun test_emission_atSpawn() {
+    fun test_sourceEmits_atSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
@@ -58,7 +58,7 @@ class EventStream_single_tests {
     }
 
     @Test
-    fun test_emission_revoked_afterSpawn() {
+    fun test_sourceEmits_revoked_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
@@ -95,7 +95,7 @@ class EventStream_single_tests {
     }
 
     @Test
-    fun test_emission_revoked_atSpawn() {
+    fun test_sourceEmits_revoked_atSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
@@ -129,7 +129,7 @@ class EventStream_single_tests {
     }
 
     @Test
-    fun test_emission_corrected_afterSpawn() {
+    fun test_sourceEmits_corrected_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
@@ -160,7 +160,7 @@ class EventStream_single_tests {
     }
 
     @Test
-    fun test_emission_corrected_atSpawn() {
+    fun test_sourceEmits_corrected_atSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the corrected event from the source for the single emission (at spawn)
