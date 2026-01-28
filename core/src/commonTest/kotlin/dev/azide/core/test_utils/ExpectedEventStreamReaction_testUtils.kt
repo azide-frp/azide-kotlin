@@ -11,12 +11,12 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReaction
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-typealias ExpectedEventStreamReaction<EventT> = ExpectedTestSubjectReaction<EventStream<EventT>>
+interface ExpectedEventStreamReaction<EventT> : ExpectedTestSubjectReaction<EventStream<EventT>>,
+    ExpectedEventStreamTransition<EventT>
 
 typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>>
 
-abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT>,
-    ExpectedEventStreamTransition<EventT> {
+abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
@@ -110,11 +110,12 @@ abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStream
     abstract val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>?
 }
 
-object ExpectedEventStreamReactionTestUtils {
+@Suppress("ClassName")
+object ExpectedEventStreamReaction_testUtils {
     fun <EventT> expectEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedEmittedEvent: EventT,
-    ): ExpectedEventStreamTransition<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+    ): ExpectedEventStreamReaction<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
         override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
             intermediatePropagationTolerance
 
@@ -125,7 +126,7 @@ object ExpectedEventStreamReactionTestUtils {
 
     fun <EventT> expectNoEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
-    ): ExpectedEventStreamTransition<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+    ): ExpectedEventStreamReaction<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
         override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>? = null
 
         override val intermediatePropagationTolerance = intermediatePropagationTolerance

@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Action
 import dev.azide.core.EventStream
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
@@ -25,7 +25,7 @@ data object EventStream_executeEach_testUtils {
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }
@@ -58,7 +58,7 @@ data object EventStream_executeEach_testUtils {
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 expectedEmittedEvent = 0,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),

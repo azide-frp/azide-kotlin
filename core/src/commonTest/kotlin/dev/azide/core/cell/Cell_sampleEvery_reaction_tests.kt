@@ -1,15 +1,10 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.EventStream
-import dev.azide.core.Moment
 import dev.azide.core.pullExternally
-import dev.azide.core.sampleEach
 import dev.azide.core.sampleEvery
 import dev.azide.core.sampling
 import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
@@ -17,9 +12,6 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.stateful.TestUtils_reaction
 import kotlin.test.Test
 

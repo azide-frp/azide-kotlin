@@ -4,7 +4,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.sampleEach
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
@@ -41,7 +41,7 @@ class EventStream_sampleEach_reaction_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = helperCell.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
         )
@@ -70,7 +70,7 @@ class EventStream_sampleEach_reaction_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = helperCell.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
@@ -101,7 +101,7 @@ class EventStream_sampleEach_reaction_tests {
                 intermediateEmittedEvent = helperCell1.sampling,
                 correctedEmittedEvent = helperCell2.sampling,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),

@@ -5,7 +5,7 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetAction
@@ -51,7 +51,7 @@ class EventStream_executeEach_step_tests {
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
@@ -89,7 +89,7 @@ class EventStream_executeEach_step_tests {
             inputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).joint(),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
@@ -129,7 +129,7 @@ class EventStream_executeEach_step_tests {
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).joint(),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),

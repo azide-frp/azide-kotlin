@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
@@ -45,7 +45,7 @@ class EventStream_executeEach_start_tests {
         Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
     }
@@ -84,7 +84,7 @@ class EventStream_executeEach_start_tests {
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),
@@ -125,7 +125,7 @@ class EventStream_executeEach_start_tests {
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = targetAction.expectIsNotExecuted(),
         )
     }
@@ -166,7 +166,7 @@ class EventStream_executeEach_start_tests {
                 intermediateEmittedEvent = targetAction1,
                 correctedEmittedEvent = targetAction2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(

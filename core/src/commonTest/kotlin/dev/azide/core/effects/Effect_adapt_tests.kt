@@ -9,7 +9,7 @@ import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.external.ExternalTrigger
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.ExpectedEventStreamReaction_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUtils
@@ -79,7 +79,7 @@ class Effect_adapt_tests {
         Effect_generic_start_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
 
@@ -118,7 +118,7 @@ class Effect_adapt_tests {
         Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
 
@@ -157,7 +157,7 @@ class Effect_adapt_tests {
         Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+            expectedSubjectTransition = ExpectedEventStreamReaction_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
 
