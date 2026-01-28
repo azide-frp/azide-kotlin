@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x5
 import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
@@ -24,7 +24,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -52,7 +52,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
@@ -83,7 +83,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetAction,
@@ -115,7 +115,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetAction1,

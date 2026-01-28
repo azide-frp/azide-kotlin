@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUp
@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
 @Suppress("ClassName")
-data object EffectTestUtils_start_quickCancelled {
+data object Effect_generic_start_quickCancelled_testUtils {
     fun <SubjectT> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
@@ -20,7 +20,7 @@ data object EffectTestUtils_start_quickCancelled {
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
-    ): SubjectT = EffectTestUtils.executeTransactionWithImpactAndNewStateVerification(
+    ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
         expectedTargetImpact = expectedTargetImpact,
         expectedNewState = expectedSubjectTransition.expectedNewState,
     ) { propagationContext ->

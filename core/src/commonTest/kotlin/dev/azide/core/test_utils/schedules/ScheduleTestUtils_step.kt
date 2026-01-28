@@ -5,8 +5,8 @@ import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestInputStimulation
-import dev.azide.core.test_utils.effects.EffectTestUtils_step
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 @Suppress("ClassName")
 data object ScheduleTestUtils_step {
@@ -14,7 +14,7 @@ data object ScheduleTestUtils_step {
         inputStimulation: TestInputStimulation,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils_step.executeStepTransaction(
+        Effect_generic_step_testUtils.executeStepTransaction(
             subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             inputStimulation = inputStimulation,

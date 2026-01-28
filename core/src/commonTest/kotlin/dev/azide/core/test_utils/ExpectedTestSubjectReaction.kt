@@ -2,7 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
-import dev.azide.core.test_utils.effects.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 interface ExpectedTestSubjectReaction<in SubjectT> {
     data object None : ExpectedTestSubjectReaction<Any> {

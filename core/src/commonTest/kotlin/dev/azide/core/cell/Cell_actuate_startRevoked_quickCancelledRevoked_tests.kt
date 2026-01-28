@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effects.EffectTestUtils_startRevoked_quickCancelledRevoked
+import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import kotlin.test.Test
 
@@ -28,7 +28,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
@@ -62,7 +62,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
@@ -99,7 +99,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
@@ -137,7 +137,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        EffectTestUtils_startRevoked_quickCancelledRevoked.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectEffect,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,

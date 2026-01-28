@@ -6,7 +6,7 @@ import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.effects.EffectTestUtils_start_rushedWrapUp
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_rushedWrapUp_testUtils
 
 @Suppress("ClassName")
 data object ScheduleTestUtils_start_rushedWrapUp {
@@ -15,7 +15,7 @@ data object ScheduleTestUtils_start_rushedWrapUp {
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        EffectTestUtils_start_rushedWrapUp.executeStartTransaction(
+        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
             slottedInputStimulation = slottedInputStimulation,
             expectedSubjectTransition = ExpectedTestSubjectTransition(

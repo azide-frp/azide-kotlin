@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.effects
+package dev.azide.core.test_utils.effect_generic
 
 enum class TestSubjectPerceptionStrategy {
     NonPerceived, Perceived,
