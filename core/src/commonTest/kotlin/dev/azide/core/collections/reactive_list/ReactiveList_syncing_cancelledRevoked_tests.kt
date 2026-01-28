@@ -4,14 +4,14 @@ import dev.azide.core.Schedule
 import dev.azide.core.collections.syncing
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlotDispatcher1x3
+import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
-import dev.azide.core.test_utils.schedules.ScheduleTestUtils_cancelled
+import dev.azide.core.test_utils.schedules.ScheduleTestUtils_cancelledRevoked
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -21,7 +21,7 @@ import kotlin.test.assertEquals
 class ReactiveList_syncing_cancelledRevoked_tests {
     @Test
     fun test_cancelled_sourceUpdates() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlotDispatcher1x3.entries.forEach { dispatcher ->
             test_cancelled_sourceUpdates(
                 dispatcher = dispatcher,
             )
@@ -29,7 +29,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
     }
 
     private fun test_cancelled_sourceUpdates(
-        dispatcher: TestSlotDispatcher1x2,
+        dispatcher: TestSlotDispatcher1x3,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -44,7 +44,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        ScheduleTestUtils_cancelled.executeCancelTransaction(
+        ScheduleTestUtils_cancelledRevoked.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
@@ -72,7 +72,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesRevoked() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
             test_cancelled_sourceUpdatesRevoked(
                 dispatcher = dispatcher,
             )
@@ -80,7 +80,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
     }
 
     private fun test_cancelled_sourceUpdatesRevoked(
-        dispatcher: TestSlotDispatcher2x2,
+        dispatcher: TestSlotDispatcher2x3,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -94,7 +94,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        ScheduleTestUtils_cancelled.executeCancelTransaction(
+        ScheduleTestUtils_cancelledRevoked.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 description = ChangeDescription.of(
@@ -122,7 +122,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesCorrected() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
             test_cancelled_sourceUpdatesCorrected(
                 dispatcher = dispatcher,
             )
@@ -130,7 +130,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
     }
 
     private fun test_cancelled_sourceUpdatesCorrected(
-        dispatcher: TestSlotDispatcher2x2,
+        dispatcher: TestSlotDispatcher2x3,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -144,7 +144,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        ScheduleTestUtils_cancelled.executeCancelTransaction(
+        ScheduleTestUtils_cancelledRevoked.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 intermediateDescription = ChangeDescription.of(
