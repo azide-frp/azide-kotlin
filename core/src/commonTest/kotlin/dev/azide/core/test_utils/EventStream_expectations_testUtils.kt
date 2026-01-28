@@ -11,12 +11,10 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReaction
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-interface ExpectedEventStreamReaction<EventT> : ExpectedTestSubjectReaction<EventStream<EventT>>,
-    ExpectedEventStreamTransition<EventT>
+interface ExpectedEventStreamEmission<EventT> : ExpectedTestSubjectReaction<EventStream<EventT>>,
+    ExpectedTestSubjectTransition<EventStream<EventT>>
 
-typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>>
-
-abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamReaction<EventT> {
+abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamEmission<EventT> {
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<EventStream<EventT>>,
@@ -115,7 +113,7 @@ object EventStream_expectations_testUtils {
     fun <EventT> expectEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedEmittedEvent: EventT,
-    ): ExpectedEventStreamReaction<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+    ): ExpectedEventStreamEmission<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
         override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
             intermediatePropagationTolerance
 
@@ -126,7 +124,7 @@ object EventStream_expectations_testUtils {
 
     fun <EventT> expectNoEmission(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
-    ): ExpectedEventStreamReaction<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
+    ): ExpectedEventStreamEmission<EventT> = object : AbstractExpectedEventStreamReaction<EventT>() {
         override val expectedEffectiveEmission: EventStreamVertex.Emission<EventT>? = null
 
         override val intermediatePropagationTolerance = intermediatePropagationTolerance
