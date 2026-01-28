@@ -1,23 +1,22 @@
-package dev.azide.core.test_utils.schedules
+package dev.azide.core.test_utils.schedule_generic
 
 import dev.azide.core.Schedule
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelled_testUtils
+import dev.azide.core.test_utils.TestSlottedStimulation4
+import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 @Suppress("ClassName")
-data object ScheduleTestUtils_start_quickCancelled {
+data object Schedule_generic_start_quickCancelledRevoked_testUtils {
     fun executeStartTransaction(
         subjectSchedule: Schedule,
-        slottedInputStimulation: TestSlottedStimulation3? = null,
+        slottedInputStimulation: TestSlottedStimulation4? = null,
         expectedTargetImpact: ExpectedImpact,
-        cancelCount: Int = 1,
     ) {
-        Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+        Effect_generic_start_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEffect = subjectSchedule,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedInputStimulation = slottedInputStimulation,
@@ -27,7 +26,6 @@ data object ScheduleTestUtils_start_quickCancelled {
                 expectedReaction = ExpectedTestSubjectReaction.None,
             ),
             expectedTargetImpact = expectedTargetImpact,
-            cancelCount = cancelCount,
         )
     }
 }

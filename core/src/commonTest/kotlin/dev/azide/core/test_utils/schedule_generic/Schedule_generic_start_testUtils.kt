@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.schedules
+package dev.azide.core.test_utils.schedule_generic
 
 import dev.azide.core.Schedule
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction
@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 @Suppress("ClassName")
-data object ScheduleTestUtils_start {
+data object Schedule_generic_start_testUtils {
     fun executeStartTransaction(
         subjectSchedule: Schedule,
         slottedInputStimulation: TestSlottedStimulation2? = null,

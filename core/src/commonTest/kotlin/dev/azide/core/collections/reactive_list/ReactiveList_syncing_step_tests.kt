@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
-import dev.azide.core.test_utils.schedules.ScheduleTestUtils_step
+import dev.azide.core.test_utils.schedule_generic.Schedule_generic_step_testUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.Ignore
@@ -30,7 +30,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -64,7 +64,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
@@ -96,7 +96,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
@@ -129,7 +129,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.revokingChange(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -163,7 +163,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.correctingChange(
                 intermediateDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(

@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils.schedules
+package dev.azide.core.test_utils.schedule_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.test_utils.ExpectedImpact
@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUti
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 @Suppress("ClassName")
-data object ScheduleTestUtils_cancelled {
+data object Schedule_generic_cancelled_testUtils {
     fun executeCancelTransaction(
         subjectOutcome: Effect.Outcome<Unit>,
         slottedInputStimulation: TestSlottedStimulation2? = null,
