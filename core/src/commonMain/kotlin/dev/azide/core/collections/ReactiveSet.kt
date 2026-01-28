@@ -3,6 +3,8 @@ package dev.azide.core.collections
 import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.Effect
+import dev.azide.core.Moment
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
@@ -24,8 +26,21 @@ interface ReactiveSet<out ElementT> : ReactiveCollection<ElementT> {
     override val trackedVertex: TrackedSetVertex<ElementT>
 }
 
-val <ElementT> ReactiveSet<ElementT>.asReactiveBag: ReactiveBag<ElementT>
-    get() = TODO()
+val <ElementT> ReactiveSet<ElementT>.samplingContent: Moment<Set<ElementT>>
+    get() = object : Moment<Set<ElementT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Set<ElementT> = trackedVertex.getOldContentView(
+            propagationContext = propagationContext,
+        ).toSet()
+    }
+
+fun <ElementT> ReactiveSet<ElementT>.sampleContentExternally(): Set<ElementT> = Transactions.executeWithResult { propagationContext ->
+    trackedVertex.getOldContentView(
+        propagationContext = propagationContext,
+    ).toSet()
+}
 
 fun <ElementT> ReactiveSet<ElementT>.contains(
     element: ElementT,

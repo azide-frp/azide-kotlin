@@ -1,8 +1,10 @@
 package dev.azide.core.collections
 
+import dev.azide.core.Moment
 import dev.azide.core.Schedule
 import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import kotlin.jvm.JvmName
 
@@ -27,6 +29,22 @@ interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
 
 val <ElementT> ReactiveList<ElementT>.asReactiveMap: ReactiveMap<Int, ElementT>
     get() = TODO()
+
+val <ElementT> ReactiveList<ElementT>.samplingContent: Moment<List<ElementT>>
+    get() = object : Moment<List<ElementT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): List<ElementT> = trackedVertex.getOldContentView(
+            propagationContext = propagationContext,
+        ).toList()
+    }
+
+fun <ElementT> ReactiveList<ElementT>.sampleContentExternally(): List<ElementT> = Transactions.executeWithResult { propagationContext ->
+    trackedVertex.getOldContentView(
+        propagationContext = propagationContext,
+    ).toList()
+}
 
 fun <ElementT> ReactiveList<ElementT>.filter(
     predicate: (ElementT) -> Boolean,
