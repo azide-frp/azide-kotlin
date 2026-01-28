@@ -82,7 +82,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_outerConst() {
+    fun test_onlyCurrentInnerUpdates_outerConst() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -104,7 +104,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_initial() {
+    fun test_onlyCurrentInnerUpdates_initial() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -126,7 +126,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_initial_revoked() {
+    fun test_onlyCurrentInnerUpdates_initial_revoked() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -150,7 +150,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_initial_corrected() {
+    fun test_onlyCurrentInnerUpdates_initial_corrected() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -177,7 +177,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_subsequent() {
+    fun test_onlyCurrentInnerUpdates_subsequent() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -212,7 +212,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_subsequent_revoked() {
+    fun test_onlyCurrentInnerUpdates_subsequent_revoked() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -249,7 +249,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyCurrentInnerUpdates_subsequent_corrected() {
+    fun test_onlyCurrentInnerUpdates_subsequent_corrected() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -289,7 +289,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyPreviousInnerUpdates() {
+    fun test_onlyPreviousInnerUpdates() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -323,7 +323,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyOuterUpdates() {
+    fun test_onlyOuterUpdates() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -349,7 +349,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyOuterUpdates_updatedInnerConst() {
+    fun test_onlyOuterUpdates_updatedInnerConst() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -375,7 +375,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyOuterUpdates_revoked() {
+    fun test_onlyOuterUpdates_revoked() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -411,7 +411,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_onlyOuterUpdates_corrected() {
+    fun test_onlyOuterUpdates_corrected() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -454,7 +454,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndNewInnerUpdate_outerFirst() {
+    fun test_outerAndNewInnerUpdate_outerFirst() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -485,7 +485,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndNewInnerUpdate_innerFirst() {
+    fun test_outerAndNewInnerUpdate_innerFirst() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -516,7 +516,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndNewInnerUpdate_newInnerUpdateRevoked() {
+    fun test_outerAndNewInnerUpdate_newInnerUpdateRevoked() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -550,7 +550,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndNewInnerUpdate_outerUpdateRevoked() {
+    fun test_outerAndNewInnerUpdate_outerUpdateRevoked() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -591,7 +591,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndOldInnerUpdate() {
+    fun test_outerAndOldInnerUpdate() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -622,7 +622,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_update_outerAndOldInnerUpdate_outerUpdateRevoked() {
+    fun test_outerAndOldInnerUpdate_outerUpdateRevoked() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
         )

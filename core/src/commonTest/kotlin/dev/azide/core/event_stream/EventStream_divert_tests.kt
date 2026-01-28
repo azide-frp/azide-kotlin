@@ -12,7 +12,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class EventStream_divert_tests {
     @Test
-    fun test_emission_onlyCurrentInnerEmits_outerConst() {
+    fun test_onlyCurrentInnerEmits_outerConst() {
         val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = Cell.Const(
@@ -31,7 +31,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_initial() {
+    fun test_onlyCurrentInnerEmits_initial() {
         val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
@@ -50,7 +50,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_initial_revoked() {
+    fun test_onlyCurrentInnerEmits_initial_revoked() {
         val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
@@ -71,7 +71,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_initial_corrected() {
+    fun test_onlyCurrentInnerEmits_initial_corrected() {
         val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
@@ -95,7 +95,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_subsequent() {
+    fun test_onlyCurrentInnerEmits_subsequent() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -125,7 +125,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_subsequent_revoked() {
+    fun test_onlyCurrentInnerEmits_subsequent_revoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -157,7 +157,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyCurrentInnerEmits_subsequent_corrected() {
+    fun test_onlyCurrentInnerEmits_subsequent_corrected() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -192,7 +192,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyPreviousInnerUpdates() {
+    fun test_onlyPreviousInnerUpdates() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -221,7 +221,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyOuterUpdates() {
+    fun test_onlyOuterUpdates() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -241,7 +241,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyOuterUpdates_updatedInnerNever() {
+    fun test_onlyOuterUpdates_updatedInnerNever() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = EventStream.Never
@@ -261,7 +261,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyOuterUpdates_revoked() {
+    fun test_onlyOuterUpdates_revoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -291,7 +291,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_onlyOuterUpdates_corrected() {
+    fun test_onlyOuterUpdates_corrected() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val intermediateInnerSourceEventStream = TestInputEventStream<Int>()
@@ -325,7 +325,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndNewInnerUpdate_outerFirst() {
+    fun test_outerAndNewInnerUpdate_outerFirst() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -350,7 +350,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndNewInnerUpdate_innerFirst() {
+    fun test_outerAndNewInnerUpdate_innerFirst() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -375,7 +375,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndNewInnerUpdate_newInnerUpdateRevoked() {
+    fun test_outerAndNewInnerUpdate_newInnerUpdateRevoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -401,7 +401,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndNewInnerUpdate_outerUpdateRevoked() {
+    fun test_outerAndNewInnerUpdate_outerUpdateRevoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -434,7 +434,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndOldInnerUpdate_outerFirst() {
+    fun test_outerAndOldInnerUpdate_outerFirst() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -460,7 +460,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndOldInnerUpdate_innerFirst() {
+    fun test_outerAndOldInnerUpdate_innerFirst() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -486,7 +486,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndOldInnerUpdate_oldInnerUpdateRevoked() {
+    fun test_outerAndOldInnerUpdate_oldInnerUpdateRevoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -512,7 +512,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndOldInnerUpdate_outerUpdateRevoked() {
+    fun test_outerAndOldInnerUpdate_outerUpdateRevoked() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -541,7 +541,7 @@ class EventStream_divert_tests {
     }
 
     @Test
-    fun test_emission_outerAndOldInnerAndNewInnerUpdate() {
+    fun test_outerAndOldInnerAndNewInnerUpdate() {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = TestInputEventStream<Int>()
@@ -578,7 +578,7 @@ class EventStream_divert_tests {
      * past and subscribe to its own old source event stream, even when there's an updated one available.
      */
     @Test
-    fun test_nested_outerCellsUpdate() {
+    fun test_nested_outerCellsUpdates() {
         // Earlier inner source event stream (A1)
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
