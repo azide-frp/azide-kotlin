@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
-import dev.azide.core.test_utils.schedules.ScheduleTestUtils_startRevoked_quickCancelled
+import dev.azide.core.test_utils.schedule_generic.Schedule_generic_startRevoked_quickCancelled_testUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.Ignore
@@ -32,7 +32,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
             externalMutableList = targetMutableList,
         )
 
-        ScheduleTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+        Schedule_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
@@ -72,7 +72,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
             externalMutableList = targetMutableList,
         )
 
-        ScheduleTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+        Schedule_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
@@ -120,7 +120,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
             externalMutableList = targetMutableList,
         )
 
-        ScheduleTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+        Schedule_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 description = ChangeDescription.of(
@@ -168,7 +168,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
             externalMutableList = targetMutableList,
         )
 
-        ScheduleTestUtils_startRevoked_quickCancelled.executeStartTransaction(
+        Schedule_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 intermediateDescription = ChangeDescription.of(

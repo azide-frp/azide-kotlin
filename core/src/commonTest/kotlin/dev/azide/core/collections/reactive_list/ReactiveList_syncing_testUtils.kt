@@ -3,7 +3,7 @@ package dev.azide.core.collections.reactive_list
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
-import dev.azide.core.test_utils.schedules.ScheduleTestUtils_step
+import dev.azide.core.test_utils.schedule_generic.Schedule_generic_step_testUtils
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
@@ -16,7 +16,7 @@ data object ReactiveList_syncing_testUtils {
 
         val targetMutableListSnapshot = targetMutableList.toList()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -42,7 +42,7 @@ data object ReactiveList_syncing_testUtils {
     ) {
         val targetMutableListSnapshot = targetMutableList.toList()
 
-        ScheduleTestUtils_step.executeStepTransaction(
+        Schedule_generic_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
