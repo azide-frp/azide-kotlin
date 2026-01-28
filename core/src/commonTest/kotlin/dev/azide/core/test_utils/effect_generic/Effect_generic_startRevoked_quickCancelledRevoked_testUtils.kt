@@ -1,8 +1,6 @@
 package dev.azide.core.test_utils.effect_generic
 
-import dev.azide.core.Cell
 import dev.azide.core.Effect
-import dev.azide.core.EventStream
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation5
@@ -67,35 +65,5 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
 
             subject
         }
-    }
-}
-
-@Suppress("ClassName")
-data object Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils {
-    fun <EventT> executeStartTransaction(
-        subjectEventStreamEffect: Effect<EventStream<EventT>>,
-        slottedInputStimulation: TestSlottedStimulation5? = null,
-        expectedTargetImpact: ExpectedImpact,
-    ) {
-        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectEventStreamEffect,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedTargetImpact = expectedTargetImpact,
-        )
-    }
-}
-
-@Suppress("ClassName")
-data object Effect_Cell_startRevoked_quickCancelledRevoked_testUtils {
-    fun <ValueT> executeStartTransaction(
-        subjectCellEffect: Effect<Cell<ValueT>>,
-        slottedInputStimulation: TestSlottedStimulation5? = null,
-        expectedTargetImpact: ExpectedImpact,
-    ) {
-        Effect_generic_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
-            subjectEffect = subjectCellEffect,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedTargetImpact = expectedTargetImpact,
-        )
     }
 }

@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_Cell_startRevoked_testUtils
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import kotlin.test.Test
 

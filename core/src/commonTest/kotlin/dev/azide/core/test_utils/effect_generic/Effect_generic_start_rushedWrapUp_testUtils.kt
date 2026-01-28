@@ -1,14 +1,10 @@
 package dev.azide.core.test_utils.effect_generic
 
-import dev.azide.core.Cell
 import dev.azide.core.Effect
-import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions.WrapUpContext
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
-import dev.azide.core.test_utils.ExpectedCellValueTransition
-import dev.azide.core.test_utils.ExpectedEventStreamEmission
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
@@ -90,39 +86,5 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
 
             subject
         }
-    }
-}
-
-@Suppress("ClassName")
-data object Effect_EventStream_start_rushedWrapUp_testUtils {
-    fun <EventT> executeStartTransaction(
-        subjectEventStreamEffect: Effect<EventStream<EventT>>,
-        slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
-        expectedTargetImpact: ExpectedImpact,
-    ) {
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEventStreamEffect,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectEmission,
-            expectedTargetImpact = expectedTargetImpact,
-        )
-    }
-}
-
-@Suppress("ClassName")
-data object Effect_Cell_start_rushedWrapUp_testUtils {
-    fun <ValueT> executeStartTransaction(
-        subjectCellEffect: Effect<Cell<ValueT>>,
-        slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
-        expectedTargetImpact: ExpectedImpact,
-    ) {
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectCellEffect,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectValueTransition,
-            expectedTargetImpact = expectedTargetImpact,
-        )
     }
 }

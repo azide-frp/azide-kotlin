@@ -5,7 +5,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetAction
-import dev.azide.core.test_utils.effect_generic.Effect_EventStream_step_testUtils
+import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.expectIsExecutedOnce

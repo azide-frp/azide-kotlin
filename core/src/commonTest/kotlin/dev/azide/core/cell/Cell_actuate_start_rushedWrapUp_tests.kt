@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.effect_generic.Effect_Cell_start_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import kotlin.test.Test
