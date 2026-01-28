@@ -14,7 +14,7 @@ typealias ExpectedCellReaction<ValueT> = ExpectedTestSubjectReaction<Cell<ValueT
 
 typealias ExpectedCellState<ValueT> = ExpectedTestSubjectState<Cell<ValueT>>
 
-typealias ExpectedCellTransition<ValueT> = ExpectedTestSubjectTransition<Cell<ValueT>>
+typealias ExpectedCellTransition<ValueT> = ExpectedTestSubjectTransitionImpl<Cell<ValueT>>
 
 private abstract class AbstractExpectedCellReaction<ValueT> : ExpectedCellReaction<ValueT> {
     final override fun prepareReactionVerifier(

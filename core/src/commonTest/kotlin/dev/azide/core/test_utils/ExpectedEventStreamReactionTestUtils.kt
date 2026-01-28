@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 
 typealias ExpectedEventStreamReaction<EventT> = ExpectedTestSubjectReaction<EventStream<EventT>>
 
-typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>>
+typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransitionImpl<EventStream<EventT>>
 
 val <EventT> ExpectedEventStreamReaction<EventT>.asExpectedTransition: ExpectedEventStreamTransition<EventT>
     get() = ExpectedEventStreamTransition(
