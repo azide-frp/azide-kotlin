@@ -78,7 +78,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_sharedSource() {
+    fun test_sharedSourceUpdates() {
         val sourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -101,7 +101,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_onlySource1() {
+    fun test_onlySource1Updates() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -128,7 +128,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_onlySource2() {
+    fun test_onlySource2Updates() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -155,7 +155,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_otherSourceConst() {
+    fun test_singleSourceUpdates_otherSourceConst() {
         val sourceCell1 = Cell.Const(
             constValue = 10,
         )
@@ -182,7 +182,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_revoked() {
+    fun test_singleSourceUpdates_revoked() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -211,7 +211,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_corrected() {
+    fun test_singleSourceUpdates_corrected() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -246,7 +246,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources() {
+    fun test_bothSourcesUpdate() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -278,7 +278,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources_oneRevoked() {
+    fun test_bothSourcesUpdate_oneRevoked() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -311,7 +311,7 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources_bothRevoked() {
+    fun test_bothSourcesUpdate_bothRevoked() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
