@@ -40,7 +40,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_elementAdded() {
+    fun test_sourceChanges_elementAdded() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -60,7 +60,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_elementRemoved() {
+    fun test_sourceChanges_elementRemoved() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -80,7 +80,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_elementRetained() {
+    fun test_sourceChanges_elementRetained() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -99,7 +99,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_elementUnmentioned() {
+    fun test_sourceChanges_elementUnmentioned() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -118,7 +118,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_revoked_elementAdded() {
+    fun test_sourceChanges_revoked_elementAdded() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -140,7 +140,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_revoked_elementRemoved() {
+    fun test_sourceChanges_revoked_elementRemoved() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -162,7 +162,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_revoked_elementUnmentioned() {
+    fun test_sourceChanges_revoked_elementUnmentioned() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -184,7 +184,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_corrected_unmentionedBefore_unmentionedLater() {
+    fun test_sourceChanges_corrected_unmentionedBefore_unmentionedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -209,7 +209,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_corrected_unmentionedBefore_mentionedLater() {
+    fun test_sourceChanges_corrected_unmentionedBefore_mentionedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -235,7 +235,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_corrected_mentionedBefore_unmentionedLater() {
+    fun test_sourceChanges_corrected_mentionedBefore_unmentionedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -260,7 +260,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_update_corrected_mentionedBefore_mentionedLater() {
+    fun test_sourceChanges_corrected_mentionedBefore_mentionedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
