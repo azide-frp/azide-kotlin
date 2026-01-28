@@ -5,15 +5,15 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.expectIsExecutedOnce
@@ -39,7 +39,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     private fun test_start_quickCancelledRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -80,7 +80,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -127,7 +127,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -174,7 +174,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         val targetAction1 = TestTargetAction.of(result = 10)
         val targetAction2 = TestTargetAction.of(result = 20)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 

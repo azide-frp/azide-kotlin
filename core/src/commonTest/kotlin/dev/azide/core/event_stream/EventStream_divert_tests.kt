@@ -6,13 +6,14 @@ import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_tests {
     @Test
     fun test_emission_onlyCurrentInnerEmits_outerConst() {
-        val innerEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = Cell.Const(
             constValue = innerEventStream,
@@ -31,7 +32,7 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_initial() {
-        val innerEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = innerEventStream,
@@ -50,7 +51,7 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_initial_revoked() {
-        val innerEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = innerEventStream,
@@ -71,7 +72,7 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_initial_corrected() {
-        val innerEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val innerEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = innerEventStream,
@@ -95,9 +96,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_subsequent() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -125,9 +126,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_subsequent_revoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -157,9 +158,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyCurrentInnerEmits_subsequent_corrected() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -192,9 +193,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyPreviousInnerUpdates() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -221,9 +222,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyOuterUpdates() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -241,7 +242,7 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyOuterUpdates_updatedInnerNever() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         val laterInnerSourceEventStream = EventStream.Never
 
@@ -261,9 +262,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyOuterUpdates_revoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -291,11 +292,11 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_onlyOuterUpdates_corrected() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val intermediateInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val intermediateInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -325,9 +326,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndNewInnerUpdate_outerFirst() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -350,9 +351,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndNewInnerUpdate_innerFirst() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -375,9 +376,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndNewInnerUpdate_newInnerUpdateRevoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -401,9 +402,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndNewInnerUpdate_outerUpdateRevoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -434,9 +435,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndOldInnerUpdate_outerFirst() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -460,9 +461,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndOldInnerUpdate_innerFirst() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -486,9 +487,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndOldInnerUpdate_oldInnerUpdateRevoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -512,9 +513,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndOldInnerUpdate_outerUpdateRevoked() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -541,9 +542,9 @@ class EventStream_divert_tests {
 
     @Test
     fun test_emission_outerAndOldInnerAndNewInnerUpdate() {
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         val outerSourceCell = TestInputCell(
             initialValue = earlierInnerSourceEventStream,
@@ -579,10 +580,10 @@ class EventStream_divert_tests {
     @Test
     fun test_nested_outerCellsUpdate() {
         // Earlier inner source event stream (A1)
-        val earlierInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
         // Later inner source event stream (A2)
-        val laterInnerSourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val laterInnerSourceEventStream = TestInputEventStream<Int>()
 
         // Outer source cell (B)
         val outerSourceCell = TestInputCell<EventStream<Int>>(
@@ -590,7 +591,7 @@ class EventStream_divert_tests {
         )
 
         // Earlier inner source event stream (C1)
-        val earlierInnerIntermediateEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val earlierInnerIntermediateEventStream = TestInputEventStream<Int>()
 
         // Intermediate `divert` event stream (C2)
         val laterInnerIntermediateEventStream = Cell.divert(outerSourceCell)

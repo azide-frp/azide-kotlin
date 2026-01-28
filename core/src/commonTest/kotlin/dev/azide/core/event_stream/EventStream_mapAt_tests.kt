@@ -5,13 +5,14 @@ import dev.azide.core.sample
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_mapAt_tests {
     @Test
     fun test_emission() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
         val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {
@@ -30,7 +31,7 @@ class EventStream_mapAt_tests {
 
     @Test
     fun test_emission_revoked() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
         val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {
@@ -51,7 +52,7 @@ class EventStream_mapAt_tests {
 
     @Test
     fun test_emission_corrected() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
         val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {

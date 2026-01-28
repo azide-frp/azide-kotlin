@@ -3,13 +3,14 @@ package dev.azide.core.event_stream
 import dev.azide.core.map
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_map_tests {
     @Test
     fun test_emission() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
@@ -24,7 +25,7 @@ class EventStream_map_tests {
 
     @Test
     fun test_emission_revoked() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
@@ -41,7 +42,7 @@ class EventStream_map_tests {
 
     @Test
     fun test_emission_corrected() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 

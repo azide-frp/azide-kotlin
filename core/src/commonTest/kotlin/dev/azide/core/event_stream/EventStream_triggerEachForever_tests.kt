@@ -5,7 +5,7 @@ import dev.azide.core.Trigger
 import dev.azide.core.test_utils.MockExternalTrigger
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.triggerEachForever
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -17,7 +17,7 @@ class EventStream_triggerEachForever_tests {
     fun test_triggerEachForever_sourceEmission() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
+        val sourceEventStream = TestInputEventStream<Trigger>()
 
         TestUtils.executeSeparately(
             sourceEventStream.triggerEachForever(),
@@ -38,7 +38,7 @@ class EventStream_triggerEachForever_tests {
     fun test_triggerEachForever_sourceEmission_revoked() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
+        val sourceEventStream = TestInputEventStream<Trigger>()
 
         TestUtils.executeSeparately(
             sourceEventStream.triggerEachForever(),
@@ -63,7 +63,7 @@ class EventStream_triggerEachForever_tests {
         val mockSideEffect1 = MockExternalTrigger()
         val mockSideEffect2 = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
+        val sourceEventStream = TestInputEventStream<Trigger>()
 
         TestUtils.executeSeparately(
             sourceEventStream.triggerEachForever(),
@@ -93,7 +93,7 @@ class EventStream_triggerEachForever_tests {
     fun test_triggerEachForever_sourceEmitsOnStart() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Trigger>()
+        val sourceEventStream = TestInputEventStream<Trigger>()
 
         TestUtils.executeSeparately(
             action = sourceEventStream.triggerEachForever(),

@@ -3,14 +3,15 @@ package dev.azide.core.event_stream
 import dev.azide.core.EventStream
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_merge2_tests {
     @Test
     fun test_firstSourceEmits() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -28,8 +29,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_secondSourceEmits() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -47,8 +48,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -71,8 +72,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_firstSourcesEmits_revoked() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -92,8 +93,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_secondSourcesEmits_revoked() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -113,8 +114,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_firstRevoked() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -138,8 +139,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_secondRevoked() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -163,8 +164,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_bothRevoked() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -188,8 +189,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_firstSourcesEmits_corrected() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -212,8 +213,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_secondSourcesEmits_corrected() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -236,8 +237,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_firstCorrected() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -263,8 +264,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_secondCorrected() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,
@@ -290,8 +291,8 @@ class EventStream_merge2_tests {
 
     @Test
     fun test_bothSourcesEmits_bothCorrected() {
-        val sourceEventStream1 = EventStreamTestUtils.createInputEventStream<Int>()
-        val sourceEventStream2 = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream1 = TestInputEventStream<Int>()
+        val sourceEventStream2 = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStream.merge2(
             sourceEventStream1,

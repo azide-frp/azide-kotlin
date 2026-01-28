@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.MockExternalTrigger
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -17,7 +18,7 @@ class EventStream_executeEachForever_tests {
     fun test_executeEachForever_sourceEmission() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -40,7 +41,7 @@ class EventStream_executeEachForever_tests {
     fun test_executeEachForever_sourceEmission_revoked() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -66,7 +67,7 @@ class EventStream_executeEachForever_tests {
         val mockSideEffect1 = MockExternalTrigger()
         val mockSideEffect2 = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -98,7 +99,7 @@ class EventStream_executeEachForever_tests {
     fun test_executeEachForever_sourceEmitsOnStart() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         TestUtils.executeSeparately(
             action = sourceEventStream.executeEachForever(),

@@ -9,10 +9,10 @@ import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropaga
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -29,7 +29,7 @@ class EventStream_hold_reaction_tests {
     private fun test_reaction_sourceUpdates(
         dispatcher: TestSlotDispatcher1x2,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
@@ -59,7 +59,7 @@ class EventStream_hold_reaction_tests {
     private fun test_reaction_sourceUpdatesRevoked(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
@@ -89,7 +89,7 @@ class EventStream_hold_reaction_tests {
     private fun test_reaction_sourceUpdatesCorrected(
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 

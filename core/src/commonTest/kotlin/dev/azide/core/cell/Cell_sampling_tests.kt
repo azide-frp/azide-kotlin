@@ -7,7 +7,7 @@ import dev.azide.core.pullExternally
 import dev.azide.core.sampling
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -59,7 +59,7 @@ class Cell_sampling_tests {
 
     @Test
     fun test_subjectStateful() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectCell = sourceEventStream.holding(
             initialValue = 10,

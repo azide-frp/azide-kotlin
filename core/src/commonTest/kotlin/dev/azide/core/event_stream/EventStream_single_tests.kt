@@ -3,13 +3,14 @@ package dev.azide.core.event_stream
 import dev.azide.core.single
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_single_tests {
     @Test
     fun test_emission_afterSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
             sourceEventStream.single()
@@ -35,7 +36,7 @@ class EventStream_single_tests {
 
     @Test
     fun test_emission_atSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
@@ -58,7 +59,7 @@ class EventStream_single_tests {
 
     @Test
     fun test_emission_revoked_afterSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
             sourceEventStream.single()
@@ -95,7 +96,7 @@ class EventStream_single_tests {
 
     @Test
     fun test_emission_revoked_atSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream(
@@ -129,7 +130,7 @@ class EventStream_single_tests {
 
     @Test
     fun test_emission_corrected_afterSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
             sourceEventStream.single()
@@ -160,7 +161,7 @@ class EventStream_single_tests {
 
     @Test
     fun test_emission_corrected_atSpawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the corrected event from the source for the single emission (at spawn)
         val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(

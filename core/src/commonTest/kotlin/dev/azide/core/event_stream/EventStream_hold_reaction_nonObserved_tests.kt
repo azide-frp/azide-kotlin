@@ -5,15 +5,15 @@ import dev.azide.core.Moment
 import dev.azide.core.holding
 import dev.azide.core.pullExternally
 import dev.azide.core.test_utils.Cell_expectations_testUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.cell.Cell_reaction_nonPerceived_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_hold_reaction_nonObserved_tests {
     @Test
     fun test_reaction_sourceUpdates() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 

@@ -10,8 +10,8 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import kotlin.test.Test
@@ -32,7 +32,7 @@ class EventStream_sampleEach_reaction_tests {
     ) {
         val helperCell = TestInputCell(initialValue = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
+        val sourceEventStream = TestInputEventStream<Moment<Int>>()
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
@@ -61,7 +61,7 @@ class EventStream_sampleEach_reaction_tests {
     ) {
         val helperCell = TestInputCell(initialValue = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
+        val sourceEventStream = TestInputEventStream<Moment<Int>>()
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
@@ -91,7 +91,7 @@ class EventStream_sampleEach_reaction_tests {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Moment<Int>>()
+        val sourceEventStream = TestInputEventStream<Moment<Int>>()
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 

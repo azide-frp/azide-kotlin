@@ -6,7 +6,7 @@ import dev.azide.core.test_utils.async.AsyncTest
 import dev.azide.core.test_utils.async.AsyncTestGroup
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.cell.JsCellTestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 
 @Suppress("ClassName")
 data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
@@ -17,7 +17,7 @@ data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
 
     data object collectible_nonObserved_test : AsyncTest() {
         override suspend fun execute() {
-            val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+            val sourceEventStream = TestInputEventStream<Int>()
 
             JsCellTestUtils.ensureCollectible {
                 sourceEventStream.holding(initialValue = 10).pullExternally()
@@ -27,7 +27,7 @@ data object EventStream_hold_garbageCollection_testGroup : AsyncTestGroup() {
 
     data object collectible_observed_test : AsyncTest() {
         override suspend fun execute() {
-            val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+            val sourceEventStream = TestInputEventStream<Int>()
 
             JsCellTestUtils.ensureCollectible {
                 val subjectCell = sourceEventStream.holding(initialValue = 10).pullExternally()

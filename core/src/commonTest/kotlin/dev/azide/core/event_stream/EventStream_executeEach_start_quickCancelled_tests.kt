@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.expectIsNotExecuted
@@ -46,7 +46,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         cancelCount: Int = 1,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -88,7 +88,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -132,7 +132,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
@@ -177,7 +177,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
         val targetAction1 = TestTargetAction.of(result = 10)
         val targetAction2 = TestTargetAction.of(result = 20)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
