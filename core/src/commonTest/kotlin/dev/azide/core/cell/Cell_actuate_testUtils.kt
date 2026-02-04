@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
@@ -39,13 +40,13 @@ data object Cell_actuate_testUtils {
     ) {
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
-            subjectCell = Unit,
+        Effect_generic_step_testUtils.executeStepTransaction(
+            subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectValueTransition = ExpectedTestSubjectTransition.None,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
         )
     }

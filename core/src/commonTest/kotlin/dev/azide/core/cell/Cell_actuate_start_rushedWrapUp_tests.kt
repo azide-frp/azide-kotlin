@@ -17,7 +17,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class Cell_actuate_start_rushedWrapUp_tests {
     @Test
-    fun test_start() {
+    fun test_start_rushedWrapUp() {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
         val sourceCell = TestInputCell(
@@ -36,15 +36,15 @@ class Cell_actuate_start_rushedWrapUp_tests {
     }
 
     @Test
-    fun test_start_sourceUpdatesSimultaneously() {
+    fun test_start_rushedWrapUp_sourceUpdatesSimultaneously() {
         TestSlotDispatcher1x3.entries.forEach { dispatcher ->
-            test_start_sourceUpdatesSimultaneously(
+            test_start_rushedWrapUp_sourceUpdatesSimultaneously(
                 dispatcher = dispatcher,
             )
         }
     }
 
-    private fun test_start_sourceUpdatesSimultaneously(
+    private fun test_start_rushedWrapUp_sourceUpdatesSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)

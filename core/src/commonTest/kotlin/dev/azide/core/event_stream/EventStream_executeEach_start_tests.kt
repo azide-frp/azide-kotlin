@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_testUtils
+import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission

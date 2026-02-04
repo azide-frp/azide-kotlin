@@ -18,7 +18,7 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_startRev
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_startRevoked_testUtils
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelled_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_EventStream_start_testUtils
+import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import kotlin.test.Test
 import kotlin.test.assertEquals

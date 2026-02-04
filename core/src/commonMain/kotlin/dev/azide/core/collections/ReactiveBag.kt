@@ -3,26 +3,34 @@ package dev.azide.core.collections
 import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.Effect
-import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
+import dev.azide.core.Moment
+import dev.azide.core.collections.ReactiveBag.Tag
+import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
-import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredTrackedSetVertex
 
 interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
+    typealias Tag = Any
+
     class Const<out ElementT>(
-        constElements: Set<ElementT>,
+        constElements: Collection<ElementT>,
     ) : ReactiveBag<ElementT> {
-        override val trackedVertex: TrackedSetVertex<ElementT> = PureTrackedSetVertex(
+        override val trackedVertex: TrackedCollectionVertex<ElementT> = PureTrackedBagVertex(
             elements = constElements,
         )
     }
 
     class Ordinary<out ElementT> internal constructor(
-        override val trackedVertex: TrackedSetVertex<ElementT>,
+        override val trackedVertex: TrackedCollectionVertex<ElementT>,
     ) : ReactiveBag<ElementT>
 
-    override val trackedVertex: TrackedSetVertex<ElementT>
+    override val trackedVertex: TrackedCollectionVertex<ElementT>
 }
+
+val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, ElementT>>
+    get() = TODO()
+
+fun <ElementT> ReactiveBag<ElementT>.sampleTaggedContentExternally(): Map<Tag, ElementT> = TODO()
 
 fun <ElementT> ReactiveBag<ElementT>.contains(
     element: ElementT,
@@ -32,12 +40,7 @@ fun <ElementT> ReactiveBag<ElementT>.contains(
 
 fun <ElementT> ReactiveBag<ElementT>.filter(
     predicate: (ElementT) -> Boolean,
-): ReactiveBag<ElementT> = ReactiveBag.Ordinary(
-    trackedVertex = FilteredTrackedSetVertex(
-        this@filter.trackedVertex,
-        predicate,
-    ),
-)
+): ReactiveBag<ElementT> = TODO()
 
 fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,

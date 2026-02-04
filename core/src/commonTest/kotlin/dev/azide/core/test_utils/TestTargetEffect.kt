@@ -2,6 +2,7 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.Effect
 import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
+import dev.azide.core.test_utils.TestTargetEffect.StartRecord
 import kotlin.test.assertEquals
 
 abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
@@ -64,6 +65,9 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
 
     abstract fun buildResult(): ResultT
 }
+
+fun <ResultT> TestTargetEffect<ResultT>.getAndResetSingleStartRecord(): StartRecord<ResultT> =
+    getAndResetStartRecords().single()
 
 fun <ResultT> TestTargetEffect<ResultT>.expectIsNotStarted(): ExpectedImpact =
     object : ExpectedImpact {
@@ -136,7 +140,7 @@ fun <ResultT> TestTargetEffect<ResultT>.expectIsStartedOnceAndCancelledOnce(): E
         }
     }
 
-fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsNotCancelled(): ExpectedImpact =
+fun <ResultT> StartRecord<ResultT>.expectIsNotCancelled(): ExpectedImpact =
     object : ExpectedImpact {
         override fun prepareImpactVerifier(): ImpactVerifier {
             resetCancellationRecords()
@@ -149,7 +153,7 @@ fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsNotCancelled(): Expe
         }
     }
 
-private fun <ResultT> TestTargetEffect.StartRecord<ResultT>.verifyWasNotCancelled() {
+private fun <ResultT> StartRecord<ResultT>.verifyWasNotCancelled() {
     val effectiveCancellationRecords = getAndResetCancellationRecords().filter {
         !it.wasRevoked
     }
@@ -161,7 +165,7 @@ private fun <ResultT> TestTargetEffect.StartRecord<ResultT>.verifyWasNotCancelle
     )
 }
 
-fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsCancelledOnce(): ExpectedImpact =
+fun <ResultT> StartRecord<ResultT>.expectIsCancelledOnce(): ExpectedImpact =
     object : ExpectedImpact {
         override fun prepareImpactVerifier(): ImpactVerifier {
             resetCancellationRecords()
@@ -174,7 +178,7 @@ fun <ResultT> TestTargetEffect.StartRecord<ResultT>.expectIsCancelledOnce(): Exp
         }
     }
 
-private fun <ResultT> TestTargetEffect.StartRecord<ResultT>.verifyWasCancelledOnce() {
+private fun <ResultT> StartRecord<ResultT>.verifyWasCancelledOnce() {
     val effectiveCancellationRecords = getAndResetCancellationRecords().filter {
         !it.wasRevoked
     }

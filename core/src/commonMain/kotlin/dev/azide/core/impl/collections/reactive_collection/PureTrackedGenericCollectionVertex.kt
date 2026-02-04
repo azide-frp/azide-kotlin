@@ -12,3 +12,5 @@ class PureTrackedGenericCollectionVertex<ContentT: Collection<*>>(
 }
 
 typealias PureTrackedSetVertex<ElementT> = PureTrackedGenericCollectionVertex<Set<ElementT>>
+
+typealias PureTrackedBagVertex<ElementT> = PureTrackedGenericCollectionVertex<Collection<ElementT>>

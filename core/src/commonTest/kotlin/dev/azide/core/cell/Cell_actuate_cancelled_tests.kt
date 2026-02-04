@@ -18,6 +18,7 @@ import dev.azide.core.test_utils.effect_cell.Effect_Cell_cancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.getAndResetSingleStartRecord
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -58,7 +59,7 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
         Effect_Cell_cancelled_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -109,7 +110,7 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
         Effect_Cell_cancelled_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -166,7 +167,7 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
         Effect_Cell_cancelled_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -224,7 +225,7 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
         Effect_Cell_cancelled_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,

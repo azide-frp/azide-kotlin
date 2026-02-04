@@ -101,39 +101,21 @@ class TestInputCell<ValueT>(
         get() = _vertex
 }
 
-fun <ValueT> TestInputCell<ValueT>.updating(
-    tag: TestInputCellTag,
-    newValue: ValueT,
-): TestStimulationMap = TestStimulationMap.of(
-    TestInputCellStimulationTag.Update(inputTag = tag) to update(newValue = newValue),
-)
-
-fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
-    tag: TestInputCellTag,
-    newValue: ValueT,
-): TestStimulationMap = TestStimulationMap.of(
-    TestInputCellStimulationTag.Update(inputTag = tag) to update(newValue = newValue),
-    TestInputCellStimulationTag.UpdateRevocation(inputTag = tag) to revokeUpdate(),
-)
-
-fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
-    tag: TestInputCellTag,
-    intermediateNewValue: ValueT,
-    correctedNewValue: ValueT,
-): TestStimulationMap = TestStimulationMap.of(
-    TestInputCellStimulationTag.Update(inputTag = tag) to update(
-        newValue = intermediateNewValue,
-    ),
-    TestInputCellStimulationTag.UpdateRevocation(inputTag = tag) to correctUpdate(
-        correctedNewValue = correctedNewValue,
-    ),
-)
-
 fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
     newValue: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = update(newValue = newValue),
     secondStimulation = revokeUpdate(),
+)
+
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+    tag: TestInputCellTag,
+    newValue: ValueT,
+): TestStimulationMap = revokingUpdate(
+    newValue = newValue,
+).tagged(
+    firstTag = TestInputCellStimulationTag.Update(inputTag = tag),
+    secondTag = TestInputCellStimulationTag.UpdateRevocation(inputTag = tag),
 )
 
 fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
@@ -142,4 +124,16 @@ fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = update(newValue = intermediateNewValue),
     secondStimulation = correctUpdate(correctedNewValue),
+)
+
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+    tag: TestInputCellTag,
+    intermediateNewValue: ValueT,
+    correctedNewValue: ValueT,
+): TestStimulationMap = correctingUpdate(
+    intermediateNewValue = intermediateNewValue,
+    correctedNewValue = correctedNewValue,
+).tagged(
+    firstTag = TestInputCellStimulationTag.Update(inputTag = tag),
+    secondTag = TestInputCellStimulationTag.UpdateCorrection(inputTag = tag),
 )
