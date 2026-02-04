@@ -5,26 +5,27 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.Moment
 import dev.azide.core.collections.ReactiveBag.Tag
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
+import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 
 interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
-    typealias Tag = Any
+    typealias Tag = Any?
 
     class Const<out ElementT>(
-        constElements: Collection<ElementT>,
+        constElements: TaggedBag<ElementT>,
     ) : ReactiveBag<ElementT> {
-        override val trackedVertex: TrackedCollectionVertex<ElementT> = PureTrackedBagVertex(
+        override val trackedVertex: TrackedTaggedBagVertex<ElementT> = PureTrackedBagVertex(
             elements = constElements,
         )
     }
 
     class Ordinary<out ElementT> internal constructor(
-        override val trackedVertex: TrackedCollectionVertex<ElementT>,
+        override val trackedVertex: TrackedTaggedBagVertex<ElementT>,
     ) : ReactiveBag<ElementT>
 
-    override val trackedVertex: TrackedCollectionVertex<ElementT>
+    override val trackedVertex: TrackedTaggedBagVertex<ElementT>
 }
 
 val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, ElementT>>

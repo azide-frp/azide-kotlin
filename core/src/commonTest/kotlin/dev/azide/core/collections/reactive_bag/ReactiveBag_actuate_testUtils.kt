@@ -18,7 +18,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 data object ReactiveBag_actuate_testUtils {
     data object SourceEffectReactiveBagTag : TestInputReactiveCollectionTag
 
-    enum class TargetEffectTag : TestInputReactiveBag.InputTag {
+    enum class TargetEffectTag {
         TargetEffect1, TargetEffect2, TargetEffect3, TargetEffect4, TargetEffect5, TargetEffect6, TargetEffect7, ExtraTargetEffect,
     }
 

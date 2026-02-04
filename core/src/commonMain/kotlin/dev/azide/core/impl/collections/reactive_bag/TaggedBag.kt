@@ -1,18 +1,35 @@
 package dev.azide.core.impl.collections.reactive_bag
 
-import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
 
-interface TaggedBag<out ElementT> : Collection<ElementT>
+interface TaggedBag<out ElementT> : Collection<ElementT> {
+    companion object {
+        fun <ElementT> ofTaggedContent(
+            elementByTag: Map<Tag, ElementT>,
+        ): TaggedBag<ElementT> = TaggedBagImpl(
+            elementByTag = elementByTag.toMutableMap(),
+        )
+    }
+
+    fun containsTag(tag: Tag): Boolean
+}
 
 interface MutableTaggedBag<ElementT> : TaggedBag<ElementT>, MutableCollection<ElementT> {
+    companion object {
+        fun <ElementT> ofTaggedContent(
+            elementByTag: Map<Tag, ElementT>,
+        ): MutableTaggedBag<ElementT> = TaggedBagImpl(
+            elementByTag = elementByTag.toMutableMap(),
+        )
+    }
+
     fun addByTag(
-        tag: ReactiveBag.Tag,
+        tag: Tag,
         element: ElementT,
     ): ElementT?
 
     fun removeByTag(
-        tag: ReactiveBag.Tag,
+        tag: Tag,
     ): ElementT?
 }
 
@@ -43,4 +60,8 @@ data class TaggedBagImpl<ElementT>(
 
         return true
     }
+
+    override fun containsTag(
+        tag: Tag,
+    ): Boolean = elementByTag.containsKey(tag)
 }

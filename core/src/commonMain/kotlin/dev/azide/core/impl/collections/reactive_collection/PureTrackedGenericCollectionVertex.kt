@@ -1,6 +1,7 @@
 package dev.azide.core.impl.collections.reactive_collection
 
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractFrozenTrackedGenericCollectionVertex
 
 class PureTrackedGenericCollectionVertex<ContentT: Collection<*>>(
@@ -13,4 +14,4 @@ class PureTrackedGenericCollectionVertex<ContentT: Collection<*>>(
 
 typealias PureTrackedSetVertex<ElementT> = PureTrackedGenericCollectionVertex<Set<ElementT>>
 
-typealias PureTrackedBagVertex<ElementT> = PureTrackedGenericCollectionVertex<Collection<ElementT>>
+typealias PureTrackedBagVertex<ElementT> = PureTrackedGenericCollectionVertex<TaggedBag<ElementT>>
