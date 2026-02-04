@@ -6,6 +6,7 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
 abstract class AbstractTrackedGeneticCollectionVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>>() :
@@ -63,5 +64,7 @@ abstract class AbstractTrackedGeneticCollectionVertex<ContentT : Collection<*>, 
 }
 
 typealias AbstractTrackedSetVertex<ElementT> = AbstractTrackedGeneticCollectionVertex<Set<ElementT>, SetChange<ElementT>>
+
+typealias AbstractTrackedListVertex<ElementT> = AbstractTrackedGeneticCollectionVertex<List<ElementT>, ListChange<ElementT>>
 
 typealias AbstractTrackedTaggedBagVertex<ElementT> = AbstractTrackedGeneticCollectionVertex<TaggedBag<ElementT>, TaggedBagChange<ElementT>>
