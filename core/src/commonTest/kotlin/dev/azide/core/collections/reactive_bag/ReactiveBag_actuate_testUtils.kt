@@ -4,6 +4,7 @@ import dev.azide.core.Effect
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.sampleTaggedContentExternally
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.utils.list.uncons
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
@@ -50,14 +51,20 @@ data object ReactiveBag_actuate_testUtils {
             override fun construct(
                 taggedContent: Map<ReactiveBag.Tag, Effect<Int>>,
             ): Pair<TestInputReactiveBag<Effect<Int>>, PreStimulation> {
+                val taggedContentEntries = taggedContent.entries.toList()
+                val (firstTaggedContentEntry, remainingTaggedContentEntries) = taggedContentEntries.uncons()
+                    ?: throw IllegalArgumentException("taggedContent must have at least two entries")
+                val (firstTag, firstEffect) = firstTaggedContentEntry
 
                 val earlierTargetEffect1 = TestTargetEffect.pure(result = -1)
                 val earlierTargetEffect2 = TestTargetEffect.pure(result = -2)
+                val earlierTargetEffect3 = TestTargetEffect.pure(result = -3)
 
                 val sourceReactiveBag = TestInputReactiveBag<Effect<Int>>(
                     initialTaggedContent = mapOf(
                         TargetEffectTag.EarlierTargetEffect1 to earlierTargetEffect1,
                         TargetEffectTag.EarlierTargetEffect2 to earlierTargetEffect2,
+                        firstTag to earlierTargetEffect3,
                     ),
                 )
 
@@ -68,7 +75,12 @@ data object ReactiveBag_actuate_testUtils {
                             Transactions.execute { propagationContext ->
                                 sourceReactiveBag.change(
                                     description = TestInputReactiveBag.ChangeDescription(
-                                        addedElementByTag = taggedContent,
+                                        addedElementByTag = remainingTaggedContentEntries.associate {
+                                            it.key to it.value
+                                        },
+                                        replacedElementByTag = mapOf(
+                                            firstTag to firstEffect,
+                                        ),
                                         removedTags = setOf(
                                             TargetEffectTag.EarlierTargetEffect1,
                                             TargetEffectTag.EarlierTargetEffect2,

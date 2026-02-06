@@ -28,5 +28,6 @@ interface Revocable {
         }
     }
 
+    // TODO: Add `propagationContext` argument and transaction IDs to detect attempts of revoking in later transactions
     fun revoke()
 }
