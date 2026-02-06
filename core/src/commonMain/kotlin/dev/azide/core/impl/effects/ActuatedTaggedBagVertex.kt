@@ -14,7 +14,6 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_bag.abstract_vertices.AbstractStatefulTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_bag.mapKeepingTags
 import dev.azide.core.impl.collections.reactive_bag.mapToKeepingTags
-import dev.azide.core.impl.collections.reactive_bag.toMutableBag
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
@@ -76,8 +75,10 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
     private val sourceVertex: TrackedTaggedBagVertex<Effect<InnerResultT>>
         get() = sourceEffectBag.trackedVertex
 
-    private val stableInnerEffectHandles: MutableTaggedBag<Effect.Outcome<InnerResultT>> =
-        initialInnerEffectOutcomes.toMutableBag()
+    private val stableInnerEffectHandles: MutableTaggedBag<Effect.Handle> =
+        initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) {
+            it.handle
+        }
 
     private var internalState = InternalState.ShutDown
 
@@ -130,10 +131,10 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
                 sourceOngoingChange.removedTags.forEach { removedTag: ReactiveBag.Tag ->
                     // If the respective inner effect isn't already being cancelled, cancel it
                     unstableInnerEffectCancellationRevocableByTag.getOrPut(removedTag) {
-                        val removedStableInnerEffectOutcome = stableInnerEffectHandles.getByTag(removedTag)
+                        val removedStableInnerEffectHandle = stableInnerEffectHandles.getByTag(removedTag)
                             ?: throw IllegalStateException("Removed tag $removedTag has no associated inner effect handle")
 
-                        removedStableInnerEffectOutcome.handle.cancel.executeInternallyWrappedUp(
+                        removedStableInnerEffectHandle.cancel.executeInternallyWrappedUp(
                             propagationContext = propagationContext,
                         ).revocable
                     }
@@ -166,13 +167,13 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
                                 newInnerEffect: Effect<InnerResultT>,
                             ),
                         ->
-                    val changedStableEffectOutcome: Effect.Outcome<InnerResultT>? =
-                        stableInnerEffectHandles.getByTag(tag = changedTag)
+                        val changedStableEffectOutcome: Effect.Handle? =
+                            stableInnerEffectHandles.getByTag(tag = changedTag)
 
                     if (changedStableEffectOutcome != null) { // Inner effect replacement
                         // Cancel the stable replaced effect if it's not already being cancelled
                         unstableInnerEffectCancellationRevocableByTag.getOrPut(changedTag) {
-                            changedStableEffectOutcome.handle.cancel.executeInternallyWrappedUp(
+                            changedStableEffectOutcome.cancel.executeInternallyWrappedUp(
                                 propagationContext = propagationContext,
                             ).revocable
                         }
@@ -246,9 +247,8 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         }
 
         // Cancel all stable inner effects
-        val stableInnerEffectCancellationRevocables =
-            stableInnerEffectHandles.map { innerEffectOutcome: Effect.Outcome<InnerResultT> ->
-                innerEffectOutcome.handle.cancel.executeInternally(
+        val stableInnerEffectCancellationRevocables = stableInnerEffectHandles.map { innerEffectHandle ->
+            innerEffectHandle.cancel.executeInternally(
                     propagationContext = propagationContext,
                     wrapUpContext = wrapUpContext,
                 ).revocable
@@ -282,10 +282,25 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
     }
 
     override fun commit() {
-        // Clear the unstable state
+        if (internalState != InternalState.StartedUp) {
+            return
+        }
 
-        unstableInnerEffectCancellationRevocableByTag?.clear()
-        unstableNewInnerEffectStartOutcomeByTag?.clear()
+        val unstableInnerEffectCancellationRevocableByTag = this.unstableInnerEffectCancellationRevocableByTag!!
+        val unstableNewInnerEffectStartOutcomeByTag = this.unstableNewInnerEffectStartOutcomeByTag!!
+
+        unstableInnerEffectCancellationRevocableByTag.forEach { (removedEffectTag: ReactiveBag.Tag, _) ->
+            stableInnerEffectHandles.removeByTag(removedEffectTag)
+                ?: throw IllegalStateException("Inconsistent internal state: Removed effect tag $removedEffectTag has no associated inner effect handle")
+        }
+
+        unstableNewInnerEffectStartOutcomeByTag.forEach { (changedEffectTag, changedEffect) ->
+            stableInnerEffectHandles.addByTag(changedEffectTag, changedEffect.result.handle)
+        }
+
+        // FIXME: These lines are necessary, but removing them doesn't cause any of the tests to fail
+        unstableInnerEffectCancellationRevocableByTag.clear()
+        unstableNewInnerEffectStartOutcomeByTag.clear()
 
         isEnqueuedForCommitment = false
     }
@@ -335,10 +350,10 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
                 // Cancel all stable effects that are being removed from the bag
                 val initialInnerEffectCancellationRevocableByTag =
                     sourceOngoingChange.removedTags.associateWithTo(mutableMapOf()) { removedTag ->
-                        val removedStableInnerEffectOutcome = stableInnerEffectHandles.getByTag(removedTag)
+                        val removedStableInnerEffectHandle = stableInnerEffectHandles.getByTag(removedTag)
                             ?: throw IllegalStateException("Removed tag $removedTag has no associated inner effect handle")
 
-                        removedStableInnerEffectOutcome.handle.cancel.executeInternallyWrappedUp(
+                        removedStableInnerEffectHandle.cancel.executeInternallyWrappedUp(
                             propagationContext = propagationContext,
                         ).revocable
                     }
@@ -346,14 +361,13 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
                 // Start all new inner effects that are being added to the bag or replace the previous effect
                 val initialNewInnerEffectStartOutcomeByTag =
                     sourceOngoingChange.changedElementByTag.mapValuesTo(mutableMapOf()) { (changedTag, newInnerEffect) ->
-                        val changedStableEffectOutcome: Effect.Outcome<InnerResultT>? =
-                            stableInnerEffectHandles.getByTag(tag = changedTag)
+                        val changedStableEffectHandle = stableInnerEffectHandles.getByTag(tag = changedTag)
 
-                        if (changedStableEffectOutcome != null) { // Inner effect replacement
+                        if (changedStableEffectHandle != null) { // Inner effect replacement
                             // Cancel the stable replaced effect
                             initialInnerEffectCancellationRevocableByTag.put(
                                 changedTag,
-                                changedStableEffectOutcome.handle.cancel.executeInternallyWrappedUp(
+                                changedStableEffectHandle.cancel.executeInternallyWrappedUp(
                                     propagationContext = propagationContext,
                                 ).revocable,
                             )

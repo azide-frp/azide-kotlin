@@ -3,14 +3,14 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.Effect
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.actuate
+import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagConstructionStrategy
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
-import dev.azide.core.startExternally
+import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.startExternallyPreStimulated
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.TestTargetEffect
-import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_bag.changing
 import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
@@ -50,15 +50,33 @@ class ReactiveBag_actuate_cancelled_tests {
         slottedStimulationBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
 
     @Test
-    fun test_cancelled_observed() {
+    fun test_initial_cancelled_observed() {
         test_cancelled(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_cancelled_nonObserved() {
+    fun test_initial_cancelled_nonObserved() {
         test_cancelled(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    @Test
+    fun test_subsequent_cancelled_observed() {
+        test_cancelled(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_subsequent_cancelled_nonObserved() {
+        test_cancelled(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
@@ -66,12 +84,14 @@ class ReactiveBag_actuate_cancelled_tests {
     @Test
     fun test_cancelled_twice() {
         test_cancelled(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             cancelCount = 2,
         )
     }
 
     private fun test_cancelled(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         cancelCount: Int = 1,
     ) {
@@ -79,15 +99,17 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -118,15 +140,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChanges_observed_addedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChanges_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChanges_observed_addedOnly() {
+        slottedStimulationBank_sourceEffectBagChanges.forEach {
+            test_cancelled_sourceEffectBagChanges_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChanges_addedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -136,15 +170,17 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -188,15 +224,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChanges_observed_removedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChanges_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChanges_observed_removedOnly() {
+        slottedStimulationBank_sourceEffectBagChanges.forEach {
+            test_cancelled_sourceEffectBagChanges_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChanges_removedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -204,8 +252,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect3 = TestTargetEffect.pure(result = 30)
         val targetEffect4 = TestTargetEffect.pure(result = 40)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
@@ -213,7 +261,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -258,15 +308,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChanges_observed_replacedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChanges_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChanges_observed_replacedOnly() {
+        slottedStimulationBank_sourceEffectBagChanges.forEach {
+            test_cancelled_sourceEffectBagChanges_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChanges_replacedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -278,8 +340,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect2b = TestTargetEffect.pure(result = 21)
         val targetEffect3b = TestTargetEffect.pure(result = 31)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2a,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
@@ -287,7 +349,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
@@ -336,9 +400,10 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChanges_observed_mixed() {
+    fun test_initial_cancelled_sourceEffectBagChanges_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -346,14 +411,36 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChanges_nonObserved() {
+    fun test_initial_cancelled_sourceEffectBagChanges_nonObserved() {
         test_cancelled_sourceEffectBagChanges_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChanges,
+        )
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChanges_observed_mixed() {
+        slottedStimulationBank_sourceEffectBagChanges.forEach {
+            test_cancelled_sourceEffectBagChanges_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChanges_nonObserved() {
+        test_cancelled_sourceEffectBagChanges_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChanges,
         )
     }
 
     private fun test_cancelled_sourceEffectBagChanges_mixed(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -368,8 +455,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect1b = TestTargetEffect.pure(result = 11)
         val targetEffect3b = TestTargetEffect.pure(result = 31)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
@@ -378,7 +465,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -438,15 +527,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesRevoked_observed_addedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_addedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+            test_cancelled_sourceEffectBagChangesRevoked_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesRevoked_addedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -456,15 +557,17 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -508,15 +611,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesRevoked_observed_removedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_removedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+            test_cancelled_sourceEffectBagChangesRevoked_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesRevoked_removedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -524,8 +639,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect3 = TestTargetEffect.pure(result = 30)
         val targetEffect4 = TestTargetEffect.pure(result = 40)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
@@ -533,7 +648,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -578,15 +695,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesRevoked_observed_replacedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_replacedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+            test_cancelled_sourceEffectBagChangesRevoked_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesRevoked_replacedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -597,15 +726,17 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect2b = TestTargetEffect.pure(result = 21)
         val targetEffect3b = TestTargetEffect.pure(result = 31)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2a,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
@@ -651,9 +782,10 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesRevoked_observed_mixed() {
+    fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -661,14 +793,36 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesRevoked_nonObserved() {
+    fun test_initial_cancelled_sourceEffectBagChangesRevoked_nonObserved() {
         test_cancelled_sourceEffectBagChangesRevoked_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked,
+        )
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_mixed() {
+        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+            test_cancelled_sourceEffectBagChangesRevoked_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_nonObserved() {
+        test_cancelled_sourceEffectBagChangesRevoked_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked,
         )
     }
 
     private fun test_cancelled_sourceEffectBagChangesRevoked_mixed(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -683,8 +837,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect6 = TestTargetEffect.pure(result = 60)
         val targetEffect7 = TestTargetEffect.pure(result = 70)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
@@ -693,7 +847,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -753,15 +909,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesCorrected_observed_addedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_addedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+            test_cancelled_sourceEffectBagChangesCorrected_addedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesCorrected_addedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -774,15 +942,17 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect6 = TestTargetEffect.pure(result = 60)
         val targetEffect7 = TestTargetEffect.pure(result = 70)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -837,15 +1007,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesCorrected_observed_removedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_removedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+            test_cancelled_sourceEffectBagChangesCorrected_removedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesCorrected_removedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -853,8 +1035,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect3 = TestTargetEffect.pure(result = 30)
         val targetEffect4 = TestTargetEffect.pure(result = 40)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3,
@@ -862,7 +1044,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -913,15 +1097,27 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesCorrected_observed_replacedOnly() {
+    fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_replacedOnly() {
+        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+            test_cancelled_sourceEffectBagChangesCorrected_replacedOnly(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
             )
         }
     }
 
     private fun test_cancelled_sourceEffectBagChangesCorrected_replacedOnly(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -935,8 +1131,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect3b = TestTargetEffect.pure(result = 31)
         val targetEffect4b = TestTargetEffect.pure(result = 41)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2a,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
@@ -944,7 +1140,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
@@ -1002,9 +1200,10 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesCorrected_observed_mixed() {
+    fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -1012,14 +1211,36 @@ class ReactiveBag_actuate_cancelled_tests {
     }
 
     @Test
-    fun test_cancelled_sourceEffectBagChangesCorrected_nonObserved() {
+    fun test_initial_cancelled_sourceEffectBagChangesCorrected_nonObserved() {
         test_cancelled_sourceEffectBagChangesCorrected_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected,
+        )
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_mixed() {
+        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+            test_cancelled_sourceEffectBagChangesCorrected_mixed(
+                sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
+                subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    @Test
+    fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_nonObserved() {
+        test_cancelled_sourceEffectBagChangesCorrected_mixed(
+            sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected,
         )
     }
 
     private fun test_cancelled_sourceEffectBagChangesCorrected_mixed(
+        sourceEffectReactiveBagConstructionStrategy: SourceEffectReactiveBagConstructionStrategy,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -1035,8 +1256,8 @@ class ReactiveBag_actuate_cancelled_tests {
         val targetEffect7a = TestTargetEffect.pure(result = 70)
         val targetEffect7b = TestTargetEffect.pure(result = 71)
 
-        val sourceReactiveBag = TestInputReactiveBag(
-            initialTaggedContent = mapOf(
+        val (sourceReactiveBag, preStimulation) = sourceEffectReactiveBagConstructionStrategy.construct(
+            taggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
                 TargetEffectTag.TargetEffect2 to targetEffect2,
                 TargetEffectTag.TargetEffect3 to targetEffect3a,
@@ -1045,7 +1266,9 @@ class ReactiveBag_actuate_cancelled_tests {
             ),
         )
 
-        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternally()
+        val subjectOutcome: Effect.Outcome<ReactiveBag<Int>> = sourceReactiveBag.actuate().startExternallyPreStimulated(
+            preStimulation = preStimulation,
+        )
 
         val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
@@ -1106,6 +1329,7 @@ class ReactiveBag_actuate_cancelled_tests {
                 targetEffect5StartRecord.expectIsCancelledOnce(),
                 targetEffect1b.expectIsNotStarted(),
                 targetEffect3b.expectIsNotStarted(),
+                targetEffect6.expectIsNotStarted(),
                 targetEffect7a.expectIsNotStarted(),
                 targetEffect7b.expectIsNotStarted(),
             ),
