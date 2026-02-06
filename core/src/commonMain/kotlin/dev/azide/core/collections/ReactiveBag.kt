@@ -5,10 +5,14 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.Moment
 import dev.azide.core.collections.ReactiveBag.Tag
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
+import dev.azide.core.impl.effects.AbstractExternalizedEffect
+import dev.azide.core.impl.effects.ActuatedTaggedBagVertex
+import dev.azide.core.pullExternally
 
 interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
     typealias Tag = Any?
@@ -29,9 +33,17 @@ interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
 }
 
 val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, ElementT>>
-    get() = TODO()
+    get() = object : Moment<Map<Tag, ElementT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Map<Tag, ElementT> = trackedVertex.getOldContentView(
+            propagationContext = propagationContext,
+        ).elementByTag.toMap()
+    }
 
-fun <ElementT> ReactiveBag<ElementT>.sampleTaggedContentExternally(): Map<Tag, ElementT> = TODO()
+fun <ElementT> ReactiveBag<ElementT>.sampleTaggedContentExternally(): Map<Tag, ElementT> =
+    samplingTaggedContent.pullExternally()
 
 fun <ElementT> ReactiveBag<ElementT>.contains(
     element: ElementT,
@@ -59,7 +71,18 @@ fun <ElementT, ResultT> ReactiveBag<ElementT>.executeEveryOf(
     selector: (ElementT) -> Action<ResultT>,
 ): Effect<ReactiveBag<ResultT>> = map(selector).executeEvery()
 
-fun <ResultT> ReactiveBag<Effect<ResultT>>.actuate(): Effect<ReactiveBag<ResultT>> = TODO()
+fun <InnerResultT> ReactiveBag<Effect<InnerResultT>>.actuate(): Effect<ReactiveBag<InnerResultT>> =
+    object : AbstractExternalizedEffect<ActuatedTaggedBagVertex<InnerResultT>, ReactiveBag<InnerResultT>>(
+        internalEffect = ActuatedTaggedBagVertex.ActuationEffect(
+            sourceEffectBag = this@actuate,
+        ),
+    ) {
+        override fun wrap(
+            subject: ActuatedTaggedBagVertex<InnerResultT>,
+        ): ReactiveBag<InnerResultT> = ReactiveBag.Ordinary(
+            trackedVertex = subject,
+        )
+    }
 
 fun <ElementT, ResultT> ReactiveBag<ElementT>.actuateOf(
     selector: (ElementT) -> Effect<ResultT>,

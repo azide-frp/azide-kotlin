@@ -35,7 +35,7 @@ data object ReactiveBag_actuate_testUtils {
     )
 
     val stimulationBank_sourceEffectBagChangesCorrected = TestStimulationBank.build(
-        TestInputReactiveCollectionTag.revokedChangeScenario(
+        TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )

@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.Action
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Transactions
 
 interface TestStimulation {
@@ -10,7 +10,7 @@ interface TestStimulation {
             action: Action<*>,
         ): TestStimulation = object : TestStimulation {
             override fun stimulate(propagationContext: Transactions.PropagationContext) {
-                action.executeInternallyWrappedUp(
+                action.executeInternallyWrappedUpUnpacked(
                     propagationContext = propagationContext,
                 )
             }

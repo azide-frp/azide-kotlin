@@ -60,7 +60,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
@@ -132,9 +132,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
                 ),
                 expectedNewTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 31,
-                    TargetEffectTag.TargetEffect4 to 40,
                     TargetEffectTag.TargetEffect5 to 50,
                     TargetEffectTag.TargetEffect6 to 60,
                     TargetEffectTag.TargetEffect7 to 70,
@@ -153,7 +151,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )

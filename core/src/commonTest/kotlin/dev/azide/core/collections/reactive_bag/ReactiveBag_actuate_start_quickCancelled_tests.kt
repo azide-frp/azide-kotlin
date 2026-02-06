@@ -139,18 +139,11 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 10,
-                    TargetEffectTag.TargetEffect2 to 20,
-                    TargetEffectTag.TargetEffect3 to 30,
-                    TargetEffectTag.TargetEffect4 to 40,
-                    TargetEffectTag.TargetEffect5 to 50,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -205,15 +198,11 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
-                    TargetEffectTag.TargetEffect4 to 40,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect4 to 40,
                 ),
             ),
@@ -273,17 +262,11 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
-                    TargetEffectTag.TargetEffect4 to 40,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect2 to 21,
-                    TargetEffectTag.TargetEffect3 to 31,
                     TargetEffectTag.TargetEffect4 to 40,
                 ),
             ),
@@ -292,9 +275,9 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                 targetEffect2a.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect3a.expectIsStartedOnceAndCancelledOnce(),
                 targetEffect4.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect1b.expectIsStartedOnceButNotCancelled(),
-                targetEffect2b.expectIsStartedOnceButNotCancelled(),
-                targetEffect3b.expectIsStartedOnceButNotCancelled(),
+                targetEffect1b.expectIsNotStarted(),
+                targetEffect2b.expectIsNotStarted(),
+                targetEffect3b.expectIsNotStarted(),
             ),
         )
     }
@@ -366,22 +349,13 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
                     TargetEffectTag.TargetEffect4 to 40,
                     TargetEffectTag.TargetEffect5 to 50,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect2 to 20,
-                    TargetEffectTag.TargetEffect3 to 31,
-                    TargetEffectTag.TargetEffect4 to 40,
-                    TargetEffectTag.TargetEffect5 to 50,
-                    TargetEffectTag.TargetEffect6 to 60,
-                    TargetEffectTag.TargetEffect7 to 70,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -724,19 +698,11 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 10,
-                    TargetEffectTag.TargetEffect2 to 20,
-                    TargetEffectTag.TargetEffect3 to 30,
-                    TargetEffectTag.TargetEffect5 to 51,
-                    TargetEffectTag.TargetEffect6 to 60,
-                    TargetEffectTag.TargetEffect7 to 70,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -800,16 +766,12 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
                     TargetEffectTag.TargetEffect4 to 40,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 10,
-                    TargetEffectTag.TargetEffect2 to 20,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -877,18 +839,12 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
                     TargetEffectTag.TargetEffect4 to 40,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 10,
-                    TargetEffectTag.TargetEffect2 to 22,
-                    TargetEffectTag.TargetEffect3 to 31,
-                    TargetEffectTag.TargetEffect4 to 41,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -974,10 +930,10 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     correctedDescription = ChangeDescription(
                         addedElementByTag = mapOf(
                             TargetEffectTag.TargetEffect6 to targetEffect6,
+                            TargetEffectTag.TargetEffect7 to targetEffect7b,
                         ),
                         replacedElementByTag = mapOf(
                             TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect7 to targetEffect7b,
                         ),
                         removedTags = setOf(
                             TargetEffectTag.TargetEffect2,
@@ -986,20 +942,13 @@ class ReactiveBag_actuate_start_quickCancelled_tests {
                     ),
                 ),
             ).asTestSlottedStimulation3,
-            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
-                expectedOldTaggedContent = mapOf(
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 30,
                     TargetEffectTag.TargetEffect4 to 40,
                     TargetEffectTag.TargetEffect5 to 50,
-                ),
-                expectedNewTaggedContent = mapOf(
-                    TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect3 to 30,
-                    TargetEffectTag.TargetEffect4 to 40,
-                    TargetEffectTag.TargetEffect6 to 60,
-                    TargetEffectTag.TargetEffect7 to 71,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(

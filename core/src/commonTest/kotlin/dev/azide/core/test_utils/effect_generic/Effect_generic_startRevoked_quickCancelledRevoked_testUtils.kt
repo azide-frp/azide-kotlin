@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation5
 import dev.azide.core.test_utils.TestStimulationSlot5
@@ -25,7 +25,7 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
             )
 
             // 1. Start the effect
-            val (effectOutcome, startRevocable) = subjectEffect.start.executeInternallyWrappedUp(
+            val (effectOutcome, startRevocable) = subjectEffect.start.executeInternallyWrappedUpUnpacked(
                 propagationContext = propagationContext,
             )
 
@@ -38,7 +38,7 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
             )
 
             // 2. Cancel the effect
-            val (_: Unit, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUp(
+            val (_: Unit, cancelRevocable) = effectHandle.cancel.executeInternallyWrappedUpUnpacked(
                 propagationContext = propagationContext,
             )
 

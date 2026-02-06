@@ -1,12 +1,12 @@
 package dev.azide.core.collections.reactive_bag
 
-import dev.azide.core.Effect
-import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.actuate
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
@@ -16,9 +16,12 @@ import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
 import dev.azide.core.test_utils.collections.reactive_bag.revokingChange
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.expectIsCancelledOnce
+import dev.azide.core.test_utils.expectIsNotCancelled
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.getAndResetSingleStartRecord
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation3
@@ -84,9 +87,11 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -99,9 +104,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
             ),
         )
 
@@ -114,21 +122,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChanges_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_cancelledRevoked_sourceEffectBagChanges_addedOnly(
+            test_cancelledRevoked_sourceEffectBagChanges_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChanges_addedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChanges_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
-
-        val targetEffect4 = TestTargetEffect.pure(result = 40)
-        val targetEffect5 = TestTargetEffect.pure(result = 50)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -138,9 +143,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -157,6 +167,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -171,9 +182,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
                 targetEffect4.expectIsStartedOnceButNotCancelled(),
                 targetEffect5.expectIsStartedOnceButNotCancelled(),
             ),
@@ -188,13 +202,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChanges_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_cancelledRevoked_sourceEffectBagChanges_removedOnly(
+            test_cancelledRevoked_sourceEffectBagChanges_observed_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChanges_removedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChanges_observed_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -211,9 +225,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -230,6 +247,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -242,10 +260,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect4.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
             ),
         )
 
@@ -258,13 +280,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChanges_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_cancelledRevoked_sourceEffectBagChanges_replacedOnly(
+            test_cancelledRevoked_sourceEffectBagChanges_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChanges_replacedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChanges_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -272,9 +294,6 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3a = TestTargetEffect.pure(result = 30)
         val targetEffect4 = TestTargetEffect.pure(result = 40)
 
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect2b = TestTargetEffect.pure(result = 21)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -285,9 +304,16 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -305,6 +331,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -319,9 +346,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3a.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
                 targetEffect1b.expectIsStartedOnceButNotCancelled(),
                 targetEffect2b.expectIsStartedOnceButNotCancelled(),
                 targetEffect3b.expectIsStartedOnceButNotCancelled(),
@@ -361,11 +392,6 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3a = TestTargetEffect.pure(result = 30)
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
-        val targetEffect6 = TestTargetEffect.pure(result = 60)
-        val targetEffect7 = TestTargetEffect.pure(result = 70)
-
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -377,9 +403,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -404,6 +439,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -413,20 +449,25 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
                 expectedNewTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 31,
-                    TargetEffectTag.TargetEffect4 to 40,
                     TargetEffectTag.TargetEffect5 to 50,
                     TargetEffectTag.TargetEffect6 to 60,
                     TargetEffectTag.TargetEffect7 to 70,
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect4.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect5.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect5StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+                targetEffect1b.expectIsStartedOnceButNotCancelled(),
+                targetEffect3b.expectIsStartedOnceButNotCancelled(),
                 targetEffect6.expectIsStartedOnceButNotCancelled(),
                 targetEffect7.expectIsStartedOnceButNotCancelled(),
             ),
@@ -441,21 +482,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesRevoked_addedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_addedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
-
-        val targetEffect4 = TestTargetEffect.pure(result = 40)
-        val targetEffect5 = TestTargetEffect.pure(result = 50)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -465,9 +503,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -484,6 +527,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -491,9 +535,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
                 targetEffect4.expectIsNotStarted(),
                 targetEffect5.expectIsNotStarted(),
             ),
@@ -508,13 +555,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesRevoked_removedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_removedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -531,9 +578,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -550,6 +600,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -558,10 +609,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceButNotCancelled(),
-                targetEffect4.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
             ),
         )
 
@@ -574,22 +629,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesRevoked_replacedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_replacedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesRevoked_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
         val targetEffect2a = TestTargetEffect.pure(result = 20)
         val targetEffect3a = TestTargetEffect.pure(result = 30)
-
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect2b = TestTargetEffect.pure(result = 21)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -599,9 +650,15 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -619,6 +676,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -626,9 +684,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceButNotCancelled(),
-                targetEffect2a.expectIsStartedOnceButNotCancelled(),
-                targetEffect3a.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
                 targetEffect1b.expectIsNotStarted(),
                 targetEffect2b.expectIsNotStarted(),
                 targetEffect3b.expectIsNotStarted(),
@@ -669,11 +730,6 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
-        val targetEffect6 = TestTargetEffect.pure(result = 60)
-        val targetEffect7 = TestTargetEffect.pure(result = 70)
-
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
@@ -684,9 +740,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -711,6 +776,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -720,11 +786,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3a.expectIsStartedOnceButNotCancelled(),
-                targetEffect4.expectIsStartedOnceButNotCancelled(),
-                targetEffect5.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect5StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+                targetEffect1b.expectIsNotStarted(),
+                targetEffect3b.expectIsNotStarted(),
                 targetEffect6.expectIsNotStarted(),
                 targetEffect7.expectIsNotStarted(),
             ),
@@ -739,24 +812,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesCorrected_addedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_addedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
-
-        val targetEffect4 = TestTargetEffect.pure(result = 40)
-        val targetEffect5a = TestTargetEffect.pure(result = 50)
-        val targetEffect5b = TestTargetEffect.pure(result = 51)
-        val targetEffect6 = TestTargetEffect.pure(result = 60)
-        val targetEffect7 = TestTargetEffect.pure(result = 70)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -766,9 +833,17 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5a = TestTargetEffect.pure(result = 50)
+        val targetEffect5b = TestTargetEffect.pure(result = 51)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -793,6 +868,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -808,9 +884,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceButNotCancelled(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
                 targetEffect4.expectIsNotStarted(),
                 targetEffect5a.expectIsNotStarted(),
                 targetEffect5b.expectIsStartedOnceButNotCancelled(),
@@ -828,13 +907,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesCorrected_removedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_removedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -851,9 +930,12 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -876,6 +958,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -888,10 +971,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceButNotCancelled(),
-                targetEffect2.expectIsStartedOnceButNotCancelled(),
-                targetEffect3.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect4.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
             ),
         )
 
@@ -904,25 +991,19 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
     @Test
     fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_cancelledRevoked_sourceEffectBagChangesCorrected_replacedOnly(
+            test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_replacedOnly(
+    private fun test_cancelledRevoked_sourceEffectBagChangesCorrected_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
         val targetEffect2a = TestTargetEffect.pure(result = 20)
         val targetEffect3a = TestTargetEffect.pure(result = 30)
         val targetEffect4a = TestTargetEffect.pure(result = 40)
-
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect2b = TestTargetEffect.pure(result = 21)
-        val targetEffect2c = TestTargetEffect.pure(result = 22)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
-        val targetEffect4b = TestTargetEffect.pure(result = 41)
 
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
@@ -933,9 +1014,18 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4a.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect2c = TestTargetEffect.pure(result = 22)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect4b = TestTargetEffect.pure(result = 41)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -960,6 +1050,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -974,10 +1065,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceButNotCancelled(),
-                targetEffect2a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect4a.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4a.expectIsNotStarted(),
                 targetEffect1b.expectIsNotStarted(),
                 targetEffect2b.expectIsNotStarted(),
                 targetEffect2c.expectIsStartedOnceButNotCancelled(),
@@ -1020,12 +1115,6 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        val targetEffect1b = TestTargetEffect.pure(result = 11)
-        val targetEffect3b = TestTargetEffect.pure(result = 31)
-        val targetEffect6 = TestTargetEffect.pure(result = 60)
-        val targetEffect7a = TestTargetEffect.pure(result = 70)
-        val targetEffect7b = TestTargetEffect.pure(result = 71)
-
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedContent = mapOf(
                 TargetEffectTag.TargetEffect1 to targetEffect1a,
@@ -1036,9 +1125,19 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             ),
         )
 
-        val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
+        val subjectOutcome = sourceReactiveBag.actuate().startExternally()
 
-        val subjectOutcome = subjectEffect.startExternally()
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7a = TestTargetEffect.pure(result = 70)
+        val targetEffect7b = TestTargetEffect.pure(result = 71)
 
         Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
@@ -1076,6 +1175,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation3,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -1092,11 +1192,16 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1a.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3a.expectIsStartedOnceButNotCancelled(),
-                targetEffect4.expectIsStartedOnceButNotCancelled(),
-                targetEffect5.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect5StartRecord.expectIsCancelledOnce(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
                 targetEffect1b.expectIsStartedOnceButNotCancelled(),
                 targetEffect3b.expectIsNotStarted(),
                 targetEffect6.expectIsStartedOnceButNotCancelled(),

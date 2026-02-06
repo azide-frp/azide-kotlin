@@ -843,12 +843,12 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                     ),
                     correctedDescription = ChangeDescription(
                         addedElementByTag = mapOf(
+                            TargetEffectTag.TargetEffect6 to targetEffect6,
                             TargetEffectTag.TargetEffect7 to targetEffect7b,
                         ),
                         replacedElementByTag = mapOf(
                             TargetEffectTag.TargetEffect1 to targetEffect1b,
                             TargetEffectTag.TargetEffect3 to targetEffect3b,
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
                         ),
                         removedTags = setOf(
                             TargetEffectTag.TargetEffect2,

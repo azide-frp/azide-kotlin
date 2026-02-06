@@ -6,6 +6,7 @@ import dev.azide.core.collections.actuate
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
@@ -48,20 +49,20 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
         slottedStimulationBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
 
     @Test
-    fun test_start_quickCancelledRevoked_observed() {
-        test_start_quickCancelledRevoked(
+    fun test_start_observed() {
+        test_start(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_nonObserved() {
-        test_start_quickCancelledRevoked(
+    fun test_start_nonObserved() {
+        test_start(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
         )
     }
 
-    private fun test_start_quickCancelledRevoked(
+    private fun test_start(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -82,6 +83,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -95,22 +97,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChanges_observed_addedOnly() {
+    fun test_start_sourceEffectBagChanges_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChanges_addedOnly(
+            test_start_sourceEffectBagChanges_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChanges_addedOnly(
+    private fun test_start_sourceEffectBagChanges_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -145,6 +147,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -159,30 +162,30 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetEffect1.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect2.expectIsStartedOnceAndCancelledOnce(),
-                targetEffect3.expectIsStartedOnceAndCancelledOnce(),
+                targetEffect1.expectIsStartedOnceButNotCancelled(),
+                targetEffect2.expectIsStartedOnceButNotCancelled(),
+                targetEffect3.expectIsStartedOnceButNotCancelled(),
                 targetEffect4.expectIsStartedOnceButNotCancelled(),
                 targetEffect5.expectIsStartedOnceButNotCancelled(),
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChanges_observed_removedOnly() {
+    fun test_start_sourceEffectBagChanges_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChanges_removedOnly(
+            test_start_sourceEffectBagChanges_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChanges_removedOnly(
+    private fun test_start_sourceEffectBagChanges_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -216,6 +219,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -235,22 +239,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChanges_observed_replacedOnly() {
+    fun test_start_sourceEffectBagChanges_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChanges_replacedOnly(
+            test_start_sourceEffectBagChanges_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChanges_replacedOnly(
+    private fun test_start_sourceEffectBagChanges_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -289,6 +293,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -313,16 +318,16 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChanges_observed_mixed() {
+    fun test_start_sourceEffectBagChanges_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChanges.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChanges_mixed(
+            test_start_sourceEffectBagChanges_observed_mixed(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -330,14 +335,14 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChanges_nonObserved() {
-        test_start_quickCancelledRevoked_sourceEffectBagChanges_mixed(
+    fun test_start_sourceEffectBagChanges_nonObserved() {
+        test_start_sourceEffectBagChanges_observed_mixed(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChanges,
         )
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChanges_mixed(
+    private fun test_start_sourceEffectBagChanges_observed_mixed(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -371,13 +376,13 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 stimulationMap = sourceReactiveBag.changing(
                     tag = SourceEffectReactiveBagTag,
                     description = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
                         replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
+                            TargetEffectTag.TargetEffect1 to targetEffect1b, // updated
+                            TargetEffectTag.TargetEffect3 to targetEffect3b, // updated
+                        ),
+                        addedElementByTag = mapOf(
+                            TargetEffectTag.TargetEffect6 to targetEffect6, // added
+                            TargetEffectTag.TargetEffect7 to targetEffect7, // added
                         ),
                         removedTags = setOf(
                             TargetEffectTag.TargetEffect2,
@@ -387,6 +392,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -396,9 +402,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
                 expectedNewTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 11,
-                    TargetEffectTag.TargetEffect2 to 20,
                     TargetEffectTag.TargetEffect3 to 31,
-                    TargetEffectTag.TargetEffect4 to 40,
                     TargetEffectTag.TargetEffect5 to 50,
                     TargetEffectTag.TargetEffect6 to 60,
                     TargetEffectTag.TargetEffect7 to 70,
@@ -417,22 +421,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_observed_addedOnly() {
+    fun test_start_sourceEffectBagChangesRevoked_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_addedOnly(
+            test_start_sourceEffectBagChangesRevoked_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_addedOnly(
+    private fun test_start_sourceEffectBagChangesRevoked_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -467,6 +471,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -482,22 +487,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_observed_removedOnly() {
+    fun test_start_sourceEffectBagChangesRevoked_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_removedOnly(
+            test_start_sourceEffectBagChangesRevoked_observed_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_removedOnly(
+    private fun test_start_sourceEffectBagChangesRevoked_observed_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -531,6 +536,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -546,22 +552,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_observed_replacedOnly() {
+    fun test_start_sourceEffectBagChangesRevoked_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_replacedOnly(
+            test_start_sourceEffectBagChangesRevoked_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_replacedOnly(
+    private fun test_start_sourceEffectBagChangesRevoked_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -598,6 +604,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -614,16 +621,16 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_observed_mixed() {
+    fun test_start_sourceEffectBagChangesRevoked_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_mixed(
+            test_start_sourceEffectBagChangesRevoked_observed_mixed(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -631,14 +638,14 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_nonObserved() {
-        test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_mixed(
+    fun test_start_sourceEffectBagChangesRevoked_nonObserved() {
+        test_start_sourceEffectBagChangesRevoked_observed_mixed(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked,
         )
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesRevoked_mixed(
+    private fun test_start_sourceEffectBagChangesRevoked_observed_mixed(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -672,13 +679,13 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 stimulationMap = sourceReactiveBag.revokingChange(
                     tag = SourceEffectReactiveBagTag,
                     intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
                         replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
+                            TargetEffectTag.TargetEffect1 to targetEffect1b, // updated
+                            TargetEffectTag.TargetEffect3 to targetEffect3b, // updated
+                        ),
+                        addedElementByTag = mapOf(
+                            TargetEffectTag.TargetEffect6 to targetEffect6, // added
+                            TargetEffectTag.TargetEffect7 to targetEffect7, // added
                         ),
                         removedTags = setOf(
                             TargetEffectTag.TargetEffect2,
@@ -688,6 +695,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -709,22 +717,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_observed_addedOnly() {
+    fun test_start_sourceEffectBagChangesCorrected_observed_addedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_addedOnly(
+            test_start_sourceEffectBagChangesCorrected_observed_addedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_addedOnly(
+    private fun test_start_sourceEffectBagChangesCorrected_observed_addedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -770,6 +778,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -796,22 +805,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_observed_removedOnly() {
+    fun test_start_sourceEffectBagChangesCorrected_observed_removedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_removedOnly(
+            test_start_sourceEffectBagChangesCorrected_observed_removedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_removedOnly(
+    private fun test_start_sourceEffectBagChangesCorrected_observed_removedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
@@ -851,6 +860,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -870,22 +880,22 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_observed_replacedOnly() {
+    fun test_start_sourceEffectBagChangesCorrected_observed_replacedOnly() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_replacedOnly(
+            test_start_sourceEffectBagChangesCorrected_observed_replacedOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_replacedOnly(
+    private fun test_start_sourceEffectBagChangesCorrected_observed_replacedOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1a = TestTargetEffect.pure(result = 10)
@@ -933,6 +943,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -959,16 +970,16 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_observed_mixed() {
+    fun test_start_sourceEffectBagChangesCorrected_observed_mixed() {
         slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
-            test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_mixed(
+            test_start_sourceEffectBagChangesCorrected_mixed(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = it,
             )
@@ -976,14 +987,14 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
     }
 
     @Test
-    fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_nonObserved() {
-        test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_mixed(
+    fun test_start_sourceEffectBagChangesCorrected_nonObserved() {
+        test_start_sourceEffectBagChangesCorrected_mixed(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected,
         )
     }
 
-    private fun test_start_quickCancelledRevoked_sourceEffectBagChangesCorrected_mixed(
+    private fun test_start_sourceEffectBagChangesCorrected_mixed(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
@@ -1018,13 +1029,13 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 stimulationMap = sourceReactiveBag.correctingChange(
                     tag = SourceEffectReactiveBagTag,
                     intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6, // not corrected
-                            TargetEffectTag.TargetEffect7 to targetEffect7a, // corrected: added differently
-                        ),
                         replacedElementByTag = mapOf(
                             TargetEffectTag.TargetEffect1 to targetEffect1b, // not corrected
                             TargetEffectTag.TargetEffect3 to targetEffect3b, // corrected: not replaced
+                        ),
+                        addedElementByTag = mapOf(
+                            TargetEffectTag.TargetEffect6 to targetEffect6, // not corrected
+                            TargetEffectTag.TargetEffect7 to targetEffect7a, // corrected: added differently
                         ),
                         removedTags = setOf(
                             TargetEffectTag.TargetEffect2, // not corrected
@@ -1032,11 +1043,11 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                         ),
                     ),
                     correctedDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                        ),
                         replacedElementByTag = mapOf(
                             TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        ),
+                        addedElementByTag = mapOf(
+                            TargetEffectTag.TargetEffect6 to targetEffect6,
                             TargetEffectTag.TargetEffect7 to targetEffect7b,
                         ),
                         removedTags = setOf(
@@ -1047,6 +1058,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
                 ),
             ).asTestSlottedStimulation4,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
                     TargetEffectTag.TargetEffect2 to 20,
@@ -1076,7 +1088,7 @@ class ReactiveBag_actuate_start_quickCancelledRevoked_tests {
             ),
         )
 
-        ReactiveBag_actuate_testUtils.verifyEffectNotOngoing(
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
             sourceReactiveBag = sourceReactiveBag,
             subjectReactiveBag = subjectReactiveBag,
         )

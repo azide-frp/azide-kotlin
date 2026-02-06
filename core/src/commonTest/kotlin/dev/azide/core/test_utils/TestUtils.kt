@@ -3,7 +3,7 @@ package dev.azide.core.test_utils
 import dev.azide.core.Action
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Transactions
 import dev.azide.core.pullInternallyWrappedUp
 
@@ -49,7 +49,7 @@ internal object TestUtils {
             propagationContext = propagationContext,
         )
 
-        val (result, _) = action.executeInternallyWrappedUp(
+        val (result, _) = action.executeInternallyWrappedUpUnpacked(
             propagationContext = propagationContext,
         )
 
