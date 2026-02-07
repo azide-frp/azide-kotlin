@@ -17,7 +17,7 @@ data object EventStream_executeEach_testUtils {
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.Companion.of(result = -1)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = subjectEventStream,

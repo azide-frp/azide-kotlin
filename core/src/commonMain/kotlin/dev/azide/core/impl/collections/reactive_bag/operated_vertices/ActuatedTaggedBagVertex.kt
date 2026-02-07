@@ -25,7 +25,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
     initialInnerEffectOutcomes: TaggedBag<Effect.Outcome<InnerResultT>>,
 ) : AbstractStatefulTrackedTaggedBagVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
-    initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.Companion.empty()) { it.result },
+    initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) { it.result },
 ), InternalEffect.Subject, Vertex.BoundListener, CommittableVertex {
     class ActuationEffect<InnerResultT>(
         private val sourceEffectBag: ReactiveBag<Effect<InnerResultT>>,
@@ -77,7 +77,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         get() = sourceEffectBag.trackedVertex
 
     private val stableInnerEffectHandles: MutableTaggedBag<Effect.Handle> =
-        initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.Companion.empty()) {
+        initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) {
             it.handle
         }
 
