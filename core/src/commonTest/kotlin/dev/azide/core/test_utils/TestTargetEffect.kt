@@ -24,18 +24,15 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
         val wasRevoked: Boolean
             get() = executionRecord.wasRevoked
 
-        val outcome: Outcome<ResultT>
-            get() = executionRecord.result
-
-        val result: ResultT
-            get() = outcome.result
+        private val handle: Handle
+            get() = executionRecord.result.handle
 
         fun resetCancellationRecords() {
-            outcome.handle.cancelRecorder.resetExecutionRecords()
+            handle.cancelRecorder.resetExecutionRecords()
         }
 
         fun getAndResetCancellationRecords(): List<TestTargetActionRecorder.ExecutionRecord<Unit>> =
-            outcome.handle.cancelRecorder.getAndResetExecutionRecords()
+            handle.cancelRecorder.getAndResetExecutionRecords()
     }
 
     companion object {
