@@ -1,11 +1,15 @@
 package dev.azide.core
 
+import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
+import dev.azide.core.impl.cell.operated_vertices.ActuatedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
 import dev.azide.core.impl.cell.operated_vertices.MappedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
+import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.event_stream.operated_vertices.DivertedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.UpdatedValuesEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.ValuesEventStreamVertex
@@ -233,81 +237,9 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
 }
 
 @JvmName("actuateEffect")
-fun <ResultT> Cell<Effect<ResultT>>.actuate(): Effect<Cell<ResultT>> = object : Effect<Cell<ResultT>> {
-    override val start = run {
-        // Define the starting action of the effect
-
-        val newInnerEffects: EventStream<Effect<ResultT>> = this@actuate.updatedValues
-
-        this@actuate.sampling.joinOf { initialInnerEffect: Effect<ResultT> ->
-            // Start the initial effect
-            initialInnerEffect.start.joinOf { initialEffectOutcome ->
-                val initialResult: ResultT = initialEffectOutcome.result
-                val initialEffectHandle: Effect.Handle = initialEffectOutcome.handle
-
-                EventStream.loopedInAction { loopedNewInnerEffectHandles: EventStream<Effect.Handle> ->
-                    // Hold the handles to the new started effects, as we need the handle to the currently active
-                    // effect to cancel it later
-                    loopedNewInnerEffectHandles.holding(
-                        initialValue = initialEffectHandle,
-                    ).joinOf { currentInnerEffectHandle: Cell<Effect.Handle> ->
-                        // Define the transition effect that cancels the old effect and starts the new one whenever a
-                        // new effect arrives
-                        val transitionEffect: Effect<EventStream<Effect.Outcome<ResultT>>> =
-                            newInnerEffects.executeEachOf { newInnerEffect: Effect<ResultT> ->
-                                currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
-                                    // Cancel the old effect...
-                                    currentInnerEffectHandleNow.cancel.joinOf {
-                                        // ...and immediately start the new one
-                                        newInnerEffect.start
-                                    }
-
-                                    // Note that in the corner case, if the source effect cell updates at the moment
-                                    // the outer effect starts, these three actions happen simultaneously: the initial
-                                    // effect starts, is immediately cancelled, and the updated effect starts.
-                                }
-                            }
-
-                        // Start the transition effect
-                        transitionEffect.start.joinOf { transitionEffectOutcome ->
-                            val newInnerEffectOutcomes: EventStream<Effect.Outcome<ResultT>> =
-                                transitionEffectOutcome.result
-                            val transitionEffectHandle = transitionEffectOutcome.handle
-
-                            val newInnerEffectResults = newInnerEffectOutcomes.map { it.result }
-                            val newInnerEffectHandles = newInnerEffectOutcomes.map { it.handle }
-
-                            val cancelCurrentInnerEffectTrigger: Trigger =
-                                currentInnerEffectHandle.sampling.joinOf { currentInnerEffectHandleNow: Effect.Handle ->
-                                    currentInnerEffectHandleNow.cancel
-                                }
-
-                            // Build the handle to the outer effect (the one we're defining)
-                            Effect.Handle.of(
-                                cancelOnce = Triggers.combine(
-                                    // Canceling the transition effect...
-                                    transitionEffectHandle.cancel,
-                                    // ...and the currently active inner effect
-                                    cancelCurrentInnerEffectTrigger,
-                                ),
-                            ).joinOf { outerEffectHandle ->
-                                newInnerEffectResults.holding(
-                                    initialValue = initialResult,
-                                ).map { outerEffectResult: Cell<ResultT> ->
-                                    LoopClosure(
-                                        // Return the outer effect's result with the corresponding handle
-                                        result = Effect.Outcome.of(
-                                            result = outerEffectResult,
-                                            handle = outerEffectHandle,
-                                        ),
-                                        loopedValue = newInnerEffectHandles, // Close the loop
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+fun <InnerResultT> Cell<Effect<InnerResultT>>.actuate(): Effect<Cell<InnerResultT>> =
+    ExternalizedEffect<Cell<InnerResultT>>(
+        internalEffect = ActuatedCellVertex.ActuationEffect(
+            sourceEffectCell = this@actuate,
+        ),
+    )
