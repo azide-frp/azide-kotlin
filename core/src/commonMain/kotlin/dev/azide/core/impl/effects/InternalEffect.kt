@@ -18,3 +18,5 @@ interface InternalEffect<ResultT> {
         wrapUpContext: Transactions.WrapUpContext,
     ): RevocableOutcome<ResultT>
 }
+
+typealias InternalSchedule = InternalEffect<Unit>

@@ -41,3 +41,5 @@ class ExternalizedEffect<ResultT>(
         }
     }
 }
+
+typealias ExternalizedSchedule = ExternalizedEffect<Unit>
