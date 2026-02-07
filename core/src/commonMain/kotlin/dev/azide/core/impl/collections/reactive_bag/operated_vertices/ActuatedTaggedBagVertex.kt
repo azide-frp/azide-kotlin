@@ -49,75 +49,85 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
             val initialInnerEffectOutcomes: TaggedBag<Effect.Outcome<InnerResultT>> =
                 initialInnerEffectStartOutcomes.mapKeepingTags { it.result }
 
-            val subjectVertex = ActuatedTaggedBagVertex(
-                wrapUpContext = wrapUpContext,
-                sourceEffectBag = sourceEffectBag,
-                initialInnerEffectOutcomes = initialInnerEffectOutcomes,
-            )
+            return with(
+                ActuatedTaggedBagVertex(
+                    wrapUpContext = wrapUpContext,
+                    sourceEffectBag = sourceEffectBag,
+                    initialInnerEffectOutcomes = initialInnerEffectOutcomes,
+                ),
+            ) {
+                object : InternalEffect.RevocableOutcome<ReactiveBag<InnerResultT>> {
+                    override val result = ReactiveBag.Ordinary(
+                        trackedVertex = this@with,
+                    )
 
-            return object : InternalEffect.RevocableOutcome<ReactiveBag<InnerResultT>> {
-                override val result = ReactiveBag.Ordinary(
-                    trackedVertex = subjectVertex,
-                )
+                    /**
+                     * Cancel the reactive bag actuation effect.
+                     */
+                    override fun cancelInternally(
+                        propagationContext: Transactions.PropagationContext,
+                        wrapUpContext: Transactions.WrapUpContext,
+                    ): Revocable {
+                        shutDown()
 
-                /**
-                 * Cancel the reactive bag actuation effect.
-                 */
-                override fun cancelInternally(
-                    propagationContext: Transactions.PropagationContext,
-                    wrapUpContext: Transactions.WrapUpContext,
-                ): Revocable = with(subjectVertex) {
-                    shutDown()
-
-                    // Revoke the ongoing change (if any)
-                    if (ongoingChange != null) {
-                        exposeChangeNotifyingListeners(
-                            propagationContext = propagationContext,
-                            change = null,
-                        )
-                    }
-
-                    // Cancel all stable inner effects
-                    val stableInnerEffectCancellationRevocables = stableInnerEffectHandles.map { innerEffectHandle ->
-                        innerEffectHandle.cancel.executeInternally(
-                            propagationContext = propagationContext,
-                            wrapUpContext = wrapUpContext,
-                        ).revocable
-                    }
-
-                    return object : Revocable {
-                        /**
-                         * Revoke the cancellation of the reactive bag actuation effect.
-                         */
-                        override fun revoke() {
-                            if (internalState == InternalState.Disposed) {
-                                return
-                            }
-
-                            // Revoke the cancellation of all stable inner effects
-                            stableInnerEffectCancellationRevocables.forEach { stableInnerEffectCancellationOutcome ->
-                                stableInnerEffectCancellationOutcome.revoke()
-                            }
-
-                            // Re-initialize the effect
-                            val startUpChange = startUp(
-                                propagationContext = propagationContext,
-                            )
-
+                        // Revoke the ongoing change (if any)
+                        if (ongoingChange != null) {
                             exposeChangeNotifyingListeners(
                                 propagationContext = propagationContext,
-                                change = startUpChange,
+                                change = null,
                             )
                         }
-                    }
-                }
 
-                override fun revoke() {
-                    initialInnerEffectStartOutcomes.forEach { initialInnerEffectStartOutcome ->
-                        initialInnerEffectStartOutcome.revocable.revoke()
+                        // Cancel all stable inner effects
+                        val stableInnerEffectCancellationRevocables =
+                            stableInnerEffectHandles.map { innerEffectHandle ->
+                                innerEffectHandle.cancel.executeInternally(
+                                    propagationContext = propagationContext,
+                                    wrapUpContext = wrapUpContext,
+                                ).revocable
+                            }
+
+                        return object : Revocable {
+                            /**
+                             * Revoke the cancellation of the reactive bag actuation effect.
+                             */
+                            override fun revoke() {
+                                if (internalState == InternalState.Disposed) {
+                                    return
+                                }
+
+                                // Revoke the cancellation of all stable inner effects
+                                stableInnerEffectCancellationRevocables.forEach { stableInnerEffectCancellationOutcome ->
+                                    stableInnerEffectCancellationOutcome.revoke()
+                                }
+
+                                // Re-initialize the effect
+                                val startUpChange = startUp(
+                                    propagationContext = propagationContext,
+                                )
+
+                                exposeChangeNotifyingListeners(
+                                    propagationContext = propagationContext,
+                                    change = startUpChange,
+                                )
+                            }
+                        }
                     }
 
-                    subjectVertex.dispose()
+                    /**
+                     * Revoke the start of the actuation effect.
+                     */
+                    override fun revoke() {
+                        initialInnerEffectStartOutcomes.forEach { initialInnerEffectStartOutcome ->
+                            initialInnerEffectStartOutcome.revocable.revoke()
+                        }
+
+                        if (internalState == InternalState.StartedUp) {
+                            shutDown()
+                        }
+
+                        internalState = InternalState.Disposed
+                    }
                 }
             }
         }
@@ -284,8 +294,6 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         )
     }
 
-
-
     override fun commit() {
         if (internalState != InternalState.StartedUp) {
             return
@@ -315,14 +323,6 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
     ): TaggedBagChange<InnerResultT>? = startUp(
         propagationContext = propagationContext,
     )
-
-    private fun dispose() {
-        if (internalState == InternalState.StartedUp) {
-            shutDown()
-        }
-
-        internalState = InternalState.Disposed
-    }
 
     private fun startUp(
         propagationContext: Transactions.PropagationContext,

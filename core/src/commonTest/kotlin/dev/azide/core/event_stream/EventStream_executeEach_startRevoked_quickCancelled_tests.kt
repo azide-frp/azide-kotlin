@@ -17,7 +17,7 @@ import dev.azide.core.test_utils.expectIsNotExecuted
 import kotlin.test.Test
 
 @Suppress("ClassName")
-class EventStream_executeEach_startRevoked_quickCancelled_quickCancelled_tests {
+class EventStream_executeEach_startRevoked_quickCancelled_tests {
     @Test
     fun test_startRevoked_quickCancelled() {
         val sourceEventStream = TestInputEventStream<Action<Int>>()
