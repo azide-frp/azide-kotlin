@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils.effect_cell
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.ExpectedCellValueTransition
+import dev.azide.core.test_utils.cell.ExpectedCellValueTransition
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils

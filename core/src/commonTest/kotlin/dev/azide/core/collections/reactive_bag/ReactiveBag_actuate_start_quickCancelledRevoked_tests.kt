@@ -7,7 +7,7 @@ import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.Sou
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
+import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag.ChangeDescription

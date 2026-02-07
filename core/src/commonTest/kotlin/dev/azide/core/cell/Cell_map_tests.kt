@@ -1,7 +1,7 @@
 package dev.azide.core.cell
 
 import dev.azide.core.map
-import dev.azide.core.test_utils.Cell_expectations_testUtils
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2

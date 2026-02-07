@@ -1,12 +1,13 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.collections.reactive_bag
 
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
+import kotlin.collections.iterator
 
 @Suppress("ClassName")
 object TaggedBagChange_testUtils {
     /**
-     * Compute the [TaggedBagChange] that would transform a tagged bag with [oldTaggedContent] into a tagged bag ith
+     * Compute the [dev.azide.core.impl.collections.reactive_bag.TaggedBagChange] that would transform a tagged bag with [oldTaggedContent] into a tagged bag ith
      * [newTaggedContent], or return `null` if no change would be needed (i.e. if the expected old and new tagged
      * content are equal).
      */

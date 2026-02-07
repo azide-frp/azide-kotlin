@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.collections.reactive_bag
 
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
@@ -8,7 +8,11 @@ import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.ExpectedTestSubjectState
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.collections.reactive_bag.TaggedBagChange_testUtils
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

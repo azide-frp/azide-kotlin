@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
@@ -6,7 +6,10 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.ExpectedTestSubjectState
+import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
