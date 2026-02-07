@@ -72,17 +72,11 @@ fun <ElementT, ResultT> ReactiveBag<ElementT>.executeEveryOf(
 ): Effect<ReactiveBag<ResultT>> = map(selector).executeEvery()
 
 fun <InnerResultT> ReactiveBag<Effect<InnerResultT>>.actuate(): Effect<ReactiveBag<InnerResultT>> =
-    object : AbstractExternalizedEffect<ActuatedTaggedBagVertex<InnerResultT>, ReactiveBag<InnerResultT>>(
+    object : AbstractExternalizedEffect<ReactiveBag<InnerResultT>>(
         internalEffect = ActuatedTaggedBagVertex.ActuationEffect(
             sourceEffectBag = this@actuate,
         ),
-    ) {
-        override fun wrap(
-            subject: ActuatedTaggedBagVertex<InnerResultT>,
-        ): ReactiveBag<InnerResultT> = ReactiveBag.Ordinary(
-            trackedVertex = subject,
-        )
-    }
+    ) {}
 
 fun <ElementT, ResultT> ReactiveBag<ElementT>.actuateOf(
     selector: (ElementT) -> Effect<ResultT>,
