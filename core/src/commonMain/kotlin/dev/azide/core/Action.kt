@@ -146,6 +146,17 @@ interface Action<out ResultT> {
 
 fun <ResultT> Action<ResultT>.executeInternallyWrappedUp(
     propagationContext: Transactions.PropagationContext,
+): Action.Outcome<ResultT> = Transactions.WrapUpContext.wrapUp(
+    propagationContext,
+) { wrapUpContext ->
+    executeInternally(
+        propagationContext = propagationContext,
+        wrapUpContext = wrapUpContext,
+    )
+}
+
+fun <ResultT> Action<ResultT>.executeInternallyWrappedUpUnpacked(
+    propagationContext: Transactions.PropagationContext,
 ): Pair<ResultT, Revocable> = Transactions.WrapUpContext.wrapUp(
     propagationContext,
 ) { wrapUpContext ->
@@ -316,7 +327,7 @@ fun <ResultT, TransformedResultT> Action<ResultT>.joinOf(
 }
 
 fun <ResultT> Action<ResultT>.executeExternally(): ResultT = Transactions.executeWithResult { propagationContext ->
-    val (result: ResultT, _) = executeInternallyWrappedUp(
+    val (result: ResultT, _) = executeInternallyWrappedUpUnpacked(
         propagationContext = propagationContext,
     )
 

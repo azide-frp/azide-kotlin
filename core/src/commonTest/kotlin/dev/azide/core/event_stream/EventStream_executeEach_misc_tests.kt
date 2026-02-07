@@ -7,7 +7,7 @@ import dev.azide.core.executeEachOf
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.TransactionTestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.stimulateForTesting
 import kotlin.test.Test
 import kotlin.test.assertFails
@@ -17,7 +17,7 @@ import kotlin.test.assertIs
 class EventStream_executeEach_misc_tests {
     @Test
     fun test_executeEach_selfCancelling() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect = sourceEventStream.executeEach()
 

@@ -3,6 +3,8 @@ package dev.azide.core.impl.collections.reactive_collection
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
+import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeCellVertex
@@ -30,6 +32,8 @@ typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Col
 typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
 
 typealias TrackedListVertex<ElementT> = TrackedGenericCollectionVertex<List<ElementT>, ListChange<ElementT>>
+
+typealias TrackedTaggedBagVertex<ElementT> = TrackedGenericCollectionVertex<TaggedBag<ElementT>, TaggedBagChange<ElementT>>
 
 fun <ContentT : Collection<*>, ChangeT : CollectionChange<*>> TrackedGenericCollectionVertex<ContentT, ChangeT>.buildSizeVertex(): CellVertex<Int> =
     TrackedCollectionSizeCellVertex(

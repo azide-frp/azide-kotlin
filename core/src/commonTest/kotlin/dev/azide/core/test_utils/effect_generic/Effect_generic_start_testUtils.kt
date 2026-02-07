@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
@@ -19,44 +19,42 @@ data object Effect_generic_start_testUtils {
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
-    ) {
-        Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
-            expectedTargetImpact = expectedTargetImpact,
-            expectedNewState = expectedSubjectTransition.expectedNewState,
-        ) { propagationContext ->
-            // 0. Pre-stimulation
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot0,
-            )
+    ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
+        expectedTargetImpact = expectedTargetImpact,
+        expectedNewState = expectedSubjectTransition.expectedNewState,
+    ) { propagationContext ->
+        // 0. Pre-stimulation
+        slottedInputStimulation?.stimulate(
+            propagationContext = propagationContext,
+            slot = TestStimulationSlot2.Slot0,
+        )
 
-            // 1. Start the effect
-            val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+        // 1. Start the effect
+        val (effectOutcome, _: Revocable) = subjectEffect.start.executeInternallyWrappedUpUnpacked(
+            propagationContext = propagationContext,
+        )
 
-            val subject = effectOutcome.result
+        val subject = effectOutcome.result
 
-            slottedInputStimulation?.stimulate(
-                propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot1,
-            )
+        slottedInputStimulation?.stimulate(
+            propagationContext = propagationContext,
+            slot = TestStimulationSlot2.Slot1,
+        )
 
-            val subjectReactionVerifier: ExpectedTestSubjectReaction.TestSubjectReactionVerifier? =
-                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
-                    propagationContext = propagationContext,
-                    subject = subject,
-                    strategy = subjectPerceptionStrategy,
-                )
-
-            expectedSubjectTransition.expectedOldState.verifyStableState(
+        val subjectReactionVerifier: ExpectedTestSubjectReaction.TestSubjectReactionVerifier? =
+            expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
                 propagationContext = propagationContext,
                 subject = subject,
+                strategy = subjectPerceptionStrategy,
             )
 
-            subjectReactionVerifier?.verifyReactionUninstalling()
+        expectedSubjectTransition.expectedOldState.verifyStableState(
+            propagationContext = propagationContext,
+            subject = subject,
+        )
 
-            subject
-        }
+        subjectReactionVerifier?.verifyReactionUninstalling()
+
+        subject
     }
 }

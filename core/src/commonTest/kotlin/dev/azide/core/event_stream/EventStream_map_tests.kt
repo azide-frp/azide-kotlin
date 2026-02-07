@@ -1,15 +1,16 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.map
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_map_tests {
     @Test
-    fun test_emission() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+    fun test_sourceEmits() {
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
@@ -23,14 +24,14 @@ class EventStream_map_tests {
     }
 
     @Test
-    fun test_emission_revoked() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+    fun test_sourceEmits_revoked() {
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -40,14 +41,14 @@ class EventStream_map_tests {
     }
 
     @Test
-    fun test_emission_corrected() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+    fun test_sourceEmits_corrected() {
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),

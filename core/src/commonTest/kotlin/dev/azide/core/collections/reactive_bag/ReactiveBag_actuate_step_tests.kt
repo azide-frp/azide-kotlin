@@ -1,0 +1,973 @@
+package dev.azide.core.collections.reactive_bag
+
+import dev.azide.core.collections.actuate
+import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
+import dev.azide.core.startExternally
+import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.ReactiveBag_expectations_testUtils
+import dev.azide.core.test_utils.TestTargetEffect
+import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
+import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag.ChangeDescription
+import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
+import dev.azide.core.test_utils.collections.reactive_bag.revokingChange
+import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_step_testUtils
+import dev.azide.core.test_utils.expectIsCancelledOnce
+import dev.azide.core.test_utils.expectIsNotCancelled
+import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
+import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.getAndResetSingleStartRecord
+import kotlin.test.Test
+
+@Suppress("ClassName")
+class ReactiveBag_actuate_step_tests {
+    @Test
+    fun test_step_sourceEffectBagChanges_observed_addedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.change(
+                description = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4,
+                        TargetEffectTag.TargetEffect5 to targetEffect5,
+                    ),
+                ),
+            ),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                    TargetEffectTag.TargetEffect5 to 50,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4.expectIsStartedOnceButNotCancelled(),
+                targetEffect5.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChanges_observed_removedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.change(
+                description = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1,
+                        TargetEffectTag.TargetEffect3,
+                    ),
+                ),
+            ),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChanges_observed_replacedOnly() {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2a = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2a,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.change(
+                description = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect2 to targetEffect2b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                ),
+            ),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 11,
+                    TargetEffectTag.TargetEffect2 to 21,
+                    TargetEffectTag.TargetEffect3 to 31,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect1b.expectIsStartedOnceButNotCancelled(),
+                targetEffect2b.expectIsStartedOnceButNotCancelled(),
+                targetEffect3b.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChanges_observed_mixed() {
+        test_step_sourceEffectBagChanges_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChanges_nonObserved() {
+        test_step_sourceEffectBagChanges_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_step_sourceEffectBagChanges_mixed(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+                TargetEffectTag.TargetEffect5 to targetEffect5,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceReactiveBag.change(
+                description = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b, // updated
+                        TargetEffectTag.TargetEffect3 to targetEffect3b, // updated
+                    ),
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6, // added
+                        TargetEffectTag.TargetEffect7 to targetEffect7, // added
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect4,
+                    ),
+                ),
+            ),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                    TargetEffectTag.TargetEffect5 to 50,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 11,
+                    TargetEffectTag.TargetEffect3 to 31,
+                    TargetEffectTag.TargetEffect5 to 50,
+                    TargetEffectTag.TargetEffect6 to 60,
+                    TargetEffectTag.TargetEffect7 to 70,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect5StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+                targetEffect1b.expectIsStartedOnceButNotCancelled(),
+                targetEffect3b.expectIsStartedOnceButNotCancelled(),
+                targetEffect6.expectIsStartedOnceButNotCancelled(),
+                targetEffect7.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesRevoked_observed_addedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4,
+                        TargetEffectTag.TargetEffect5 to targetEffect5,
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesRevoked_observed_removedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                intermediateDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1,
+                        TargetEffectTag.TargetEffect3,
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesRevoked_observed_replacedOnly() {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2a = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2a,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                intermediateDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect2 to targetEffect2b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect1b.expectIsNotStarted(),
+                targetEffect2b.expectIsNotStarted(),
+                targetEffect3b.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesRevoked_observed_mixed() {
+        test_step_sourceEffectBagChangesRevoked_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesRevoked_nonObserved() {
+        test_step_sourceEffectBagChangesRevoked_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_step_sourceEffectBagChangesRevoked_mixed(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+                TargetEffectTag.TargetEffect5 to targetEffect5,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect4,
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                    TargetEffectTag.TargetEffect5 to 50,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect5StartRecord.expectIsNotCancelled(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+                targetEffect1b.expectIsNotStarted(),
+                targetEffect3b.expectIsNotStarted(),
+                targetEffect6.expectIsNotStarted(),
+                targetEffect7.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesCorrected_observed_addedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5a = TestTargetEffect.pure(result = 50)
+        val targetEffect5b = TestTargetEffect.pure(result = 51)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7 = TestTargetEffect.pure(result = 70)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4, // corrected: not added
+                        TargetEffectTag.TargetEffect5 to targetEffect5a, // corrected: added differently
+                        TargetEffectTag.TargetEffect7 to targetEffect7, // not corrected
+                    ),
+                ),
+                correctedDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect5 to targetEffect5b,
+                        TargetEffectTag.TargetEffect6 to targetEffect6, // (not mentioned before)
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect5 to 51,
+                    TargetEffectTag.TargetEffect6 to 60,
+                    TargetEffectTag.TargetEffect7 to 70,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5a.expectIsNotStarted(),
+                targetEffect5b.expectIsStartedOnceButNotCancelled(),
+                targetEffect6.expectIsStartedOnceButNotCancelled(),
+                targetEffect7.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesCorrected_observed_removedOnly() {
+        val targetEffect1 = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3 = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                intermediateDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1, // corrected: not removed
+                        TargetEffectTag.TargetEffect3, // not corrected
+                    ),
+                ),
+                correctedDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect3,
+                        TargetEffectTag.TargetEffect4, // (not mentioned before)
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsNotCancelled(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect1.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesCorrected_observed_replacedOnly() {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2a = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+        val targetEffect4a = TestTargetEffect.pure(result = 40)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2a,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+                TargetEffectTag.TargetEffect4 to targetEffect4a,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2a.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4a.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect2b = TestTargetEffect.pure(result = 21)
+        val targetEffect2c = TestTargetEffect.pure(result = 22)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect4b = TestTargetEffect.pure(result = 41)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                intermediateDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b, // corrected: not replaced
+                        TargetEffectTag.TargetEffect2 to targetEffect2b, // corrected: replaced differently
+                        TargetEffectTag.TargetEffect3 to targetEffect3b, // not corrected
+                    ),
+                ),
+                correctedDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect2 to targetEffect2c,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                        TargetEffectTag.TargetEffect4 to targetEffect4b, // (not mentioned before)
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 22,
+                    TargetEffectTag.TargetEffect3 to 31,
+                    TargetEffectTag.TargetEffect4 to 41,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsNotCancelled(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsCancelledOnce(),
+                targetEffect4StartRecord.expectIsCancelledOnce(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2a.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4a.expectIsNotStarted(),
+                targetEffect1b.expectIsNotStarted(),
+                targetEffect2b.expectIsNotStarted(),
+                targetEffect2c.expectIsStartedOnceButNotCancelled(),
+                targetEffect3b.expectIsStartedOnceButNotCancelled(),
+                targetEffect4b.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesCorrected_observed_mixed() {
+        test_step_sourceEffectBagChangesCorrected_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        )
+    }
+
+    @Test
+    fun test_step_sourceEffectBagChangesCorrected_nonObserved() {
+        test_step_sourceEffectBagChangesCorrected_mixed(
+            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
+        )
+    }
+
+    private fun test_step_sourceEffectBagChangesCorrected_mixed(
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+    ) {
+        val targetEffect1a = TestTargetEffect.pure(result = 10)
+        val targetEffect2 = TestTargetEffect.pure(result = 20)
+        val targetEffect3a = TestTargetEffect.pure(result = 30)
+        val targetEffect4 = TestTargetEffect.pure(result = 40)
+        val targetEffect5 = TestTargetEffect.pure(result = 50)
+
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedContent = mapOf(
+                TargetEffectTag.TargetEffect1 to targetEffect1a,
+                TargetEffectTag.TargetEffect2 to targetEffect2,
+                TargetEffectTag.TargetEffect3 to targetEffect3a,
+                TargetEffectTag.TargetEffect4 to targetEffect4,
+                TargetEffectTag.TargetEffect5 to targetEffect5,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.actuate().startExternally().result
+
+        val targetEffect1StartRecord = targetEffect1a.getAndResetSingleStartRecord()
+        val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
+        val targetEffect3StartRecord = targetEffect3a.getAndResetSingleStartRecord()
+        val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
+        val targetEffect5StartRecord = targetEffect5.getAndResetSingleStartRecord()
+
+        val targetEffect1b = TestTargetEffect.pure(result = 11)
+        val targetEffect3b = TestTargetEffect.pure(result = 31)
+        val targetEffect6 = TestTargetEffect.pure(result = 60)
+        val targetEffect7a = TestTargetEffect.pure(result = 70)
+        val targetEffect7b = TestTargetEffect.pure(result = 71)
+
+        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6, // not corrected
+                        TargetEffectTag.TargetEffect7 to targetEffect7a, // corrected: added differently
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b, // not corrected
+                        TargetEffectTag.TargetEffect3 to targetEffect3b, // corrected: not replaced
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2, // not corrected
+                        TargetEffectTag.TargetEffect4, // corrected: not removed
+                    ),
+                ),
+                correctedDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                    ),
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect5, // (not mentioned before)
+                    ),
+                ),
+            ).joint(),
+            expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 10,
+                    TargetEffectTag.TargetEffect2 to 20,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                    TargetEffectTag.TargetEffect5 to 50,
+                ),
+                expectedNewTaggedContent = mapOf(
+                    TargetEffectTag.TargetEffect1 to 11,
+                    TargetEffectTag.TargetEffect3 to 30,
+                    TargetEffectTag.TargetEffect4 to 40,
+                    TargetEffectTag.TargetEffect6 to 60,
+                    TargetEffectTag.TargetEffect7 to 71,
+                ),
+            ),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetEffect1StartRecord.expectIsCancelledOnce(),
+                targetEffect2StartRecord.expectIsCancelledOnce(),
+                targetEffect3StartRecord.expectIsNotCancelled(),
+                targetEffect4StartRecord.expectIsNotCancelled(),
+                targetEffect5StartRecord.expectIsCancelledOnce(),
+                targetEffect1a.expectIsNotStarted(),
+                targetEffect2.expectIsNotStarted(),
+                targetEffect3a.expectIsNotStarted(),
+                targetEffect4.expectIsNotStarted(),
+                targetEffect5.expectIsNotStarted(),
+                targetEffect1b.expectIsStartedOnceButNotCancelled(),
+                targetEffect3b.expectIsNotStarted(),
+                targetEffect6.expectIsStartedOnceButNotCancelled(),
+                targetEffect7a.expectIsNotStarted(),
+                targetEffect7b.expectIsStartedOnceButNotCancelled(),
+            ),
+        )
+
+        ReactiveBag_actuate_testUtils.verifyEffectOngoing(
+            sourceReactiveBag = sourceReactiveBag,
+            subjectReactiveBag = subjectReactiveBag,
+        )
+    }
+}

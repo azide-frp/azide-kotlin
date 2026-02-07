@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
@@ -47,7 +47,7 @@ data object Effect_generic_cancelledRevoked_testUtils {
             )
 
             // 1. Cancel the effect
-            val (_: Unit, cancelRevocable: Revocable) = subjectHandle.cancel.executeInternallyWrappedUp(
+            val (_: Unit, cancelRevocable: Revocable) = subjectHandle.cancel.executeInternallyWrappedUpUnpacked(
                 propagationContext = propagationContext,
             )
 

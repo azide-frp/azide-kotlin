@@ -2,7 +2,7 @@ package dev.azide.core.collections.reactive_collection
 
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.collections.sum
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import kotlin.test.Test
@@ -66,7 +66,7 @@ class ReactiveCollection_sum_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(5, 6),
                     elementsToRemove = setOf(2, 3),
@@ -87,7 +87,7 @@ class ReactiveCollection_sum_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(5, 6),
                     elementsToRemove = setOf(2, 3),

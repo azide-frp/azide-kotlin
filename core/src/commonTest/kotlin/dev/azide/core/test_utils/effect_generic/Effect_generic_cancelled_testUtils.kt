@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
+import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
@@ -49,7 +49,7 @@ data object Effect_generic_cancelled_testUtils {
 
             // 1. Cancel the effect
             repeat(cancelCount) {
-                val (_: Unit, _: Revocable) = subjectEffectHandle.cancel.executeInternallyWrappedUp(
+                val (_: Unit, _: Revocable) = subjectEffectHandle.cancel.executeInternallyWrappedUpUnpacked(
                     propagationContext = propagationContext,
                 )
             }

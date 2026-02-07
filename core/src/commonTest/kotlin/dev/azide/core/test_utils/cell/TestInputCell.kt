@@ -6,7 +6,8 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -62,7 +63,7 @@ class TestInputCell<ValueT>(
 
     fun update(
         newValue: ValueT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -75,7 +76,7 @@ class TestInputCell<ValueT>(
 
     fun correctUpdate(
         correctedNewValue: ValueT,
-    ): TestInputStimulation = object : TestInputStimulation {
+    ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -86,7 +87,7 @@ class TestInputCell<ValueT>(
         }
     }
 
-    fun revokeUpdate(): TestInputStimulation = object : TestInputStimulation {
+    fun revokeUpdate(): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -107,10 +108,32 @@ fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
     secondStimulation = revokeUpdate(),
 )
 
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+    tag: TestInputCellTag,
+    newValue: ValueT,
+): TestStimulationMap = revokingUpdate(
+    newValue = newValue,
+).tagged(
+    firstTag = TestInputCellStimulationTag.Update(inputTag = tag),
+    secondTag = TestInputCellStimulationTag.UpdateRevocation(inputTag = tag),
+)
+
 fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
     intermediateNewValue: ValueT,
     correctedNewValue: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = update(newValue = intermediateNewValue),
     secondStimulation = correctUpdate(correctedNewValue),
+)
+
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+    tag: TestInputCellTag,
+    intermediateNewValue: ValueT,
+    correctedNewValue: ValueT,
+): TestStimulationMap = correctingUpdate(
+    intermediateNewValue = intermediateNewValue,
+    correctedNewValue = correctedNewValue,
+).tagged(
+    firstTag = TestInputCellStimulationTag.Update(inputTag = tag),
+    secondTag = TestInputCellStimulationTag.UpdateCorrection(inputTag = tag),
 )

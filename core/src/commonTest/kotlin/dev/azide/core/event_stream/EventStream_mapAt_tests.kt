@@ -2,17 +2,18 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.mapAt
 import dev.azide.core.sample
-import dev.azide.core.test_utils.TestInputStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_mapAt_tests {
     @Test
-    fun test_emission() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
-        val externalCell = CellTestUtils.createInputCell(initialValue = 'A')
+    fun test_sourceEmits() {
+        val sourceEventStream = TestInputEventStream<Int>()
+        val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {
             val externalValue: Char = externalCell.sample()
@@ -29,9 +30,9 @@ class EventStream_mapAt_tests {
     }
 
     @Test
-    fun test_emission_revoked() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
-        val externalCell = CellTestUtils.createInputCell(initialValue = 'A')
+    fun test_sourceEmits_revoked() {
+        val sourceEventStream = TestInputEventStream<Int>()
+        val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {
             val externalValue: Char = externalCell.sample()
@@ -40,7 +41,7 @@ class EventStream_mapAt_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -50,9 +51,9 @@ class EventStream_mapAt_tests {
     }
 
     @Test
-    fun test_emission_corrected() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
-        val externalCell = CellTestUtils.createInputCell(initialValue = 'A')
+    fun test_sourceEmits_corrected() {
+        val sourceEventStream = TestInputEventStream<Int>()
+        val externalCell = TestInputCell(initialValue = 'A')
 
         val subjectEventStream = sourceEventStream.mapAt {
             val externalValue: Char = externalCell.sample()
@@ -61,7 +62,7 @@ class EventStream_mapAt_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),

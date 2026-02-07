@@ -4,20 +4,21 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUtils
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_cancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.getAndResetSingleStartRecord
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -50,7 +51,7 @@ class Cell_actuate_cancelled_tests {
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -58,12 +59,12 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelled_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1StartRecord.expectIsCancelledOnce(),
@@ -101,7 +102,7 @@ class Cell_actuate_cancelled_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -109,15 +110,15 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelled_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -158,7 +159,7 @@ class Cell_actuate_cancelled_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -166,15 +167,15 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelled_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -216,7 +217,7 @@ class Cell_actuate_cancelled_tests {
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -224,16 +225,16 @@ class Cell_actuate_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
+        val targetEffect1StartRecord = targetEffect1.getAndResetSingleStartRecord()
 
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelled_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),

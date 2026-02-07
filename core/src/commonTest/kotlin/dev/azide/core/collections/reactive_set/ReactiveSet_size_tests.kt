@@ -2,6 +2,7 @@ package dev.azide.core.collections.reactive_set
 
 import dev.azide.core.collections.filter
 import dev.azide.core.collections.size
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import kotlin.test.Test
@@ -24,7 +25,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_sizeIncreased() {
+    fun test_sourceChanges_sizeIncreased() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -44,7 +45,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_sizeDecreased() {
+    fun test_sourceChanges_sizeDecreased() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -64,7 +65,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_sizeUnaffected() {
+    fun test_sourceChanges_sizeUnaffected() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -83,7 +84,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_revoked_sizeAffected() {
+    fun test_sourceChanges_revoked_sizeAffected() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -93,7 +94,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, 7, -8, 9),
                     elementsToRemove = setOf(1, 5),
@@ -105,7 +106,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_revoked_sizeUnaffected() {
+    fun test_sourceChanges_revoked_sizeUnaffected() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -115,7 +116,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7),
                     elementsToRemove = setOf(1, -2),
@@ -127,7 +128,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_corrected_sizeUnaffectedEarlier_sizeUnaffectedLater() {
+    fun test_sourceChanges_corrected_sizeUnaffectedEarlier_sizeUnaffectedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -137,7 +138,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7),
                     elementsToRemove = setOf(1, -2),
@@ -152,7 +153,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_corrected_sizeUnaffectedEarlier_sizeAffectedLater() {
+    fun test_sourceChanges_corrected_sizeUnaffectedEarlier_sizeAffectedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -162,7 +163,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7),
                     elementsToRemove = setOf(1, -2),
@@ -178,7 +179,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_corrected_sizeAffectedEarlier_sizeUnaffectedLater() {
+    fun test_sourceChanges_corrected_sizeAffectedEarlier_sizeUnaffectedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -188,7 +189,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6),
                     elementsToRemove = setOf(1, -2, 3, 5),
@@ -203,7 +204,7 @@ class ReactiveSet_size_tests {
     }
 
     @Test
-    fun test_update_corrected_sizeAffectedEarlier_sizeAffectedLater() {
+    fun test_sourceChanges_corrected_sizeAffectedEarlier_sizeAffectedLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -213,7 +214,7 @@ class ReactiveSet_size_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = _root_ide_package_.dev.azide.core.test_utils.TestInputStimulation.Companion.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
                     elementsToAdd = setOf(6, -7, 8),
                     elementsToRemove = setOf(1, -2),

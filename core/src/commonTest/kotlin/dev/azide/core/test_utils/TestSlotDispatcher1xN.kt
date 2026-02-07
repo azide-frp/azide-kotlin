@@ -5,9 +5,9 @@ interface TestSlotDispatcher1xN {
 }
 
 fun TestSlotDispatcher1xN.dispatch(
-    testStimulation: TestInputStimulation,
+    testStimulation: TestStimulation,
     slot: TestStimulationSlot,
-): TestInputStimulation? = when (slot) {
+): TestStimulation? = when (slot) {
     this@dispatch.slot -> testStimulation
 
     else -> null

@@ -88,7 +88,7 @@ interface TestSlottedStimulation4 {
     )
 }
 
-fun TestInputStimulation.bind(
+fun TestStimulation.bind(
     dispatcher: TestSlotDispatcher1x4,
 ): TestSlottedStimulation4 = object : TestSlottedStimulation4 {
     override fun stimulate(

@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_cancelled_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_cancelled_testUtils
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,7 +45,7 @@ class ReactiveList_syncing_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_generic_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
@@ -95,7 +95,7 @@ class ReactiveList_syncing_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_generic_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 description = ChangeDescription.of(
@@ -145,7 +145,7 @@ class ReactiveList_syncing_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_generic_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.executeCancelTransaction(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 intermediateDescription = ChangeDescription.of(

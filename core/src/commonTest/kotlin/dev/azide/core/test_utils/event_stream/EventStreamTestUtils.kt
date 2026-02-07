@@ -4,18 +4,16 @@ import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.MomentContext
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.Vertex.Listener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import dev.azide.core.impl.event_stream.registerListenerOnline
 import dev.azide.core.pullInternallyWrappedUp
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -23,13 +21,11 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal object EventStreamTestUtils {
-    fun <EventT> createInputEventStream(): TestInputEventStream<EventT> = TestInputEventStream()
-
     /**
      * Spawn a stateful event stream, not expecting it to emit during spawn.
      */
     fun <EventT> spawnStatefulEventStream(
-        inputStimulation: TestInputStimulation? = null,
+        inputStimulation: TestStimulation? = null,
         spawn: context(MomentContext) () -> EventStream<EventT>,
     ): EventStream<EventT> = Transactions.executeWithResult { propagationContext ->
         inputStimulation?.stimulate(
@@ -54,7 +50,7 @@ internal object EventStreamTestUtils {
      * Spawn a stateful event stream, expecting it to emit during spawn with [expectedEmittedEvent].
      */
     fun <EventT> spawnStatefulEventStreamExpectingEmission(
-        inputStimulation: TestInputStimulation? = null,
+        inputStimulation: TestStimulation? = null,
         expectedEmittedEvent: EventT,
         spawn: Moment<EventStream<EventT>>,
     ): EventStream<EventT> = Transactions.executeWithResult { propagationContext ->
@@ -94,7 +90,7 @@ internal object EventStreamTestUtils {
      * Spawn a stateful event stream, expecting it to emit during spawn with [expectedEmittedEvent].
      */
     fun <EventT> spawnStatefulEventStreamExpectingEmission(
-        inputStimulation: TestInputStimulation? = null,
+        inputStimulation: TestStimulation? = null,
         expectedEmittedEvent: EventT,
         spawn: context(MomentContext) () -> EventStream<EventT>,
     ): EventStream<EventT> = spawnStatefulEventStreamExpectingEmission(
@@ -129,7 +125,7 @@ internal object EventStreamTestUtils {
          * Verify that, under the given [inputStimulation], the subject event stream emits [expectedEmittedEvent].
          */
         fun verifyEmitsAsExpected(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedEmittedEvent: EventT,
         ) {
             // Clear the emission potentially received in separate transactions
@@ -163,7 +159,7 @@ internal object EventStreamTestUtils {
          * fail.
          */
         fun verifyDoesNotEmitAtAll(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
         ) {
             // Clear the emission potentially received in separate transactions
             receivedEmission = null
@@ -186,7 +182,7 @@ internal object EventStreamTestUtils {
          * revoked) is propagated by the subject event stream's vertex during the transaction, the verification will fail.
          */
         fun verifyDoesNotEmitEffectively(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
         ) {
             // Clear the emission potentially received in separate transactions
             receivedEmission = null
@@ -257,7 +253,7 @@ internal object EventStreamTestUtils {
      */
     fun <EventT> verifyEmitsAsExpected(
         subjectEventStream: EventStream<EventT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedEmittedEvent: EventT,
     ) {
         val subscribingVerifier = subscribeForVerification(
@@ -278,7 +274,7 @@ internal object EventStreamTestUtils {
      */
     fun <EventT> verifyDoesNotEmitAtAll(
         subjectEventStream: EventStream<EventT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
     ) {
         val subscribingVerifier = subscribeForVerification(
             subjectEventStream = subjectEventStream,
@@ -297,7 +293,7 @@ internal object EventStreamTestUtils {
      */
     fun <EventT> verifyDoesNotEmitEffectively(
         subjectEventStream: EventStream<EventT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
     ) {
         val subscribingVerifier = subscribeForVerification(
             subjectEventStream = subjectEventStream,

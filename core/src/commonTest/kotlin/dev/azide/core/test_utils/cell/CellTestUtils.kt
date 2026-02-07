@@ -10,7 +10,7 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.impl.registerListenerOnline
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -21,12 +21,6 @@ internal object CellTestUtils {
             propagationContext: Transactions.PropagationContext,
         ): ListenerStatus = ListenerStatus.Reachable
     }
-
-    fun <ValueT> createInputCell(
-        initialValue: ValueT,
-    ): TestInputCell<ValueT> = TestInputCell(
-        initialValue = initialValue,
-    )
 
     class ObservingVerifier<ValueT>(
         propagationContext: Transactions.PropagationContext,
@@ -49,7 +43,7 @@ internal object CellTestUtils {
          * [expectedNewValue].
          */
         fun verifyUpdatesAsExpected(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedOldValue: ValueT,
             expectedNewValue: ValueT,
         ) {
@@ -70,7 +64,7 @@ internal object CellTestUtils {
          * cell's vertex during the transaction (even if it's later corrected), the verification will fail.
          */
         fun verifyDoesNotUpdateAtAll(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedUnaffectedValue: ValueT,
         ) {
             verifyReceivedUpdate(
@@ -86,7 +80,7 @@ internal object CellTestUtils {
          * propagated by the subject cell's vertex during the transaction, the verification will fail.
          */
         fun verifyDoesNotUpdateEffectively(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedUnaffectedValue: ValueT,
         ) {
             verifyReceivedUpdate(
@@ -99,7 +93,7 @@ internal object CellTestUtils {
         }
 
         private fun verifyReceivedUpdate(
-            inputStimulation: TestInputStimulation,
+            inputStimulation: TestStimulation,
             expectedOldValue: ValueT,
             expectedReceivedUpdate: ReceivedUpdate<ValueT>?,
         ) {
@@ -251,7 +245,7 @@ internal object CellTestUtils {
      */
     fun <ValueT> verifyUpdatesAsExpected(
         subjectCell: Cell<ValueT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedOldValue: ValueT,
         expectedNewValue: ValueT,
     ) {
@@ -274,7 +268,7 @@ internal object CellTestUtils {
      */
     fun <ValueT> verifyDoesNotUpdateAtAll(
         subjectCell: Cell<ValueT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedUnaffectedValue: ValueT,
     ) {
         val observingVerifier = observeForVerification(
@@ -295,7 +289,7 @@ internal object CellTestUtils {
      */
     fun <ValueT> verifyDoesNotUpdateEffectively(
         subjectCell: Cell<ValueT>,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedUnaffectedValue: ValueT,
     ) {
         val observingVerifier = observeForVerification(

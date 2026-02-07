@@ -6,6 +6,7 @@ import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.map
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.assertIsStackOverflowError
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -69,7 +70,7 @@ class EventStream_loop_tests {
 
     @Test
     fun test_selfCycle_harmful() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         // Event stream forming a self-cycle, but depending also on another event stream.
         val loopedEventStream = EventStream.looped { loopedEventStream ->
@@ -124,7 +125,7 @@ class EventStream_loop_tests {
 
     @Test
     fun test_smallCycle_harmful() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         // Event stream forming a small cycle, but depending also on another event stream.
         val loopedEventStream = EventStream.looped { loopedEventStream ->

@@ -3,17 +3,17 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
@@ -41,16 +41,16 @@ class Cell_actuate_start_tests {
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        Effect_Cell_start_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1.expectIsStartedOnceButNotCancelled(),
@@ -82,19 +82,19 @@ class Cell_actuate_start_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        Effect_Cell_start_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
             ),
@@ -130,19 +130,19 @@ class Cell_actuate_start_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        Effect_Cell_start_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -178,20 +178,20 @@ class Cell_actuate_start_tests {
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        Effect_generic_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        Effect_Cell_start_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

@@ -132,7 +132,7 @@ fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
 }
 
 fun <ResultT> Effect<ResultT>.startExternally(): Effect.Outcome<ResultT> = Transactions.executeWithResult {
-    val (effectOutcome: Effect.Outcome<ResultT>, _) = start.executeInternallyWrappedUp(it)
+    val (effectOutcome: Effect.Outcome<ResultT>, _) = start.executeInternallyWrappedUpUnpacked(it)
 
     effectOutcome
 }

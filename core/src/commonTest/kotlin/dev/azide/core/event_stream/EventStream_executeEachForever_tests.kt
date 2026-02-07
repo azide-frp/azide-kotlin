@@ -4,9 +4,10 @@ import dev.azide.core.Action
 import dev.azide.core.executeEachForever
 import dev.azide.core.map
 import dev.azide.core.test_utils.MockExternalTrigger
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -14,10 +15,10 @@ import kotlin.test.assertTrue
 @Suppress("ClassName")
 class EventStream_executeEachForever_tests {
     @Test
-    fun test_executeEachForever_sourceEmission() {
+    fun test_sourceEmits() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -37,10 +38,10 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmission_revoked() {
+    fun test_sourceEmits_revoked() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -48,7 +49,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect).map { 10 },
                 ),
@@ -62,11 +63,11 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmission_corrected() {
+    fun test_sourceEmits_corrected() {
         val mockSideEffect1 = MockExternalTrigger()
         val mockSideEffect2 = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEventStream = TestUtils.executeSeparately(
             sourceEventStream.executeEachForever(),
@@ -74,7 +75,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1).map { 10 },
                 ),
@@ -95,10 +96,10 @@ class EventStream_executeEachForever_tests {
     }
 
     @Test
-    fun test_executeEachForever_sourceEmitsOnStart() {
+    fun test_sourceEmitsOnStart() {
         val mockSideEffect = MockExternalTrigger()
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         TestUtils.executeSeparately(
             action = sourceEventStream.executeEachForever(),

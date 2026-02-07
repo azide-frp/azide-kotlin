@@ -75,7 +75,7 @@ context(transactionTestContext: TransactionTestContext) fun <ResultT> Effect<Res
 }
 
 @Deprecated("Switch to the new test utils")
-context(transactionTestContext: TransactionTestContext) internal fun TestInputStimulation.stimulateForTesting() {
+context(transactionTestContext: TransactionTestContext) internal fun TestStimulation.stimulateForTesting() {
     this.stimulate(
         propagationContext = transactionTestContext.propagationContext,
     )

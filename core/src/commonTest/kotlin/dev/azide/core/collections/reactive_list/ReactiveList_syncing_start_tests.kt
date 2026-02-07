@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
-import dev.azide.core.test_utils.schedule_generic.Schedule_generic_start_testUtils
+import dev.azide.core.test_utils.schedule.Schedule_start_testUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.Ignore
@@ -30,7 +30,7 @@ class ReactiveList_syncing_start_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_generic_start_testUtils.executeStartTransaction(
+        Schedule_start_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
@@ -65,7 +65,7 @@ class ReactiveList_syncing_start_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_generic_start_testUtils.executeStartTransaction(
+        Schedule_start_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.change(
                 description = ChangeDescription.of(
@@ -108,7 +108,7 @@ class ReactiveList_syncing_start_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_generic_start_testUtils.executeStartTransaction(
+        Schedule_start_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 description = ChangeDescription.of(
@@ -151,7 +151,7 @@ class ReactiveList_syncing_start_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_generic_start_testUtils.executeStartTransaction(
+        Schedule_start_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 intermediateDescription = ChangeDescription.of(

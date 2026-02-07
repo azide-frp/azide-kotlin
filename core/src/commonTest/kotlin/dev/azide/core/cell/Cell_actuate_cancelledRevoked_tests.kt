@@ -4,17 +4,17 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotCancelled
@@ -43,7 +43,7 @@ class Cell_actuate_cancelledRevoked_tests {
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -53,10 +53,10 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = targetEffect1StartRecord.expectIsNotCancelled(),
@@ -93,7 +93,7 @@ class Cell_actuate_cancelledRevoked_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -103,13 +103,13 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 20,
@@ -151,7 +151,7 @@ class Cell_actuate_cancelledRevoked_tests {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -161,13 +161,13 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
             ),
@@ -209,7 +209,7 @@ class Cell_actuate_cancelledRevoked_tests {
         val targetEffect2 = TestTargetEffect.pure(result = 20)
         val targetEffect3 = TestTargetEffect.pure(result = 30)
 
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = targetEffect1,
         )
 
@@ -219,14 +219,14 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
+        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+            subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,
                 expectedNewValue = 30,

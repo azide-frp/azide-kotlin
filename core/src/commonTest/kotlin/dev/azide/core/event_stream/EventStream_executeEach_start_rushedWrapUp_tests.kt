@@ -4,13 +4,13 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedEventStreamReactionTestUtils
+import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetAction
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_rushedWrapUp_testUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import kotlin.test.Test
 
@@ -18,13 +18,13 @@ import kotlin.test.Test
 class EventStream_executeEach_start_rushedWrapUp_tests {
     @Test
     fun test_start_rushedWrapUp() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectNoEmission(),
+        Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
+            subjectEventStreamEffect = subjectEffect,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
         )
     }
@@ -41,16 +41,16 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
     ) {
         val targetAction = TestTargetAction.of(result = 10)
 
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Action<Int>>()
+        val sourceEventStream = TestInputEventStream<Action<Int>>()
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
-            subjectEffect = subjectEffect,
+        Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
+            subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetAction,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedEventStreamReactionTestUtils.expectEmission(
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
             expectedTargetImpact = targetAction.expectIsExecutedOnce(),

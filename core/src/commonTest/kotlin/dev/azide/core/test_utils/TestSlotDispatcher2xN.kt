@@ -8,8 +8,8 @@ interface TestSlotDispatcher2xN {
 fun TestSlotDispatcher2xN.dispatch(
     orderedTestStimulation: DoubleTestStimulation,
     slot: TestStimulationSlot,
-): TestInputStimulation? = when (slot) {
-    slotA if slotA == slotB -> TestInputStimulation.combine(
+): TestStimulation? = when (slot) {
+    slotA if slotA == slotB -> TestStimulation.combine(
         orderedTestStimulation.firstStimulation,
         orderedTestStimulation.secondStimulation,
     )

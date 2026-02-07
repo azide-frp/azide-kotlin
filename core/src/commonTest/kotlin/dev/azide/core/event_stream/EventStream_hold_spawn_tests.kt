@@ -3,28 +3,28 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_hold_spawn_tests {
     @Test
     fun test_spawn() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -42,16 +42,16 @@ class EventStream_hold_spawn_tests {
     private fun test_spawn_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),
@@ -70,16 +70,16 @@ class EventStream_hold_spawn_tests {
     private fun test_spawn_sourceEmitsRevokedSimultaneously(
         dispatcher: TestSlotDispatcher2x3,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 0,
             ),
@@ -98,17 +98,17 @@ class EventStream_hold_spawn_tests {
     private fun test_spawn_sourceEmitsCorrectedSimultaneously(
         dispatcher: TestSlotDispatcher2x3,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn.executeSpawnTransaction(
+        Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 0,
                 expectedNewValue = 20,

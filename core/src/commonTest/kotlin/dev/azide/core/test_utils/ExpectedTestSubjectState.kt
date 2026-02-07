@@ -17,16 +17,20 @@ interface ExpectedTestSubjectState<in SubjectT> {
     )
 }
 
-data class ExpectedTestSubjectTransition<in SubjectT>(
-    val expectedOldState: ExpectedTestSubjectState<SubjectT>,
-    val expectedReaction: ExpectedTestSubjectReaction<SubjectT>,
-    val expectedNewState: ExpectedTestSubjectState<SubjectT>,
-) {
-    companion object {
-        val None: ExpectedTestSubjectTransition<Any> = ExpectedTestSubjectTransition(
-            expectedOldState = ExpectedTestSubjectState.None,
-            expectedReaction = ExpectedTestSubjectReaction.None,
-            expectedNewState = ExpectedTestSubjectState.None,
-        )
+interface ExpectedTestSubjectTransition<in SubjectT> {
+    data object None : ExpectedTestSubjectTransition<Any> {
+        override val expectedOldState: ExpectedTestSubjectState<Any> = ExpectedTestSubjectState.None
+        override val expectedReaction: ExpectedTestSubjectReaction<Any> = ExpectedTestSubjectReaction.None
+        override val expectedNewState: ExpectedTestSubjectState<Any> = ExpectedTestSubjectState.None
     }
+
+    val expectedOldState: ExpectedTestSubjectState<SubjectT>
+    val expectedReaction: ExpectedTestSubjectReaction<SubjectT>
+    val expectedNewState: ExpectedTestSubjectState<SubjectT>
 }
+
+data class ExpectedTestSubjectTransitionImpl<in SubjectT>(
+    override val expectedOldState: ExpectedTestSubjectState<SubjectT>,
+    override val expectedReaction: ExpectedTestSubjectReaction<SubjectT>,
+    override val expectedNewState: ExpectedTestSubjectState<SubjectT>,
+) : ExpectedTestSubjectTransition<SubjectT>

@@ -3,7 +3,7 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.verifyReactionUninstalling
 
@@ -12,7 +12,7 @@ data object Effect_generic_step_testUtils {
     fun <SubjectT> executeStepTransaction(
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        inputStimulation: TestInputStimulation,
+        inputStimulation: TestStimulation,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
         expectedTargetImpact: ExpectedImpact,
     ) {

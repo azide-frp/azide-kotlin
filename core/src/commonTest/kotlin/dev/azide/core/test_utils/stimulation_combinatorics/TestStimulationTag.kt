@@ -1,0 +1,3 @@
+package dev.azide.core.test_utils.stimulation_combinatorics
+
+interface TestStimulationTag

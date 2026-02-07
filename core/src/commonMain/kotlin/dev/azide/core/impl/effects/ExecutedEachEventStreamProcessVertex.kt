@@ -2,7 +2,7 @@ package dev.azide.core.impl.effects
 
 import dev.azide.core.Action
 import dev.azide.core.EventStream
-import dev.azide.core.executeInternallyWrappedUp
+import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex.BoundListener
@@ -45,7 +45,7 @@ class ExecutedEachEventStreamProcessVertex<EventT>(
 
                 val emittedAction: Action<EventT> = emission.emittedEvent
 
-                val (emittedEvent: EventT, executedActionRevocable) = emittedAction.executeInternallyWrappedUp(
+                val (emittedEvent: EventT, executedActionRevocable) = emittedAction.executeInternallyWrappedUpUnpacked(
                     propagationContext = propagationContext,
                 )
 
@@ -78,7 +78,7 @@ class ExecutedEachEventStreamProcessVertex<EventT>(
         sourceVertex.ongoingEmission?.let { sourceOngoingActionEmission ->
             val emittedAction: Action<EventT> = sourceOngoingActionEmission.emittedEvent
 
-            val (event: EventT, executedActionRevocable: Revocable) = emittedAction.executeInternallyWrappedUp(
+            val (event: EventT, executedActionRevocable: Revocable) = emittedAction.executeInternallyWrappedUpUnpacked(
                 propagationContext = propagationContext,
             )
 

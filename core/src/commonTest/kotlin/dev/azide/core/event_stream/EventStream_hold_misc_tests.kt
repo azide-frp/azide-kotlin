@@ -11,7 +11,7 @@ import dev.azide.core.sample
 import dev.azide.core.sampling
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.CellTestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 class EventStream_hold_misc_tests {
     @Test
     fun test_looped() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val memoryCell = TestUtils.pullSeparately(
             EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->
@@ -44,7 +44,7 @@ class EventStream_hold_misc_tests {
 
     @Test
     fun test_looped_initialSample() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val memoryCellInitialValue: Int = TestUtils.pullSeparately(
             EventStream.loopedInMoment { loopedMultiplicationStream: EventStream<Int> ->

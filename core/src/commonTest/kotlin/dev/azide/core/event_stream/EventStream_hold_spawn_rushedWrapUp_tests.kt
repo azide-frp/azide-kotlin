@@ -3,24 +3,24 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
-import dev.azide.core.test_utils.stateful.StatefulTestUtils_spawn_rushedWrapUp
+import dev.azide.core.test_utils.cell.Cell_spawn_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_hold_spawn_rushedWrapUp_tests {
     @Test
     fun test_spawn_rushedWrapUp() {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
-            subjectSpawnMoment = subjectMoment,
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 0,
             ),
         )
@@ -38,16 +38,16 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
     private fun test_spawn_rushedWrapUp_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
-        val sourceEventStream = EventStreamTestUtils.createInputEventStream<Int>()
+        val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        StatefulTestUtils_spawn_rushedWrapUp.executeSpawnTransaction(
-            subjectSpawnMoment = subjectMoment,
+        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+            subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
             ).bind(dispatcher),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 0,
                 expectedNewValue = 10,
             ),

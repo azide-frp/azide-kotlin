@@ -1,98 +1,125 @@
 package dev.azide.core.cell
 
-import dev.azide.core.Cell
 import dev.azide.core.map
-import dev.azide.core.test_utils.TestInputStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
+import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
+import dev.azide.core.test_utils.cell.Cell_sampling_testUtils
+import dev.azide.core.test_utils.cell.correctingUpdate
+import dev.azide.core.test_utils.cell.revokingUpdate
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class Cell_map_tests {
     @Test
     fun test_passiveSample() {
-        val sourceCell = CellTestUtils.createInputCell(
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.verifyAtRest(
+        Cell_sampling_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            expectedValue = "10",
+            expectedSubjectValue = Cell_expectations_testUtils.expectStableValue(
+                expectedValue = "10",
+            ),
         )
     }
 
     @Test
-    fun test_passiveSample_sourceConst() {
-        val subjectCell = Cell.Const(
-            constValue = 10,
-        ).map { it.toString() }
-
-        CellTestUtils.verifyAtRest(
-            subjectCell = subjectCell,
-            expectedValue = "10",
-        )
+    fun test_sourceUpdates() {
+        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+            test_sourceUpdates(
+                dispatcher = dispatcher,
+            )
+        }
     }
 
-    @Test
-    fun test_update() {
-        val sourceCell = CellTestUtils.createInputCell(
+    private fun test_sourceUpdates(
+        dispatcher: TestSlotDispatcher1x2,
+    ) {
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            inputStimulation = sourceCell.update(
+            slottedInputStimulation = sourceCell.update(
                 newValue = 11,
+            ).bind(dispatcher),
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
+                expectedOldValue = "10",
+                expectedNewValue = "11",
             ),
-            expectedOldValue = "10",
-            expectedNewValue = "11",
         )
     }
 
     @Test
-    fun test_update_revoked() {
-        val sourceCell = CellTestUtils.createInputCell(
+    fun test_sourceUpdates_revoked() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_sourceUpdates_revoked(
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    private fun test_sourceUpdates_revoked(
+        dispatcher: TestSlotDispatcher2x2,
+    ) {
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
-                sourceCell.update(
-                    newValue = 11,
-                ),
-                sourceCell.revokeUpdate(),
+            slottedInputStimulation = sourceCell.revokingUpdate(
+                newValue = 11,
+            ).bind(dispatcher),
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedValue = "10",
             ),
-            expectedUnaffectedValue = "10",
         )
     }
 
-
     @Test
-    fun test_update_corrected() {
-        val sourceCell = CellTestUtils.createInputCell(
+    fun test_sourceUpdates_corrected() {
+        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+            test_sourceUpdates_corrected(
+                dispatcher = dispatcher,
+            )
+        }
+    }
+
+    private fun test_sourceUpdates_corrected(
+        dispatcher: TestSlotDispatcher2x2,
+    ) {
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
-                sourceCell.update(
-                    newValue = 11,
-                ),
-                sourceCell.correctUpdate(
-                    correctedNewValue = 12,
-                ),
+            slottedInputStimulation = sourceCell.correctingUpdate(
+                intermediateNewValue = 11,
+                correctedNewValue = 12,
+            ).bind(dispatcher),
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldValue = "10",
+                expectedNewValue = "12",
             ),
-            expectedOldValue = "10",
-            expectedNewValue = "12",
         )
     }
 }

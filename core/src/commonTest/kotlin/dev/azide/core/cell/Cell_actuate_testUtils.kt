@@ -2,10 +2,11 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.sampleExternally
-import dev.azide.core.test_utils.ExpectedCellReactionTestUtils
+import dev.azide.core.test_utils.Cell_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
 import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
@@ -21,13 +22,13 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+        Effect_Cell_step_testUtils.executeStepTransaction(
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectNoTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = preStimulationValue,
             ),
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
@@ -58,13 +59,13 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = 0)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
-            subject = subjectCell,
+        Effect_Cell_step_testUtils.executeStepTransaction(
+            subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedCellReactionTestUtils.expectTransition(
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = preStimulationValue,
                 expectedNewValue = 0,
             ),

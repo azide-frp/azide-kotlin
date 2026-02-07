@@ -1,19 +1,20 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.TestInputStimulation
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class Cell_map2_tests {
     @Test
     fun test_passiveSample() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -32,7 +33,7 @@ class Cell_map2_tests {
 
     @Test
     fun test_passiveSample_singleSourceConst() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
@@ -77,8 +78,8 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_sharedSource() {
-        val sourceCell = CellTestUtils.createInputCell(
+    fun test_sharedSourceUpdates() {
+        val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
@@ -100,12 +101,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_onlySource1() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_onlySource1Updates() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -127,12 +128,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_onlySource2() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_onlySource2Updates() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -154,12 +155,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_otherSourceConst() {
+    fun test_singleSourceUpdates_otherSourceConst() {
         val sourceCell1 = Cell.Const(
             constValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -181,12 +182,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_revoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_singleSourceUpdates_revoked() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -199,7 +200,7 @@ class Cell_map2_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell2.update(
                     newValue = 'B',
                 ),
@@ -210,12 +211,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_singleSource_corrected() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_singleSourceUpdates_corrected() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -228,7 +229,7 @@ class Cell_map2_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell2.update(
                     newValue = 'B',
                 ),
@@ -245,12 +246,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_bothSourcesUpdate() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -263,7 +264,7 @@ class Cell_map2_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell1.update(
                     newValue = 11,
                 ),
@@ -277,12 +278,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources_oneRevoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_bothSourcesUpdate_oneRevoked() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -295,7 +296,7 @@ class Cell_map2_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell1.update(
                     newValue = 11,
                 ),
@@ -310,12 +311,12 @@ class Cell_map2_tests {
     }
 
     @Test
-    fun test_update_bothSources_bothRevoked() {
-        val sourceCell1 = CellTestUtils.createInputCell(
+    fun test_bothSourcesUpdate_bothRevoked() {
+        val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
 
-        val sourceCell2 = CellTestUtils.createInputCell(
+        val sourceCell2 = TestInputCell(
             initialValue = 'A',
         )
 
@@ -328,7 +329,7 @@ class Cell_map2_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestInputStimulation.combine(
+            inputStimulation = TestStimulation.combine(
                 sourceCell1.update(
                     newValue = 11,
                 ),

@@ -1,25 +1,32 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.impl.Transactions
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
 
 data class DoubleTestStimulation(
-    val firstStimulation: TestInputStimulation,
-    val secondStimulation: TestInputStimulation,
+    val firstStimulation: TestStimulation,
+    val secondStimulation: TestStimulation,
 ) {
-    fun joint(): TestInputStimulation {
-        return object : TestInputStimulation {
-            override fun stimulate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                firstStimulation.stimulate(
-                    propagationContext = propagationContext,
-                )
+    fun tagged(
+        firstTag: TestStimulationTag,
+        secondTag: TestStimulationTag,
+    ): TestStimulationMap = TestStimulationMap.of(
+        firstTag to firstStimulation,
+        secondTag to secondStimulation,
+    )
 
-                secondStimulation.stimulate(
-                    propagationContext = propagationContext,
-                )
-            }
+    fun joint(): TestStimulation = object : TestStimulation {
+        override fun stimulate(
+            propagationContext: Transactions.PropagationContext,
+        ) {
+            firstStimulation.stimulate(
+                propagationContext = propagationContext,
+            )
 
+            secondStimulation.stimulate(
+                propagationContext = propagationContext,
+            )
         }
     }
 }
