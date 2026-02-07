@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.TestSlotDispatcher2x2
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
@@ -72,7 +72,7 @@ class EventStream_executeEach_start_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         dispatcher: TestSlotDispatcher1x2,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -82,12 +82,12 @@ class EventStream_executeEach_start_tests {
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).bind(dispatcher),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder.expectIsExecutedOnce(),
         )
     }
 
@@ -113,7 +113,7 @@ class EventStream_executeEach_start_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -123,10 +123,10 @@ class EventStream_executeEach_start_tests {
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).bind(dispatcher),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
-            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }
 
@@ -152,8 +152,8 @@ class EventStream_executeEach_start_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         dispatcher: TestSlotDispatcher2x2,
     ) {
-        val targetAction1 = TestTargetAction.of(result = 10)
-        val targetAction2 = TestTargetAction.of(result = 20)
+        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 20)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -163,15 +163,15 @@ class EventStream_executeEach_start_tests {
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
-                intermediateEmittedEvent = targetAction1,
-                correctedEmittedEvent = targetAction2,
+                intermediateEmittedEvent = targetActionRecorder1.recordedAction,
+                correctedEmittedEvent = targetActionRecorder2.recordedAction,
             ).bind(dispatcher),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetAction1.expectIsNotExecuted(),
-                targetAction2.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsExecutedOnce(),
             ),
         )
     }

@@ -7,7 +7,7 @@ import dev.azide.core.executeEach
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x5
 import dev.azide.core.test_utils.TestSlotDispatcher2x5
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
@@ -46,7 +46,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x5,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -55,7 +55,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).bind(dispatcher),
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -77,7 +77,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
         dispatcher: TestSlotDispatcher2x5,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -86,9 +86,9 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).bind(dispatcher),
-            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
 
         EventStream_executeEach_testUtils.verifyEffectNotOngoing(
@@ -108,8 +108,8 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
         dispatcher: TestSlotDispatcher2x5,
     ) {
-        val targetAction1 = TestTargetAction.of(result = 10)
-        val targetAction2 = TestTargetAction.of(result = 10)
+        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -118,12 +118,12 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
-                intermediateEmittedEvent = targetAction1,
-                correctedEmittedEvent = targetAction2,
+                intermediateEmittedEvent = targetActionRecorder1.recordedAction,
+                correctedEmittedEvent = targetActionRecorder2.recordedAction,
             ).bind(dispatcher),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetAction1.expectIsNotExecuted(),
-                targetAction2.expectIsNotExecuted(),
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsNotExecuted(),
             ),
         )
 

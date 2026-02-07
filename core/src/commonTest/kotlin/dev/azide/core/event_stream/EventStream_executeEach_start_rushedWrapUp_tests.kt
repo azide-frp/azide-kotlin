@@ -7,7 +7,7 @@ import dev.azide.core.executeEach
 import dev.azide.core.test_utils.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
@@ -39,7 +39,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
     private fun test_start_rushedWrapUp_sourceEmitsSimultaneously(
         dispatcher: TestSlotDispatcher1x3,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -48,12 +48,12 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
         Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).bind(dispatcher),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder.expectIsExecutedOnce(),
         )
     }
 }

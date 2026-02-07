@@ -9,7 +9,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-abstract class TestTargetAction<ResultT>() : Action<ResultT> {
+abstract class TestTargetActionRecorder<ResultT>() {
     class ExecutionRecord<ResultT>(
         val result: ResultT,
     ) {
@@ -27,13 +27,36 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
         }
     }
 
-    class Trigger : TestTargetAction<Unit>() {
+    class TriggerRecorder : TestTargetActionRecorder<Unit>() {
         override fun buildResult(): Unit = Unit
     }
 
     companion object {
-        fun <ResultT> of(result: ResultT): TestTargetAction<ResultT> = object : TestTargetAction<ResultT>() {
+        fun <ResultT> of(result: ResultT): TestTargetActionRecorder<ResultT> =
+            object : TestTargetActionRecorder<ResultT>() {
             override fun buildResult(): ResultT = result
+        }
+    }
+
+    val recordedAction: Action<ResultT> = object : Action<ResultT> {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Action.Outcome<ResultT> {
+            val result = buildResult()
+
+            val execution = ExecutionRecord(result = result)
+
+            executionRecords.add(execution)
+
+            return Action.Outcome.of(
+                result = result,
+                revocable = object : Revocable {
+                    override fun revoke() {
+                        execution.revoke()
+                    }
+                },
+            )
         }
     }
 
@@ -47,30 +70,10 @@ abstract class TestTargetAction<ResultT>() : Action<ResultT> {
         executionRecords.clear()
     }
 
-    override fun executeInternally(
-        propagationContext: Transactions.PropagationContext,
-        wrapUpContext: Transactions.WrapUpContext,
-    ): Action.Outcome<ResultT> {
-        val result = buildResult()
-
-        val execution = ExecutionRecord(result = result)
-
-        executionRecords.add(execution)
-
-        return Action.Outcome.of(
-            result = result,
-            revocable = object : Revocable {
-                override fun revoke() {
-                    execution.revoke()
-                }
-            },
-        )
-    }
-
     abstract fun buildResult(): ResultT
 }
 
-fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnceWithoutRevocation(): ResultT {
+fun <ResultT> TestTargetActionRecorder<ResultT>.verifyWasExecutedOnceWithoutRevocation(): ResultT {
     val executionRecord = assertNotNull(
         getAndResetExecutionRecords().singleOrNull(),
     )
@@ -82,7 +85,7 @@ fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnceWithoutRevocation()
     return executionRecord.result
 }
 
-fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnce(): TestTargetAction.ExecutionRecord<ResultT> {
+fun <ResultT> TestTargetActionRecorder<ResultT>.verifyWasExecutedOnce(): TestTargetActionRecorder.ExecutionRecord<ResultT> {
     val executionRecords = getAndResetExecutionRecords()
 
     assertEquals(
@@ -94,7 +97,7 @@ fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnce(): TestTargetActio
     return executionRecords.single()
 }
 
-fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnceAndRevoked(): ResultT {
+fun <ResultT> TestTargetActionRecorder<ResultT>.verifyWasExecutedOnceAndRevoked(): ResultT {
     val executionRecord = assertNotNull(
         getAndResetExecutionRecords().singleOrNull(),
     )
@@ -106,37 +109,37 @@ fun <ResultT> TestTargetAction<ResultT>.verifyWasExecutedOnceAndRevoked(): Resul
     return executionRecord.result
 }
 
-fun TestTargetAction<*>.verifyWasNotExecuted() {
+fun TestTargetActionRecorder<*>.verifyWasNotExecuted() {
     assertTrue(
         getAndResetExecutionRecords().isEmpty()
     )
 }
 
-fun TestTargetAction.ExecutionRecord<*>.verifyWasRevoked() {
+fun TestTargetActionRecorder.ExecutionRecord<*>.verifyWasRevoked() {
     assertTrue(
         actual = wasRevoked,
         message = "Expected action to have been revoked, but it was not.",
     )
 }
 
-fun TestTargetAction.ExecutionRecord<*>.verifyWasNotRevoked() {
+fun TestTargetActionRecorder.ExecutionRecord<*>.verifyWasNotRevoked() {
     assertFalse(
         actual = wasRevoked,
         message = "Expected action to not have been revoked, but it was.",
     )
 }
 
-fun <ResultT> TestTargetAction<ResultT>.expectIsNotExecuted(): ExpectedImpact = expectIsExecutedNTimes(
+fun <ResultT> TestTargetActionRecorder<ResultT>.expectIsNotExecuted(): ExpectedImpact = expectIsExecutedNTimes(
     expectedExecutionCount = 0,
     message = "Expected no executions of the target action.",
 )
 
-fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedOnce(): ExpectedImpact = expectIsExecutedNTimes(
+fun <ResultT> TestTargetActionRecorder<ResultT>.expectIsExecutedOnce(): ExpectedImpact = expectIsExecutedNTimes(
     expectedExecutionCount = 1,
     message = "Expected a single execution of the target action during the stimulation.",
 )
 
-fun <ResultT> TestTargetAction<ResultT>.expectIsExecutedNTimes(
+fun <ResultT> TestTargetActionRecorder<ResultT>.expectIsExecutedNTimes(
     expectedExecutionCount: Int,
     message: String,
 ): ExpectedImpact = object : ExpectedImpact {
