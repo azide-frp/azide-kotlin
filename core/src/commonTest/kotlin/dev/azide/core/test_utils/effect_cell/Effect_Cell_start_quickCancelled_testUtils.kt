@@ -2,9 +2,9 @@ package dev.azide.core.test_utils.effect_cell
 
 import dev.azide.core.Cell
 import dev.azide.core.Effect
-import dev.azide.core.test_utils.cell.ExpectedCellValueTransition
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
+import dev.azide.core.test_utils.cell.ExpectedCellValueTransition
 import dev.azide.core.test_utils.effect_generic.Effect_generic_start_quickCancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 

@@ -2,9 +2,9 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.sampleExternally
-import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
 import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils

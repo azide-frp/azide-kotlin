@@ -3,8 +3,9 @@ package dev.azide.core.test_utils
 import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.Trigger
-import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
+import dev.azide.core.test_utils.generic.ExpectedImpact.ImpactVerifier
 import dev.azide.core.test_utils.TestTargetEffect.StartRecord
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import kotlin.test.assertEquals
 
 abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {

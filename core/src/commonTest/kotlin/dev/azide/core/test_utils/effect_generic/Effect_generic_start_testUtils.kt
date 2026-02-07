@@ -3,13 +3,13 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
-import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
+import dev.azide.core.test_utils.generic.verifyReactionUninstalling
 
 @Suppress("ClassName")
 data object Effect_generic_start_testUtils {

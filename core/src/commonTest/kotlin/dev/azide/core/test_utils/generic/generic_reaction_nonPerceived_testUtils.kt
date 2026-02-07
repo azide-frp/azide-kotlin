@@ -1,6 +1,5 @@
 package dev.azide.core.test_utils.generic
 
-import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")

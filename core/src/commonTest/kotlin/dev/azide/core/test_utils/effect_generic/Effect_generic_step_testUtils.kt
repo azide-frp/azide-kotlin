@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.effect_generic
 
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
+import dev.azide.core.test_utils.generic.verifyReactionUninstalling
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {

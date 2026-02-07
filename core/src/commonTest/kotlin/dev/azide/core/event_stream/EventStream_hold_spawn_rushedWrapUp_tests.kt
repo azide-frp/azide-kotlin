@@ -3,9 +3,9 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test

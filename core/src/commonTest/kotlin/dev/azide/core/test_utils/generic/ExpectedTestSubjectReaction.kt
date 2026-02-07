@@ -1,7 +1,6 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.generic
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 interface ExpectedTestSubjectReaction<in SubjectT> {
@@ -42,7 +41,7 @@ interface ExpectedTestSubjectReaction<in SubjectT> {
 fun <SubjectT> ExpectedTestSubjectReaction<SubjectT>.prepareReactionVerifierInstalled(
     propagationContext: Transactions.PropagationContext,
     subject: SubjectT,
-): TestSubjectReactionVerifier = prepareReactionVerifier(
+): ExpectedTestSubjectReaction.TestSubjectReactionVerifier = prepareReactionVerifier(
     propagationContext = propagationContext,
     subjectLazy = lazyOf(subject),
 ).apply {
@@ -53,7 +52,7 @@ fun <SubjectT> ExpectedTestSubjectReaction<SubjectT>.prepareReactionVerifierWith
     propagationContext: Transactions.PropagationContext,
     subject: SubjectT,
     strategy: TestSubjectPerceptionStrategy,
-): TestSubjectReactionVerifier? = when (strategy) {
+): ExpectedTestSubjectReaction.TestSubjectReactionVerifier? = when (strategy) {
     TestSubjectPerceptionStrategy.NonPerceived -> null
 
     TestSubjectPerceptionStrategy.Perceived -> prepareReactionVerifierInstalled(
@@ -62,12 +61,12 @@ fun <SubjectT> ExpectedTestSubjectReaction<SubjectT>.prepareReactionVerifierWith
     )
 }
 
-fun TestSubjectReactionVerifier.verifyReactionUninstalling() {
+fun ExpectedTestSubjectReaction.TestSubjectReactionVerifier.verifyReactionUninstalling() {
     verifyReaction()
     uninstall()
 }
 
-fun TestSubjectReactionVerifier.installLater(
+fun ExpectedTestSubjectReaction.TestSubjectReactionVerifier.installLater(
     wrapUpContext: Transactions.WrapUpContext,
 ) {
     wrapUpContext.enqueueForWrapUp {

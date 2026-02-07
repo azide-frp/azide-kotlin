@@ -6,11 +6,11 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
-import dev.azide.core.test_utils.ExpectedTestSubjectState
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

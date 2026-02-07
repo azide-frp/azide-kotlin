@@ -3,7 +3,8 @@ package dev.azide.core.test_utils
 import dev.azide.core.Action
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact.ImpactVerifier
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull

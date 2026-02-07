@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.effect_event_stream
 
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.effect_generic.Effect_generic_startRevoked_testUtils
 

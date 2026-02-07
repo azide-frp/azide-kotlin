@@ -6,7 +6,7 @@ import dev.azide.core.executeExternally
 import dev.azide.core.external.ExternalEffectDelegate
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.schedule.Schedule_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils

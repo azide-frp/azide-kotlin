@@ -4,7 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x4
 import dev.azide.core.test_utils.TestSlotDispatcher2x4
 import dev.azide.core.test_utils.TestTargetActionRecorder

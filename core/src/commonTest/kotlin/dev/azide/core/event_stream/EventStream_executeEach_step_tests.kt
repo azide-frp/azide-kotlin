@@ -5,12 +5,12 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission

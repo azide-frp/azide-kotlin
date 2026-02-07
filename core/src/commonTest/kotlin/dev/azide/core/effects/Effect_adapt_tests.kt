@@ -9,8 +9,7 @@ import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.external.ExternalTrigger
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_cancelled_testUtils
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils
@@ -20,6 +19,7 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_qu
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelled_testUtils
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,6 +1,6 @@
 package dev.azide.core.collections.reactive_list
 
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.schedule.Schedule_step_testUtils

@@ -1,13 +1,13 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag

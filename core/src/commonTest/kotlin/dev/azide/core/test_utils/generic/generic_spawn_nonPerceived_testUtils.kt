@@ -2,7 +2,6 @@ package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Moment
 import dev.azide.core.pullInternallyWrappedUp
-import dev.azide.core.test_utils.ExpectedTestSubjectState
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulationSlot2
 

@@ -3,11 +3,11 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestSlotDispatcher2x3
 import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission

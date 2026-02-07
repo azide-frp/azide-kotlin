@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.TestStimulationSlot3
 
