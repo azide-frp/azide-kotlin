@@ -193,25 +193,3 @@ private fun <ResultT> StartRecord<ResultT>.verifyWasCancelledOnce() {
         message = "Expected exactly one cancellation of the target effect during the stimulation.",
     )
 }
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasStartedOnce(): TestTargetActionRecorder.ExecutionRecord<TestTargetEffect.Outcome<ResultT>> =
-    startRecorder.verifyWasExecutedOnce()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasStartedOnceAndRevoked(): TestTargetEffect.Outcome<ResultT> =
-    startRecorder.verifyWasExecutedOnceAndRevoked()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasNotStarted() {
-    startRecorder.verifyWasNotExecuted()
-}
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect.Outcome<ResultT>.verifyWasCancelledOnce(): TestTargetActionRecorder.ExecutionRecord<Unit> =
-    handle.cancelRecorder.verifyWasExecutedOnce()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect.Outcome<ResultT>.verifyWasNotCancelled() {
-    handle.cancelRecorder.verifyWasNotExecuted()
-}
