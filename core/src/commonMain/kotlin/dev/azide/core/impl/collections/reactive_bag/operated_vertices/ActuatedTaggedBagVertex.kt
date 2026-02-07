@@ -1,4 +1,4 @@
-package dev.azide.core.impl.effects
+package dev.azide.core.impl.collections.reactive_bag.operated_vertices
 
 import dev.azide.core.Action
 import dev.azide.core.Effect
@@ -15,6 +15,7 @@ import dev.azide.core.impl.collections.reactive_bag.abstract_vertices.AbstractSt
 import dev.azide.core.impl.collections.reactive_bag.mapKeepingTags
 import dev.azide.core.impl.collections.reactive_bag.mapToKeepingTags
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
+import dev.azide.core.impl.effects.InternalEffect
 import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
 
@@ -24,7 +25,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
     initialInnerEffectOutcomes: TaggedBag<Effect.Outcome<InnerResultT>>,
 ) : AbstractStatefulTrackedTaggedBagVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
-    initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) { it.result },
+    initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.Companion.empty()) { it.result },
 ), InternalEffect.Subject, Vertex.BoundListener, CommittableVertex {
     class ActuationEffect<InnerResultT>(
         private val sourceEffectBag: ReactiveBag<Effect<InnerResultT>>,
@@ -76,7 +77,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         get() = sourceEffectBag.trackedVertex
 
     private val stableInnerEffectHandles: MutableTaggedBag<Effect.Handle> =
-        initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) {
+        initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.Companion.empty()) {
             it.handle
         }
 
