@@ -6,11 +6,17 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListener
 
-abstract class AbstractTransformativeTrackedGenericCollectionVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>> :
-    AbstractStatelessTrackedGenericCollectionVertex<ContentT, ChangeT>(), BoundListener {
+abstract class AbstractTransformativeTrackedGenericCollectionVertex<
+        ContentT : Collection<*>,
+        ChangeT : CollectionChange<*>,
+        TransformedContentT : Collection<*>,
+        TransformedChangeT : CollectionChange<*>,
+        > :
+    AbstractStatelessTrackedGenericCollectionVertex<TransformedContentT, TransformedChangeT>(), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 
     /**
@@ -54,7 +60,7 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<ContentT : C
     final override fun activate(
         propagationContext: PropagationContext,
         mode: Vertex.ActivationMode,
-    ): ChangeT? {
+    ): TransformedChangeT? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
@@ -81,7 +87,7 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<ContentT : C
 
     final override fun getOldContentView(
         propagationContext: PropagationContext,
-    ): ContentT {
+    ): TransformedContentT {
         val oldContentView = sourceVertex.getOldContentView(
             propagationContext = propagationContext,
         )
@@ -95,11 +101,17 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<ContentT : C
 
     protected abstract fun transformOldContentView(
         oldContentView: ContentT,
-    ): ContentT
+    ): TransformedContentT
 
     protected abstract fun transformChange(
         change: ChangeT,
-    ): ChangeT?
+    ): TransformedChangeT?
 }
 
-typealias AbstractTransformativeTrackedSetVertex<ElementT> = AbstractTransformativeTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
+typealias AbstractTransformativeTrackedSetVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>, Set<TransformedElementT>, SetChange<TransformedElementT>>
+
+typealias AbstractAlteringTrackedSetVertex<ElementT> = AbstractTransformativeTrackedSetVertex<ElementT, ElementT>
+
+typealias AbstractTransformativeTrackedListVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<List<ElementT>, ListChange<ElementT>, List<TransformedElementT>, ListChange<TransformedElementT>>
+
+typealias AbstractAlteringTrackedListVertex<ElementT> = AbstractTransformativeTrackedListVertex<ElementT, ElementT>

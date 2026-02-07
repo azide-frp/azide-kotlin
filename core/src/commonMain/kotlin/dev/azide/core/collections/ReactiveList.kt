@@ -6,6 +6,7 @@ import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
+import dev.azide.core.impl.collections.reactive_list.operated_vertices.MappedTrackedListVertex
 import kotlin.jvm.JvmName
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
@@ -16,7 +17,9 @@ interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
             get() = TODO("Not yet implemented")
     }
 
-    class Ordinary<out ElementT>
+    class Ordinary<out ElementT>(
+        override val trackedVertex: TrackedListVertex<ElementT>,
+    ) : ReactiveList<ElementT>
 
     companion object {
         fun <ElementT> empty(): ReactiveList<ElementT> = Const(emptyList())
@@ -54,7 +57,12 @@ fun <ElementT> ReactiveList<ElementT>.filter(
 
 fun <ElementT, TransformedElementT> ReactiveList<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
-): ReactiveList<TransformedElementT> = TODO()
+): ReactiveList<TransformedElementT> = ReactiveList.Ordinary(
+    trackedVertex = MappedTrackedListVertex(
+        sourceVertex = this.trackedVertex,
+        transform = transform,
+    ),
+)
 
 fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sorted(): ReactiveList<ElementT> = TODO()
 

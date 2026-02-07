@@ -98,7 +98,9 @@ private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedRea
             override fun handle(
                 propagationContext: Transactions.PropagationContext,
             ) {
-                receivedChanges.add(subjectVertex.ongoingChange)
+                val perceivedChange = subjectVertex.ongoingChange
+
+                receivedChanges.add(perceivedChange)
             }
         }
 
