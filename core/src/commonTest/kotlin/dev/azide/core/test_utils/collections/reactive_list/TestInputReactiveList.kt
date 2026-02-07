@@ -238,7 +238,7 @@ class TestInputReactiveList<ElementT>(
         }
     }
 
-    override val trackedVertex: TrackedCollectionVertex<ElementT>
+    override val trackedVertex: TrackedListVertex<ElementT>
         get() = _vertex
 }
 
