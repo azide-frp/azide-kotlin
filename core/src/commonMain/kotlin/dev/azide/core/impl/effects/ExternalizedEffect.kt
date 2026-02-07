@@ -6,10 +6,10 @@ import dev.azide.core.Trigger
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 
-abstract class AbstractExternalizedEffect<ResultT>(
+class ExternalizedEffect<ResultT>(
     internalEffect: InternalEffect<ResultT>,
 ) : Effect<ResultT> {
-    final override val start: Action<Effect.Outcome<ResultT>> = object : Action<Effect.Outcome<ResultT>> {
+    override val start: Action<Effect.Outcome<ResultT>> = object : Action<Effect.Outcome<ResultT>> {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,

@@ -10,7 +10,7 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
-import dev.azide.core.impl.effects.AbstractExternalizedEffect
+import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
 import dev.azide.core.pullExternally
 
@@ -72,11 +72,11 @@ fun <ElementT, ResultT> ReactiveBag<ElementT>.executeEveryOf(
 ): Effect<ReactiveBag<ResultT>> = map(selector).executeEvery()
 
 fun <InnerResultT> ReactiveBag<Effect<InnerResultT>>.actuate(): Effect<ReactiveBag<InnerResultT>> =
-    object : AbstractExternalizedEffect<ReactiveBag<InnerResultT>>(
+    ExternalizedEffect<ReactiveBag<InnerResultT>>(
         internalEffect = ActuatedTaggedBagVertex.ActuationEffect(
             sourceEffectBag = this@actuate,
         ),
-    ) {}
+    )
 
 fun <ElementT, ResultT> ReactiveBag<ElementT>.actuateOf(
     selector: (ElementT) -> Effect<ResultT>,
