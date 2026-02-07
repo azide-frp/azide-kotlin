@@ -9,8 +9,6 @@ interface InternalEffect<SubjectT : InternalEffect.Subject> {
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): Revocable
-
-        fun dispose()
     }
 
     interface RevocableOutcome<SubjectT : InternalEffect.Subject> : Revocable {

@@ -312,7 +312,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         propagationContext = propagationContext,
     )
 
-    override fun dispose() {
+    private fun dispose() {
         if (internalState == InternalState.StartedUp) {
             shutDown()
         }
