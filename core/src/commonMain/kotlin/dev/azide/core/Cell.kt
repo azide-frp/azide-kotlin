@@ -1,6 +1,5 @@
 package dev.azide.core
 
-import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
@@ -8,7 +7,6 @@ import dev.azide.core.impl.cell.operated_vertices.ActuatedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
 import dev.azide.core.impl.cell.operated_vertices.MappedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
-import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.event_stream.operated_vertices.DivertedEventStreamVertex
 import dev.azide.core.impl.event_stream.operated_vertices.UpdatedValuesEventStreamVertex

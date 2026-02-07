@@ -1,9 +1,9 @@
 package dev.azide.core.impl.cell.abstract_vertices
 
+import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.AbstractLiveVertex
 import dev.azide.core.impl.enqueueForCommitment
 
 abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<ValueT>, CommittableVertex {

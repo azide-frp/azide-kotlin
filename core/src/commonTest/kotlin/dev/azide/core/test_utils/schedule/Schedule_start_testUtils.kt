@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.schedule
 
 import dev.azide.core.Schedule
-import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 
 @Suppress("ClassName")
 data object Schedule_start_testUtils {

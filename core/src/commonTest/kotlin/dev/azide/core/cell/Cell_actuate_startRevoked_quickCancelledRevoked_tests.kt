@@ -3,7 +3,6 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x5
 import dev.azide.core.test_utils.TestSlotDispatcher2x5
 import dev.azide.core.test_utils.TestTargetEffect
@@ -12,6 +11,7 @@ import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import kotlin.test.Test
 
 @Suppress("ClassName")

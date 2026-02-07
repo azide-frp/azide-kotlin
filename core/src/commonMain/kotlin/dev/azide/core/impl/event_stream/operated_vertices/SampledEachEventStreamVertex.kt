@@ -4,8 +4,8 @@ import dev.azide.core.EventStream
 import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
 import dev.azide.core.pullInternallyWrappedUp

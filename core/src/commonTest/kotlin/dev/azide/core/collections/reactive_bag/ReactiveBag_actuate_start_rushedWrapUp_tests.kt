@@ -5,7 +5,6 @@ import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.actuate
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
-import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
@@ -14,6 +13,7 @@ import dev.azide.core.test_utils.collections.reactive_bag.changing
 import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation3

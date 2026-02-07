@@ -7,11 +7,11 @@ import dev.azide.core.Moment
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
-import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
 import dev.azide.core.pullExternally
 
 interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {

@@ -3,7 +3,6 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
@@ -12,6 +11,7 @@ import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import kotlin.test.Test
 
 @Suppress("ClassName")

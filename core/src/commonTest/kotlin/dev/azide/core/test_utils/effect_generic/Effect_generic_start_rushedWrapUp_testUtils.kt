@@ -5,11 +5,11 @@ import dev.azide.core.impl.Transactions.WrapUpContext
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
+import dev.azide.core.test_utils.TestSlottedStimulation3
+import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.generic.installLater
 
 @Suppress("ClassName")

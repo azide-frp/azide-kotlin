@@ -4,7 +4,6 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlotDispatcher1x3
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.bind
@@ -12,6 +11,7 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_ru
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.expectIsExecutedOnce
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import kotlin.test.Test
 
 @Suppress("ClassName")

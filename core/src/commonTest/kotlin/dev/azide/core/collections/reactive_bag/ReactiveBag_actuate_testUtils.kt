@@ -6,7 +6,6 @@ import dev.azide.core.collections.sampleTaggedContentExternally
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.utils.list.uncons
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
@@ -16,6 +15,7 @@ import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_step_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 
 @Suppress("ClassName")

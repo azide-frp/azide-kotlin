@@ -2,9 +2,9 @@ package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
-import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation4
 import dev.azide.core.test_utils.TestStimulationSlot4
+import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_quickCancelled_testUtils {

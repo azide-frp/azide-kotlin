@@ -2,7 +2,6 @@ package dev.azide.core.test_utils.collections.reactive_bag
 
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
-import kotlin.collections.iterator
 
 @Suppress("ClassName")
 object TaggedBagChange_testUtils {

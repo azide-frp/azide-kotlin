@@ -4,10 +4,10 @@ import dev.azide.core.CausalLoopException
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.Vertex.Listener
 import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.enqueueForCommitment
+import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveListenerHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag

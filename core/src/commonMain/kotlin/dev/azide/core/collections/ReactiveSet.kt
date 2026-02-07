@@ -6,8 +6,8 @@ import dev.azide.core.Effect
 import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredTrackedSetVertex
 
 interface ReactiveSet<out ElementT> : ReactiveCollection<ElementT> {

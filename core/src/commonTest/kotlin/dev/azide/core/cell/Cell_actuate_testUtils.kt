@@ -2,7 +2,6 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.sampleExternally
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
@@ -11,6 +10,7 @@ import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 
 @Suppress("ClassName")
 data object Cell_actuate_testUtils {

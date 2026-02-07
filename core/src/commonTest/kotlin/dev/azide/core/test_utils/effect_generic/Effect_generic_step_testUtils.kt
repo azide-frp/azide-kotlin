@@ -1,9 +1,9 @@
 package dev.azide.core.test_utils.effect_generic
 
+import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
 import dev.azide.core.test_utils.generic.verifyReactionUninstalling
 

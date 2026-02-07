@@ -1,11 +1,7 @@
 package dev.azide.core.impl.collections.reactive_list.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
-import dev.azide.core.impl.collections.reactive_bag.TaggedBag
-import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedListVertex
-import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
 

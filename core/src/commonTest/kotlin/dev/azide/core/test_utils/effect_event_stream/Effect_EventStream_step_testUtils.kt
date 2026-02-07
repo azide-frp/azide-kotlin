@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils.effect_event_stream
 
-import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 
 @Suppress("ClassName")
 data object Effect_EventStream_step_testUtils {

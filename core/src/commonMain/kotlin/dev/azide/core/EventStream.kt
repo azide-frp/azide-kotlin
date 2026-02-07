@@ -4,7 +4,6 @@ import dev.azide.core.external.ExternalStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.impl.effects.AdaptedExternalStreamVertex
 import dev.azide.core.impl.effects.ExecutedEachEventStreamVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.event_stream.EventStreamVertex
