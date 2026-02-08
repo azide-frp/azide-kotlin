@@ -2,13 +2,15 @@ package dev.azide.core.test_utils.collections.reactive_list
 
 import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.abstract_vertices.AbstractStatefulTrackedListVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag
+import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import kotlin.test.assertTrue
 
 class TestInputReactiveList<ElementT>(
@@ -102,7 +104,7 @@ class TestInputReactiveList<ElementT>(
                 override fun toListChangePart(): ListChange.Part<ElementT> = ListChange.Part(
                     firstIndexInclusive = indexRange.start,
                     lastIndexExclusive = indexRange.endExclusive,
-                    newElements = emptyList(),
+                    newElements = replacedElements,
                 )
             }
 
@@ -238,7 +240,7 @@ class TestInputReactiveList<ElementT>(
         }
     }
 
-    override val trackedVertex: TrackedCollectionVertex<ElementT>
+    override val trackedVertex: TrackedListVertex<ElementT>
         get() = _vertex
 }
 
@@ -255,6 +257,17 @@ fun <ElementT> ChangeDescription<ElementT>.verifyIsApplicable(
     )
 }
 
+fun <ElementT> TestInputReactiveList<ElementT>.changing(
+    tag: TestInputReactiveCollectionTag,
+    description: ChangeDescription<ElementT>,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ) to change(
+        description = description,
+    ),
+)
+
 fun <ElementT> TestInputReactiveList<ElementT>.revokingChange(
     description: ChangeDescription<ElementT>,
 ): DoubleTestStimulation = DoubleTestStimulation(
@@ -262,6 +275,20 @@ fun <ElementT> TestInputReactiveList<ElementT>.revokingChange(
         description = description,
     ),
     secondStimulation = revokeChange(),
+)
+
+fun <ElementT> TestInputReactiveList<ElementT>.revokingChange(
+    tag: TestInputReactiveCollectionTag,
+    intermediateDescription: ChangeDescription<ElementT>,
+): TestStimulationMap = revokingChange(
+    intermediateDescription,
+).tagged(
+    firstTag = TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ),
+    secondTag = TestInputReactiveCollectionStimulationTag.ChangeRevocation(
+        inputTag = tag,
+    ),
 )
 
 fun <ElementT> TestInputReactiveList<ElementT>.correctingChange(
@@ -273,5 +300,21 @@ fun <ElementT> TestInputReactiveList<ElementT>.correctingChange(
     ),
     secondStimulation = correctChange(
         correctedDescription = correctedDescription,
+    ),
+)
+
+fun <ElementT> TestInputReactiveList<ElementT>.correctingChange(
+    tag: TestInputReactiveCollectionTag,
+    intermediateDescription: ChangeDescription<ElementT>,
+    correctedDescription: ChangeDescription<ElementT>,
+): TestStimulationMap = correctingChange(
+    intermediateDescription = intermediateDescription,
+    correctedDescription = correctedDescription,
+).tagged(
+    firstTag = TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ),
+    secondTag = TestInputReactiveCollectionStimulationTag.ChangeCorrection(
+        inputTag = tag,
     ),
 )

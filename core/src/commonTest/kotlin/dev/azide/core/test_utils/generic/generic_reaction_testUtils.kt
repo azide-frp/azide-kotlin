@@ -1,10 +1,8 @@
 package dev.azide.core.test_utils.generic
 
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation2
-import dev.azide.core.test_utils.TestStimulationSlot2
-import dev.azide.core.test_utils.prepareReactionVerifierInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object generic_reaction_testUtils {
@@ -17,9 +15,8 @@ data object generic_reaction_testUtils {
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation.stimulate(
+            slottedInputStimulation.slotStimulation0.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot0,
             )
 
             // 1. Perceive the subject
@@ -28,9 +25,8 @@ data object generic_reaction_testUtils {
                 subject = subject,
             )
 
-            slottedInputStimulation.stimulate(
+            slottedInputStimulation.slotStimulation1.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot1,
             )
 
             expectedSubjectTransition.expectedOldState.verifyStableState(

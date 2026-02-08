@@ -1,31 +1,16 @@
 package dev.azide.core.test_utils
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 
 enum class TestStimulationSlot3 : TestStimulationSlot {
     Slot0, Slot1, Slot2,
 }
 
-enum class TestSlotDispatcher1x3(
-    override val slot: TestStimulationSlot3,
-) : TestSlotDispatcher1xN {
-    Case0(
-        TestStimulationSlot3.Slot0,
-    ),
-
-    Case1(
-        TestStimulationSlot3.Slot1,
-    ),
-
-    Case2(
-        TestStimulationSlot3.Slot2,
-    ),
-}
-
-enum class TestSlotDispatcher2x3(
-    override val slotA: TestStimulationSlot3,
-    override val slotB: TestStimulationSlot3,
-) : TestSlotDispatcher2xN {
+enum class TestSlottedStimulationScenario2x3(
+    val slotA: TestStimulationSlot3,
+    val slotB: TestStimulationSlot3,
+) {
     Case00(
         TestStimulationSlot3.Slot0,
         TestStimulationSlot3.Slot0,
@@ -57,41 +42,4 @@ enum class TestSlotDispatcher2x3(
     ),
 }
 
-interface TestSlottedStimulation3 {
-    fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot3,
-    )
-}
-
-fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x3,
-): TestSlottedStimulation3 = object : TestSlottedStimulation3 {
-    override fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot3,
-    ) {
-        dispatcher.dispatch(
-            testStimulation = this@bind,
-            slot = slot,
-        )?.stimulate(
-            propagationContext = propagationContext,
-        )
-    }
-}
-
-fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x3,
-): TestSlottedStimulation3 = object : TestSlottedStimulation3 {
-    override fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot3,
-    ) {
-        dispatcher.dispatch(
-            orderedTestStimulation = this@bind,
-            slot = slot,
-        )?.stimulate(
-            propagationContext = propagationContext,
-        )
-    }
-}
+typealias TestSlottedStimulation3 = TestSlottedStimulation<TestSlotCount.Count3>

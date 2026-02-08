@@ -6,6 +6,10 @@ data class TestStimulationScenario(
     val stimulationTags: List<TestStimulationTag>,
 ) {
     companion object {
+        val Empty = TestStimulationScenario(
+            stimulationTags = emptyList(),
+        )
+
         fun of(
             vararg stimulationTags: TestStimulationTag,
         ): TestStimulationScenario = TestStimulationScenario(

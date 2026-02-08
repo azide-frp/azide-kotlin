@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.generic
 
 import kotlin.test.assertEquals
 

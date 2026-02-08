@@ -5,7 +5,6 @@ import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.actuate
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag.ChangeDescription
@@ -14,31 +13,32 @@ import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
 import dev.azide.core.test_utils.collections.reactive_bag.revokingChange
 import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_startRevoked_quickCancelled_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation4
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
 class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<TestSlotCount.Count4>
+    private typealias SuitableSlotCount = TestSlotCount.Count4
 
-    private val slotCount = TestSlotCount.Count4
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
     private val slottedStimulationBank_sourceEffectBagChanges =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChanges =
         slottedStimulationBank_sourceEffectBagChanges.slottedStimulationScenarios[0]
 
     private val slottedStimulationBank_sourceEffectBagChangesRevoked =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesRevoked.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked =
         slottedStimulationBank_sourceEffectBagChangesRevoked.slottedStimulationScenarios[0]
 
     private val slottedStimulationBank_sourceEffectBagChangesCorrected =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesCorrected.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected =
         slottedStimulationBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
@@ -104,17 +104,17 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.changing(
-                    tag = SourceEffectReactiveBagTag,
-                    description = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect4 to targetEffect4,
-                            TargetEffectTag.TargetEffect5 to targetEffect5,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.changing(
+                tag = SourceEffectReactiveBagTag,
+                description = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4,
+                        TargetEffectTag.TargetEffect5 to targetEffect5,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -159,17 +159,17 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.changing(
-                    tag = SourceEffectReactiveBagTag,
-                    description = ChangeDescription(
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect1,
-                            TargetEffectTag.TargetEffect3,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.changing(
+                tag = SourceEffectReactiveBagTag,
+                description = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1,
+                        TargetEffectTag.TargetEffect3,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -217,18 +217,18 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.changing(
-                    tag = SourceEffectReactiveBagTag,
-                    description = ChangeDescription(
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect2 to targetEffect2b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.changing(
+                tag = SourceEffectReactiveBagTag,
+                description = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect2 to targetEffect2b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -289,25 +289,25 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.changing(
-                    tag = SourceEffectReactiveBagTag,
-                    description = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect2,
-                            TargetEffectTag.TargetEffect4,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.changing(
+                tag = SourceEffectReactiveBagTag,
+                description = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect4,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -357,17 +357,17 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.revokingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect4 to targetEffect4,
-                            TargetEffectTag.TargetEffect5 to targetEffect5,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4,
+                        TargetEffectTag.TargetEffect5 to targetEffect5,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -412,17 +412,17 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.revokingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect1,
-                            TargetEffectTag.TargetEffect3,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1,
+                        TargetEffectTag.TargetEffect3,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -468,18 +468,18 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.revokingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect2 to targetEffect2b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect2 to targetEffect2b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -539,25 +539,25 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.revokingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect2,
-                            TargetEffectTag.TargetEffect4,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.revokingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect4,
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -610,25 +610,25 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.correctingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect4 to targetEffect4, // corrected: not added
-                            TargetEffectTag.TargetEffect5 to targetEffect5a, // corrected: added differently
-                            TargetEffectTag.TargetEffect7 to targetEffect7, // not corrected
-                        ),
-                    ),
-                    correctedDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect5 to targetEffect5b,
-                            TargetEffectTag.TargetEffect6 to targetEffect6, // (not mentioned before)
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect4 to targetEffect4, // corrected: not added
+                        TargetEffectTag.TargetEffect5 to targetEffect5a, // corrected: added differently
+                        TargetEffectTag.TargetEffect7 to targetEffect7, // not corrected
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+                correctedDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect5 to targetEffect5b,
+                        TargetEffectTag.TargetEffect6 to targetEffect6, // (not mentioned before)
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -676,23 +676,23 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.correctingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect1, // corrected: not removed
-                            TargetEffectTag.TargetEffect3, // not corrected
-                        ),
-                    ),
-                    correctedDescription = ChangeDescription(
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect3,
-                            TargetEffectTag.TargetEffect4, // (not mentioned before)
-                        ),
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect1, // corrected: not removed
+                        TargetEffectTag.TargetEffect3, // not corrected
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+                correctedDescription = ChangeDescription(
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect3,
+                        TargetEffectTag.TargetEffect4, // (not mentioned before)
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -742,25 +742,25 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.correctingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b, // corrected: not replaced
-                            TargetEffectTag.TargetEffect2 to targetEffect2b, // corrected: replaced differently
-                            TargetEffectTag.TargetEffect3 to targetEffect3b, // not corrected
-                        ),
-                    ),
-                    correctedDescription = ChangeDescription(
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect2 to targetEffect2c,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                            TargetEffectTag.TargetEffect4 to targetEffect4b, // (not mentioned before)
-                        ),
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b, // corrected: not replaced
+                        TargetEffectTag.TargetEffect2 to targetEffect2b, // corrected: replaced differently
+                        TargetEffectTag.TargetEffect3 to targetEffect3b, // not corrected
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+                correctedDescription = ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect2 to targetEffect2c,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                        TargetEffectTag.TargetEffect4 to targetEffect4b, // (not mentioned before)
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -824,39 +824,39 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
 
         Effect_ReactiveBag_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.correctingChange(
-                    tag = SourceEffectReactiveBagTag,
-                    intermediateDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6, // not corrected
-                            TargetEffectTag.TargetEffect7 to targetEffect7a, // corrected: added differently
-                        ),
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b, // not corrected
-                            TargetEffectTag.TargetEffect3 to targetEffect3b, // corrected: not replaced
-                        ),
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect2, // not corrected
-                            TargetEffectTag.TargetEffect4, // corrected: not removed
-                        ),
+            slottedInputStimulation = sourceReactiveBag.correctingChange(
+                tag = SourceEffectReactiveBagTag,
+                intermediateDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6, // not corrected
+                        TargetEffectTag.TargetEffect7 to targetEffect7a, // corrected: added differently
                     ),
-                    correctedDescription = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7b,
-                        ),
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect2,
-                            TargetEffectTag.TargetEffect5, // (not mentioned before)
-                        ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b, // not corrected
+                        TargetEffectTag.TargetEffect3 to targetEffect3b, // corrected: not replaced
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2, // not corrected
+                        TargetEffectTag.TargetEffect4, // corrected: not removed
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+                correctedDescription = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7b,
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect5, // (not mentioned before)
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),

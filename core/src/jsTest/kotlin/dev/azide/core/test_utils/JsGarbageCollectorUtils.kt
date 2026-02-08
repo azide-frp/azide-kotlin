@@ -85,7 +85,7 @@ object JsGarbageCollectorUtils {
         var delay = config.minAllocationDelay
         var size = config.minBlockSize
 
-        // We override the dispatcher to use the default one. By default, the dispatcher used during testing offers a so
+        // We override the slottedStimulationScenario to use the default one. By default, the slottedStimulationScenario used during testing offers a so
         // called "delay-skipping", while these delays have to work in real time (as does the garbage collector).
         withContext(Dispatchers.Default) {
             @Suppress("AssignedValueIsNeverRead") while (true) {

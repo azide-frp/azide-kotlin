@@ -2,11 +2,10 @@ package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Moment
 import dev.azide.core.pullInternallyWrappedUp
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.TestStimulationSlot3
-import dev.azide.core.test_utils.prepareReactionVerifierInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_testUtils {
@@ -19,9 +18,8 @@ data object generic_spawn_testUtils {
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation0?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot0,
             )
 
             // 1. Spawn the subject
@@ -29,9 +27,8 @@ data object generic_spawn_testUtils {
                 propagationContext = propagationContext,
             )
 
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation1?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot1,
             )
 
             // 2. Perceive the subject
@@ -40,9 +37,8 @@ data object generic_spawn_testUtils {
                 subject = subject,
             )
 
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation2?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot2,
             )
 
             expectedSubjectTransition.expectedOldState.verifyStableState(

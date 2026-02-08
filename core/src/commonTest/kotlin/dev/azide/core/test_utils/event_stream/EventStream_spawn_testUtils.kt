@@ -2,7 +2,6 @@ package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
 import dev.azide.core.Moment
-import dev.azide.core.test_utils.ExpectedEventStreamEmission
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.generic.generic_spawn_testUtils
 

@@ -101,6 +101,15 @@ class TestInputCell<ValueT>(
         get() = _vertex
 }
 
+fun <ValueT> TestInputCell<ValueT>.updating(
+    tag: TestInputCellTag,
+    newValue: ValueT,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputCellStimulationTag.Update(inputTag = tag) to update(
+        newValue = newValue,
+    ),
+)
+
 fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
     newValue: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(

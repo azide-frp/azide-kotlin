@@ -3,15 +3,25 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.Cell_expectations_testUtils
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_nonPerceived_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.emitting
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class EventStream_hold_spawn_nonObserved_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_spawn() {
         val sourceEventStream = TestInputEventStream<Int>()
@@ -31,15 +41,15 @@ class EventStream_hold_spawn_nonObserved_tests {
 
     @Test
     fun test_spawn_sourceEmitsSimultaneously() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_spawn_sourceEmitsSimultaneously(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -47,9 +57,10 @@ class EventStream_hold_spawn_nonObserved_tests {
 
         Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
             subjectCellSpawnMoment = subjectMoment,
-            slottedInputStimulation = sourceEventStream.emit(
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceEventStreamTag,
                 emittedEvent = 10,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedValue = 0,
             ),

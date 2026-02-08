@@ -5,7 +5,7 @@ import dev.azide.core.CausalLoopException
 import dev.azide.core.executeEach
 import dev.azide.core.executeEachOf
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.TransactionTestUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.stimulateForTesting
@@ -33,12 +33,12 @@ class EventStream_executeEach_misc_tests {
 
         nastyEffect.startExternally()
 
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         assertIs<CausalLoopException>(
             assertFails {
                 TransactionTestUtils.executeInsideTransaction {
-                    sourceEventStream.emit(emittedEvent = targetAction).stimulateForTesting()
+                    sourceEventStream.emit(emittedEvent = targetActionRecorder.recordedAction).stimulateForTesting()
                 }
             },
         )

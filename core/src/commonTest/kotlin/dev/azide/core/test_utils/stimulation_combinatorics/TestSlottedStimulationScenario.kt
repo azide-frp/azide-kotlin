@@ -17,15 +17,15 @@ data class TestSlottedStimulationScenario<@Suppress("unused") SlotCountT : TestS
             )
         }
     }
-
-    fun bind(
-        stimulationMap: TestStimulationMap,
-    ): TestSlottedStimulation<SlotCountT> = TestSlottedStimulation(
-        slotStimulations = slotStimulationScenarios.map { stimulationScenario: TestStimulationScenario ->
-            stimulationScenario.bind(stimulationMap = stimulationMap)
-        },
-    )
 }
+
+fun <@Suppress("unused") SlotCountT : TestSlotCount> TestStimulationMap.bind(
+    __scenario__: TestSlottedStimulationScenario<SlotCountT>,
+): TestSlottedStimulation<SlotCountT> = TestSlottedStimulation(
+    slotStimulations = __scenario__.slotStimulationScenarios.map { stimulationScenario: TestStimulationScenario ->
+        stimulationScenario.bind(stimulationMap = this)
+    },
+)
 
 val TestSlottedStimulationScenario<TestSlotCount.Count1Plus>.slotStimulation0: TestStimulationScenario
     get() = slotStimulationScenarios[0]

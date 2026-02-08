@@ -2,47 +2,69 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Action
 import dev.azide.core.EventStream
-import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 
 @Suppress("ClassName")
 data object EventStream_executeEach_testUtils {
+    data object SourceActionEventStreamTag : TestInputEventStreamTag
+
+    val stimulationBank_sourceActionEventStreamEmits = TestStimulationBank.build(
+        TestInputEventStreamTag.emissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
+    val stimulationBank_sourceActionEventStreamEmitsRevoked = TestStimulationBank.build(
+        TestInputEventStreamTag.revokedEmissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
+    val stimulationBank_sourceActionEventStreamEmitsCorrected = TestStimulationBank.build(
+        TestInputEventStreamTag.correctedEmissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
     fun verifyEffectNotOngoing(
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
     ) {
-        val targetAction = TestTargetAction.Companion.of(result = -1)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
-            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }
 
     fun verifyEffectNotOngoing(
         sourceEventStream: TestInputEventStream<Action<Int>>,
     ) {
-        val targetAction = TestTargetAction.of(result = -1)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ),
             expectedSubjectEmission = ExpectedTestSubjectTransition.None,
-            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }
 
@@ -50,18 +72,18 @@ data object EventStream_executeEach_testUtils {
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
     ) {
-        val targetAction = TestTargetAction.of(result = 0)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 0)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 0,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder.expectIsExecutedOnce(),
         )
     }
 }

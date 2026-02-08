@@ -3,13 +3,14 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.TestSlottedStimulation2
-import dev.azide.core.test_utils.TestStimulationSlot2
-import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
+import dev.azide.core.test_utils.generic.verifyReactionUninstalling
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Effect_generic_start_testUtils {
@@ -24,9 +25,8 @@ data object Effect_generic_start_testUtils {
         expectedNewState = expectedSubjectTransition.expectedNewState,
     ) { propagationContext ->
         // 0. Pre-stimulation
-        slottedInputStimulation?.stimulate(
+        slottedInputStimulation?.slotStimulation0?.stimulate(
             propagationContext = propagationContext,
-            slot = TestStimulationSlot2.Slot0,
         )
 
         // 1. Start the effect
@@ -36,9 +36,8 @@ data object Effect_generic_start_testUtils {
 
         val subject = effectOutcome.result
 
-        slottedInputStimulation?.stimulate(
+        slottedInputStimulation?.slotStimulation1?.stimulate(
             propagationContext = propagationContext,
-            slot = TestStimulationSlot2.Slot1,
         )
 
         val subjectReactionVerifier: ExpectedTestSubjectReaction.TestSubjectReactionVerifier? =

@@ -1,13 +1,18 @@
 package dev.azide.core.test_utils
 
+import dev.azide.core.Action
 import dev.azide.core.Effect
-import dev.azide.core.test_utils.ExpectedImpact.ImpactVerifier
+import dev.azide.core.Trigger
 import dev.azide.core.test_utils.TestTargetEffect.StartRecord
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact.ImpactVerifier
 import kotlin.test.assertEquals
 
 abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
     class Handle : Effect.Handle {
-        override val cancel: TestTargetAction.Trigger = TestTargetAction.Trigger()
+        val cancelRecorder: TestTargetActionRecorder.TriggerRecorder = TestTargetActionRecorder.TriggerRecorder()
+
+        override val cancel: Trigger = cancelRecorder.recordedAction
     }
 
     interface Outcome<ResultT> : Effect.Outcome<ResultT> {
@@ -15,23 +20,20 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
     }
 
     class StartRecord<ResultT>(
-        private val executionRecord: TestTargetAction.ExecutionRecord<Outcome<ResultT>>,
+        private val executionRecord: TestTargetActionRecorder.ExecutionRecord<Outcome<ResultT>>,
     ) {
         val wasRevoked: Boolean
             get() = executionRecord.wasRevoked
 
-        val outcome: Outcome<ResultT>
-            get() = executionRecord.result
-
-        val result: ResultT
-            get() = outcome.result
+        private val handle: Handle
+            get() = executionRecord.result.handle
 
         fun resetCancellationRecords() {
-            outcome.handle.cancel.resetExecutionRecords()
+            handle.cancelRecorder.resetExecutionRecords()
         }
 
-        fun getAndResetCancellationRecords(): List<TestTargetAction.ExecutionRecord<Unit>> =
-            outcome.handle.cancel.getAndResetExecutionRecords()
+        fun getAndResetCancellationRecords(): List<TestTargetActionRecorder.ExecutionRecord<Unit>> =
+            handle.cancelRecorder.getAndResetExecutionRecords()
     }
 
     companion object {
@@ -42,7 +44,7 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
         }
     }
 
-    private val _start = object : TestTargetAction<Outcome<ResultT>>() {
+    private val startRecorder = object : TestTargetActionRecorder<Outcome<ResultT>>() {
         override fun buildResult(): Outcome<ResultT> {
             val result = this@TestTargetEffect.buildResult()
 
@@ -53,13 +55,13 @@ abstract class TestTargetEffect<ResultT>() : Effect<ResultT> {
         }
     }
 
-    final override val start: TestTargetAction<Outcome<ResultT>> = _start
+    final override val start: Action<Outcome<ResultT>> = startRecorder.recordedAction
 
     fun resetStartRecords() {
-        _start.resetExecutionRecords()
+        startRecorder.resetExecutionRecords()
     }
 
-    fun getAndResetStartRecords(): List<StartRecord<ResultT>> = _start.getAndResetExecutionRecords().map {
+    fun getAndResetStartRecords(): List<StartRecord<ResultT>> = startRecorder.getAndResetExecutionRecords().map {
         StartRecord(executionRecord = it)
     }
 
@@ -188,26 +190,4 @@ private fun <ResultT> StartRecord<ResultT>.verifyWasCancelledOnce() {
         actual = effectiveCancellationRecords.size,
         message = "Expected exactly one cancellation of the target effect during the stimulation.",
     )
-}
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasStartedOnce(): TestTargetAction.ExecutionRecord<TestTargetEffect.Outcome<ResultT>> =
-    start.verifyWasExecutedOnce()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasStartedOnceAndRevoked(): TestTargetEffect.Outcome<ResultT> =
-    start.verifyWasExecutedOnceAndRevoked()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect<ResultT>.verifyWasNotStarted() {
-    start.verifyWasNotExecuted()
-}
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect.Outcome<ResultT>.verifyWasCancelledOnce(): TestTargetAction.ExecutionRecord<Unit> =
-    handle.cancel.verifyWasExecutedOnce()
-
-@Deprecated("Switch to the new test utils")
-fun <ResultT> TestTargetEffect.Outcome<ResultT>.verifyWasNotCancelled() {
-    handle.cancel.verifyWasNotExecuted()
 }

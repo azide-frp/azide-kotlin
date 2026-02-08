@@ -5,17 +5,17 @@ import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.TestTargetAction
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -37,7 +37,7 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmits(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -49,12 +49,12 @@ class EventStream_executeEach_step_tests {
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder.expectIsExecutedOnce(),
         )
     }
 
@@ -75,7 +75,7 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmitsRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -87,12 +87,12 @@ class EventStream_executeEach_step_tests {
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.revokingEmission(
-                emittedEvent = targetAction,
+                emittedEvent = targetActionRecorder.recordedAction,
             ).joint(),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
-            expectedTargetImpact = targetAction.expectIsNotExecuted(),
+            expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }
 
@@ -113,8 +113,8 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmitsCorrected(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetAction1 = TestTargetAction.of(result = 10)
-        val targetAction2 = TestTargetAction.of(result = 20)
+        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 20)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -126,16 +126,16 @@ class EventStream_executeEach_step_tests {
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.correctingEmission(
-                intermediateEmittedEvent = targetAction1,
-                correctedEmittedEvent = targetAction2,
+                intermediateEmittedEvent = targetActionRecorder1.recordedAction,
+                correctedEmittedEvent = targetActionRecorder2.recordedAction,
             ).joint(),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetAction1.expectIsNotExecuted(),
-                targetAction2.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsExecutedOnce(),
             ),
         )
     }

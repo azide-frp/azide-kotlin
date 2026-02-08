@@ -4,8 +4,8 @@ import dev.azide.core.external.ExternalStream
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.operated_vertices.HeldCellVertex
-import dev.azide.core.impl.effects.AbstractProcessEffect
-import dev.azide.core.impl.effects.ExecutedEachEventStreamProcessVertex
+import dev.azide.core.impl.effects.ExecutedEachEventStreamVertex
+import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.TerminatedEventStreamVertex
@@ -205,18 +205,11 @@ fun <EventT, TransformedEventT> EventStream<EventT>.sampleEachOf(
 ): EventStream<TransformedEventT> = map(transform).sampleEach()
 
 fun <EventT> EventStream<Action<EventT>>.executeEach(): Effect<EventStream<EventT>> =
-    object : AbstractProcessEffect<ExecutedEachEventStreamProcessVertex<EventT>, EventStream<EventT>>() {
-        override fun buildProcessVertex(): ExecutedEachEventStreamProcessVertex<EventT> =
-            ExecutedEachEventStreamProcessVertex(
-                sourceEventStream = this@executeEach,
-            )
-
-        override fun wrap(
-            effectVertex: ExecutedEachEventStreamProcessVertex<EventT>,
-        ): EventStream<EventT> = EventStream.Ordinary(
-            vertex = effectVertex,
-        )
-    }
+    ExternalizedEffect<EventStream<EventT>>(
+        internalEffect = ExecutedEachEventStreamVertex.ExecutionEffect(
+            sourceEventStream = this@executeEach,
+        ),
+    )
 
 fun EventStream<Trigger>.triggerEach(): Schedule = executeEach().map { }
 

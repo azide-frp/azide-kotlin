@@ -6,7 +6,7 @@ import dev.azide.core.impl.Vertex.Listener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.FrozenTrackedGenericCollectionVertex
 
-abstract class AbstractFrozenTrackedGenericCollectionVertex<ContentT : Collection<*>> :
+abstract class AbstractFrozenTrackedGenericCollectionVertex<out ContentT : Collection<*>> :
     FrozenTrackedGenericCollectionVertex<ContentT> {
     private object NoopListenerHandle : ListenerHandle
 

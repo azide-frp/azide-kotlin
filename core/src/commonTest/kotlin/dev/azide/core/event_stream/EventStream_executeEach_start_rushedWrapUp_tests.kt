@@ -3,19 +3,29 @@ package dev.azide.core.event_stream
 import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
+import dev.azide.core.event_stream.EventStream_executeEach_testUtils.SourceActionEventStreamTag
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.TestSlotDispatcher1x3
-import dev.azide.core.test_utils.TestTargetAction
-import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.expectIsExecutedOnce
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class EventStream_executeEach_start_rushedWrapUp_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count3
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceActionEventStreamEmits =
+        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+
     @Test
     fun test_start_rushedWrapUp() {
         val sourceEventStream = TestInputEventStream<Action<Int>>()
@@ -31,15 +41,15 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
     @Test
     fun test_start_rushedWrapUp_sourceEmitsSimultaneously() {
-        TestSlotDispatcher1x3.entries.forEach { dispatcher ->
-            test_start_rushedWrapUp_sourceEmitsSimultaneously(dispatcher = dispatcher)
+        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+            test_start_rushedWrapUp_sourceEmitsSimultaneously(slottedStimulationScenario = slottedStimulationScenario)
         }
     }
 
     private fun test_start_rushedWrapUp_sourceEmitsSimultaneously(
-        dispatcher: TestSlotDispatcher1x3,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetAction = TestTargetAction.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -47,13 +57,14 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
         Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectEventStreamEffect = subjectEffect,
-            slottedInputStimulation = sourceEventStream.emit(
-                emittedEvent = targetAction,
-            ).bind(dispatcher),
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceActionEventStreamTag,
+                emittedEvent = targetActionRecorder.recordedAction,
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
-            expectedTargetImpact = targetAction.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder.expectIsExecutedOnce(),
         )
     }
 }

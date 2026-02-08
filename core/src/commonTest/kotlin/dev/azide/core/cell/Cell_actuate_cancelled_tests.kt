@@ -3,26 +3,50 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
+import dev.azide.core.cell.Cell_actuate_testUtils.SourceEffectCellTag
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.Cell_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedImpact
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
 import dev.azide.core.test_utils.TestTargetEffect
-import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.updating
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_cancelled_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
 import dev.azide.core.test_utils.expectIsNotStarted
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.getAndResetSingleStartRecord
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class Cell_actuate_cancelled_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceEffectCellUpdates =
+        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdates.distribute(slotCount = SuitableSlotCount)
+
+    private val arbitrarySlottedStimulationScenario_sourceEffectCellUpdates =
+        slottedStimulationBank_sourceEffectCellUpdates.get(0)
+
+    private val slottedStimulationBank_sourceEffectCellUpdatesRevoked =
+        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val arbitrarySlottedStimulationScenario_sourceEffectCellUpdatesRevoked =
+        slottedStimulationBank_sourceEffectCellUpdatesRevoked.get(0)
+
+    private val slottedStimulationBank_sourceEffectCellUpdatesCorrected =
+        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+
+    private val arbitrarySlottedStimulationScenario_sourceEffectCellUpdatesCorrected =
+        slottedStimulationBank_sourceEffectCellUpdatesCorrected.get(0)
+
     @Test
     fun test_cancelled_observed() {
         test_cancelled(
@@ -79,10 +103,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdates_observed() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceEffectCellUpdates.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdates(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -91,13 +115,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdates_nonObserved() {
         test_cancelled_sourceUpdates(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher1x2.Case1,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectCellUpdates,
         )
     }
 
     private fun test_cancelled_sourceUpdates(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -115,9 +139,10 @@ class Cell_actuate_cancelled_tests {
         Effect_Cell_cancelled_testUtils.executeCancelTransaction(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.update(
+            slottedInputStimulation = sourceCell.updating(
+                tag = SourceEffectCellTag,
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
@@ -136,10 +161,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesRevoked_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceEffectCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdatesRevoked(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -148,13 +173,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdatesRevoked_nonObserved() {
         test_cancelled_sourceUpdatesRevoked(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectCellUpdatesRevoked,
         )
     }
 
     private fun test_cancelled_sourceUpdatesRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -173,8 +198,9 @@ class Cell_actuate_cancelled_tests {
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = SourceEffectCellTag,
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
@@ -193,10 +219,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesCorrected_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceEffectCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdatesCorrected(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -205,13 +231,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdatesCorrected_nonObserved() {
         test_cancelled_sourceUpdatesCorrected(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = arbitrarySlottedStimulationScenario_sourceEffectCellUpdatesCorrected,
         )
     }
 
     private fun test_cancelled_sourceUpdatesCorrected(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -231,9 +257,10 @@ class Cell_actuate_cancelled_tests {
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(
+                tag = SourceEffectCellTag,
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,

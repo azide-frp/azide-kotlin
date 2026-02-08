@@ -3,13 +3,16 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
-import dev.azide.core.test_utils.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.ExpectedImpact
 import dev.azide.core.test_utils.TestSlottedStimulation4
-import dev.azide.core.test_utils.TestStimulationSlot4
-import dev.azide.core.test_utils.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
+import dev.azide.core.test_utils.generic.verifyReactionUninstalling
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation3
 
 @Suppress("ClassName")
 data object Effect_generic_start_quickCancelledRevoked_testUtils {
@@ -24,9 +27,8 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
            expectedNewState = expectedSubjectTransition.expectedNewState,
        ) { propagationContext ->
            // 0. Pre-stimulation
-           slottedInputStimulation?.stimulate(
+           slottedInputStimulation?.slotStimulation0?.stimulate(
                propagationContext = propagationContext,
-               slot = TestStimulationSlot4.Slot0,
            )
 
            // 1. Start the effect
@@ -37,9 +39,8 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
            val subject = effectOutcome.result
            val effectHandle = effectOutcome.handle
 
-           slottedInputStimulation?.stimulate(
+           slottedInputStimulation?.slotStimulation1?.stimulate(
                propagationContext = propagationContext,
-               slot = TestStimulationSlot4.Slot1,
            )
 
            val subjectReactionVerifier: TestSubjectReactionVerifier? =
@@ -60,17 +61,15 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
                propagationContext = propagationContext,
            )
 
-           slottedInputStimulation?.stimulate(
+           slottedInputStimulation?.slotStimulation2?.stimulate(
                propagationContext = propagationContext,
-               slot = TestStimulationSlot4.Slot2,
            )
 
            // 3. Revoke the effect's cancellation
            cancelRevocable.revoke()
 
-           slottedInputStimulation?.stimulate(
+           slottedInputStimulation?.slotStimulation3?.stimulate(
                propagationContext = propagationContext,
-               slot = TestStimulationSlot4.Slot3,
            )
 
            // Verify the old state again (to ensure its stability)

@@ -1,8 +1,8 @@
 package dev.azide.core
 
 import dev.azide.core.external.ExternalSchedule
-import dev.azide.core.impl.effects.AbstractProcessSchedule
-import dev.azide.core.impl.effects.AdaptedExternalScheduleProcessVertex
+import dev.azide.core.impl.effects.AdaptedExternalSchedule
+import dev.azide.core.impl.effects.ExternalizedSchedule
 
 typealias Schedule = Effect<Unit>
 
@@ -14,11 +14,11 @@ object Schedules {
 
     fun adapt(
         externalSchedule: ExternalSchedule,
-    ): Schedule = object : AbstractProcessSchedule<AdaptedExternalScheduleProcessVertex>() {
-        override fun buildProcessVertex(): AdaptedExternalScheduleProcessVertex = AdaptedExternalScheduleProcessVertex(
+    ): Schedule = ExternalizedSchedule(
+        AdaptedExternalSchedule(
             externalSchedule = externalSchedule,
         )
-    }
+    )
 }
 
 abstract class AbstractSchedule : Schedule {

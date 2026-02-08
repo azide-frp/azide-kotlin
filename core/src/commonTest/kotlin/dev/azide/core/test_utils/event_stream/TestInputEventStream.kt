@@ -124,7 +124,7 @@ fun <EventT> TestInputEventStream<EventT>.correctingEmission(
     TestInputEventStreamStimulationTag.Emission(inputTag = tag) to emit(
         emittedEvent = intermediateEmittedEvent,
     ),
-    TestInputEventStreamStimulationTag.EmissionRevocation(inputTag = tag) to correctEmission(
+    TestInputEventStreamStimulationTag.EmissionCorrection(inputTag = tag) to correctEmission(
         correctedEmittedEvent = correctedEmittedEvent,
     ),
 )

@@ -4,7 +4,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
 import dev.azide.core.pullExternally
-import dev.azide.core.test_utils.Cell_expectations_testUtils
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_reaction_nonPerceived_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test

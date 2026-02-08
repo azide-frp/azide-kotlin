@@ -6,8 +6,8 @@ import dev.azide.core.Effect
 import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
-import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
+import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.collections.reactive_set.operated_vertices.FilteredTrackedSetVertex
 
 interface ReactiveSet<out ElementT> : ReactiveCollection<ElementT> {
@@ -59,7 +59,7 @@ fun <ElementT> ReactiveSet<ElementT>.filter(
 
 fun <ElementT, TransformedElementT> ReactiveSet<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
-): ReactiveBag<TransformedElementT> = TODO()
+): ReactiveBag<TransformedElementT> = TODO("Unimplemented: ReactiveSet.map")
 
 fun <ElementT> ReactiveSet<ElementT>.fuseOf(
     selector: (ElementT) -> Cell<ElementT>,

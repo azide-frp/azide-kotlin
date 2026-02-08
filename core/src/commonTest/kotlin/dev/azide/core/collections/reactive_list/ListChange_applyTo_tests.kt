@@ -84,7 +84,29 @@ class ListChange_applyTo_tests {
     }
 
     @Test
-    fun test_applyTo_nonEmpty_removedOnly_singlePart() {
+    fun test_applyTo_nonEmpty_removedOnly_singlePart_singleElement() {
+        val mutableList = mutableListOf(0, 10, 20, 30, 40)
+
+        ListChange(
+            parts = listOf(
+                ListChange.Part(
+                    firstIndexInclusive = 2,
+                    lastIndexExclusive = 3,
+                    newElements = emptyList<Int>(),
+                )
+            ),
+        ).applyTo(
+            mutableList = mutableList,
+        )
+
+        assertEquals(
+            expected = listOf(0, 10, 30, 40),
+            actual = mutableList,
+        )
+    }
+
+    @Test
+    fun test_applyTo_nonEmpty_removedOnly_singlePart_multipleElements() {
         val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60)
 
         ListChange(
@@ -134,7 +156,7 @@ class ListChange_applyTo_tests {
     }
 
     @Test
-    fun test_applyTo_nonEmpty_replaced_singlePart() {
+    fun test_applyTo_nonEmpty_replaced_singlePart_expanded() {
         val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60)
 
         ListChange(
@@ -151,6 +173,95 @@ class ListChange_applyTo_tests {
 
         assertEquals(
             expected = listOf(0, 10, 11, 12, 13, 50, 60),
+            actual = mutableList,
+        )
+    }
+
+    @Test
+    fun test_applyTo_nonEmpty_replaced_singlePart_aligned_singleElement() {
+        val mutableList = mutableListOf(0, 10, 20, 30, 40)
+
+        ListChange(
+            parts = listOf(
+                ListChange.Part(
+                    firstIndexInclusive = 2,
+                    lastIndexExclusive = 3,
+                    newElements = listOf(21),
+                )
+            ),
+        ).applyTo(
+            mutableList = mutableList,
+        )
+
+        assertEquals(
+            expected = listOf(0, 10, 21, 30, 40),
+            actual = mutableList,
+        )
+    }
+
+    @Test
+    fun test_applyTo_nonEmpty_replaced_singlePart_aligned_multipleElements() {
+        val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60)
+
+        ListChange(
+            parts = listOf(
+                ListChange.Part(
+                    firstIndexInclusive = 2,
+                    lastIndexExclusive = 5,
+                    newElements = listOf(21, 31, 41),
+                )
+            ),
+        ).applyTo(
+            mutableList = mutableList,
+        )
+
+        assertEquals(
+            expected = listOf(0, 10, 21, 31, 41, 50, 60),
+            actual = mutableList,
+        )
+    }
+
+    @Test
+    fun test_applyTo_nonEmpty_replaced_singlePart_collapsed_barely() {
+        val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60)
+
+        ListChange(
+            parts = listOf(
+                ListChange.Part(
+                    firstIndexInclusive = 3,
+                    lastIndexExclusive = 6,
+                    newElements = listOf(31, 32),
+                )
+            ),
+        ).applyTo(
+            mutableList = mutableList,
+        )
+
+        assertEquals(
+            expected = listOf(0, 10, 20, 31, 32, 60),
+            actual = mutableList,
+        )
+    }
+
+
+    @Test
+    fun test_applyTo_nonEmpty_replaced_singlePart_collapsed_strongly() {
+        val mutableList = mutableListOf(0, 10, 20, 30, 40, 50, 60, 70, 80, 90)
+
+        ListChange(
+            parts = listOf(
+                ListChange.Part(
+                    firstIndexInclusive = 2,
+                    lastIndexExclusive = 8,
+                    newElements = listOf(21, 31, 41),
+                )
+            ),
+        ).applyTo(
+            mutableList = mutableList,
+        )
+
+        assertEquals(
+            expected = listOf(0, 10, 21, 31, 41, 80, 90),
             actual = mutableList,
         )
     }

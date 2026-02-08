@@ -1,30 +1,45 @@
 package dev.azide.core.cell
 
-import dev.azide.core.test_utils.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
-import dev.azide.core.test_utils.bind
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import dev.azide.core.updatedValues
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class Cell_updatedValues_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_sourceUpdates() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_sourceUpdates(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -34,9 +49,10 @@ class Cell_updatedValues_tests {
 
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceCell.update(
+            slottedInputStimulation = sourceCell.updating(
+                tag = SourceCellTag,
                 newValue = 20,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
@@ -45,15 +61,15 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_sourceUpdates_revoked(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_revoked(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -64,8 +80,9 @@ class Cell_updatedValues_tests {
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = SourceCellTag,
                 newValue = 20,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -74,15 +91,15 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_sourceUpdates_corrected(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_corrected(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -93,9 +110,10 @@ class Cell_updatedValues_tests {
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.correctingUpdate(
+                tag = SourceCellTag,
                 intermediateNewValue = 20,
                 correctedNewValue = 21,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 21,

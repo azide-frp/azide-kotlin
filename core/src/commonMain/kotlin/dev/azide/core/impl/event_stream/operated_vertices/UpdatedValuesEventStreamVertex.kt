@@ -2,12 +2,12 @@ package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
-import dev.azide.core.impl.registerBoundListener
+import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
+import dev.azide.core.impl.registerBoundListener
 
 class UpdatedValuesEventStreamVertex<ValueT>(
     private val sourceVertex: CellVertex<ValueT>,

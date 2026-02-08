@@ -5,6 +5,12 @@ import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Transactions
 
 interface TestStimulation {
+    data object Noop : TestStimulation {
+        override fun stimulate(propagationContext: Transactions.PropagationContext) {
+            // No operation performed
+        }
+    }
+
     companion object {
         fun executing(
             action: Action<*>,

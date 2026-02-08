@@ -3,8 +3,8 @@ package dev.azide.core
 import dev.azide.core.Triggers.merging
 import dev.azide.core.external.ExternalStreamEffect
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.effects.AbstractProcessEffect
-import dev.azide.core.impl.effects.AdaptedExternalStreamEffectProcessVertex
+import dev.azide.core.impl.effects.AdaptedExternalStreamVertex
+import dev.azide.core.impl.effects.ExternalizedEffect
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
 
@@ -55,19 +55,11 @@ interface Effect<ResultT> {
     companion object {
         fun <EventT> adapt(
             externalStreamEffect: ExternalStreamEffect<EventT>,
-        ): Effect<EventStream<EventT>> =
-            object : AbstractProcessEffect<AdaptedExternalStreamEffectProcessVertex<EventT>, EventStream<EventT>>() {
-                override fun buildProcessVertex(): AdaptedExternalStreamEffectProcessVertex<EventT> =
-                    AdaptedExternalStreamEffectProcessVertex(
-                        externalStreamEffectVertex = externalStreamEffect,
-                    )
-
-                override fun wrap(
-                    effectVertex: AdaptedExternalStreamEffectProcessVertex<EventT>,
-                ): EventStream<EventT> = EventStream.Ordinary(
-                    vertex = effectVertex,
-                )
-            }
+        ): Effect<EventStream<EventT>> = ExternalizedEffect<EventStream<EventT>>(
+            internalEffect = AdaptedExternalStreamVertex.AdaptationEffect(
+                externalStreamEffect = externalStreamEffect,
+            ),
+        )
     }
 
     val start: Action<Outcome<ResultT>>

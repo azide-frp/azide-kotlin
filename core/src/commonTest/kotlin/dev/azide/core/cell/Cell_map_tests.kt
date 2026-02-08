@@ -1,20 +1,36 @@
 package dev.azide.core.cell
 
 import dev.azide.core.map
-import dev.azide.core.test_utils.Cell_expectations_testUtils
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
-import dev.azide.core.test_utils.bind
-import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.Cell_sampling_testUtils
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class Cell_map_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+
     @Test
     fun test_passiveSample() {
         val sourceCell = TestInputCell(
@@ -33,15 +49,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_sourceUpdates(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -51,9 +67,10 @@ class Cell_map_tests {
 
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.update(
+            slottedInputStimulation = sourceCell.updating(
+                tag = SourceCellTag,
                 newValue = 11,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = "10",
                 expectedNewValue = "11",
@@ -63,15 +80,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_sourceUpdates_revoked(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_revoked(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -82,8 +99,9 @@ class Cell_map_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = SourceCellTag,
                 newValue = 11,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = "10",
@@ -93,15 +111,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        slottedStimulationBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_sourceUpdates_corrected(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_corrected(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -112,9 +130,10 @@ class Cell_map_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
+                tag = SourceCellTag,
                 intermediateNewValue = 11,
                 correctedNewValue = 12,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = "10",

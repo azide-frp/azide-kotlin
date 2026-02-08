@@ -1,4 +1,4 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.event_stream
 
 import dev.azide.core.EventStream
 import dev.azide.core.impl.Transactions
@@ -6,22 +6,16 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 interface ExpectedEventStreamEmission<EventT> : ExpectedTestSubjectReaction<EventStream<EventT>>,
-    ExpectedTestSubjectTransition<EventStream<EventT>> {
-        object   None : AbstractExpectedEventStreamReaction<Any?>() {
-            override val intermediatePropagationTolerance: IntermediatePropagationTolerance
-                get() = TODO("Not yet implemented")
-            override val expectedEffectiveEmission: EventStreamVertex.Emission<Any?>?
-                get() = TODO("Not yet implemented")
-
-
-        }
-    }
+    ExpectedTestSubjectTransition<EventStream<EventT>>
 
 abstract class AbstractExpectedEventStreamReaction<EventT> : ExpectedEventStreamEmission<EventT> {
     final override fun prepareReactionVerifier(

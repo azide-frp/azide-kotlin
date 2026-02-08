@@ -1,8 +1,8 @@
 package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.ExpectedTestSubjectState
-import dev.azide.core.test_utils.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 
 @Suppress("ClassName")
 data object Effect_generic_testUtils {

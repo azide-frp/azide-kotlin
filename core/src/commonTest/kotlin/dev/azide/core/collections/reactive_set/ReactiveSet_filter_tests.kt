@@ -41,7 +41,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_predicateAcceptedAll() {
+    fun test_sourceChanges_predicateAcceptedAll() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -62,7 +62,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_predicateRejectedAll() {
+    fun test_sourceChanges_predicateRejectedAll() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -82,7 +82,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_predicateAcceptedSome() {
+    fun test_sourceChanges_predicateAcceptedSome() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -103,7 +103,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_revoked_predicateAcceptedSome() {
+    fun test_sourceChangesRevoked_predicateAcceptedSome() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -126,7 +126,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_revoked_predicateAcceptedNone() {
+    fun test_sourceChangesRevoked_predicateAcceptedNone() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -149,7 +149,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_corrected_predicateAcceptedNoneEarlier_predicateAcceptedNoneLater() {
+    fun test_sourceChangesCorrected_predicateAcceptedNoneEarlier_predicateAcceptedNoneLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -175,7 +175,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_corrected_predicateAcceptedNoneEarlier_predicateAcceptedSomeLater() {
+    fun test_sourceChangesCorrected_predicateAcceptedNoneEarlier_predicateAcceptedSomeLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -202,7 +202,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_corrected_predicateAcceptedSomeEarlier_predicateAcceptedNoneLater() {
+    fun test_sourceChangesCorrected_predicateAcceptedSomeEarlier_predicateAcceptedNoneLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -228,7 +228,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_change_corrected_predicateAcceptedSomeEarlier_predicateAcceptedSomeLater() {
+    fun test_sourceChangesCorrected_predicateAcceptedSomeEarlier_predicateAcceptedSomeLater() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )

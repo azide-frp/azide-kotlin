@@ -1,14 +1,18 @@
-package dev.azide.core.test_utils
+package dev.azide.core.test_utils.collections.reactive_bag
 
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListenerOnline
-import dev.azide.core.test_utils.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -95,7 +99,9 @@ private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedRea
             override fun handle(
                 propagationContext: Transactions.PropagationContext,
             ) {
-                receivedChanges.add(subjectVertex.ongoingChange)
+                val perceivedChange = subjectVertex.ongoingChange
+
+                receivedChanges.add(perceivedChange)
             }
         }
 
@@ -124,6 +130,16 @@ abstract class AbstractExpectedReactiveBagContentTransition<ElementT> : Expected
 object ReactiveBag_expectations_testUtils {
     fun <ElementT> expectTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedOldTaggedElements: TaggedBag<ElementT>,
+        expectedNewTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> = expectTaggedContentTransition(
+        intermediatePropagationTolerance = intermediatePropagationTolerance,
+        expectedOldTaggedContent = expectedOldTaggedElements.elementByTag,
+        expectedNewTaggedContent = expectedNewTaggedElements.elementByTag,
+    )
+
+    fun <ElementT> expectTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedOldTaggedContent: Map<Tag, ElementT>,
         expectedNewTaggedContent: Map<Tag, ElementT>,
     ): ExpectedReactiveBagContentTransition<ElementT> =
@@ -144,6 +160,14 @@ object ReactiveBag_expectations_testUtils {
                 }
 
         }
+
+    fun <ElementT> expectNoTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedUnaffectedTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> = expectNoTaggedContentTransition(
+        intermediatePropagationTolerance = intermediatePropagationTolerance,
+        expectedUnaffectedTaggedContent = expectedUnaffectedTaggedElements.elementByTag,
+    )
 
     fun <ElementT> expectNoTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
