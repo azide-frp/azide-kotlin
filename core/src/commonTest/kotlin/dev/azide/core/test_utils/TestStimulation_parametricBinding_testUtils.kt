@@ -4,15 +4,6 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 
-fun TestStimulation.bind(
-    slottedStimulationScenario: TestSlottedStimulationScenario1x2,
-): TestSlottedStimulation2 = TestSlottedStimulationBuilder(TestSlotCount.Count2).apply {
-    add(
-        slot = slottedStimulationScenario.slot,
-        testStimulation = this@bind,
-    )
-}.build()
-
 fun DoubleTestStimulation.bind(
     slottedStimulationScenario: TestSlottedStimulationScenario2x2,
 ): TestSlottedStimulation2 = TestSlottedStimulationBuilder(TestSlotCount.Count2).apply {

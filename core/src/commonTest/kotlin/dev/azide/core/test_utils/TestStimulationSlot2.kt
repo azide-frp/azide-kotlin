@@ -7,18 +7,6 @@ enum class TestStimulationSlot2 : TestStimulationSlot {
     Slot0, Slot1,
 }
 
-enum class TestSlottedStimulationScenario1x2(
-    val slot: TestStimulationSlot2,
-) {
-    Case0(
-        TestStimulationSlot2.Slot0,
-    ),
-
-    Case1(
-        TestStimulationSlot2.Slot1,
-    ),
-}
-
 enum class TestSlottedStimulationScenario2x2(
     val slotA: TestStimulationSlot2,
     val slotB: TestStimulationSlot2,
