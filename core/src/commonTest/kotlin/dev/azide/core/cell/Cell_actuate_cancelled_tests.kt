@@ -4,8 +4,8 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
 import dev.azide.core.startExternally
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
@@ -79,10 +79,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdates_observed() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdates(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -91,13 +91,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdates_nonObserved() {
         test_cancelled_sourceUpdates(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher1x2.Case1,
+            slottedStimulationScenario = TestSlottedStimulationScenario1x2.Case1,
         )
     }
 
     private fun test_cancelled_sourceUpdates(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -117,7 +117,7 @@ class Cell_actuate_cancelled_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
@@ -136,10 +136,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesRevoked_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdatesRevoked(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -148,13 +148,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdatesRevoked_nonObserved() {
         test_cancelled_sourceUpdatesRevoked(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x2.Case11,
         )
     }
 
     private fun test_cancelled_sourceUpdatesRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -174,7 +174,7 @@ class Cell_actuate_cancelled_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
@@ -193,10 +193,10 @@ class Cell_actuate_cancelled_tests {
 
     @Test
     fun test_cancelled_sourceUpdatesCorrected_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_cancelled_sourceUpdatesCorrected(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -205,13 +205,13 @@ class Cell_actuate_cancelled_tests {
     fun test_cancelled_sourceUpdatesCorrected_nonObserved() {
         test_cancelled_sourceUpdatesCorrected(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x2.Case11,
         )
     }
 
     private fun test_cancelled_sourceUpdatesCorrected(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -233,7 +233,7 @@ class Cell_actuate_cancelled_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,

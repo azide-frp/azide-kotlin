@@ -1,8 +1,8 @@
 package dev.azide.core.cell
 
 import dev.azide.core.map
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
@@ -33,15 +33,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -53,7 +53,7 @@ class Cell_map_tests {
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.update(
                 newValue = 11,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = "10",
                 expectedNewValue = "11",
@@ -63,15 +63,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates_revoked(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_revoked(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -83,7 +83,7 @@ class Cell_map_tests {
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = 11,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = "10",
@@ -93,15 +93,15 @@ class Cell_map_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates_corrected(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_corrected(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -114,7 +114,7 @@ class Cell_map_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = 11,
                 correctedNewValue = 12,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = "10",

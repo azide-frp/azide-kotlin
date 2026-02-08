@@ -7,7 +7,7 @@ enum class TestStimulationSlot4 : TestStimulationSlot {
     Slot0, Slot1, Slot2, Slot3,
 }
 
-enum class TestSlotDispatcher1x4(
+enum class TestSlottedStimulationScenario1x4(
     override val slot: TestStimulationSlot4,
 ) : TestSlotDispatcher1xN {
     Case0(
@@ -27,7 +27,7 @@ enum class TestSlotDispatcher1x4(
     ),
 }
 
-enum class TestSlotDispatcher2x4(
+enum class TestSlottedStimulationScenario2x4(
     override val slotA: TestStimulationSlot4,
     override val slotB: TestStimulationSlot4,
 ) : TestSlotDispatcher2xN {

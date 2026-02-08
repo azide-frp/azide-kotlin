@@ -3,8 +3,8 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
@@ -59,10 +59,10 @@ class Cell_actuate_start_tests {
 
     @Test
     fun test_start_sourceUpdatesSimultaneously_observed() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -71,13 +71,13 @@ class Cell_actuate_start_tests {
     fun test_start_sourceUpdatesSimultaneously_nonObserved() {
         test_start_sourceUpdatesSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher1x2.Case1,
+            slottedStimulationScenario = TestSlottedStimulationScenario1x2.Case1,
         )
     }
 
     private fun test_start_sourceUpdatesSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -93,7 +93,7 @@ class Cell_actuate_start_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
@@ -107,10 +107,10 @@ class Cell_actuate_start_tests {
 
     @Test
     fun test_start_sourceUpdatesRevokedSimultaneously_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesRevokedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -119,13 +119,13 @@ class Cell_actuate_start_tests {
     fun test_start_sourceUpdatesRevokedSimultaneously_nonObserved() {
         test_start_sourceUpdatesRevokedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x2.Case11,
         )
     }
 
     private fun test_start_sourceUpdatesRevokedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -141,7 +141,7 @@ class Cell_actuate_start_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
@@ -154,10 +154,10 @@ class Cell_actuate_start_tests {
 
     @Test
     fun test_start_sourceUpdatesCorrectedSimultaneously_observed() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesCorrectedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -166,13 +166,13 @@ class Cell_actuate_start_tests {
     fun test_start_sourceUpdatesCorrectedSimultaneously_nonObserved() {
         test_start_sourceUpdatesCorrectedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x2.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x2.Case11,
         )
     }
 
     private fun test_start_sourceUpdatesCorrectedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -190,7 +190,7 @@ class Cell_actuate_start_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,

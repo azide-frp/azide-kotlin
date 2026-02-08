@@ -1,7 +1,7 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
@@ -85,7 +85,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = laterInnerSourceEventStream.emit(
                 emittedEvent = 22,
-            ).bind(TestSlotDispatcher1x2.Case1),
+            ).bind(TestSlottedStimulationScenario1x2.Case1),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
@@ -133,7 +133,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = laterInnerSourceEventStream.emit(
                 emittedEvent = 22,
-            ).bind(TestSlotDispatcher1x2.Case1),
+            ).bind(TestSlottedStimulationScenario1x2.Case1),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }

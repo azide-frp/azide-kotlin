@@ -3,8 +3,8 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.TestSlotDispatcher1x5
-import dev.azide.core.test_utils.TestSlotDispatcher2x5
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x5
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x5
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
@@ -42,15 +42,15 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
     @Test
     fun test_startRevoked_quickCancelledRevoked_sourceUpdatesSimultaneously_observed() {
-        TestSlotDispatcher1x5.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x5.entries.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelledRevoked_sourceUpdatesSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_startRevoked_quickCancelledRevoked_sourceUpdatesSimultaneously(
-        dispatcher: TestSlotDispatcher1x5,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x5,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -65,7 +65,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -79,15 +79,15 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
 
     @Test
     fun test_startRevoked_quickCancelledRevoked_sourceUpdatesCorrectedSimultaneously_observed() {
-        TestSlotDispatcher2x5.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x5.entries.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelledRevoked_sourceUpdatesCorrectedSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_startRevoked_quickCancelledRevoked_sourceUpdatesCorrectedSimultaneously(
-        dispatcher: TestSlotDispatcher2x5,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x5,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -104,7 +104,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),

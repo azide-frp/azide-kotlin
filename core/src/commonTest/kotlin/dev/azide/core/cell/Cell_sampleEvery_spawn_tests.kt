@@ -4,8 +4,8 @@ import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.sampleEvery
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.TestSlotDispatcher1x3
-import dev.azide.core.test_utils.TestSlotDispatcher2x3
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x3
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x3
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
@@ -37,15 +37,15 @@ class Cell_sampleEvery_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsSimultaneously() {
-        TestSlotDispatcher1x3.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x3.entries.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_spawn_sourceEmitsSimultaneously(
-        dispatcher: TestSlotDispatcher1x3,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x3,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -60,7 +60,7 @@ class Cell_sampleEvery_spawn_tests {
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.update(
                 newValue = helperCell2.sampling,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,
@@ -70,15 +70,15 @@ class Cell_sampleEvery_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsRevokedSimultaneously() {
-        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x3.entries.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsRevokedSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_spawn_sourceEmitsRevokedSimultaneously(
-        dispatcher: TestSlotDispatcher2x3,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x3,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -93,7 +93,7 @@ class Cell_sampleEvery_spawn_tests {
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = helperCell2.sampling,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = 10,
@@ -103,15 +103,15 @@ class Cell_sampleEvery_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsCorrectedSimultaneously() {
-        TestSlotDispatcher2x3.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x3.entries.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsCorrectedSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_spawn_sourceEmitsCorrectedSimultaneously(
-        dispatcher: TestSlotDispatcher2x3,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x3,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -128,7 +128,7 @@ class Cell_sampleEvery_spawn_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = 10,

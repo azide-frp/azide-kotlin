@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.TestSlotDispatcher1x3
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x3
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
@@ -37,15 +37,15 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
     @Test
     fun test_start_rushedWrapUp_sourceUpdatesSimultaneously() {
-        TestSlotDispatcher1x3.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x3.entries.forEach { slottedStimulationScenario ->
             test_start_rushedWrapUp_sourceUpdatesSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_start_rushedWrapUp_sourceUpdatesSimultaneously(
-        dispatcher: TestSlotDispatcher1x3,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x3,
     ) {
         val targetEffect1 = TestTargetEffect.pure(result = 10)
         val targetEffect2 = TestTargetEffect.pure(result = 20)
@@ -60,7 +60,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.update(
                 newValue = targetEffect2,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = 10,
                 expectedNewValue = 20,

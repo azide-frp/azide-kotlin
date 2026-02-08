@@ -5,93 +5,93 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 
 fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x2,
+    slottedStimulationScenario: TestSlottedStimulationScenario1x2,
 ): TestSlottedStimulation2 = TestSlottedStimulationBuilder(TestSlotCount.Count2).apply {
     add(
-        slot = dispatcher.slot,
+        slot = slottedStimulationScenario.slot,
         testStimulation = this@bind,
     )
 }.build()
 
 fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x2,
+    slottedStimulationScenario: TestSlottedStimulationScenario2x2,
 ): TestSlottedStimulation2 = TestSlottedStimulationBuilder(TestSlotCount.Count2).apply {
     add(
-        slot = dispatcher.slotA,
+        slot = slottedStimulationScenario.slotA,
         testStimulation = this@bind.firstStimulation,
     )
 
     add(
-        slot = dispatcher.slotB,
+        slot = slottedStimulationScenario.slotB,
         testStimulation = this@bind.secondStimulation,
     )
 }.build()
 
 fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x3,
+    slottedStimulationScenario: TestSlottedStimulationScenario1x3,
 ): TestSlottedStimulation3 = TestSlottedStimulationBuilder(TestSlotCount.Count3).apply {
     add(
-        slot = dispatcher.slot,
+        slot = slottedStimulationScenario.slot,
         testStimulation = this@bind,
     )
 }.build()
 
 fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x3,
+    slottedStimulationScenario: TestSlottedStimulationScenario2x3,
 ): TestSlottedStimulation3 = TestSlottedStimulationBuilder(TestSlotCount.Count3).apply {
     add(
-        slot = dispatcher.slotA,
+        slot = slottedStimulationScenario.slotA,
         testStimulation = this@bind.firstStimulation,
     )
 
     add(
-        slot = dispatcher.slotB,
+        slot = slottedStimulationScenario.slotB,
         testStimulation = this@bind.secondStimulation,
     )
 }.build()
 
 fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x4,
+    slottedStimulationScenario: TestSlottedStimulationScenario1x4,
 ): TestSlottedStimulation4 = TestSlottedStimulationBuilder(TestSlotCount.Count4).apply {
     add(
-        slot = dispatcher.slot,
+        slot = slottedStimulationScenario.slot,
         testStimulation = this@bind,
     )
 }.build()
 
 fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x4,
+    slottedStimulationScenario: TestSlottedStimulationScenario2x4,
 ): TestSlottedStimulation4 = TestSlottedStimulationBuilder(TestSlotCount.Count4).apply {
     add(
-        slot = dispatcher.slotA,
+        slot = slottedStimulationScenario.slotA,
         testStimulation = this@bind.firstStimulation,
     )
 
     add(
-        slot = dispatcher.slotB,
+        slot = slottedStimulationScenario.slotB,
         testStimulation = this@bind.secondStimulation,
     )
 }.build()
 
 fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x5,
+    slottedStimulationScenario: TestSlottedStimulationScenario1x5,
 ): TestSlottedStimulation5 = TestSlottedStimulationBuilder(TestSlotCount.Count5).apply {
     add(
-        slot = dispatcher.slot,
+        slot = slottedStimulationScenario.slot,
         testStimulation = this@bind,
     )
 }.build()
 
 fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x5,
+    slottedStimulationScenario: TestSlottedStimulationScenario2x5,
 ): TestSlottedStimulation5 = TestSlottedStimulationBuilder(TestSlotCount.Count5).apply {
     add(
-        slot = dispatcher.slotA,
+        slot = slottedStimulationScenario.slotA,
         testStimulation = this@bind.firstStimulation,
     )
 
     add(
-        slot = dispatcher.slotB,
+        slot = slottedStimulationScenario.slotB,
         testStimulation = this@bind.secondStimulation,
     )
 }.build()

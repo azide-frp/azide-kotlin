@@ -3,7 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_nonPerceived_testUtils
@@ -31,15 +31,15 @@ class EventStream_hold_spawn_nonObserved_tests {
 
     @Test
     fun test_spawn_sourceEmitsSimultaneously() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_spawn_sourceEmitsSimultaneously(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -49,7 +49,7 @@ class EventStream_hold_spawn_nonObserved_tests {
             subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedOldSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedValue = 0,
             ),

@@ -4,8 +4,8 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.EventStream
 import dev.azide.core.executeEach
-import dev.azide.core.test_utils.TestSlotDispatcher1x4
-import dev.azide.core.test_utils.TestSlotDispatcher2x4
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x4
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x4
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_start_quickCancelledRevoked_testUtils
@@ -58,10 +58,10 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_subscribed() {
-        TestSlotDispatcher1x4.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x4.entries.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -70,13 +70,13 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_nonSubscribed() {
         test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher1x4.Case1,
+            slottedStimulationScenario = TestSlottedStimulationScenario1x4.Case1,
         )
     }
 
     private fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher1x4,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x4,
     ) {
         val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
@@ -89,7 +89,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emit(
                 emittedEvent = targetActionRecorder.recordedAction,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 10,
@@ -105,10 +105,10 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_subscribed() {
-        TestSlotDispatcher2x4.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x4.entries.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -117,13 +117,13 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_nonSubscribed() {
         test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x4.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x4.Case11,
         )
     }
 
     private fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x4,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x4,
     ) {
         val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
 
@@ -136,7 +136,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 emittedEvent = targetActionRecorder.recordedAction,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -151,10 +151,10 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_subscribed() {
-        TestSlotDispatcher2x4.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x4.entries.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
@@ -163,13 +163,13 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
     fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_nonSubscribed() {
         test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            dispatcher = TestSlotDispatcher2x4.Case11,
+            slottedStimulationScenario = TestSlottedStimulationScenario2x4.Case11,
         )
     }
 
     private fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        dispatcher: TestSlotDispatcher2x4,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x4,
     ) {
         val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
         val targetActionRecorder2 = TestTargetActionRecorder.of(result = 20)
@@ -184,7 +184,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 intermediateEmittedEvent = targetActionRecorder1.recordedAction,
                 correctedEmittedEvent = targetActionRecorder2.recordedAction,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,

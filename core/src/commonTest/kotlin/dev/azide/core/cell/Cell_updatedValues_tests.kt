@@ -1,7 +1,7 @@
 package dev.azide.core.cell
 
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
@@ -16,15 +16,15 @@ import kotlin.test.Test
 class Cell_updatedValues_tests {
     @Test
     fun test_sourceUpdates() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -36,7 +36,7 @@ class Cell_updatedValues_tests {
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.update(
                 newValue = 20,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
@@ -45,15 +45,15 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates_revoked(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_revoked(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -65,7 +65,7 @@ class Cell_updatedValues_tests {
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 newValue = 20,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -74,15 +74,15 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_sourceUpdates_corrected(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_sourceUpdates_corrected(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -95,7 +95,7 @@ class Cell_updatedValues_tests {
             slottedInputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = 20,
                 correctedNewValue = 21,
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 21,

@@ -2,8 +2,8 @@ package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.Schedule
 import dev.azide.core.collections.syncing
-import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlotDispatcher2x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
+import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
@@ -11,7 +11,6 @@ import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.schedule.Schedule_start_testUtils
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -44,15 +43,15 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesSimultaneously() {
-        TestSlotDispatcher1x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_start_sourceUpdatesSimultaneously(
-        dispatcher: TestSlotDispatcher1x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -73,7 +72,7 @@ class ReactiveList_syncing_start_tests {
                         newElements = listOf(21, 22, 23),
                     ),
                 ),
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
             ),
@@ -87,15 +86,15 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesRevokedSimultaneously() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesRevokedSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_start_sourceUpdatesRevokedSimultaneously(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -116,7 +115,7 @@ class ReactiveList_syncing_start_tests {
                         newElements = listOf(21, 22, 23),
                     ),
                 ),
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
             ),
@@ -130,15 +129,15 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesCorrectedSimultaneously() {
-        TestSlotDispatcher2x2.entries.forEach { dispatcher ->
+        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesCorrectedSimultaneously(
-                dispatcher = dispatcher,
+                slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
     private fun test_start_sourceUpdatesCorrectedSimultaneously(
-        dispatcher: TestSlotDispatcher2x2,
+        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
     ) {
         val targetMutableList = mutableListOf<Int>()
 
@@ -165,7 +164,7 @@ class ReactiveList_syncing_start_tests {
                         newElements = listOf(24, 25),
                     ),
                 ),
-            ).bind(dispatcher),
+            ).bind(slottedStimulationScenario),
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
             ),
