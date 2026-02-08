@@ -1,151 +1,255 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.filter
-import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.correctingEmission
+import dev.azide.core.test_utils.event_stream.emitting
+import dev.azide.core.test_utils.event_stream.revokingEmission
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class EventStream_filter_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsRevoked =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsCorrected =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+
     @Test
     fun test_sourceEmits_predicateAccepted() {
+        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+            test_sourceEmits_predicateAccepted(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmits_predicateAccepted(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceEventStreamTag,
                 emittedEvent = 11,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
             ),
-            expectedEmittedEvent = 11,
         )
     }
 
     @Test
     fun test_sourceEmits_predicateRejected() {
+        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+            test_sourceEmits_predicateRejected(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmits_predicateRejected(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceEventStreamTag,
                 emittedEvent = 11,
-            ),
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
     @Test
-    fun test_sourceEmits_revoked_predicateAccepted() {
+    fun test_sourceEmitsRevoked_predicateAccepted() {
+        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+            test_sourceEmitsRevoked_predicateAccepted(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmitsRevoked_predicateAccepted(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.revokeEmission(),
+            slottedInputStimulation = sourceEventStream.revokingEmission(
+                tag = SourceEventStreamTag,
+                emittedEvent = 11,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
 
     @Test
-    fun test_sourceEmits_revoked_predicateRejected() {
+    fun test_sourceEmitsRevoked_predicateRejected() {
+        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+            test_sourceEmitsRevoked_predicateRejected(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmitsRevoked_predicateRejected(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.revokeEmission(),
-            ),
+            slottedInputStimulation = sourceEventStream.revokingEmission(
+                tag = SourceEventStreamTag,
+                emittedEvent = 11,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
     @Test
-    fun test_sourceEmits_corrected_predicateAcceptedBoth() {
+    fun test_sourceEmitsCorrected_predicateAcceptedBoth() {
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+            test_sourceEmitsCorrected_predicateAcceptedBoth(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmitsCorrected_predicateAcceptedBoth(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = 12,
-                ),
+            slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
+                intermediateEmittedEvent = 11,
+                correctedEmittedEvent = 12,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedEmittedEvent = 12,
             ),
-            expectedEmittedEvent = 12,
         )
     }
 
     @Test
-    fun test_sourceEmits_corrected_predicateRejectedBoth() {
+    fun test_sourceEmitsCorrected_predicateRejectedBoth() {
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+            test_sourceEmitsCorrected_predicateRejectedBoth(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmitsCorrected_predicateRejectedBoth(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = 12,
-                ),
+            slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
+                intermediateEmittedEvent = 11,
+                correctedEmittedEvent = 12,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
+        )
+    }
+
+    @Test
+    fun test_sourceEmitsCorrected_predicateAcceptedFirst() {
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+            test_sourceEmitsCorrected_predicateAcceptedFirst(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_sourceEmitsCorrected_predicateAcceptedFirst(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val sourceEventStream = TestInputEventStream<Int>()
+
+        val subjectEventStream = sourceEventStream.filter { it > 0 }
+
+        EventStream_reaction_testUtils.executeReactionTransaction(
+            subjectEventStream = subjectEventStream,
+            slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
+                intermediateEmittedEvent = 11,
+                correctedEmittedEvent = -12,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
 
     @Test
-    fun test_sourceEmits_corrected_predicateAcceptedFirst() {
-        val sourceEventStream = TestInputEventStream<Int>()
-
-        val subjectEventStream = sourceEventStream.filter { it > 0 }
-
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
-            subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = -12,
-                ),
-            ),
-        )
+    fun test_sourceEmitsCorrected_predicateAcceptedSecond() {
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+            test_sourceEmitsCorrected_predicateAcceptedSecond(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
     }
 
-    @Test
-    fun test_sourceEmits_corrected_predicateAcceptedSecond() {
+    private fun test_sourceEmitsCorrected_predicateAcceptedSecond(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
-                sourceEventStream.emit(
-                    emittedEvent = -11,
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = 12,
-                ),
+            slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
+                intermediateEmittedEvent = -11,
+                correctedEmittedEvent = 12,
+            ).bind(slottedStimulationScenario),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 12,
             ),
-            expectedEmittedEvent = 12,
         )
     }
 }
