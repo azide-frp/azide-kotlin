@@ -59,7 +59,7 @@ fun <ElementT> ReactiveSet<ElementT>.filter(
 
 fun <ElementT, TransformedElementT> ReactiveSet<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
-): ReactiveBag<TransformedElementT> = TODO()
+): ReactiveBag<TransformedElementT> = TODO("Unimplemented: ReactiveSet.map")
 
 fun <ElementT> ReactiveSet<ElementT>.fuseOf(
     selector: (ElementT) -> Cell<ElementT>,
