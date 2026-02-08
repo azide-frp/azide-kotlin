@@ -55,8 +55,8 @@ fun <T> generateBucketSplits(list: List<T>, n: Int): Sequence<List<List<T>>> = s
      * [minCutIndex] - the minimum cut index allowed for this cut (to ensure nondecreasing order)
      */
     suspend fun SequenceScope<List<List<T>>>.recurse(k: Int, minCutIndex: Int) {
-        when (k) { // We're at the bottom of the recursion, a single combination of cut indices is generated
-            kLimit -> {
+        when (k) {
+            kLimit -> { // We're at the bottom of the recursion, a single combination of cut indices is generated
                 val buckets: List<List<T>> = cutIndices.asIterable().zipWithNextExtra(
                     extraFirst = 0,
                     extraLast = m,
