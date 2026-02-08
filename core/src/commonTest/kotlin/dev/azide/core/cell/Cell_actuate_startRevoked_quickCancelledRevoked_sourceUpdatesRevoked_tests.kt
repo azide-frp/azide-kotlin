@@ -3,7 +3,6 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.actuate
-import dev.azide.core.test_utils.TestSlottedStimulation5
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
@@ -12,10 +11,8 @@ import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_quickCance
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation5
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -25,9 +22,6 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_sourceUpdatesRevoked_tests
     private typealias SuitableSlotCount = TestSlotCount.Count5
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation5
-        get() = asTestSlottedStimulation5
 
     private val slottedStimulationBank = TestStimulationBank.build(
         TestInputCellTag.revokedUpdateScenario(inputCellTag = SourceEffectCellTag),
@@ -63,7 +57,7 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_sourceUpdatesRevoked_tests
                     tag = SourceEffectCellTag,
                     newValue = targetEffect2,
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),

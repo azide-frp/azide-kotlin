@@ -18,11 +18,8 @@ import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -30,9 +27,6 @@ class ReactiveBag_actuate_start_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation2
-        get() = asTestSlottedStimulation2
 
     private val slottedStimulationBank_sourceEffectBagChanges =
         ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
@@ -148,7 +142,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -219,7 +213,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -292,7 +286,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -390,7 +384,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -468,7 +462,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -532,7 +526,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -599,7 +593,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -689,7 +683,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 expectedUnaffectedTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -771,7 +765,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -852,7 +846,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -934,7 +928,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,
@@ -1048,7 +1042,7 @@ class ReactiveBag_actuate_start_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(
                     TargetEffectTag.TargetEffect1 to 10,

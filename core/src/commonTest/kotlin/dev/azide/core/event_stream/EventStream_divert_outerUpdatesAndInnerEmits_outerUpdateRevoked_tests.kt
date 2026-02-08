@@ -2,7 +2,6 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
@@ -14,20 +13,15 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
-
-    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation2
-        get() = asTestSlottedStimulation2
-
+    
     private data object SourceOuterCellTag : TestInputCellTag
 
     private data object SourceInnerEventStreamTag : TestInputEventStreamTag
@@ -40,7 +34,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
             inputEventStreamTag = SourceInnerEventStreamTag,
         ),
     ).distribute(
-        slotCount = TestSlotCount.Count2,
+        slotCount = SuitableSlotCount,
     )
 
     @Test
@@ -53,7 +47,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
     }
 
     private fun test_outerUpdatesAndOldInnerEmits_outerUpdateRevoked(
-        slottedStimulationScenario: TestSlottedStimulationScenario<TestSlotCount.Count2>,
+        slottedStimulationScenario: TestSlottedStimulationScenario<SuitableSlotCount>,
     ) {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
@@ -78,7 +72,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
                         emittedEvent = 11,
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 11,
             ),
@@ -103,7 +97,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
     }
 
     private fun test_outerUpdatesAndNewInnerEmits_outerUpdateRevoked(
-        slottedStimulationScenario: TestSlottedStimulationScenario<TestSlotCount.Count2>,
+        slottedStimulationScenario: TestSlottedStimulationScenario<SuitableSlotCount>,
     ) {
         val earlierInnerSourceEventStream = TestInputEventStream<Int>()
 
@@ -128,7 +122,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
                         emittedEvent = 21,
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),

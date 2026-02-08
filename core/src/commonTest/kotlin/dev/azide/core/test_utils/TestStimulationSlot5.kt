@@ -1,6 +1,7 @@
 package dev.azide.core.test_utils
 
-import dev.azide.core.impl.Transactions
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 
 enum class TestStimulationSlot5 : TestStimulationSlot {
     Slot0, Slot1, Slot2, Slot3, Slot4,
@@ -110,41 +111,4 @@ enum class TestSlotDispatcher2x5(
     ),
 }
 
-interface TestSlottedStimulation5 {
-    fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot5,
-    )
-}
-
-fun TestStimulation.bind(
-    dispatcher: TestSlotDispatcher1x5,
-): TestSlottedStimulation5 = object : TestSlottedStimulation5 {
-    override fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot5,
-    ) {
-        dispatcher.dispatch(
-            testStimulation = this@bind,
-            slot = slot,
-        )?.stimulate(
-            propagationContext = propagationContext,
-        )
-    }
-}
-
-fun DoubleTestStimulation.bind(
-    dispatcher: TestSlotDispatcher2x5,
-): TestSlottedStimulation5 = object : TestSlottedStimulation5 {
-    override fun stimulate(
-        propagationContext: Transactions.PropagationContext,
-        slot: TestStimulationSlot5,
-    ) {
-        dispatcher.dispatch(
-            orderedTestStimulation = this@bind,
-            slot = slot,
-        )?.stimulate(
-            propagationContext = propagationContext,
-        )
-    }
-}
+typealias TestSlottedStimulation5 = TestSlottedStimulation<TestSlotCount.Count5>

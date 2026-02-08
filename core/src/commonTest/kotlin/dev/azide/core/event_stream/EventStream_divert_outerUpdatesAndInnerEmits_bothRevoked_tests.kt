@@ -2,7 +2,6 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
 import dev.azide.core.test_utils.TestSlotDispatcher1x2
-import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
@@ -14,11 +13,9 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -26,9 +23,6 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation2
-        get() = asTestSlottedStimulation2
 
     private data object SourceOuterCellTag : TestInputCellTag
 
@@ -80,7 +74,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
                         emittedEvent = 11,
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -130,7 +124,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
                         emittedEvent = 21,
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 

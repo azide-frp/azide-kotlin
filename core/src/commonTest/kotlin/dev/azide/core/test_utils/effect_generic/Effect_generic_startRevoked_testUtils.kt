@@ -3,8 +3,10 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_testUtils {
@@ -18,9 +20,8 @@ data object Effect_generic_startRevoked_testUtils {
             expectedNewState = null,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation0?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot0,
             )
 
             // 1. Start the effect
@@ -30,17 +31,15 @@ data object Effect_generic_startRevoked_testUtils {
 
             val subject = effectOutcome.result
 
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation1?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot1,
             )
 
             // 2. Revoke the effect's start
             startRevocable.revoke()
 
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation2?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot3.Slot2,
             )
 
             subject

@@ -3,7 +3,8 @@ package dev.azide.core.test_utils.generic
 import dev.azide.core.Moment
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestSlottedStimulation2
-import dev.azide.core.test_utils.TestStimulationSlot2
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object generic_spawn_nonPerceived_testUtils {
@@ -17,9 +18,8 @@ data object generic_spawn_nonPerceived_testUtils {
             expectedNewState = expectedNewState,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation0?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot0,
             )
 
             // 1. Spawn the subject
@@ -32,9 +32,8 @@ data object generic_spawn_nonPerceived_testUtils {
                 subject = subject,
             )
 
-            slottedInputStimulation?.stimulate(
+            slottedInputStimulation?.slotStimulation1?.stimulate(
                 propagationContext = propagationContext,
-                slot = TestStimulationSlot2.Slot1,
             )
 
             expectedOldState.verifyStableState(

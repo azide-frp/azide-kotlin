@@ -2,7 +2,6 @@ package dev.azide.core.collections.reactive_bag
 
 import dev.azide.core.collections.map
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
-import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_reaction_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
@@ -11,9 +10,7 @@ import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
 import dev.azide.core.test_utils.collections.reactive_bag.revokingChange
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -21,9 +18,6 @@ class ReactiveBag_map_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation2
-        get() = asTestSlottedStimulation2
 
     private val slottedStimulationBank_sourceEffectBagChanges =
         ReactiveBag_generic_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
@@ -69,7 +63,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedElements = taggedBagOf(
                     0 to "0.1",
@@ -124,7 +118,7 @@ class ReactiveBag_map_tests {
                         removedTags = setOf(10, 20, 40, 50),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedElements = taggedBagOf(
                     0 to "0.1",
@@ -185,7 +179,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedElements = taggedBagOf(
                     0 to "0.1",
@@ -251,7 +245,7 @@ class ReactiveBag_map_tests {
                         removedTags = setOf(20, 30, 50),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedElements = taggedBagOf(
                     0 to "0.1",
@@ -312,7 +306,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedElements = taggedBagOf(
@@ -363,7 +357,7 @@ class ReactiveBag_map_tests {
                         removedTags = setOf(10, 20, 40, 50),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedElements = taggedBagOf(
@@ -420,7 +414,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedElements = taggedBagOf(
@@ -479,7 +473,7 @@ class ReactiveBag_map_tests {
                         removedTags = setOf(20, 30, 50),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedTaggedElements = taggedBagOf(
@@ -541,7 +535,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedElements = taggedBagOf(
@@ -618,7 +612,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedElements = taggedBagOf(
@@ -688,7 +682,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedElements = taggedBagOf(
@@ -771,7 +765,7 @@ class ReactiveBag_map_tests {
                         ),
                     ),
                 ),
-            ).asSuitableTestSlottedStimulation,
+            ),
             expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
                 expectedOldTaggedElements = taggedBagOf(

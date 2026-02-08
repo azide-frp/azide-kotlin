@@ -6,11 +6,13 @@ import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.TestStimulationSlot3
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.installLater
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_start_rushedWrapUp_testUtils {
@@ -24,9 +26,8 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
         expectedNewState = expectedSubjectTransition.expectedNewState,
     ) { propagationContext ->
         // 0. Pre-stimulation
-        slottedInputStimulation?.stimulate(
+        slottedInputStimulation?.slotStimulation0?.stimulate(
             propagationContext = propagationContext,
-            slot = TestStimulationSlot3.Slot0,
         )
 
         val (
@@ -55,9 +56,8 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
                     wrapUpContext = wrapUpContext,
                 ).result
 
-                slottedInputStimulation?.stimulate(
+                slottedInputStimulation?.slotStimulation1?.stimulate(
                     propagationContext = propagationContext,
-                    slot = TestStimulationSlot3.Slot1,
                 )
 
                 LoopClosure(
@@ -71,9 +71,8 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
         }
 
         // 2. Post-wrap-up stimulation
-        slottedInputStimulation?.stimulate(
+        slottedInputStimulation?.slotStimulation2?.stimulate(
             propagationContext = propagationContext,
-            slot = TestStimulationSlot3.Slot2,
         )
 
         expectedSubjectTransition.expectedOldState.verifyStableState(
