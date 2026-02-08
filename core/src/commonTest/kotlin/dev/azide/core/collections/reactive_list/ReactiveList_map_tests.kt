@@ -51,7 +51,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.changing(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     description = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 3,
@@ -93,7 +93,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.changing(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     description = ChangeDescription.of(
                         ChangeDescription.Part.Removal(
                             indexRange = 1..<3,
@@ -133,7 +133,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.changing(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     description = ChangeDescription.of(
                         ChangeDescription.Part.Replacement(
                             indexRange = 1..<3,
@@ -175,7 +175,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.changing(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     description = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 2,
@@ -220,7 +220,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.revokingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 3,
@@ -262,7 +262,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.revokingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Removal(
                             indexRange = 1..<3,
@@ -302,7 +302,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.revokingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Replacement(
                             indexRange = 1..<3,
@@ -344,7 +344,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.revokingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 2,
@@ -389,7 +389,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.correctingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 3,
@@ -438,7 +438,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.correctingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Removal(
                             indexRange = 1..<3,
@@ -484,7 +484,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.correctingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Replacement(
                             indexRange = 1..<3,
@@ -533,7 +533,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = slottedStimulationScenario.bind(
                 stimulationMap = sourceReactiveList.correctingChange(
-                    tag = ReactiveList_generic_testUtils.SourceEffectReactiveListTag,
+                    tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
                     intermediateDescription = ChangeDescription.of(
                         ChangeDescription.Part.Insertion(
                             index = 2,
