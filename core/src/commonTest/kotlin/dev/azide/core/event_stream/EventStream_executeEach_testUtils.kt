@@ -7,12 +7,34 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_tes
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 
 @Suppress("ClassName")
 data object EventStream_executeEach_testUtils {
+    data object SourceActionEventStreamTag : TestInputEventStreamTag
+
+    val stimulationBank_sourceActionEventStreamEmits = TestStimulationBank.build(
+        TestInputEventStreamTag.emissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
+    val stimulationBank_sourceActionEventStreamEmitsRevoked = TestStimulationBank.build(
+        TestInputEventStreamTag.revokedEmissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
+    val stimulationBank_sourceActionEventStreamEmitsCorrected = TestStimulationBank.build(
+        TestInputEventStreamTag.correctedEmissionScenario(
+            inputEventStreamTag = SourceActionEventStreamTag,
+        ),
+    )
+
     fun verifyEffectNotOngoing(
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
