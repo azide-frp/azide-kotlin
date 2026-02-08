@@ -3,6 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.event_stream.EventStream_divert_testUtils.SourceInnerEventStreamTag
 import dev.azide.core.event_stream.EventStream_divert_testUtils.SourceOuterCellTag
+import dev.azide.core.event_stream.EventStream_divert_testUtils.SuitableSlotCount
 import dev.azide.core.event_stream.EventStream_divert_testUtils.SuitableTestSlottedStimulationScenario
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
@@ -13,7 +14,6 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
@@ -29,7 +29,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
             inputEventStreamTag = SourceInnerEventStreamTag,
         ),
     ).distribute(
-        slotCount = TestSlotCount.Count2,
+        slotCount = SuitableSlotCount,
     )
 
     @Test
