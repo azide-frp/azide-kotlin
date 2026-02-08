@@ -8,8 +8,8 @@ enum class TestStimulationSlot3 : TestStimulationSlot {
 }
 
 enum class TestSlottedStimulationScenario1x3(
-    override val slot: TestStimulationSlot3,
-) : TestSlotDispatcher1xN {
+    val slot: TestStimulationSlot3,
+) {
     Case0(
         TestStimulationSlot3.Slot0,
     ),
@@ -24,9 +24,9 @@ enum class TestSlottedStimulationScenario1x3(
 }
 
 enum class TestSlottedStimulationScenario2x3(
-    override val slotA: TestStimulationSlot3,
-    override val slotB: TestStimulationSlot3,
-) : TestSlotDispatcher2xN {
+    val slotA: TestStimulationSlot3,
+    val slotB: TestStimulationSlot3,
+) {
     Case00(
         TestStimulationSlot3.Slot0,
         TestStimulationSlot3.Slot0,
