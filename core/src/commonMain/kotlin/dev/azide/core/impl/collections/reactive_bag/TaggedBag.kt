@@ -103,6 +103,10 @@ class TaggedBagImpl<ElementT>(
     ): Boolean = _elementByTag.containsKey(tag)
 }
 
+fun <ElementT> taggedBagOf(
+    vararg taggedElements: Pair<Tag, ElementT>,
+): TaggedBag<ElementT> = TODO()
+
 fun <ElementT> TaggedBag<ElementT>.toMutableBag(): MutableTaggedBag<ElementT> =
     TaggedBagImpl(initialElementByTag = elementByTag)
 

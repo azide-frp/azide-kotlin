@@ -5,6 +5,7 @@ import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListenerOnline
@@ -129,6 +130,14 @@ abstract class AbstractExpectedReactiveBagContentTransition<ElementT> : Expected
 object ReactiveBag_expectations_testUtils {
     fun <ElementT> expectTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedOldTaggedElements: TaggedBag<ElementT>,
+        expectedNewTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> {
+        TODO()
+    }
+
+    fun <ElementT> expectTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedOldTaggedContent: Map<Tag, ElementT>,
         expectedNewTaggedContent: Map<Tag, ElementT>,
     ): ExpectedReactiveBagContentTransition<ElementT> =
@@ -149,6 +158,13 @@ object ReactiveBag_expectations_testUtils {
                 }
 
         }
+
+    fun <ElementT> expectNoTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedUnaffectedTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> {
+        TODO()
+    }
 
     fun <ElementT> expectNoTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,

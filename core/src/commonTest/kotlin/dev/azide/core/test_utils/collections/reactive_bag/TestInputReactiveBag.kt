@@ -20,6 +20,10 @@ import kotlin.test.assertTrue
 class TestInputReactiveBag<ElementT>(
     initialTaggedContent: Map<Tag, ElementT>,
 ) : ReactiveBag<ElementT> {
+    constructor(
+        initialTaggedElements: TaggedBag< ElementT>,
+    ): this(initialTaggedContent = TODO())
+
     data class ChangeDescription<ElementT>(
         val addedElementByTag: Map<Tag, ElementT> = emptyMap(),
         val replacedElementByTag: Map<Tag, ElementT> = emptyMap(),
