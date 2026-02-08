@@ -3,6 +3,7 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.collections.map
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
+import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_generic_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_reaction_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.changing

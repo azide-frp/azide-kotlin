@@ -1,4 +1,4 @@
-package dev.azide.core.collections.reactive_bag
+package dev.azide.core.test_utils.collections.reactive_bag
 
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
