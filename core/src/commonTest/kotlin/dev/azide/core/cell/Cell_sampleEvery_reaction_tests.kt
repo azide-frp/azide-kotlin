@@ -33,7 +33,6 @@ class Cell_sampleEvery_reaction_tests {
     private val slottedStimulationBank_sourceCellUpdatesCorrected =
         Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
-
     @Test
     fun test_step_sourceUpdates() {
         slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
