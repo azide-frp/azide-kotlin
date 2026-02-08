@@ -4,22 +4,39 @@ import dev.azide.core.Cell
 import dev.azide.core.pullExternally
 import dev.azide.core.sampleEvery
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
-import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
-import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils
+import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.updating
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class Cell_sampleEvery_reaction_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+
+
     @Test
     fun test_step_sourceUpdates() {
-        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_step_sourceUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -27,7 +44,7 @@ class Cell_sampleEvery_reaction_tests {
     }
 
     private fun test_step_sourceUpdates(
-        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -40,7 +57,8 @@ class Cell_sampleEvery_reaction_tests {
 
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.update(
+            slottedInputStimulation = sourceCell.updating(
+                tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
@@ -52,7 +70,7 @@ class Cell_sampleEvery_reaction_tests {
 
     @Test
     fun test_step_sourceUpdatesRevoked() {
-        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_step_sourceUpdatesRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -60,7 +78,7 @@ class Cell_sampleEvery_reaction_tests {
     }
 
     private fun test_step_sourceUpdatesRevoked(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -74,6 +92,7 @@ class Cell_sampleEvery_reaction_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -85,7 +104,7 @@ class Cell_sampleEvery_reaction_tests {
 
     @Test
     fun test_step_sourceUpdatesCorrected() {
-        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_step_sourceUpdatesCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -93,7 +112,7 @@ class Cell_sampleEvery_reaction_tests {
     }
 
     private fun test_step_sourceUpdatesCorrected(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
@@ -108,6 +127,7 @@ class Cell_sampleEvery_reaction_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
+                tag = SourceCellTag,
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
             ).bind(slottedStimulationScenario),
