@@ -7,7 +7,7 @@ data class TestSlottedStimulationBank<SlotCountT : TestSlotCount>(
         stimulationMap: TestStimulationMap,
     ): Sequence<TestSlottedStimulation<SlotCountT>> = slottedStimulationScenarios.asSequence()
         .map { slottedStimulationScenario: TestSlottedStimulationScenario<SlotCountT> ->
-            slottedStimulationScenario.bind(stimulationMap)
+            stimulationMap.bind(slottedStimulationScenario)
         }
 
     fun forEach(

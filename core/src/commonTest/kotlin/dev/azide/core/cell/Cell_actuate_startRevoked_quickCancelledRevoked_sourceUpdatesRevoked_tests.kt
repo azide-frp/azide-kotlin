@@ -13,6 +13,7 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -52,11 +53,11 @@ class Cell_actuate_startRevoked_quickCancelledRevoked_sourceUpdatesRevoked_tests
 
         Effect_Cell_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceCell.revokingUpdate(
-                    tag = SourceEffectCellTag,
-                    newValue = targetEffect2,
-                ),
+            slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = SourceEffectCellTag,
+                newValue = targetEffect2,
+            ).bind(
+                slottedStimulationScenario,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),

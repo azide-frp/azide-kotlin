@@ -16,6 +16,7 @@ import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -102,24 +103,24 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
 
         val subjectReactiveBag = Effect_ReactiveBag_start_rushedWrapUp_testUtils.executeStartTransaction(
             subjectReactiveBagEffect = subjectEffect,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = sourceReactiveBag.changing(
-                    tag = SourceEffectReactiveBagTag,
-                    description = ChangeDescription(
-                        addedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect6 to targetEffect6,
-                            TargetEffectTag.TargetEffect7 to targetEffect7,
-                        ),
-                        replacedElementByTag = mapOf(
-                            TargetEffectTag.TargetEffect1 to targetEffect1b,
-                            TargetEffectTag.TargetEffect3 to targetEffect3b,
-                        ),
-                        removedTags = setOf(
-                            TargetEffectTag.TargetEffect2,
-                            TargetEffectTag.TargetEffect4,
-                        ),
+            slottedInputStimulation = sourceReactiveBag.changing(
+                tag = SourceEffectReactiveBagTag,
+                description = ChangeDescription(
+                    addedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect6 to targetEffect6,
+                        TargetEffectTag.TargetEffect7 to targetEffect7,
+                    ),
+                    replacedElementByTag = mapOf(
+                        TargetEffectTag.TargetEffect1 to targetEffect1b,
+                        TargetEffectTag.TargetEffect3 to targetEffect3b,
+                    ),
+                    removedTags = setOf(
+                        TargetEffectTag.TargetEffect2,
+                        TargetEffectTag.TargetEffect4,
                     ),
                 ),
+            ).bind(
+                slottedStimulationScenario,
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 expectedOldTaggedContent = mapOf(

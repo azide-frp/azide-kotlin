@@ -16,6 +16,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -61,17 +62,17 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = TestStimulationMap.union(
-                    outerSourceCell.revokingUpdate(
-                        tag = SourceOuterCellTag,
-                        newValue = laterInnerSourceEventStream,
-                    ),
-                    earlierInnerSourceEventStream.emitting(
-                        tag = SourceInnerEventStreamTag,
-                        emittedEvent = 11,
-                    ),
+            slottedInputStimulation = TestStimulationMap.union(
+                outerSourceCell.revokingUpdate(
+                    tag = SourceOuterCellTag,
+                    newValue = laterInnerSourceEventStream,
                 ),
+                earlierInnerSourceEventStream.emitting(
+                    tag = SourceInnerEventStreamTag,
+                    emittedEvent = 11,
+                ),
+            ).bind(
+                slottedStimulationScenario,
             ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 11,
@@ -111,17 +112,17 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
         EventStream_reaction_testUtils.executeReactionTransaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = slottedStimulationScenario.bind(
-                stimulationMap = TestStimulationMap.union(
-                    outerSourceCell.revokingUpdate(
-                        tag = SourceOuterCellTag,
-                        newValue = laterInnerSourceEventStream,
-                    ),
-                    laterInnerSourceEventStream.emitting(
-                        tag = SourceInnerEventStreamTag,
-                        emittedEvent = 21,
-                    ),
+            slottedInputStimulation = TestStimulationMap.union(
+                outerSourceCell.revokingUpdate(
+                    tag = SourceOuterCellTag,
+                    newValue = laterInnerSourceEventStream,
                 ),
+                laterInnerSourceEventStream.emitting(
+                    tag = SourceInnerEventStreamTag,
+                    emittedEvent = 21,
+                ),
+            ).bind(
+                slottedStimulationScenario,
             ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
