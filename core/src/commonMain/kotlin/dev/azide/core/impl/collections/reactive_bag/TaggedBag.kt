@@ -105,7 +105,9 @@ class TaggedBagImpl<ElementT>(
 
 fun <ElementT> taggedBagOf(
     vararg taggedElements: Pair<Tag, ElementT>,
-): TaggedBag<ElementT> = TODO()
+): TaggedBag<ElementT> = TaggedBagImpl(
+    initialElementByTag = taggedElements.toMap(),
+)
 
 fun <ElementT> TaggedBag<ElementT>.toMutableBag(): MutableTaggedBag<ElementT> =
     TaggedBagImpl(initialElementByTag = elementByTag)

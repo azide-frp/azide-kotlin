@@ -27,6 +27,13 @@ data class TaggedBagChange<out ElementT>(
         get() = addedElements.size - removedElements.size
 }
 
+fun <ElementT, TransformedElementT> TaggedBagChange<ElementT>.map(
+    transform: (ElementT) -> TransformedElementT,
+): TaggedBagChange<TransformedElementT> = TaggedBagChange(
+    changedElementByTag = changedElementByTag.mapValues { (_, element) -> transform(element) },
+    removedTags = removedTags,
+)
+
 fun <ElementT> TaggedBagChange<ElementT>.applyTo(
     mutableTaggedBag: MutableTaggedBag<ElementT>,
 ) {

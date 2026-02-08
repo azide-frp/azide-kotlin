@@ -22,7 +22,7 @@ class TestInputReactiveBag<ElementT>(
 ) : ReactiveBag<ElementT> {
     constructor(
         initialTaggedElements: TaggedBag< ElementT>,
-    ): this(initialTaggedContent = TODO())
+    ): this(initialTaggedContent = initialTaggedElements.elementByTag)
 
     data class ChangeDescription<ElementT>(
         val addedElementByTag: Map<Tag, ElementT> = emptyMap(),

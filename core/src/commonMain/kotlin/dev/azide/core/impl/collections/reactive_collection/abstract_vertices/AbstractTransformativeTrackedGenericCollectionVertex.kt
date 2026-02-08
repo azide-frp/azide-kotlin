@@ -4,6 +4,8 @@ import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.collections.reactive_bag.TaggedBag
+import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
 import dev.azide.core.impl.collections.reactive_list.ListChange
@@ -108,10 +110,29 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     ): TransformedChangeT?
 }
 
-typealias AbstractTransformativeTrackedSetVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>, Set<TransformedElementT>, SetChange<TransformedElementT>>
+typealias AbstractTransformativeTrackedSetVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<
+        Set<ElementT>,
+        SetChange<ElementT>,
+        Set<TransformedElementT>,
+        SetChange<TransformedElementT>,
+        >
 
 typealias AbstractAlteringTrackedSetVertex<ElementT> = AbstractTransformativeTrackedSetVertex<ElementT, ElementT>
 
-typealias AbstractTransformativeTrackedListVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<List<ElementT>, ListChange<ElementT>, List<TransformedElementT>, ListChange<TransformedElementT>>
+typealias AbstractTransformativeTrackedTaggedBagVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<
+        TaggedBag<ElementT>,
+        TaggedBagChange<ElementT>,
+        TaggedBag<TransformedElementT>,
+        TaggedBagChange<TransformedElementT>,
+        >
+
+typealias AbstractAlteringTrackedTaggedBagVertex<ElementT> = AbstractTransformativeTrackedTaggedBagVertex<ElementT, ElementT>
+
+typealias AbstractTransformativeTrackedListVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<
+        List<ElementT>,
+        ListChange<ElementT>,
+        List<TransformedElementT>,
+        ListChange<TransformedElementT>,
+        >
 
 typealias AbstractAlteringTrackedListVertex<ElementT> = AbstractTransformativeTrackedListVertex<ElementT, ElementT>

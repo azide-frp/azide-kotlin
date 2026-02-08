@@ -14,6 +14,6 @@ class PureTrackedGenericCollectionVertex<out ContentT: Collection<*>>(
 
 typealias PureTrackedSetVertex<ElementT> = PureTrackedGenericCollectionVertex<Set<ElementT>>
 
-typealias PureTrackedBagVertex<ElementT> = PureTrackedGenericCollectionVertex<TaggedBag<ElementT>>
+typealias PureTrackedTaggedBagVertex<ElementT> = PureTrackedGenericCollectionVertex<TaggedBag<ElementT>>
 
 typealias PureTrackedListVertex<ElementT> = PureTrackedGenericCollectionVertex<List<ElementT>>

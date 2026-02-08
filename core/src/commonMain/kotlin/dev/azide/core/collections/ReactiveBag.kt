@@ -8,7 +8,8 @@ import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
-import dev.azide.core.impl.collections.reactive_collection.PureTrackedBagVertex
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.MappedTrackedTaggedBagVertex
+import dev.azide.core.impl.collections.reactive_collection.PureTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
@@ -20,7 +21,7 @@ interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
         constElements: TaggedBag<ElementT>,
     ) : ReactiveBag<ElementT> {
-        override val trackedVertex: TrackedTaggedBagVertex<ElementT> = PureTrackedBagVertex(
+        override val trackedVertex: TrackedTaggedBagVertex<ElementT> = PureTrackedTaggedBagVertex(
             elements = constElements,
         )
     }
@@ -57,7 +58,12 @@ fun <ElementT> ReactiveBag<ElementT>.filter(
 
 fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
-): ReactiveBag<TransformedElementT> = TODO()
+): ReactiveBag<TransformedElementT> = ReactiveBag.Ordinary(
+    trackedVertex = MappedTrackedTaggedBagVertex(
+        sourceVertex = this.trackedVertex,
+        transform = transform,
+    ),
+)
 
 fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = TODO()
 
