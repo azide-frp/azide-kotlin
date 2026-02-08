@@ -1,21 +1,35 @@
 package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.Schedule
+import dev.azide.core.collections.reactive_list.ReactiveList_generic_testUtils.SourceReactiveListTag
 import dev.azide.core.collections.syncing
-import dev.azide.core.test_utils.TestSlottedStimulationScenario1x4
-import dev.azide.core.test_utils.TestSlottedStimulationScenario2x4
-import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
+import dev.azide.core.test_utils.collections.reactive_list.changing
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class ReactiveList_syncing_startRevoked_quickCancelled_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count4
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceListChanges =
+        ReactiveList_generic_testUtils.stimulationBank_sourceListChanges.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceListChangesRevoked =
+        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceListChangesCorrected =
+        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
     val originalTargetListContent = listOf(-1, -2, -3)
 
     @Test
@@ -50,7 +64,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesSimultaneously() {
-        TestSlottedStimulationScenario1x4.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceListChanges.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -58,7 +72,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
     }
 
     private fun test_startRevoked_quickCancelled_sourceUpdatesSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario1x4,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetMutableList = originalTargetListContent.toMutableList()
 
@@ -72,7 +86,8 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
 
         Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
-            slottedInputStimulation = sourceReactiveList.change(
+            slottedInputStimulation = sourceReactiveList.changing(
+                tag = SourceReactiveListTag,
                 description = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
@@ -98,7 +113,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesRevokedSimultaneously() {
-        TestSlottedStimulationScenario2x4.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceListChangesRevoked.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -106,7 +121,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
     }
 
     private fun test_startRevoked_quickCancelled_sourceUpdatesRevokedSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x4,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetMutableList = originalTargetListContent.toMutableList()
 
@@ -121,7 +136,8 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
         Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.revokingChange(
-                description = ChangeDescription.of(
+                tag = SourceReactiveListTag,
+                intermediateDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(21, 22, 23),
@@ -146,7 +162,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesCorrectedSimultaneously() {
-        TestSlottedStimulationScenario2x4.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceListChangesCorrected.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -154,7 +170,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
     }
 
     private fun test_startRevoked_quickCancelled_sourceUpdatesCorrectedSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x4,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val targetMutableList = originalTargetListContent.toMutableList()
 
@@ -169,6 +185,7 @@ class ReactiveList_syncing_startRevoked_quickCancelled_tests {
         Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.correctingChange(
+                tag = SourceReactiveListTag,
                 intermediateDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
