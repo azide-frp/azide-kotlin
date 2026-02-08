@@ -160,6 +160,7 @@ fun <ElementT> ListChange.Part<ElementT>.applyTo(
     mutableList: MutableList<ElementT>,
 ) {
     val sizeDelta = this.sizeDelta
+    val newLastIndexExclusive = firstIndexInclusive + newElements.size
 
     when {
         sizeDelta > 0 -> {
@@ -181,7 +182,7 @@ fun <ElementT> ListChange.Part<ElementT>.applyTo(
             }
         }
 
-        else -> {
+        else -> { // sizeDelta < 0
             val removalSize = -sizeDelta
 
             for (i in 0 until newElements.size) {
@@ -189,7 +190,7 @@ fun <ElementT> ListChange.Part<ElementT>.applyTo(
             }
 
             repeat(removalSize) {
-                mutableList.removeAt(firstIndexInclusive)
+                mutableList.removeAt(newLastIndexExclusive)
             }
         }
     }
