@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class ReactiveList_syncing_step_tests {
     @Test
     fun test_step_sourceUpdates_insertion() {

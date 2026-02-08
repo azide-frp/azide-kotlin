@@ -17,7 +17,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class ReactiveList_syncing_cancelled_tests {
     private val initialSourceElements = listOf(0, 10, 20, 30)
 

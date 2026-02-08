@@ -16,7 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class ReactiveList_syncing_startRevoked_quickCancelled_tests {
     val originalTargetListContent = listOf(-1, -2, -3)
 

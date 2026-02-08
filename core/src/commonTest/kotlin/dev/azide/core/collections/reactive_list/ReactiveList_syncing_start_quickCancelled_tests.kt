@@ -16,7 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Suppress("ClassName")
-@Ignore // TODO: Implement
 class ReactiveList_syncing_start_quickCancelled_tests {
     @Test
     fun test_start_quickCancelled() {
@@ -38,7 +37,7 @@ class ReactiveList_syncing_start_quickCancelled_tests {
         )
 
         assertEquals(
-            expected = listOf(10, 20, 30),
+            expected = emptyList(),
             actual = targetMutableList,
         )
 
@@ -86,7 +85,7 @@ class ReactiveList_syncing_start_quickCancelled_tests {
         )
 
         assertEquals(
-            expected = listOf(10, 20, 21, 22, 23, 30),
+            expected = emptyList(),
             actual = targetMutableList,
         )
 
@@ -134,7 +133,7 @@ class ReactiveList_syncing_start_quickCancelled_tests {
         )
 
         assertEquals(
-            expected = listOf(10, 20, 30),
+            expected = emptyList(),
             actual = targetMutableList,
         )
 
@@ -188,7 +187,7 @@ class ReactiveList_syncing_start_quickCancelled_tests {
         )
 
         assertEquals(
-            expected = listOf(10, 20, 24, 25, 30),
+            expected = emptyList(),
             actual = targetMutableList,
         )
 

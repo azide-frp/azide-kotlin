@@ -7,6 +7,8 @@ import dev.azide.core.collections.helpers.SortableValue
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.MappedTrackedListVertex
+import dev.azide.core.impl.effects.ExternalizedEffect
+import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
 import kotlin.jvm.JvmName
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
@@ -76,4 +78,9 @@ fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValu
 
 fun <ElementT> ReactiveList<ElementT>.syncing(
     externalMutableList: MutableList<ElementT>,
-): Schedule = TODO()
+): Schedule = ExternalizedEffect(
+    internalEffect = ReactiveListSyncingSchedule(
+        sourceReactiveList = this@syncing,
+        externalMutableList = externalMutableList,
+    )
+)
