@@ -66,14 +66,13 @@ fun <ElementT, TransformedElementT> ReactiveList<ElementT>.map(
     ),
 )
 
-fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sorted(): ReactiveList<ElementT> = TODO("Unimplemented: sorted")
+fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sortedPurely(): ReactiveList<ElementT> =
+    TODO("Unimplemented: sorted")
 
-@JvmName("sortedSortableValue")
-fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue<ElementT, SortKeyT>>.sorted(): ReactiveList<ElementT> =
+fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue<ElementT, SortKeyT>>.sortedUniquely(): ReactiveList<ElementT> =
     TODO("Unimplemented: sortedSortableValue")
 
-@JvmName("sortedReactiveSortableValue")
-fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sorted(): ReactiveList<ElementT> =
+fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sortedUniquelyReactively(): ReactiveList<ElementT> =
     TODO("Unimplemented: sortedReactiveSortableValue")
 
 fun <ElementT> ReactiveList<ElementT>.syncing(
