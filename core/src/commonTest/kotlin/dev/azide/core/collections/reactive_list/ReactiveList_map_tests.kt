@@ -9,25 +9,30 @@ import dev.azide.core.test_utils.collections.reactive_list.changing
 import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation2
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
 class ReactiveList_map_tests {
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<TestSlotCount.Count2>
+    private typealias SuitableSlotCount = TestSlotCount.Count2
 
-    private val slotCount = TestSlotCount.Count2
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation2
+        get() = asTestSlottedStimulation2
 
     private val slottedStimulationBank_sourceEffectListChanges =
-        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChanges.distribute(slotCount = slotCount)
+        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChanges.distribute(slotCount = SuitableSlotCount)
 
     private val slottedStimulationBank_sourceEffectListChangesRevoked =
-        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChangesRevoked.distribute(slotCount = slotCount)
+        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val slottedStimulationBank_sourceEffectListChangesCorrected =
-        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChangesCorrected.distribute(slotCount = slotCount)
+        ReactiveList_generic_testUtils.stimulationBank_sourceEffectListChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_sourceListChanges_insertionsOnly() {
@@ -63,7 +68,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
                 expectedNewContent = listOf("0", "10", "20", "21", "22", "23", "30", "40", "50", "51", "52", "60"),
@@ -103,7 +108,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
                 expectedNewContent = listOf("0", "30", "60"),
@@ -145,7 +150,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
                 expectedNewContent = listOf("0", "11", "12", "30", "41", "42", "43", "60"),
@@ -190,7 +195,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
                 expectedNewContent = listOf("0", "10", "15", "16", "20", "30", "50", "200"),
@@ -232,7 +237,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectNoContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -272,7 +277,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectNoContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -314,7 +319,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectNoContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -359,7 +364,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectNoContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -407,7 +412,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -453,7 +458,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -502,7 +507,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),
@@ -557,7 +562,7 @@ class ReactiveList_map_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation2,
+            ).asSuitableTestSlottedStimulation,
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldContent = listOf("0", "10", "20", "30", "40", "50", "60"),

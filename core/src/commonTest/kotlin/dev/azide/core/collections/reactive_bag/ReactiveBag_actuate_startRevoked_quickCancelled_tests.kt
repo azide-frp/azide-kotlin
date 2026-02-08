@@ -5,6 +5,7 @@ import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.actuate
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.SourceEffectReactiveBagTag
 import dev.azide.core.collections.reactive_bag.ReactiveBag_actuate_testUtils.TargetEffectTag
+import dev.azide.core.test_utils.TestSlottedStimulation4
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag.ChangeDescription
@@ -15,30 +16,34 @@ import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_startRev
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.asTestSlottedStimulation4
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
 class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<TestSlotCount.Count4>
+    private typealias SuitableSlotCount = TestSlotCount.Count4
 
-    private val slotCount = TestSlotCount.Count4
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val TestSlottedStimulation<SuitableSlotCount>.asSuitableTestSlottedStimulation: TestSlottedStimulation4
+        get() = asTestSlottedStimulation4
 
     private val slottedStimulationBank_sourceEffectBagChanges =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChanges =
         slottedStimulationBank_sourceEffectBagChanges.slottedStimulationScenarios[0]
 
     private val slottedStimulationBank_sourceEffectBagChangesRevoked =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesRevoked.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked =
         slottedStimulationBank_sourceEffectBagChangesRevoked.slottedStimulationScenarios[0]
 
     private val slottedStimulationBank_sourceEffectBagChangesCorrected =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesCorrected.distribute(slotCount = slotCount)
+        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected =
         slottedStimulationBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
@@ -114,7 +119,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -169,7 +174,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -228,7 +233,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -307,7 +312,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -367,7 +372,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -422,7 +427,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -479,7 +484,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -557,7 +562,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -628,7 +633,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -692,7 +697,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
@@ -760,7 +765,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2a.expectIsNotStarted(),
@@ -856,7 +861,7 @@ class ReactiveBag_actuate_startRevoked_quickCancelled_tests {
                         ),
                     ),
                 ),
-            ).asTestSlottedStimulation4,
+            ).asSuitableTestSlottedStimulation,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1a.expectIsNotStarted(),
                 targetEffect2.expectIsNotStarted(),
