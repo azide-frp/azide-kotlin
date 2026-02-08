@@ -6,7 +6,6 @@ import dev.azide.core.actuate
 import dev.azide.core.cell.Cell_actuate_testUtils.SourceEffectCellTag
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetEffect
-import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
