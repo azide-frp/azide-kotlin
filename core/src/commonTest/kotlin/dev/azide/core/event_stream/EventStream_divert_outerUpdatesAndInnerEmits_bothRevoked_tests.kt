@@ -1,8 +1,9 @@
 package dev.azide.core.event_stream
 
 import dev.azide.core.Cell
-import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
-import dev.azide.core.test_utils.bind
+import dev.azide.core.event_stream.EventStream_divert_testUtils.SourceInnerEventStreamTag
+import dev.azide.core.event_stream.EventStream_divert_testUtils.SourceOuterCellTag
+import dev.azide.core.event_stream.EventStream_divert_testUtils.SuitableTestSlottedStimulationScenario
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.cell.revokingUpdate
@@ -13,7 +14,6 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
@@ -21,14 +21,6 @@ import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
-    private typealias SuitableSlotCount = TestSlotCount.Count2
-
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private data object SourceOuterCellTag : TestInputCellTag
-
-    private data object SourceInnerEventStreamTag : TestInputEventStreamTag
-
     private val slottedStimulationBank = TestStimulationBank.build(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceOuterCellTag,
@@ -81,12 +73,9 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
             ),
         )
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_divert_testUtils.verifyInnerEventStreamNotExposed(
+            innerSourceEventStream = laterInnerSourceEventStream,
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 22,
-            ).bind(TestSlottedStimulationScenario1x2.Case1),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -129,12 +118,9 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_divert_testUtils.verifyInnerEventStreamNotExposed(
+            innerSourceEventStream = laterInnerSourceEventStream,
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 22,
-            ).bind(TestSlottedStimulationScenario1x2.Case1),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 }
