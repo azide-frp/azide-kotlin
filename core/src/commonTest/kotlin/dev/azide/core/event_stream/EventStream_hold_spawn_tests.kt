@@ -3,19 +3,34 @@ package dev.azide.core.event_stream
 import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
-import dev.azide.core.test_utils.TestSlottedStimulationScenario1x3
-import dev.azide.core.test_utils.TestSlottedStimulationScenario2x3
-import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_spawn_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
+import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class EventStream_hold_spawn_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count3
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsRevoked =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsCorrected =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_spawn() {
         val sourceEventStream = TestInputEventStream<Int>()
@@ -32,7 +47,7 @@ class EventStream_hold_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsSimultaneously() {
-        TestSlottedStimulationScenario1x3.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -40,7 +55,7 @@ class EventStream_hold_spawn_tests {
     }
 
     private fun test_spawn_sourceEmitsSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario1x3,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -48,7 +63,8 @@ class EventStream_hold_spawn_tests {
 
         Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
-            slottedInputStimulation = sourceEventStream.emit(
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
@@ -60,7 +76,7 @@ class EventStream_hold_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsRevokedSimultaneously() {
-        TestSlottedStimulationScenario2x3.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -68,7 +84,7 @@ class EventStream_hold_spawn_tests {
     }
 
     private fun test_spawn_sourceEmitsRevokedSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x3,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -77,6 +93,7 @@ class EventStream_hold_spawn_tests {
         Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.revokingEmission(
+                tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -88,7 +105,7 @@ class EventStream_hold_spawn_tests {
 
     @Test
     fun test_spawn_sourceEmitsCorrectedSimultaneously() {
-        TestSlottedStimulationScenario2x3.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -96,7 +113,7 @@ class EventStream_hold_spawn_tests {
     }
 
     private fun test_spawn_sourceEmitsCorrectedSimultaneously(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x3,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -105,6 +122,7 @@ class EventStream_hold_spawn_tests {
         Cell_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(slottedStimulationScenario),

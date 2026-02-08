@@ -4,22 +4,37 @@ import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.holding
 import dev.azide.core.pullExternally
-import dev.azide.core.test_utils.TestSlottedStimulationScenario1x2
-import dev.azide.core.test_utils.TestSlottedStimulationScenario2x2
-import dev.azide.core.test_utils.bind
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.correctingEmission
+import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
-@Suppress("ClassName")
+@Suppress("ClassName", "PrivatePropertyName")
 class EventStream_hold_reaction_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count2
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsRevoked =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceEventStreamEmitsCorrected =
+        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_reaction_sourceUpdates() {
-        TestSlottedStimulationScenario1x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_reaction_sourceUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -27,7 +42,7 @@ class EventStream_hold_reaction_tests {
     }
 
     private fun test_reaction_sourceUpdates(
-        slottedStimulationScenario: TestSlottedStimulationScenario1x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -37,7 +52,8 @@ class EventStream_hold_reaction_tests {
 
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceEventStream.emit(
+            slottedInputStimulation = sourceEventStream.emitting(
+                tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
@@ -49,7 +65,7 @@ class EventStream_hold_reaction_tests {
 
     @Test
     fun test_reaction_sourceUpdatesRevoked() {
-        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_reaction_sourceUpdatesRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -57,7 +73,7 @@ class EventStream_hold_reaction_tests {
     }
 
     private fun test_reaction_sourceUpdatesRevoked(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -68,6 +84,7 @@ class EventStream_hold_reaction_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.revokingEmission(
+                tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -79,7 +96,7 @@ class EventStream_hold_reaction_tests {
 
     @Test
     fun test_reaction_sourceUpdatesCorrected() {
-        TestSlottedStimulationScenario2x2.entries.forEach { slottedStimulationScenario ->
+        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_reaction_sourceUpdatesCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -87,7 +104,7 @@ class EventStream_hold_reaction_tests {
     }
 
     private fun test_reaction_sourceUpdatesCorrected(
-        slottedStimulationScenario: TestSlottedStimulationScenario2x2,
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceEventStream = TestInputEventStream<Int>()
 
@@ -98,6 +115,7 @@ class EventStream_hold_reaction_tests {
         Cell_reaction_testUtils.executeReactionTransaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.correctingEmission(
+                tag = SourceEventStreamTag,
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,
             ).bind(slottedStimulationScenario),
