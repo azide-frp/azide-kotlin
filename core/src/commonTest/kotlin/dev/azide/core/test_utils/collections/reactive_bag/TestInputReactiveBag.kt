@@ -124,37 +124,37 @@ class TestInputReactiveBag<ElementT>(
     }
 
     fun change(
-        description: ChangeDescription<ElementT>,
+        changeDescription: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
-            description.verifyIsApplicable(
+            changeDescription.verifyIsApplicable(
                 targetVertex = _vertex,
                 propagationContext = propagationContext,
             )
 
             _vertex.change(
                 propagationContext = propagationContext,
-                change = description.toTaggedBagChange(),
+                change = changeDescription.toTaggedBagChange(),
             )
         }
     }
 
     fun correctChange(
-        correctedDescription: ChangeDescription<ElementT>,
+        correctedChangeDescription: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
-            correctedDescription.verifyIsApplicable(
+            correctedChangeDescription.verifyIsApplicable(
                 targetVertex = _vertex,
                 propagationContext = propagationContext,
             )
 
             _vertex.correctChange(
                 propagationContext = propagationContext,
-                correctedChange = correctedDescription.toTaggedBagChange(),
+                correctedChange = correctedChangeDescription.toTaggedBagChange(),
             )
         }
     }
@@ -187,29 +187,29 @@ fun <ElementT> ChangeDescription<ElementT>.verifyIsApplicable(
 
 fun <ElementT> TestInputReactiveBag<ElementT>.changing(
     tag: TestInputReactiveCollectionTag,
-    description: ChangeDescription<ElementT>,
+    changeDescription: ChangeDescription<ElementT>,
 ): TestStimulationMap = TestStimulationMap.of(
     TestInputReactiveCollectionStimulationTag.Change(
         inputTag = tag,
     ) to change(
-        description = description,
+        changeDescription = changeDescription,
     ),
 )
 
 fun <ElementT> TestInputReactiveBag<ElementT>.revokingChange(
-    intermediateDescription: ChangeDescription<ElementT>,
+    temporaryChangeDescription: ChangeDescription<ElementT>,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = change(
-        description = intermediateDescription,
+        changeDescription = temporaryChangeDescription,
     ),
     secondStimulation = revokeChange(),
 )
 
 fun <ElementT> TestInputReactiveBag<ElementT>.revokingChange(
     tag: TestInputReactiveCollectionTag,
-    intermediateDescription: ChangeDescription<ElementT>,
+    temporaryChangeDescription: ChangeDescription<ElementT>,
 ): TestStimulationMap = revokingChange(
-    intermediateDescription,
+    temporaryChangeDescription,
 ).tagged(
     firstTag = TestInputReactiveCollectionStimulationTag.Change(
         inputTag = tag,
@@ -220,24 +220,24 @@ fun <ElementT> TestInputReactiveBag<ElementT>.revokingChange(
 )
 
 fun <ElementT> TestInputReactiveBag<ElementT>.correctingChange(
-    intermediateDescription: ChangeDescription<ElementT>,
-    correctedDescription: ChangeDescription<ElementT>,
+    intermediateChangeDescription: ChangeDescription<ElementT>,
+    correctedChangeDescription: ChangeDescription<ElementT>,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = change(
-        description = intermediateDescription,
+        changeDescription = intermediateChangeDescription,
     ),
     secondStimulation = correctChange(
-        correctedDescription = correctedDescription,
+        correctedChangeDescription = correctedChangeDescription,
     ),
 )
 
 fun <ElementT> TestInputReactiveBag<ElementT>.correctingChange(
     tag: TestInputReactiveCollectionTag,
-    intermediateDescription: ChangeDescription<ElementT>,
-    correctedDescription: ChangeDescription<ElementT>,
+    intermediateChangeDescription: ChangeDescription<ElementT>,
+    correctedChangeDescription: ChangeDescription<ElementT>,
 ): TestStimulationMap = correctingChange(
-    intermediateDescription = intermediateDescription,
-    correctedDescription = correctedDescription,
+    intermediateChangeDescription = intermediateChangeDescription,
+    correctedChangeDescription = correctedChangeDescription,
 ).tagged(
     firstTag = TestInputReactiveCollectionStimulationTag.Change(
         inputTag = tag,

@@ -52,7 +52,7 @@ class ReactiveSet_contains_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, 7),
                     removedElements = emptySet(),
                 ),
@@ -74,7 +74,7 @@ class ReactiveSet_contains_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, -7),
                     removedElements = setOf(1, 5),
                 ),
@@ -96,7 +96,7 @@ class ReactiveSet_contains_tests {
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, 7, -8),
                     removedElements = setOf(1, 5),
                 ),
@@ -115,7 +115,7 @@ class ReactiveSet_contains_tests {
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, 7, -8),
                     removedElements = setOf(1, 5),
                 ),
@@ -137,7 +137,7 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, -7),
                         removedElements = setOf(1, 3),
                     ),
@@ -161,7 +161,7 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, -7),
                         removedElements = setOf(1, 5),
                     ),
@@ -185,7 +185,7 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(1, 5),
                     ),
@@ -209,13 +209,13 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(1, 5),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
                         removedElements = setOf(1, 5),
                     ),
@@ -238,13 +238,13 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(1, 5),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7, 8),
                         removedElements = setOf(1, 5),
                     ),
@@ -268,13 +268,13 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6),
                         removedElements = setOf(1, -2, 3, 5),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, 7),
                         removedElements = setOf(1, -2),
                     ),
@@ -297,13 +297,13 @@ class ReactiveSet_contains_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, -7, 8),
                         removedElements = setOf(1, -2),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, 7, 8, 9),
                         removedElements = setOf(3, -4),
                     ),

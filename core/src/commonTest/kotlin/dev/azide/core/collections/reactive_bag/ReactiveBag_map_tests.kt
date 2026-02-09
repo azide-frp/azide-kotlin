@@ -57,7 +57,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         40 to 40.1,
                         50 to 50.1,
@@ -115,7 +115,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     removedTags = setOf(10, 20, 40, 50),
                 ),
             ).bind(
@@ -170,7 +170,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     replacedElementByTag = mapOf(
                         10 to 11.1,
                         20 to 12.1,
@@ -235,7 +235,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         15 to 15.1,
                         16 to 16.1,
@@ -300,7 +300,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         70 to 70.1,
                         80 to 80.1,
@@ -354,7 +354,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
                     removedTags = setOf(10, 20, 40, 50),
                 ),
             ).bind(
@@ -405,7 +405,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
                     replacedElementByTag = mapOf(
                         10 to 11.1,
                         20 to 12.1,
@@ -462,7 +462,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         70 to 70.1,
                         80 to 80.1,
@@ -521,14 +521,14 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         25 to 25.1, // not corrected
                         26 to 26.1, // corrected: added differently
                         70 to 70.1, // corrected: not added
                     ),
                 ),
-                correctedDescription = TestInputReactiveBag.ChangeDescription(
+                correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         25 to 25.1,
                         26 to 26.2,
@@ -595,7 +595,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
                     removedTags = setOf(
                         10, // corrected: not removed
                         20, // not corrected
@@ -604,7 +604,7 @@ class ReactiveBag_map_tests {
                         50, // not corrected
                     ),
                 ),
-                correctedDescription = TestInputReactiveBag.ChangeDescription(
+                correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
                     removedTags = setOf(
                         20,
                         30,
@@ -665,7 +665,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
                     replacedElementByTag = mapOf(
                         10 to 11.1, // not corrected
                         20 to 12.1, // corrected: replaced differently
@@ -675,7 +675,7 @@ class ReactiveBag_map_tests {
                         60 to 43.1, // corrected: not replaced
                     ),
                 ),
-                correctedDescription = TestInputReactiveBag.ChangeDescription(
+                correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
                     replacedElementByTag = mapOf(
                         10 to 11.1,
                         20 to 12.2,
@@ -739,7 +739,7 @@ class ReactiveBag_map_tests {
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
-                intermediateDescription = TestInputReactiveBag.ChangeDescription(
+                intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         5 to 5.1, // not corrected
                         70 to 70.1, // corrected: not added
@@ -750,7 +750,7 @@ class ReactiveBag_map_tests {
                     ),
                     removedTags = setOf(20, 50),
                 ),
-                correctedDescription = TestInputReactiveBag.ChangeDescription(
+                correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         5 to 5.1,
                     ),

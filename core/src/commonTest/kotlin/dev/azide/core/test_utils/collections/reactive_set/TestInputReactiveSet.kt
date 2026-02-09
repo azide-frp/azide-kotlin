@@ -89,12 +89,12 @@ class TestInputReactiveSet<ElementT>(
     }
 
     fun change(
-        description: ChangeDescription<ElementT>,
+        changeDescription: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
-            description.verifyIsApplicable(
+            changeDescription.verifyIsApplicable(
                 targetSet = _vertex.getOldContentView(
                     propagationContext = propagationContext,
                 ),
@@ -102,18 +102,18 @@ class TestInputReactiveSet<ElementT>(
 
             _vertex.change(
                 propagationContext = propagationContext,
-                change = description.toSetChange(),
+                change = changeDescription.toSetChange(),
             )
         }
     }
 
     fun correctChange(
-        correctedDescription: ChangeDescription<ElementT>,
+        correctedChangeDescription: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
-            correctedDescription.verifyIsApplicable(
+            correctedChangeDescription.verifyIsApplicable(
                 targetSet = _vertex.getOldContentView(
                     propagationContext = propagationContext,
                 ),
@@ -121,7 +121,7 @@ class TestInputReactiveSet<ElementT>(
 
             _vertex.correctChange(
                 propagationContext = propagationContext,
-                correctedChange = correctedDescription.toSetChange(),
+                correctedChange = correctedChangeDescription.toSetChange(),
             )
         }
     }
@@ -142,22 +142,22 @@ class TestInputReactiveSet<ElementT>(
 }
 
 fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
-    description: TestInputReactiveSet.ChangeDescription<ElementT>,
+    temporaryChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
 ): TestStimulation = TestStimulation.combine(
     change(
-        description = description,
+        changeDescription = temporaryChangeDescription,
     ),
     revokeChange(),
 )
 
 fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
-    intermediateDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
-    correctedDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
+    intermediateChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
+    correctedChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
 ): TestStimulation = TestStimulation.combine(
     change(
-        description = intermediateDescription,
+        changeDescription = intermediateChangeDescription,
     ),
     correctChange(
-        correctedDescription = correctedDescription,
+        correctedChangeDescription = correctedChangeDescription,
     ),
 )

@@ -88,7 +88,7 @@ class ReactiveList_syncing_startRevoked_tests {
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(21, 22, 23),
@@ -137,7 +137,7 @@ class ReactiveList_syncing_startRevoked_tests {
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(21, 22, 23),
@@ -186,13 +186,13 @@ class ReactiveList_syncing_startRevoked_tests {
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(21, 22, 23),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(24, 25),

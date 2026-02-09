@@ -51,7 +51,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -93,7 +93,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
                         indexRange = 1..<3,
                     ),
@@ -133,7 +133,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
                         indexRange = 1..<3,
                         replacedElements = listOf(11, 12),
@@ -175,7 +175,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(15, 16),
@@ -220,7 +220,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -262,7 +262,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
                         indexRange = 1..<3,
                     ),
@@ -302,7 +302,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
                         indexRange = 1..<3,
                         replacedElements = listOf(100, 110),
@@ -344,7 +344,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(15, 16),
@@ -389,7 +389,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -399,7 +399,7 @@ class ReactiveList_map_tests {
                         newElements = listOf(51, 52),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(25, 26),
@@ -438,7 +438,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
                         indexRange = 1..<3,
                     ),
@@ -446,7 +446,7 @@ class ReactiveList_map_tests {
                         indexRange = 4..<6,
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
                         indexRange = 2..<4,
                     ),
@@ -484,7 +484,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
                         indexRange = 1..<3,
                         replacedElements = listOf(11, 21),
@@ -494,7 +494,7 @@ class ReactiveList_map_tests {
                         replacedElements = listOf(140, 150),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
                         indexRange = 1..<4,
                         replacedElements = listOf(11, 12, 13),
@@ -533,7 +533,7 @@ class ReactiveList_map_tests {
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(15, 16),
@@ -546,7 +546,7 @@ class ReactiveList_map_tests {
                         replacedElements = listOf(200),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 1,
                         newElements = listOf(5),

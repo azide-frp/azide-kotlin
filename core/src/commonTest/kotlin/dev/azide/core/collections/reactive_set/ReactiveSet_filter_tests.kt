@@ -54,7 +54,7 @@ class ReactiveSet_filter_tests {
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, 7),
                     removedElements = setOf(1, 5),
                 ),
@@ -77,7 +77,7 @@ class ReactiveSet_filter_tests {
         ReactiveSetTestUtils.verifyDoesNotChangeAtAll(
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(-6, -7),
                     removedElements = setOf(-2, -4),
                 ),
@@ -99,7 +99,7 @@ class ReactiveSet_filter_tests {
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(6, -7, 8, -9),
                     removedElements = setOf(1, -2),
                 ),
@@ -123,7 +123,7 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(-2, 5),
                     ),
@@ -148,7 +148,7 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
                         removedElements = setOf(-2),
                     ),
@@ -173,13 +173,13 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
                         removedElements = setOf(-2, -4),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-8),
                         removedElements = setOf(-2, -4),
                     ),
@@ -203,13 +203,13 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
                         removedElements = setOf(-2, -4),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 8),
                         removedElements = setOf(-2, -4),
                     ),
@@ -234,13 +234,13 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(-2, 5),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -8),
                         removedElements = setOf(-2, -4),
                     ),
@@ -264,13 +264,13 @@ class ReactiveSet_filter_tests {
             subjectReactiveSet = subjectReactiveSet,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
                         removedElements = setOf(-2, 5),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, 8),
                         removedElements = setOf(-2, 3, 5),
                     ),

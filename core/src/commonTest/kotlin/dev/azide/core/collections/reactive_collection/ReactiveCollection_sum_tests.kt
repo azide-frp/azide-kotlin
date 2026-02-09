@@ -49,7 +49,7 @@ class ReactiveCollection_sum_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                description = TestInputReactiveSet.ChangeDescription(
+                changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(5, 6),
                     removedElements = setOf(2, 3),
                 ),
@@ -71,7 +71,7 @@ class ReactiveCollection_sum_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(5, 6),
                         removedElements = setOf(2, 3),
                     ),
@@ -94,13 +94,13 @@ class ReactiveCollection_sum_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    description = TestInputReactiveSet.ChangeDescription(
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(5, 6),
                         removedElements = setOf(2, 3),
                     ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(7),
                         removedElements = setOf(4),
                     ),
