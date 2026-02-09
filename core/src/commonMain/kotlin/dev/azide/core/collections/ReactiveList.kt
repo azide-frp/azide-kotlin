@@ -8,6 +8,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedListVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.MappedTrackedListVertex
+import dev.azide.core.impl.collections.reactive_list.operated_vertices.SortedUniquelyTrackedListVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
 import kotlin.jvm.JvmName
@@ -70,7 +71,11 @@ fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sortedPurely(
     TODO("Unimplemented: sortedPurely")
 
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue<ElementT, SortKeyT>>.sortedUniquely(): ReactiveList<ElementT> =
-    TODO("Unimplemented: sortedUniquely")
+    ReactiveList.Ordinary(
+        trackedVertex = SortedUniquelyTrackedListVertex(
+            sourceVertex = this.trackedVertex,
+        ),
+    )
 
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sortedUniquelyReactively(): ReactiveList<ElementT> =
     TODO("Unimplemented: sortedUniquelyReactively")
