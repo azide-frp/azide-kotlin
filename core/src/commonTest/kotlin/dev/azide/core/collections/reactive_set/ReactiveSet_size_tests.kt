@@ -5,6 +5,7 @@ import dev.azide.core.collections.size
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
+import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -36,8 +37,10 @@ class ReactiveSet_size_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                elementsToAdd = setOf(6, 7, -8, 9),
-                elementsToRemove = setOf(1, 5),
+                description = TestInputReactiveSet.ChangeDescription(
+                    addedElements = setOf(6, 7, -8, 9),
+                    removedElements = setOf(1, 5),
+                ),
             ),
             expectedOldValue = 3,
             expectedNewValue = 4,
@@ -56,8 +59,10 @@ class ReactiveSet_size_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                elementsToAdd = setOf(6, -7),
-                elementsToRemove = setOf(1, 5),
+                description = TestInputReactiveSet.ChangeDescription(
+                    addedElements = setOf(6, -7),
+                    removedElements = setOf(1, 5),
+                ),
             ),
             expectedOldValue = 3,
             expectedNewValue = 2,
@@ -76,8 +81,10 @@ class ReactiveSet_size_tests {
         CellTestUtils.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                elementsToAdd = setOf(6, 7, -8),
-                elementsToRemove = setOf(1, 5),
+                description = TestInputReactiveSet.ChangeDescription(
+                    addedElements = setOf(6, 7, -8),
+                    removedElements = setOf(1, 5),
+                ),
             ),
             expectedUnaffectedValue = 3,
         )
@@ -96,8 +103,10 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6, 7, -8, 9),
-                    elementsToRemove = setOf(1, 5),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6, 7, -8, 9),
+                        removedElements = setOf(1, 5),
+                    ),
                 ),
                 sourceReactiveSet.revokeChange(),
             ),
@@ -118,8 +127,10 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6, -7),
-                    elementsToRemove = setOf(1, -2),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6, -7),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
                 sourceReactiveSet.revokeChange(),
             ),
@@ -140,12 +151,16 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6, -7),
-                    elementsToRemove = setOf(1, -2),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6, -7),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedElementsToAdd = setOf(-6, 7),
-                    correctedElementsToRemove = setOf(3, -4),
+                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(-6, 7),
+                        removedElements = setOf(3, -4),
+                    ),
                 ),
             ),
             expectedUnaffectedValue = 3,
@@ -165,12 +180,16 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6, -7),
-                    elementsToRemove = setOf(1, -2),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6, -7),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedElementsToAdd = setOf(-6, 7, 8, 9),
-                    correctedElementsToRemove = setOf(1, -2),
+                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(-6, 7, 8, 9),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
             ),
             expectedOldValue = 3,
@@ -191,12 +210,16 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6),
-                    elementsToRemove = setOf(1, -2, 3, 5),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6),
+                        removedElements = setOf(1, -2, 3, 5),
+                    ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedElementsToAdd = setOf(-6, 7),
-                    correctedElementsToRemove = setOf(1, -2),
+                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(-6, 7),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
             ),
             expectedUnaffectedValue = 3,
@@ -216,12 +239,16 @@ class ReactiveSet_size_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(6, -7, 8),
-                    elementsToRemove = setOf(1, -2),
+                    description = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(6, -7, 8),
+                        removedElements = setOf(1, -2),
+                    ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedElementsToAdd = setOf(-6, 7, 8, 9),
-                    correctedElementsToRemove = setOf(3, -4),
+                    correctedDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(-6, 7, 8, 9),
+                        removedElements = setOf(3, -4),
+                    ),
                 ),
             ),
             expectedOldValue = 3,

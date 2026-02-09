@@ -87,6 +87,7 @@ class TestInputReactiveSet<ElementT>(
             }
         }
     }
+
     fun change(
         description: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
@@ -105,17 +106,6 @@ class TestInputReactiveSet<ElementT>(
             )
         }
     }
-
-    @Deprecated("Use change(description: ChangeDescription) instead")
-    fun change(
-        elementsToAdd: Set<ElementT>,
-        elementsToRemove: Set<ElementT>,
-    ): TestStimulation = change(
-        description = ChangeDescription(
-            addedElements = elementsToAdd,
-            removedElements = elementsToRemove,
-        ),
-    )
 
     fun correctChange(
         correctedDescription: ChangeDescription<ElementT>,
@@ -136,16 +126,6 @@ class TestInputReactiveSet<ElementT>(
         }
     }
 
-    @Deprecated("Use correctChange(correctedDescription: ChangeDescription) instead")
-    fun correctChange(
-        correctedElementsToAdd: Set<ElementT>,
-        correctedElementsToRemove: Set<ElementT>,
-    ): TestStimulation = correctChange(
-        correctedDescription = ChangeDescription(
-            addedElements = correctedElementsToAdd,
-            removedElements = correctedElementsToRemove,
-        ),
-    )
 
     fun revokeChange(): TestStimulation = object : TestStimulation {
         override fun stimulate(
