@@ -20,9 +20,9 @@ data class TestSlottedStimulationScenario<@Suppress("unused") SlotCountT : TestS
 }
 
 fun <@Suppress("unused") SlotCountT : TestSlotCount> TestStimulationMap.bind(
-    __scenario__: TestSlottedStimulationScenario<SlotCountT>,
+    scenario: TestSlottedStimulationScenario<SlotCountT>,
 ): TestSlottedStimulation<SlotCountT> = TestSlottedStimulation(
-    slotStimulations = __scenario__.slotStimulationScenarios.map { stimulationScenario: TestStimulationScenario ->
+    slotStimulations = scenario.slotStimulationScenarios.map { stimulationScenario: TestStimulationScenario ->
         stimulationScenario.bind(stimulationMap = this)
     },
 )
