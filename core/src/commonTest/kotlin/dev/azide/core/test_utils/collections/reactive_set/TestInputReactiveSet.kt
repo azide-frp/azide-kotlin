@@ -15,33 +15,29 @@ class TestInputReactiveSet<ElementT>(
     ) {
         fun change(
             propagationContext: Transactions.PropagationContext,
-            elementsToAdd: Set<ElementT>,
-            elementsToRemove: Set<ElementT>,
+            change: SetChange<ElementT>,
         ) {
             if (ongoingChange != null) {
                 throw IllegalStateException("Another change is already ongoing")
             }
 
-            _change(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
-                elementsToAdd = elementsToAdd,
-                elementsToRemove = elementsToRemove,
+                change = change,
             )
         }
 
         fun correctChange(
             propagationContext: Transactions.PropagationContext,
-            correctedElementsToAdd: Set<ElementT>,
-            correctedElementsToRemove: Set<ElementT>,
+            correctedChange: SetChange<ElementT>,
         ) {
             if (ongoingChange == null) {
                 throw IllegalStateException("No ongoing change to correct")
             }
 
-            _change(
+            exposeChangeNotifyingListeners(
                 propagationContext = propagationContext,
-                elementsToAdd = correctedElementsToAdd,
-                elementsToRemove = correctedElementsToRemove,
+                change = correctedChange,
             )
         }
 
@@ -57,69 +53,99 @@ class TestInputReactiveSet<ElementT>(
                 change = null,
             )
         }
+    }
 
-        private fun _change(
-            propagationContext: Transactions.PropagationContext,
-            elementsToAdd: Set<ElementT>,
-            elementsToRemove: Set<ElementT>,
+    data class ChangeDescription<ElementT>(
+        val addedElements: Set<ElementT> = emptySet(),
+        val removedElements: Set<ElementT> = emptySet(),
+    ) {
+        init {
+            val intersection = addedElements.intersect(removedElements)
+            require(intersection.isEmpty()) {
+                "Elements cannot be both added and removed in the same change: $intersection"
+            }
+        }
+
+        fun toSetChange(): SetChange<ElementT> = SetChange(
+            addedElements = addedElements,
+            removedElements = removedElements,
+        )
+
+        fun verifyIsApplicable(
+            targetSet: Set<ElementT>,
         ) {
-            val intersection = elementsToAdd.intersect(elementsToRemove)
-
-            if (intersection.isNotEmpty()) {
-                throw IllegalArgumentException("Elements cannot be both added and removed: $intersection")
+            for (element in addedElements) {
+                require(!targetSet.contains(element)) {
+                    "Element $element is already present in the target set."
+                }
             }
 
-            val oldContentView = getOldContentView(
-                propagationContext = propagationContext,
+            for (element in removedElements) {
+                require(targetSet.contains(element)) {
+                    "Element $element is not present in the target set for removal."
+                }
+            }
+        }
+    }
+    fun change(
+        description: ChangeDescription<ElementT>,
+    ): TestStimulation = object : TestStimulation {
+        override fun stimulate(
+            propagationContext: Transactions.PropagationContext,
+        ) {
+            description.verifyIsApplicable(
+                targetSet = _vertex.getOldContentView(
+                    propagationContext = propagationContext,
+                ),
             )
 
-            if (elementsToAdd.any { oldContentView.contains(it) }) {
-                throw IllegalArgumentException("New elements contain elements already present in the set")
-            }
-
-            if (elementsToRemove.any { !oldContentView.contains(it) }) {
-                throw IllegalArgumentException("Elements to remove contain elements not present in the set")
-            }
-
-            exposeChangeNotifyingListeners(
+            _vertex.change(
                 propagationContext = propagationContext,
-                change = SetChange(
-                    addedElements = elementsToAdd,
-                    removedElements = elementsToRemove,
-                ),
+                change = description.toSetChange(),
             )
         }
     }
 
+    @Deprecated("Use change(description: ChangeDescription) instead")
     fun change(
         elementsToAdd: Set<ElementT>,
         elementsToRemove: Set<ElementT>,
+    ): TestStimulation = change(
+        description = ChangeDescription(
+            addedElements = elementsToAdd,
+            removedElements = elementsToRemove,
+        ),
+    )
+
+    fun correctChange(
+        correctedDescription: ChangeDescription<ElementT>,
     ): TestStimulation = object : TestStimulation {
         override fun stimulate(
             propagationContext: Transactions.PropagationContext,
         ) {
-            _vertex.change(
+            correctedDescription.verifyIsApplicable(
+                targetSet = _vertex.getOldContentView(
+                    propagationContext = propagationContext,
+                ),
+            )
+
+            _vertex.correctChange(
                 propagationContext = propagationContext,
-                elementsToAdd = elementsToAdd,
-                elementsToRemove = elementsToRemove,
+                correctedChange = correctedDescription.toSetChange(),
             )
         }
     }
 
+    @Deprecated("Use correctChange(correctedDescription: ChangeDescription) instead")
     fun correctChange(
         correctedElementsToAdd: Set<ElementT>,
         correctedElementsToRemove: Set<ElementT>,
-    ): TestStimulation = object : TestStimulation {
-        override fun stimulate(
-            propagationContext: Transactions.PropagationContext,
-        ) {
-            _vertex.correctChange(
-                propagationContext = propagationContext,
-                correctedElementsToAdd = correctedElementsToAdd,
-                correctedElementsToRemove = correctedElementsToRemove,
-            )
-        }
-    }
+    ): TestStimulation = correctChange(
+        correctedDescription = ChangeDescription(
+            addedElements = correctedElementsToAdd,
+            removedElements = correctedElementsToRemove,
+        ),
+    )
 
     fun revokeChange(): TestStimulation = object : TestStimulation {
         override fun stimulate(
@@ -136,28 +162,22 @@ class TestInputReactiveSet<ElementT>(
 }
 
 fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
-    elementsToAdd: Set<ElementT>,
-    elementsToRemove: Set<ElementT>,
+    description: TestInputReactiveSet.ChangeDescription<ElementT>,
 ): TestStimulation = TestStimulation.combine(
     change(
-        elementsToAdd = elementsToAdd,
-        elementsToRemove = elementsToRemove,
+        description = description,
     ),
     revokeChange(),
 )
 
 fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
-    intermediateElementsToAdd: Set<ElementT>,
-    intermediateElementsToRemove: Set<ElementT>,
-    correctedElementsToAdd: Set<ElementT>,
-    correctedElementsToRemove: Set<ElementT>,
-) = TestStimulation.combine(
+    intermediateDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
+    correctedDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
+): TestStimulation = TestStimulation.combine(
     change(
-        elementsToAdd = intermediateElementsToAdd,
-        elementsToRemove = intermediateElementsToRemove,
+        description = intermediateDescription,
     ),
     correctChange(
-        correctedElementsToAdd = correctedElementsToAdd,
-        correctedElementsToRemove = correctedElementsToRemove,
+        correctedDescription = correctedDescription,
     ),
 )
