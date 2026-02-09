@@ -5,7 +5,12 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.collections.reactive_set.abstract_vertices.AbstractStatefulTrackedSetVertex
+import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag
+import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
+import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet.ChangeDescription
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputReactiveSet<ElementT>(
     initialElements: Set<ElementT>,
@@ -141,23 +146,64 @@ class TestInputReactiveSet<ElementT>(
         get() = _vertex
 }
 
+fun <ElementT> TestInputReactiveSet<ElementT>.changing(
+    tag: TestInputReactiveCollectionTag,
+    changeDescription: ChangeDescription<ElementT>,
+): TestStimulationMap = TestStimulationMap.of(
+    TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ) to change(
+        changeDescription = changeDescription,
+    ),
+)
+
 fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
-    temporaryChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
-): TestStimulation = TestStimulation.combine(
-    change(
+    temporaryChangeDescription: ChangeDescription<ElementT>,
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = change(
         changeDescription = temporaryChangeDescription,
     ),
-    revokeChange(),
+    secondStimulation = revokeChange(),
+)
+
+fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
+    tag: TestInputReactiveCollectionTag,
+    temporaryChangeDescription: ChangeDescription<ElementT>,
+): TestStimulationMap = revokingChange(
+    temporaryChangeDescription,
+).tagged(
+    firstTag = TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ),
+    secondTag = TestInputReactiveCollectionStimulationTag.ChangeRevocation(
+        inputTag = tag,
+    ),
 )
 
 fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
-    intermediateChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
-    correctedChangeDescription: TestInputReactiveSet.ChangeDescription<ElementT>,
-): TestStimulation = TestStimulation.combine(
-    change(
+    intermediateChangeDescription: ChangeDescription<ElementT>,
+    correctedChangeDescription: ChangeDescription<ElementT>,
+): DoubleTestStimulation = DoubleTestStimulation(
+    firstStimulation = change(
         changeDescription = intermediateChangeDescription,
     ),
-    correctChange(
+    secondStimulation = correctChange(
         correctedChangeDescription = correctedChangeDescription,
+    ),
+)
+
+fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
+    tag: TestInputReactiveCollectionTag,
+    intermediateChangeDescription: ChangeDescription<ElementT>,
+    correctedChangeDescription: ChangeDescription<ElementT>,
+): TestStimulationMap = correctingChange(
+    intermediateChangeDescription = intermediateChangeDescription,
+    correctedChangeDescription = correctedChangeDescription,
+).tagged(
+    firstTag = TestInputReactiveCollectionStimulationTag.Change(
+        inputTag = tag,
+    ),
+    secondTag = TestInputReactiveCollectionStimulationTag.ChangeCorrection(
+        inputTag = tag,
     ),
 )
