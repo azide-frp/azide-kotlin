@@ -31,6 +31,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
     private val slottedStimulationBank_sourceListChangesCorrected =
         ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+
     @Test
     fun test_cancelledRevoked_sourceUpdates() {
         slottedStimulationBank_sourceListChanges.forEach { slottedStimulationScenario ->
