@@ -3,6 +3,7 @@ package dev.azide.core
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
+import dev.azide.core.impl.cell.effects.CellTriggerEverySchedule
 import dev.azide.core.impl.cell.operated_vertices.ActuatedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.ExecutedEveryCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
@@ -157,7 +158,11 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
-fun Cell<Trigger>.triggerEvery(): Schedule = executeEvery().map { }
+fun Cell<Trigger>.triggerEvery(): Schedule = ExternalizedEffect(
+    internalEffect = CellTriggerEverySchedule(
+        sourceActionCell = this@triggerEvery,
+    ),
+)
 
 fun <ValueT> Cell<ValueT>.triggerEveryOf(
     transform: (ValueT) -> Trigger,
