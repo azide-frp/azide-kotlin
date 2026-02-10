@@ -156,13 +156,14 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
-fun Cell<Trigger>.triggerEvery(): Schedule = TODO()
+fun Cell<Trigger>.triggerEvery(): Schedule = executeEvery().map { }
 
 fun <ValueT> Cell<ValueT>.triggerEveryOf(
     transform: (ValueT) -> Trigger,
 ): Schedule = map(transform).triggerEvery()
 
-fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> = TODO()
+fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> =
+    TODO()
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
     transform: (ValueT) -> Action<TransformedValueT>,
