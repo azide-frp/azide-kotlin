@@ -573,8 +573,8 @@ class ReactiveList_sortedUniquely_tests {
                     "!60",
                 ),
                 expectedNewContent = listOf(
-                    ".5",
                     "^0",
+                    ".5",
                     "#10",
                 ),
             ),
