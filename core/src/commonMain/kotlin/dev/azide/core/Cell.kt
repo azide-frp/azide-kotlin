@@ -4,6 +4,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
 import dev.azide.core.impl.cell.operated_vertices.ActuatedCellVertex
+import dev.azide.core.impl.cell.operated_vertices.ExecutedEveryCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
 import dev.azide.core.impl.cell.operated_vertices.MappedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
@@ -162,8 +163,11 @@ fun <ValueT> Cell<ValueT>.triggerEveryOf(
     transform: (ValueT) -> Trigger,
 ): Schedule = map(transform).triggerEvery()
 
-fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> =
-    TODO()
+fun <ResultT> Cell<Action<ResultT>>.executeEvery(): Effect<Cell<ResultT>> = ExternalizedEffect<Cell<ResultT>>(
+    internalEffect = ExecutedEveryCellVertex.ExecutionEffect(
+        sourceActionCell = this@executeEvery,
+    ),
+)
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
     transform: (ValueT) -> Action<TransformedValueT>,

@@ -58,7 +58,7 @@ class Cell_executeEvery_step_tests {
                 expectedNewValue = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsExecutedOnce(),
             ),
         )
@@ -103,7 +103,7 @@ class Cell_executeEvery_step_tests {
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsNotExecuted(),
             ),
         )
@@ -151,7 +151,7 @@ class Cell_executeEvery_step_tests {
                 expectedNewValue = 30,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsNotExecuted(),
                 targetActionRecorder3.expectIsExecutedOnce(),
             ),

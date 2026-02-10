@@ -78,7 +78,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
             ),
-            expectedTargetImpact = targetActionRecorder1.expectIsExecutedOnce(),
+            expectedTargetImpact = targetActionRecorder1.expectIsNotExecuted(),
         )
 
         Cell_executeEvery_testUtils.verifyEffectOngoing(
@@ -133,7 +133,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
                 expectedNewValue = 20,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsExecutedOnce(),
             ),
         )
@@ -189,7 +189,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
                 expectedUnaffectedValue = 10,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsNotExecuted(),
             ),
         )
@@ -248,7 +248,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
                 expectedNewValue = 30,
             ),
             expectedTargetImpact = ExpectedImpact.combine(
-                targetActionRecorder1.expectIsExecutedOnce(),
+                targetActionRecorder1.expectIsNotExecuted(),
                 targetActionRecorder2.expectIsNotExecuted(),
                 targetActionRecorder3.expectIsExecutedOnce(),
             ),
