@@ -1,0 +1,158 @@
+package dev.azide.core.cell
+
+import dev.azide.core.Cell
+import dev.azide.core.Effect
+import dev.azide.core.executeEvery
+import dev.azide.core.test_utils.TestTargetActionRecorder
+import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.correctingUpdate
+import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_testUtils
+import dev.azide.core.test_utils.expectIsNotExecuted
+import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
+import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import kotlin.test.Test
+
+@Suppress("ClassName", "PrivatePropertyName")
+class Cell_executeEvery_startRevoked_tests {
+    private typealias SuitableSlotCount = TestSlotCount.Count3
+
+    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
+
+    private val slottedStimulationBank_sourceActionCellUpdates =
+        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceActionCellUpdatesRevoked =
+        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+
+    private val slottedStimulationBank_sourceActionCellUpdatesCorrected =
+        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+
+    @Test
+    fun test_startRevoked() {
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
+
+        val sourceCell = TestInputCell(
+            initialValue = targetActionRecorder1.recordedAction,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
+
+        Effect_Cell_startRevoked_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsNotExecuted(),
+            ),
+        )
+    }
+
+    @Test
+    fun test_startRevoked_sourceUpdatesSimultaneously() {
+        slottedStimulationBank_sourceActionCellUpdates.forEach { slottedStimulationScenario ->
+            test_startRevoked_sourceUpdatesSimultaneously(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_startRevoked_sourceUpdatesSimultaneously(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
+
+        val sourceCell = TestInputCell(
+            initialValue = targetActionRecorder1.recordedAction,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
+
+        Effect_Cell_startRevoked_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
+            slottedInputStimulation = sourceCell.updating(
+                tag = Cell_executeEvery_testUtils.SourceActionCellTag,
+                newValue = targetActionRecorder2.recordedAction,
+            ).bind(slottedStimulationScenario),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsNotExecuted(),
+            ),
+        )
+    }
+
+    @Test
+    fun test_startRevoked_sourceUpdatesRevokedSimultaneously() {
+        slottedStimulationBank_sourceActionCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+            test_startRevoked_sourceUpdatesRevokedSimultaneously(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_startRevoked_sourceUpdatesRevokedSimultaneously(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
+
+        val sourceCell = TestInputCell(
+            initialValue = targetActionRecorder1.recordedAction,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
+
+        Effect_Cell_startRevoked_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
+            slottedInputStimulation = sourceCell.revokingUpdate(
+                tag = Cell_executeEvery_testUtils.SourceActionCellTag,
+                newValue = targetActionRecorder2.recordedAction,
+            ).bind(slottedStimulationScenario),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsNotExecuted(),
+            ),
+        )
+    }
+
+    @Test
+    fun test_startRevoked_sourceUpdatesCorrectedSimultaneously() {
+        slottedStimulationBank_sourceActionCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+            test_startRevoked_sourceUpdatesCorrectedSimultaneously(
+                slottedStimulationScenario = slottedStimulationScenario,
+            )
+        }
+    }
+
+    private fun test_startRevoked_sourceUpdatesCorrectedSimultaneously(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
+        val targetActionRecorder3 = TestTargetActionRecorder.pure(result = 30)
+
+        val sourceCell = TestInputCell(
+            initialValue = targetActionRecorder1.recordedAction,
+        )
+
+        val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
+
+        Effect_Cell_startRevoked_testUtils.executeStartTransaction(
+            subjectCellEffect = subjectEffect,
+            slottedInputStimulation = sourceCell.correctingUpdate(
+                tag = Cell_executeEvery_testUtils.SourceActionCellTag,
+                intermediateNewValue = targetActionRecorder2.recordedAction,
+                correctedNewValue = targetActionRecorder3.recordedAction,
+            ).bind(slottedStimulationScenario),
+            expectedTargetImpact = ExpectedImpact.combine(
+                targetActionRecorder1.expectIsNotExecuted(),
+                targetActionRecorder2.expectIsNotExecuted(),
+                targetActionRecorder3.expectIsNotExecuted(),
+            ),
+        )
+    }
+}

@@ -49,7 +49,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
     private fun test_start_rushedWrapUp_sourceEmitsSimultaneously(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 

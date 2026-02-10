@@ -33,7 +33,7 @@ class EventStream_executeEach_misc_tests {
 
         nastyEffect.startExternally()
 
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         assertIs<CausalLoopException>(
             assertFails {

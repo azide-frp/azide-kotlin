@@ -37,7 +37,7 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmits(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -75,7 +75,7 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmitsRevoked(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -113,8 +113,8 @@ class EventStream_executeEach_step_tests {
     private fun test_step_sourceEmitsCorrected(
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
     ) {
-        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
-        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 20)
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 

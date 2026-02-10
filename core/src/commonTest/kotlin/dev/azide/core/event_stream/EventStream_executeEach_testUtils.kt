@@ -39,7 +39,7 @@ data object EventStream_executeEach_testUtils {
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = -1)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = subjectEventStream,
@@ -55,7 +55,7 @@ data object EventStream_executeEach_testUtils {
     fun verifyEffectNotOngoing(
         sourceEventStream: TestInputEventStream<Action<Int>>,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = -1)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = Unit,
@@ -72,7 +72,7 @@ data object EventStream_executeEach_testUtils {
         sourceEventStream: TestInputEventStream<Action<Int>>,
         subjectEventStream: EventStream<Int>,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 0)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 0)
 
         Effect_EventStream_step_testUtils.executeStepTransaction(
             subjectEventStream = subjectEventStream,
