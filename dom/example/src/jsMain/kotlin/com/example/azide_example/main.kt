@@ -1,6 +1,7 @@
 package com.example.azide_example
 
 import dev.azide.core.Action
+import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveList
@@ -17,6 +18,12 @@ import dev.azide.core.startExternally
 import dev.azide.dom.creatingReactiveHtmlDivElement
 import dev.azide.dom.creatingReactiveHtmlSpanElement
 import dev.azide.dom.intervalTimeoutEffect
+import dev.azide.dom.pure.CssColor
+import dev.azide.dom.pure.px
+import dev.azide.dom.pure.style.CssBorderStyle
+import dev.azide.dom.pure.style.CssFlexDirection
+import dev.azide.dom.pure.style.CssFlexStyle
+import dev.azide.dom.style.ReactiveCssStyle
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.HTMLDivElement
@@ -28,6 +35,13 @@ fun creatingMagicNumberElement(
 ): Effect<HTMLSpanElement> = document.creatingReactiveHtmlSpanElement(
     children = ReactiveList.of(
         document.createTextNode("$magicNumber"),
+    ),
+    style = ReactiveCssStyle(
+        borderStyle = CssBorderStyle(
+            width = 1.px,
+            color = CssColor.red,
+            style = CssBorderStyle.Style.Solid,
+        ),
     ),
 )
 
@@ -42,6 +56,14 @@ fun creatingRootElement(
 
     document.creatingReactiveHtmlDivElement(
         children = sortedMagicNumberElements,
+        style = ReactiveCssStyle(
+            displayStyle = Cell.Const(
+                CssFlexStyle(
+                    direction = CssFlexDirection.Row,
+                    gap = 8.px,
+                ),
+            ),
+        ),
     )
 }
 

@@ -5,9 +5,11 @@ import dev.azide.core.Effect
 import dev.azide.core.collections.ReactiveList
 import dev.azide.core.collections.syncing
 import dev.azide.core.external.ExternalAllocator
+import dev.azide.core.joinOf
 import dev.azide.core.mapTo
 import dev.azide.core.startingOf
 import dev.azide.dom.collections.childNodesList
+import dev.azide.dom.style.ReactiveCssStyle
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
@@ -21,6 +23,7 @@ import org.w3c.dom.css.ElementCSSInlineStyle
 fun <ElementT> Document.creatingReactiveElement(
     createElement: Document.() -> ElementT,
     children: ReactiveList<Node>? = null,
+    style: ReactiveCssStyle,
 ): Effect<ElementT> where ElementT : Element, ElementT : ElementCSSInlineStyle {
     val effectiveChildren = children ?: ReactiveList.empty()
 
@@ -31,6 +34,8 @@ fun <ElementT> Document.creatingReactiveElement(
     ).startingOf { element: ElementT ->
         effectiveChildren.syncing(
             externalMutableList = element.childNodesList,
-        ).mapTo(element)
+        ).joinOf {
+            style.bind(styleDeclaration = element.style)
+        }.mapTo(element)
     }
 }
