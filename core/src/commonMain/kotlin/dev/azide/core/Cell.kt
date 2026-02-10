@@ -156,6 +156,12 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
+fun Cell<Trigger>.triggerEvery(): Schedule = TODO()
+
+fun <ValueT> Cell<ValueT>.triggerEveryOf(
+    transform: (ValueT) -> Trigger,
+): Schedule = map(transform).triggerEvery()
+
 fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> = TODO()
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
@@ -234,6 +240,10 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
     }
 }
 
+fun <ValueT> Cell<ValueT>.actuateOf(
+    transform: (ValueT) -> Schedule,
+): Schedule = map(transform).actuate()
+
 @JvmName("actuateEffect")
 fun <InnerResultT> Cell<Effect<InnerResultT>>.actuate(): Effect<Cell<InnerResultT>> =
     ExternalizedEffect<Cell<InnerResultT>>(
@@ -241,3 +251,8 @@ fun <InnerResultT> Cell<Effect<InnerResultT>>.actuate(): Effect<Cell<InnerResult
             sourceEffectCell = this@actuate,
         ),
     )
+
+@JvmName("actuateOfEffect")
+fun <ValueT, TransformedValueT> Cell<ValueT>.actuateOf(
+    transform: (ValueT) -> Effect<TransformedValueT>,
+): Effect<Cell<TransformedValueT>> = map(transform).actuate()

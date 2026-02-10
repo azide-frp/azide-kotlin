@@ -19,6 +19,12 @@ object Schedules {
             externalSchedule = externalSchedule,
         )
     )
+
+    fun combine(
+        schedules: Iterable<Schedule>,
+    ): Schedule {
+        TODO()
+    }
 }
 
 abstract class AbstractSchedule : Schedule {

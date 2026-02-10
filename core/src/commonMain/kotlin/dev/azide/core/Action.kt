@@ -224,6 +224,27 @@ object Triggers {
         }
     }
 
+    fun combine(
+        triggers: Iterable<Trigger>,
+    ): Trigger = object : Trigger {
+        override fun executeInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): Action.Outcome<Unit> {
+            val revocables = triggers.map { trigger ->
+                trigger.executeInternally(
+                    propagationContext = propagationContext,
+                    wrapUpContext = wrapUpContext,
+                ).revocable
+            }
+
+            return Action.Outcome.of(
+                result = Unit,
+                revocable = Revocable.combine(revocables),
+            )
+        }
+    }
+
     fun Trigger.merging(): Action<Trigger> = object : Action<Trigger> {
         override fun executeInternally(
             propagationContext: Transactions.PropagationContext,
