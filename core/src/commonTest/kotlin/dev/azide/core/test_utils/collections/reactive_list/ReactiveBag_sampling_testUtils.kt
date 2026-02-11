@@ -1,15 +1,16 @@
 package dev.azide.core.test_utils.collections.reactive_list
 
-import dev.azide.core.collections.ReactiveList
+import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.collections.reactive_bag.ExpectedReactiveBagContent
 
 @Suppress("ClassName")
-data object ReactiveList_sampling_testUtils {
+data object ReactiveBag_sampling_testUtils {
     fun <ElementT> executeSamplingTransaction(
-        subjectReactiveList: ReactiveList<ElementT>,
+        subjectReactiveBag: ReactiveBag<ElementT>,
         inputStimulation: TestStimulation? = null,
-        expectedSubjectContent: ExpectedReactiveListContent<ElementT>,
+        expectedSubjectContent: ExpectedReactiveBagContent<ElementT>,
     ) {
         Transactions.execute { propagationContext ->
             inputStimulation?.stimulate(
@@ -18,7 +19,7 @@ data object ReactiveList_sampling_testUtils {
 
             expectedSubjectContent.verifyStableState(
                 propagationContext = propagationContext,
-                subject = subjectReactiveList,
+                subject = subjectReactiveBag,
             )
         }
     }

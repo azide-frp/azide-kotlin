@@ -1,8 +1,11 @@
 package dev.azide.core.collections.reactive_list
 
+import dev.azide.core.collections.ReactiveList
 import dev.azide.core.collections.map
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_reaction_testUtils
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_sampling_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.changing
@@ -28,6 +31,22 @@ class ReactiveList_map_tests {
 
     private val slottedStimulationBank_sourceListChangesCorrected =
         ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+
+    @Test
+    fun test_passiveSample() {
+        val sourceReactiveList = TestInputReactiveList(
+            initialElements = listOf(0, 10, 20, 30),
+        )
+
+        val subjectReactiveList = sourceReactiveList.map { it.toString() }
+
+        ReactiveList_sampling_testUtils.executeSamplingTransaction(
+            subjectReactiveList = subjectReactiveList,
+            expectedSubjectContent = ReactiveList_expectations_testUtils.expectStableContent(
+                expectedContent = listOf("0", "10", "20", "30"),
+            ),
+        )
+    }
 
     @Test
     fun test_sourceListChanges_insertionsOnly() {

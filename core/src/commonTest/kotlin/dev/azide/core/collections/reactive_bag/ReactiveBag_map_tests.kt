@@ -9,6 +9,7 @@ import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.collections.reactive_bag.changing
 import dev.azide.core.test_utils.collections.reactive_bag.correctingChange
 import dev.azide.core.test_utils.collections.reactive_bag.revokingChange
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveBag_sampling_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
@@ -29,6 +30,32 @@ class ReactiveBag_map_tests {
 
     private val slottedStimulationBank_sourceBagChangesCorrected =
         ReactiveBag_generic_testUtils.stimulationBank_sourceBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
+
+    @Test
+    fun test_passiveSample() {
+        val sourceReactiveBag = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                0 to 0.1,
+                10 to 10.1,
+                11 to 10.1, // Element duplicate
+                30 to 30.1,
+            ),
+        )
+
+        val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
+
+        ReactiveBag_sampling_testUtils.executeSamplingTransaction(
+            subjectReactiveBag = subjectReactiveBag,
+            expectedSubjectContent = ReactiveBag_expectations_testUtils.expectStableTaggedContent(
+                expectedTaggedElements = taggedBagOf(
+                    0 to "0.1",
+                    10 to "10.1",
+                    11 to "10.1", // Element duplicate
+                    30 to "30.1",
+                ),
+            ),
+        )
+    }
 
     @Test
     fun test_sourceBagChanges_additionsOnly() {
