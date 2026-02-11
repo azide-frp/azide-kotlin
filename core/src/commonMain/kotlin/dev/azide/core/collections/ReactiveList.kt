@@ -5,6 +5,7 @@ import dev.azide.core.Moment
 import dev.azide.core.Schedule
 import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
+import dev.azide.core.collections.helpers.withSortKey
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedListVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
@@ -13,6 +14,7 @@ import dev.azide.core.impl.collections.reactive_list.operated_vertices.OfSingleT
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.SortedUniquelyTrackedListVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
+import dev.azide.core.map
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
@@ -87,7 +89,11 @@ fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue
     )
 
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sortedUniquelyReactively(): ReactiveList<ElementT> =
-    TODO("Unimplemented: sortedUniquelyReactively")
+    fuseOf { sortableValue: ReactiveSortableValue<ElementT, SortKeyT> ->
+        sortableValue.sortKey.map { sortKey: SortKeyT ->
+            sortableValue.value withSortKey sortKey
+        }
+    }.sortedUniquely()
 
 fun <ElementT> ReactiveList<ElementT>.syncing(
     externalMutableList: MutableList<ElementT>,

@@ -13,7 +13,7 @@ data class ReactiveSortableValue<ValueT, SortKeyT : Comparable<SortKeyT>>(
     val sortKey: Cell<SortKeyT>,
 )
 
-infix fun <ValueT, SortKeyT : Comparable<SortKeyT>> ValueT.withSortKey(
+infix fun <ValueT, SortKeyT : Comparable<SortKeyT>> ValueT.withReactiveSortKey(
     sortKey: Cell<SortKeyT>,
 ): ReactiveSortableValue<ValueT, SortKeyT> = ReactiveSortableValue(
     value = this,

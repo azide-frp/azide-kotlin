@@ -83,6 +83,15 @@ fun <ResultT> Effect<*>.mapTo(
     result: ResultT,
 ): Effect<ResultT> = map { result }
 
+@JvmName("joinOfMoment")
+@OptIn(ExperimentalTypeInference::class)
+@OverloadResolutionByLambdaReturnType
+fun <ResultT, TransformedResultT> Effect<ResultT>.joinOf(
+    transform: (ResultT) -> Moment<TransformedResultT>,
+): Effect<TransformedResultT> = joinOf {
+    transform(it).asAction
+}
+
 @JvmName("joinOfAction")
 @OptIn(ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType

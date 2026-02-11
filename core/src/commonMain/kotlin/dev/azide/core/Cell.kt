@@ -62,6 +62,13 @@ interface Cell<out ValueT> {
             transform: (ValueT1, ValueT2, ValueT3, ValueT4) -> ResultT,
         ): Cell<ResultT> = TODO()
 
+        fun <ValueT> defining(
+            initialValue: ValueT,
+            newValues: EventStream<ValueT>,
+        ): Moment<Cell<ValueT>> = newValues.holding(
+            initialValue = initialValue,
+        )
+
         context(momentContext: MomentContext) fun <ValueT> define(
             initialValue: ValueT,
             newValues: EventStream<ValueT>,

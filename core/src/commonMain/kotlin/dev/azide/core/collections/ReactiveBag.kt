@@ -65,11 +65,11 @@ fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.map(
     ),
 )
 
-fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = TODO()
+fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = TODO("ReactiveBag.fuse")
 
-fun <ElementT> ReactiveBag<ElementT>.fuseOf(
-    selector: (ElementT) -> Cell<ElementT>,
-): ReactiveBag<ElementT> = map(selector).fuse()
+fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.fuseOf(
+    selector: (ElementT) -> Cell<TransformedElementT>,
+): ReactiveBag<TransformedElementT> = map(selector).fuse()
 
 fun <ResultT> ReactiveBag<Action<ResultT>>.executeEvery(): Effect<ReactiveBag<ResultT>> = TODO()
 

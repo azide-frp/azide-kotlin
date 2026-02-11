@@ -172,6 +172,30 @@ context(momentContext: MomentContext) fun <EventT> EventStream<EventT>.hold(
     wrapUpContext = momentContext.wrapUpContext,
 )
 
+fun <EventT, AccT> EventStream<EventT>.accumulating(
+    initialAccValue: AccT,
+    transform: (accValue: AccT, newEvent: EventT) -> AccT,
+): Moment<Cell<AccT>> = EventStream.loopedInMoment<Cell<AccT>, AccT> { loopedNewAccValues ->
+    Cell.defining(
+        initialValue = initialAccValue,
+        newValues = loopedNewAccValues,
+    ).map { accCell: Cell<AccT> ->
+        val newAccValues = this@accumulating.sampleEachOf { newEvent: EventT ->
+            accCell.sampling.map { sampledAccValue: AccT ->
+                transform(
+                    sampledAccValue,
+                    newEvent,
+                )
+            }
+        }
+
+        LoopClosure(
+            result = accCell,
+            loopedValue = newAccValues,
+        )
+    }
+}
+
 context(momentContext: MomentContext) fun <EventT, AccT> EventStream<EventT>.accumulate(
     initialAccValue: AccT,
     transform: (accValue: AccT, newEvent: EventT) -> AccT,
