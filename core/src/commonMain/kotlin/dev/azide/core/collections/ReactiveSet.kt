@@ -5,6 +5,7 @@ import dev.azide.core.Cell
 import dev.azide.core.Effect
 import dev.azide.core.Moment
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.FromSetTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedSetVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
 import dev.azide.core.impl.collections.reactive_collection.buildContainsVertex
@@ -25,6 +26,13 @@ interface ReactiveSet<out ElementT> : ReactiveCollection<ElementT> {
 
     override val trackedVertex: TrackedSetVertex<ElementT>
 }
+
+val <ElementT> ReactiveSet<ElementT>.asReactiveBag: ReactiveBag<ElementT>
+    get() = ReactiveBag.Ordinary(
+        trackedVertex = FromSetTaggedBagVertex(
+            sourceVertex = this.trackedVertex,
+        ),
+    )
 
 val <ElementT> ReactiveSet<ElementT>.samplingContent: Moment<Set<ElementT>>
     get() = object : Moment<Set<ElementT>> {
@@ -59,7 +67,7 @@ fun <ElementT> ReactiveSet<ElementT>.filter(
 
 fun <ElementT, TransformedElementT> ReactiveSet<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
-): ReactiveBag<TransformedElementT> = TODO("Unimplemented: ReactiveSet.map")
+): ReactiveBag<TransformedElementT> = asReactiveBag.map(transform)
 
 fun <ElementT> ReactiveSet<ElementT>.fuseOf(
     selector: (ElementT) -> Cell<ElementT>,

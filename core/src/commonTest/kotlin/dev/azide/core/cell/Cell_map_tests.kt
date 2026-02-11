@@ -39,7 +39,7 @@ class Cell_map_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        Cell_sampling_testUtils.executeReactionTransaction(
+        Cell_sampling_testUtils.executeSamplingTransaction(
             subjectCell = subjectCell,
             expectedSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedValue = "10",

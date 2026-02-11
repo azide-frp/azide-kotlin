@@ -18,7 +18,7 @@ data object ReactiveList_syncing_testUtils {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 0,
                         newElements = prefix,
@@ -44,7 +44,7 @@ data object ReactiveList_syncing_testUtils {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 0,
                         newElements = listOf(-1, -2, -3),

@@ -61,7 +61,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -93,7 +93,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -125,8 +125,8 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
     private fun test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
-        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 

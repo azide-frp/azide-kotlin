@@ -155,7 +155,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
-                description = ChangeDescription(
+                changeDescription = ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect4 to targetEffect4,
                         TargetEffectTag.TargetEffect5 to targetEffect5,
@@ -235,7 +235,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
-                description = ChangeDescription(
+                changeDescription = ChangeDescription(
                     removedTags = setOf(
                         TargetEffectTag.TargetEffect1,
                         TargetEffectTag.TargetEffect3,
@@ -318,7 +318,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
-                description = ChangeDescription(
+                changeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b,
                         TargetEffectTag.TargetEffect2 to targetEffect2b,
@@ -419,7 +419,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
-                description = ChangeDescription(
+                changeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b, // updated
                         TargetEffectTag.TargetEffect3 to targetEffect3b, // updated
@@ -515,7 +515,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                temporaryChangeDescription = ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect4 to targetEffect4,
                         TargetEffectTag.TargetEffect5 to targetEffect5,
@@ -588,7 +588,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                temporaryChangeDescription = ChangeDescription(
                     removedTags = setOf(
                         TargetEffectTag.TargetEffect1,
                         TargetEffectTag.TargetEffect3,
@@ -663,7 +663,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                temporaryChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b,
                         TargetEffectTag.TargetEffect2 to targetEffect2b,
@@ -756,7 +756,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                temporaryChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b, // updated
                         TargetEffectTag.TargetEffect3 to targetEffect3b, // updated
@@ -848,14 +848,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                intermediateChangeDescription = ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect4 to targetEffect4, // corrected: not added
                         TargetEffectTag.TargetEffect5 to targetEffect5a, // corrected: added differently
                         TargetEffectTag.TargetEffect7 to targetEffect7, // not corrected
                     ),
                 ),
-                correctedDescription = ChangeDescription(
+                correctedChangeDescription = ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect5 to targetEffect5b,
                         TargetEffectTag.TargetEffect6 to targetEffect6, // (not mentioned before)
@@ -940,13 +940,13 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                intermediateChangeDescription = ChangeDescription(
                     removedTags = setOf(
                         TargetEffectTag.TargetEffect1, // corrected: not removed
                         TargetEffectTag.TargetEffect3, // not corrected
                     ),
                 ),
-                correctedDescription = ChangeDescription(
+                correctedChangeDescription = ChangeDescription(
                     removedTags = setOf(
                         TargetEffectTag.TargetEffect3,
                         TargetEffectTag.TargetEffect4, // (not mentioned before)
@@ -1030,14 +1030,14 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                intermediateChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b, // corrected: not replaced
                         TargetEffectTag.TargetEffect2 to targetEffect2b, // corrected: replaced differently
                         TargetEffectTag.TargetEffect3 to targetEffect3b, // not corrected
                     ),
                 ),
-                correctedDescription = ChangeDescription(
+                correctedChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect2 to targetEffect2c,
                         TargetEffectTag.TargetEffect3 to targetEffect3b,
@@ -1142,7 +1142,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
-                intermediateDescription = ChangeDescription(
+                intermediateChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b, // not corrected
                         TargetEffectTag.TargetEffect3 to targetEffect3b, // corrected: not replaced
@@ -1156,7 +1156,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
                         TargetEffectTag.TargetEffect4, // corrected: not removed
                     ),
                 ),
-                correctedDescription = ChangeDescription(
+                correctedChangeDescription = ChangeDescription(
                     replacedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect1 to targetEffect1b,
                     ),

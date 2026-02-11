@@ -26,6 +26,16 @@ interface Revocable {
                 }
             }
         }
+
+        fun combine(
+            revocables: Iterable<Revocable>,
+        ): Revocable = object : Revocable {
+            override fun revoke() {
+                for (revocable in revocables) {
+                    revocable.revoke()
+                }
+            }
+        }
     }
 
     // TODO: Add `propagationContext` argument and transaction IDs to detect attempts of revoking in later transactions

@@ -136,3 +136,12 @@ typealias AbstractTransformativeTrackedListVertex<ElementT, TransformedElementT>
         >
 
 typealias AbstractAlteringTrackedListVertex<ElementT> = AbstractTransformativeTrackedListVertex<ElementT, ElementT>
+
+typealias AbstractTransformativeTrackedSetToTaggedBagVertex<ElementT, TransformedElementT> = AbstractTransformativeTrackedGenericCollectionVertex<
+        Set<ElementT>,
+        SetChange<ElementT>,
+        TaggedBag<TransformedElementT>,
+        TaggedBagChange<TransformedElementT>,
+        >
+
+typealias AbstractAlteringTrackedSetToTaggedBagVertex<ElementT> = AbstractTransformativeTrackedSetToTaggedBagVertex<ElementT, ElementT>

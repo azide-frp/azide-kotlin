@@ -9,7 +9,6 @@ import dev.azide.core.test_utils.collections.reactive_list.correctingChange
 import dev.azide.core.test_utils.collections.reactive_list.revokingChange
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.schedule.Schedule_step_testUtils
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,7 +30,7 @@ class ReactiveList_syncing_step_tests {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -65,7 +64,7 @@ class ReactiveList_syncing_step_tests {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
                         indexRange = 2..3,
                     ),
@@ -97,7 +96,7 @@ class ReactiveList_syncing_step_tests {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.change(
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
                         indexRange = 3..5,
                         replacedElements = listOf(31, 32),
@@ -130,7 +129,7 @@ class ReactiveList_syncing_step_tests {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.revokingChange(
-                description = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -164,13 +163,13 @@ class ReactiveList_syncing_step_tests {
 
         Schedule_step_testUtils.executeStepTransaction(
             inputStimulation = sourceReactiveList.correctingChange(
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(14, 15),

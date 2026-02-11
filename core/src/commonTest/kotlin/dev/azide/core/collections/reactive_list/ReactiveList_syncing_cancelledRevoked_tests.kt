@@ -31,6 +31,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
     private val slottedStimulationBank_sourceListChangesCorrected =
         ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+
     @Test
     fun test_cancelledRevoked_sourceUpdates() {
         slottedStimulationBank_sourceListChanges.forEach { slottedStimulationScenario ->
@@ -59,7 +60,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = SourceReactiveListTag,
-                description = ChangeDescription.of(
+                changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -110,7 +111,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
@@ -161,13 +162,13 @@ class ReactiveList_syncing_cancelledRevoked_tests {
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = SourceReactiveListTag,
-                intermediateDescription = ChangeDescription.of(
+                intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 3,
                         newElements = listOf(21, 22, 23),
                     ),
                 ),
-                correctedDescription = ChangeDescription.of(
+                correctedChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
                         index = 2,
                         newElements = listOf(14, 15),

@@ -33,7 +33,7 @@ abstract class TestTargetActionRecorder<ResultT>() {
     }
 
     companion object {
-        fun <ResultT> of(result: ResultT): TestTargetActionRecorder<ResultT> =
+        fun <ResultT> pure(result: ResultT): TestTargetActionRecorder<ResultT> =
             object : TestTargetActionRecorder<ResultT>() {
             override fun buildResult(): ResultT = result
         }

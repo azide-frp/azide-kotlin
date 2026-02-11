@@ -3,7 +3,9 @@ package dev.azide.core
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.PureCellVertex
+import dev.azide.core.impl.cell.effects.CellTriggerEverySchedule
 import dev.azide.core.impl.cell.operated_vertices.ActuatedCellVertex
+import dev.azide.core.impl.cell.operated_vertices.ExecutedEveryCellVertex
 import dev.azide.core.impl.cell.operated_vertices.Mapped2CellVertex
 import dev.azide.core.impl.cell.operated_vertices.MappedCellVertex
 import dev.azide.core.impl.cell.operated_vertices.SwitchedCellVertex
@@ -59,6 +61,13 @@ interface Cell<out ValueT> {
             cell4: Cell<ValueT4>,
             transform: (ValueT1, ValueT2, ValueT3, ValueT4) -> ResultT,
         ): Cell<ResultT> = TODO()
+
+        fun <ValueT> defining(
+            initialValue: ValueT,
+            newValues: EventStream<ValueT>,
+        ): Moment<Cell<ValueT>> = newValues.holding(
+            initialValue = initialValue,
+        )
 
         context(momentContext: MomentContext) fun <ValueT> define(
             initialValue: ValueT,
@@ -156,7 +165,21 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.sampleEveryOf(
     transform: (ValueT) -> Moment<TransformedValueT>,
 ): Moment<Cell<TransformedValueT>> = map(transform).sampleEvery()
 
-fun <ValueT> Cell<Action<ValueT>>.executeEvery(): Effect<Cell<ValueT>> = TODO()
+fun Cell<Trigger>.triggerEvery(): Schedule = ExternalizedEffect(
+    internalEffect = CellTriggerEverySchedule(
+        sourceActionCell = this@triggerEvery,
+    ),
+)
+
+fun <ValueT> Cell<ValueT>.triggerEveryOf(
+    transform: (ValueT) -> Trigger,
+): Schedule = map(transform).triggerEvery()
+
+fun <ResultT> Cell<Action<ResultT>>.executeEvery(): Effect<Cell<ResultT>> = ExternalizedEffect<Cell<ResultT>>(
+    internalEffect = ExecutedEveryCellVertex.ExecutionEffect(
+        sourceActionCell = this@executeEvery,
+    ),
+)
 
 fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
     transform: (ValueT) -> Action<TransformedValueT>,
@@ -234,6 +257,10 @@ fun Cell<Schedule>.actuate(): Schedule = object : AbstractSchedule() {
     }
 }
 
+fun <ValueT> Cell<ValueT>.actuateOf(
+    transform: (ValueT) -> Schedule,
+): Schedule = map(transform).actuate()
+
 @JvmName("actuateEffect")
 fun <InnerResultT> Cell<Effect<InnerResultT>>.actuate(): Effect<Cell<InnerResultT>> =
     ExternalizedEffect<Cell<InnerResultT>>(
@@ -241,3 +268,8 @@ fun <InnerResultT> Cell<Effect<InnerResultT>>.actuate(): Effect<Cell<InnerResult
             sourceEffectCell = this@actuate,
         ),
     )
+
+@JvmName("actuateOfEffect")
+fun <ValueT, TransformedValueT> Cell<ValueT>.actuateOf(
+    transform: (ValueT) -> Effect<TransformedValueT>,
+): Effect<Cell<TransformedValueT>> = map(transform).actuate()

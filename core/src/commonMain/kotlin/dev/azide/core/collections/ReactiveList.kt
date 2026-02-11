@@ -1,16 +1,20 @@
 package dev.azide.core.collections
 
+import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.Schedule
 import dev.azide.core.collections.helpers.ReactiveSortableValue
 import dev.azide.core.collections.helpers.SortableValue
+import dev.azide.core.collections.helpers.withSortKey
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedListVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.MappedTrackedListVertex
+import dev.azide.core.impl.collections.reactive_list.operated_vertices.OfSingleTrackedListVertex
+import dev.azide.core.impl.collections.reactive_list.operated_vertices.SortedUniquelyTrackedListVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
-import kotlin.jvm.JvmName
+import dev.azide.core.map
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
@@ -29,6 +33,14 @@ interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
         fun <ElementT> of(
             vararg elements: ElementT,
         ): ReactiveList<ElementT> = Const(elements.toList())
+
+        fun <ElementT> of(
+            element: Cell<ElementT>,
+        ): ReactiveList<ElementT> = Ordinary(
+            trackedVertex = OfSingleTrackedListVertex(
+                sourceVertex = element.vertex,
+            ),
+        )
     }
 
     override val trackedVertex: TrackedListVertex<ElementT>
@@ -67,13 +79,21 @@ fun <ElementT, TransformedElementT> ReactiveList<ElementT>.map(
 )
 
 fun <ElementT : Comparable<ElementT>> ReactiveCollection<ElementT>.sortedPurely(): ReactiveList<ElementT> =
-    TODO("Unimplemented: sorted")
+    TODO("Unimplemented: sortedPurely")
 
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveCollection<SortableValue<ElementT, SortKeyT>>.sortedUniquely(): ReactiveList<ElementT> =
-    TODO("Unimplemented: sortedSortableValue")
+    ReactiveList.Ordinary(
+        trackedVertex = SortedUniquelyTrackedListVertex(
+            sourceVertex = this.trackedVertex,
+        ),
+    )
 
 fun <ElementT, SortKeyT : Comparable<SortKeyT>> ReactiveBag<ReactiveSortableValue<ElementT, SortKeyT>>.sortedUniquelyReactively(): ReactiveList<ElementT> =
-    TODO("Unimplemented: sortedReactiveSortableValue")
+    fuseOf { sortableValue: ReactiveSortableValue<ElementT, SortKeyT> ->
+        sortableValue.sortKey.map { sortKey: SortKeyT ->
+            sortableValue.value withSortKey sortKey
+        }
+    }.sortedUniquely()
 
 fun <ElementT> ReactiveList<ElementT>.syncing(
     externalMutableList: MutableList<ElementT>,

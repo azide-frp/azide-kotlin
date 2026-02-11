@@ -6,27 +6,7 @@ import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
 data object Cell_sampling_testUtils {
-    fun <ValueT> executeReactionTransaction(
-        subjectCell: Cell<ValueT>,
-        inputStimulation: TestStimulation? = null,
-        expectedSubjectValue: ExpectedCellValue<ValueT>,
-    ) {
-        Transactions.execute { propagationContext ->
-            inputStimulation?.stimulate(
-                propagationContext = propagationContext,
-            )
-
-            expectedSubjectValue.verifyStableState(
-                propagationContext = propagationContext,
-                subject = subjectCell,
-            )
-        }
-    }
-}
-
-@Suppress("ClassName")
-data object ReactiveList_sampling_testUtils {
-    fun <ValueT> executeReactionTransaction(
+    fun <ValueT> executeSamplingTransaction(
         subjectCell: Cell<ValueT>,
         inputStimulation: TestStimulation? = null,
         expectedSubjectValue: ExpectedCellValue<ValueT>,

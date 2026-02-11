@@ -5,6 +5,7 @@ import dev.azide.core.collections.sum
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.CellTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
+import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -48,8 +49,10 @@ class ReactiveCollection_sum_tests {
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
-                elementsToAdd = setOf(5, 6),
-                elementsToRemove = setOf(2, 3),
+                changeDescription = TestInputReactiveSet.ChangeDescription(
+                    addedElements = setOf(5, 6),
+                    removedElements = setOf(2, 3),
+                ),
             ),
             expectedOldValue = 10,
             expectedNewValue = 16,
@@ -68,8 +71,10 @@ class ReactiveCollection_sum_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(5, 6),
-                    elementsToRemove = setOf(2, 3),
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(5, 6),
+                        removedElements = setOf(2, 3),
+                    ),
                 ),
                 sourceReactiveSet.revokeChange(),
             ),
@@ -89,12 +94,16 @@ class ReactiveCollection_sum_tests {
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combine(
                 sourceReactiveSet.change(
-                    elementsToAdd = setOf(5, 6),
-                    elementsToRemove = setOf(2, 3),
+                    changeDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(5, 6),
+                        removedElements = setOf(2, 3),
+                    ),
                 ),
                 sourceReactiveSet.correctChange(
-                    correctedElementsToAdd = setOf(7),
-                    correctedElementsToRemove = setOf(4),
+                    correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
+                        addedElements = setOf(7),
+                        removedElements = setOf(4),
+                    ),
                 ),
             ),
             expectedOldValue = 10,

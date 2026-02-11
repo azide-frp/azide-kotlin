@@ -74,7 +74,7 @@ data object ReactiveBag_actuate_testUtils {
                         override fun preStimulateExternally() {
                             Transactions.execute { propagationContext ->
                                 sourceReactiveBag.change(
-                                    description = TestInputReactiveBag.ChangeDescription(
+                                    changeDescription = TestInputReactiveBag.ChangeDescription(
                                         addedElementByTag = remainingTaggedContentEntries.associate {
                                             it.key to it.value
                                         },
@@ -141,7 +141,7 @@ data object ReactiveBag_actuate_testUtils {
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.ExtraTargetEffect to extraTargetEffect,
                     ),
@@ -163,7 +163,7 @@ data object ReactiveBag_actuate_testUtils {
             subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceReactiveBag.change(
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.ExtraTargetEffect to extraTargetEffect,
                     ),
@@ -186,7 +186,7 @@ data object ReactiveBag_actuate_testUtils {
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(
-                description = TestInputReactiveBag.ChangeDescription(
+                changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.ExtraTargetEffect to extraTargetEffect,
                     ),

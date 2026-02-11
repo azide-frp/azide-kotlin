@@ -105,7 +105,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -155,7 +155,7 @@ class EventStream_executeEach_cancelledRevoked_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder = TestTargetActionRecorder.of(result = 10)
+        val targetActionRecorder = TestTargetActionRecorder.pure(result = 10)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 
@@ -204,8 +204,8 @@ class EventStream_executeEach_cancelledRevoked_tests {
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val targetActionRecorder1 = TestTargetActionRecorder.of(result = 10)
-        val targetActionRecorder2 = TestTargetActionRecorder.of(result = 20)
+        val targetActionRecorder1 = TestTargetActionRecorder.pure(result = 10)
+        val targetActionRecorder2 = TestTargetActionRecorder.pure(result = 20)
 
         val sourceEventStream = TestInputEventStream<Action<Int>>()
 

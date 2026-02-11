@@ -105,7 +105,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
-                description = ChangeDescription(
+                changeDescription = ChangeDescription(
                     addedElementByTag = mapOf(
                         TargetEffectTag.TargetEffect6 to targetEffect6,
                         TargetEffectTag.TargetEffect7 to targetEffect7,

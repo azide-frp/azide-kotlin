@@ -2,6 +2,7 @@ package dev.azide.core
 
 import dev.azide.core.external.ExternalSchedule
 import dev.azide.core.impl.effects.AdaptedExternalSchedule
+import dev.azide.core.impl.effects.CombinedSchedule
 import dev.azide.core.impl.effects.ExternalizedSchedule
 
 typealias Schedule = Effect<Unit>
@@ -18,6 +19,14 @@ object Schedules {
         AdaptedExternalSchedule(
             externalSchedule = externalSchedule,
         )
+    )
+
+    fun combine(
+        schedules: Iterable<Schedule>,
+    ): Schedule = ExternalizedSchedule(
+        internalEffect = CombinedSchedule(
+            schedules = schedules,
+        ),
     )
 }
 
