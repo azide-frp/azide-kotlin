@@ -1,5 +1,6 @@
 package dev.azide.core.collections
 
+import dev.azide.core.Cell
 import dev.azide.core.Moment
 import dev.azide.core.Schedule
 import dev.azide.core.collections.helpers.ReactiveSortableValue
@@ -8,10 +9,10 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedListVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.MappedTrackedListVertex
+import dev.azide.core.impl.collections.reactive_list.operated_vertices.OfSingleTrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.SortedUniquelyTrackedListVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
-import kotlin.jvm.JvmName
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
     class Const<out ElementT>(
@@ -30,6 +31,14 @@ interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
         fun <ElementT> of(
             vararg elements: ElementT,
         ): ReactiveList<ElementT> = Const(elements.toList())
+
+        fun <ElementT> of(
+            element: Cell<ElementT>,
+        ): ReactiveList<ElementT> = Ordinary(
+            trackedVertex = OfSingleTrackedListVertex(
+                sourceVertex = element.vertex,
+            ),
+        )
     }
 
     override val trackedVertex: TrackedListVertex<ElementT>
