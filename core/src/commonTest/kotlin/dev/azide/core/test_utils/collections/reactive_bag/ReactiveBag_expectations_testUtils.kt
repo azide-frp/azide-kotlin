@@ -188,6 +188,12 @@ object ReactiveBag_expectations_testUtils {
         }
 
     fun <ElementT> expectStableTaggedContent(
+        expectedTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContent<ElementT> = expectStableTaggedContent(
+        expectedTaggedContent = expectedTaggedElements.elementByTag,
+    )
+
+    fun <ElementT> expectStableTaggedContent(
         expectedTaggedContent: Map<Tag, ElementT>,
     ): ExpectedReactiveBagContent<ElementT> = object : ExpectedReactiveBagContent<ElementT> {
         override fun verifyStableState(
