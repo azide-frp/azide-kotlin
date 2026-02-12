@@ -14,6 +14,12 @@ data class TestSlottedStimulationBank<SlotCountT : TestSlotCount>(
             stimulationMap.bind(slottedStimulationScenario)
         }
 
+    fun forEachIndexed(
+        block: (index: Int, TestSlottedStimulationScenario<SlotCountT>) -> Unit,
+    ) {
+        slottedStimulationScenarios.forEachIndexed(block)
+    }
+
     fun forEach(
         block: (TestSlottedStimulationScenario<SlotCountT>) -> Unit,
     ) {
