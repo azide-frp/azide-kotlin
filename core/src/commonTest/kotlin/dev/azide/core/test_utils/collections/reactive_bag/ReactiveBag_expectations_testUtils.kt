@@ -158,8 +158,24 @@ object ReactiveBag_expectations_testUtils {
                         newTaggedContent = expectedNewTaggedContent,
                     )
                 }
-
         }
+
+    fun <ElementT> expectPotentialTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedOldTaggedElements: TaggedBag<ElementT>,
+        expectedNewTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> = when {
+        expectedOldTaggedElements == expectedNewTaggedElements -> expectNoTaggedContentTransition(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+            expectedUnaffectedTaggedElements = expectedOldTaggedElements,
+        )
+
+        else -> expectTaggedContentTransition(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+            expectedOldTaggedElements = expectedOldTaggedElements,
+            expectedNewTaggedElements = expectedNewTaggedElements,
+        )
+    }
 
     fun <ElementT> expectNoTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,

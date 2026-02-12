@@ -7,6 +7,19 @@ data class TaggedBagChange<out ElementT>(
     val changedElementByTag: Map<Tag, ElementT>,
     val removedTags: Set<Tag>,
 ) : CollectionChange<ElementT> {
+    companion object {
+        fun <ElementT> of(
+            changedElementByTag: Map<Tag, ElementT>,
+            removedTags: Set<Tag>,
+        ): TaggedBagChange<ElementT>? = when {
+            changedElementByTag.isEmpty() && removedTags.isEmpty() -> null
+            else -> TaggedBagChange(
+                changedElementByTag = changedElementByTag,
+                removedTags = removedTags,
+            )
+        }
+    }
+
     init {
         require(changedElementByTag.isNotEmpty() || removedTags.isNotEmpty()) {
             "A TaggedBagChange must have at least one changed or removed element."

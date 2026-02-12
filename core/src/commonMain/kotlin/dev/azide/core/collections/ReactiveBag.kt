@@ -8,6 +8,7 @@ import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.FusedTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.MappedTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
@@ -65,7 +66,11 @@ fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.map(
     ),
 )
 
-fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = TODO("ReactiveBag.fuse")
+fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = ReactiveBag.Ordinary(
+    trackedVertex = FusedTrackedTaggedBagVertex(
+        outerSourceBagVertex = this.trackedVertex,
+    ),
+)
 
 fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.fuseOf(
     selector: (ElementT) -> Cell<TransformedElementT>,

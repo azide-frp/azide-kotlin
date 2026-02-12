@@ -6,6 +6,10 @@ data class TestStimulationMap(
     val stimulationByTag: Map<TestStimulationTag, TestStimulation>,
 ) {
     companion object {
+        val Empty = TestStimulationMap(
+            stimulationByTag = emptyMap(),
+        )
+
         fun of(
             vararg pairs: Pair<TestStimulationTag, TestStimulation>,
         ): TestStimulationMap = TestStimulationMap(

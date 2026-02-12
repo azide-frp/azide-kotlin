@@ -43,7 +43,7 @@ class SwitchedCellVertex<ValueT>(
     private var updatedInnerSourceVertex: CellVertex<ValueT>? = null
 
     /**
-     * The handle to the new (updated or stable otherwise) inner cell vertex.
+     * The handle to the new (updated or stable otherwise) inner cell vertex listener.
      *
      * If the vertex is inactive: `null`
      *
