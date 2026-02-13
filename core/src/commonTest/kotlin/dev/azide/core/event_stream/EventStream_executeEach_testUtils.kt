@@ -17,19 +17,19 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenar
 data object EventStream_executeEach_testUtils {
     data object SourceActionEventStreamTag : TestInputEventStreamTag
 
-    val stimulationScenarioBank_sourceActionEventStreamEmits = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmits = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.emissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionEventStreamEmitsRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsRevoked = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.revokedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionEventStreamEmitsCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsCorrected = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.correctedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),

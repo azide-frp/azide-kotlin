@@ -19,19 +19,19 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenar
 data object Cell_executeEvery_testUtils {
     data object SourceActionCellTag : TestInputCellTag
 
-    val stimulationScenarioBank_sourceActionCellUpdates = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdates = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionCellUpdatesRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionCellUpdatesCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),

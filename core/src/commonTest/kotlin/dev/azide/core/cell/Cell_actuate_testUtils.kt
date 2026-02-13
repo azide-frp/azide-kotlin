@@ -18,19 +18,19 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenar
 data object Cell_actuate_testUtils {
     data object SourceEffectCellTag : TestInputCellTag
 
-    val stimulationScenarioBank_sourceEffectCellUpdates = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdates = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectCellUpdatesRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectCellUpdatesCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),

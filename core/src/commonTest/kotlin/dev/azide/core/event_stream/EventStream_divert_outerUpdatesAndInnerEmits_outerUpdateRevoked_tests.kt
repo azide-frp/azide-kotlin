@@ -21,7 +21,7 @@ import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
-    private val slottedStimulationScenarioBank = TestStimulationScenarioBank.build(
+    private val slottedStimulationScenarioBank = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceOuterCellTag,
         ),

@@ -7,19 +7,19 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenar
 data object ReactiveBag_generic_testUtils {
     data object SourceReactiveBagTag : TestInputReactiveCollectionTag
 
-    val stimulationScenarioBank_sourceBagChanges = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceBagChanges = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceBagChangesRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceBagChangesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceBagChangesCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceBagChangesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceReactiveBagTag,
         ),

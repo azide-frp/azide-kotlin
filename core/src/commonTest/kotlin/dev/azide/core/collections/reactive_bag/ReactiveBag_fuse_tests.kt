@@ -1732,7 +1732,7 @@ class ReactiveBag_fuse_tests {
 
         open val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
             // By default, build all combinations of the dynamic cell stimulations
-            get() = TestStimulationScenarioBank.build(
+            get() = TestStimulationScenarioBank.mixAll(
                 dynamicCellXStimulationKind.toStimulationScenario(
                     tag = DynamicCellStimulationTag.DynamicCellX,
                 ),
@@ -1812,7 +1812,7 @@ class ReactiveBag_fuse_tests {
         sourceBagStimulationScenario: SourceBagStimulationScenario,
         sourceBagChangeVariety: SourceBagChangeVariety,
     ) {
-        val stimulationScenarioBank = TestStimulationScenarioBank.build(
+        val stimulationScenarioBank = TestStimulationScenarioBank.mixAll(
             sourceBagStimulationScenario.outerSourceBagStimulationScenario,
         )
 
