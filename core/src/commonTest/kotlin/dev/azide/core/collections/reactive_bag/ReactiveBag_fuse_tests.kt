@@ -4,12 +4,7 @@ import dev.azide.core.collections.fuse
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.TestInputCellStimulationTag
-import dev.azide.core.test_utils.cell.TestInputCellStimulationTag.UpdateRevocation
 import dev.azide.core.test_utils.cell.TestInputCellTag
-import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag.Change
-import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag.ChangeCorrection
-import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag.ChangeRevocation
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
@@ -763,8 +758,8 @@ class ReactiveBag_fuse_tests {
             )
         }
 
-        val dynamicCellStimulationScenarios: Array<TestStimulationScenario>
-            get() = arrayOf(
+        val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+            get() = TestStimulationScenarioBank.build(
                 dynamicCellXStimulationKind.toStimulationScenario(
                     tag = DynamicCellStimulationTag.DynamicCellX,
                 ),
@@ -902,9 +897,7 @@ class ReactiveBag_fuse_tests {
     @Test
     fun test_dynamicCellsUpdate_only_matrix() {
         DynamicCellStimulationScenario.allEffective.forEach { dynamicSourceCellStimulationStrategy ->
-            val stimulationScenarioBank = TestStimulationScenarioBank.build(
-                *dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarios,
-            )
+            val stimulationScenarioBank = dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarioBank
 
             stimulationScenarioBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
                 test_dynamicCellsUpdate_only(
@@ -1081,11 +1074,10 @@ class ReactiveBag_fuse_tests {
         sourceBagChangeVariety: SourceBagChangeVariety,
     ) {
         DynamicCellStimulationScenario.allEffective.forEach { dynamicSourceCellStimulationStrategy ->
-            val stimulationScenarioBank = TestStimulationScenarioBank.build(
-                sourceBagStimulationScenario.outerSourceBagStimulationScenario,
-                *dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarios,
-            )
+            val outerSourceBagStimulationScenario = sourceBagStimulationScenario.outerSourceBagStimulationScenario
+            val dynamicCellStimulationScenarioBank = dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarioBank
 
+            val stimulationScenarioBank = outerSourceBagStimulationScenario.toBank().mixWith(dynamicCellStimulationScenarioBank)
             val slottedStimulationScenarioBank = stimulationScenarioBank.distribute(SuitableSlotCount)
 
             slottedStimulationScenarioBank.forEach { slottedStimulationScenario ->

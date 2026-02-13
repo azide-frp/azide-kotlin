@@ -3,7 +3,7 @@ package dev.azide.core.test_utils.stimulation_combinatorics
 import dev.azide.core.impl.utils.list.uncons
 
 data class TestStimulationScenarioBank(
-    val stimulationScenarios: List<TestStimulationScenario>,
+    val stimulationScenarios: Sequence<TestStimulationScenario>,
 ) {
     companion object {
         fun build(
@@ -21,10 +21,24 @@ data class TestStimulationScenarioBank(
                             otherStimulationScenario = nextStimulationScenario,
                         )
                     }
-                }.toList(),
+                },
             )
         }
     }
+
+    fun mixWith(
+        other: TestStimulationScenarioBank,
+    ): TestStimulationScenarioBank = TestStimulationScenarioBank(
+        stimulationScenarios.fold(
+            initial = other.stimulationScenarios,
+        ) { combinedStimulationScenarios: Sequence<TestStimulationScenario>, nextStimulationScenario: TestStimulationScenario ->
+            combinedStimulationScenarios.flatMap { oldStimulationScenario ->
+                oldStimulationScenario.combineWith(
+                    otherStimulationScenario = nextStimulationScenario,
+                )
+            }
+        },
+    )
 
     fun <SlotCountT : TestSlotCount> distribute(
         slotCount: SlotCountT,
@@ -33,6 +47,6 @@ data class TestStimulationScenarioBank(
             stimulationScenario.distribute(
                 slotCount = slotCount,
             )
-        }.toList(),
+        },
     )
 }
