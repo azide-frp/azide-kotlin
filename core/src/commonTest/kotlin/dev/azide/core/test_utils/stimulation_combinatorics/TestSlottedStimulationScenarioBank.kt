@@ -1,11 +1,9 @@
 package dev.azide.core.test_utils.stimulation_combinatorics
 
 data class TestSlottedStimulationScenarioBank<SlotCountT : TestSlotCount>(
-    val slottedStimulationScenarios: List<TestSlottedStimulationScenario<SlotCountT>>,
+    private val slottedStimulationScenarios: List<TestSlottedStimulationScenario<SlotCountT>>,
 ) {
-    fun get(
-        index: Int,
-    ): TestSlottedStimulationScenario<SlotCountT> = slottedStimulationScenarios[index]
+    fun first(): TestSlottedStimulationScenario<SlotCountT> = slottedStimulationScenarios[0]
 
     fun bind(
         stimulationMap: TestStimulationMap,

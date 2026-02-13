@@ -29,19 +29,19 @@ class ReactiveBag_actuate_startRevoked_quickCancelledRevoked_tests {
         ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChanges =
-        slottedStimulationScenarioBank_sourceEffectBagChanges.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChanges.first()
 
     private val slottedStimulationScenarioBank_sourceEffectBagChangesRevoked =
         ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked =
-        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.first()
 
     private val slottedStimulationScenarioBank_sourceEffectBagChangesCorrected =
         ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected =
-        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.first()
 
     @Test
     fun test_startRevoked_quickCancelledRevoked() {

@@ -32,7 +32,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmits =
-        slottedStimulationScenarioBank_sourceActionEventStreamEmits.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.first()
 
     private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked =
         EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsRevoked.distribute(
@@ -40,7 +40,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsRevoked =
-        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.first()
 
     private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected =
         EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsCorrected.distribute(
@@ -48,7 +48,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
         )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsCorrected =
-        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.first()
 
     @Test
     fun test_start_quickCancelledRevoked_subscribed() {
