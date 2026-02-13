@@ -23,8 +23,8 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEffectCellUpdates =
-        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectCellUpdates =
+        Cell_actuate_testUtils.stimulationScenarioBank_sourceEffectCellUpdates.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_start_rushedWrapUp() {
@@ -47,7 +47,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
     @Test
     fun test_start_rushedWrapUp_sourceUpdatesSimultaneously() {
-        slottedStimulationBank_sourceEffectCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEffectCellUpdates.forEach { slottedStimulationScenario ->
             test_start_rushedWrapUp_sourceUpdatesSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

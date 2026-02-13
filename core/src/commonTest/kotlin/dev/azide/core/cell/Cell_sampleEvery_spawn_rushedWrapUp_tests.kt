@@ -21,8 +21,8 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_spawn_rushedWrapUp() {
@@ -44,7 +44,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
     @Test
     fun test_spawn_rushedWrapUp_sourceEmitsSimultaneously() {
-        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_spawn_rushedWrapUp_sourceEmitsSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

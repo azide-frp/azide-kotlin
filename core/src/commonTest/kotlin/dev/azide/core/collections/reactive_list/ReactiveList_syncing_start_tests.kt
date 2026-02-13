@@ -22,14 +22,14 @@ class ReactiveList_syncing_start_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceListChanges =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChanges =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChanges.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceListChangesRevoked =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChangesRevoked =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceListChangesCorrected =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChangesCorrected =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
     
     @Test
     fun test_start() {
@@ -58,7 +58,7 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesSimultaneously() {
-        slottedStimulationBank_sourceListChanges.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceListChanges.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -102,7 +102,7 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesRevokedSimultaneously() {
-        slottedStimulationBank_sourceListChangesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceListChangesRevoked.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -146,7 +146,7 @@ class ReactiveList_syncing_start_tests {
 
     @Test
     fun test_start_sourceUpdatesCorrectedSimultaneously() {
-        slottedStimulationBank_sourceListChangesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceListChangesCorrected.forEach { slottedStimulationScenario ->
             test_start_sourceUpdatesCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

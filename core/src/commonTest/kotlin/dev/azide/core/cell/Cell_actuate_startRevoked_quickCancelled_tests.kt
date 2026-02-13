@@ -23,14 +23,14 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEffectCellUpdates =
-        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectCellUpdates =
+        Cell_actuate_testUtils.stimulationScenarioBank_sourceEffectCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEffectCellUpdatesRevoked =
-        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectCellUpdatesRevoked =
+        Cell_actuate_testUtils.stimulationScenarioBank_sourceEffectCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEffectCellUpdatesCorrected =
-        Cell_actuate_testUtils.stimulationBank_sourceEffectCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectCellUpdatesCorrected =
+        Cell_actuate_testUtils.stimulationScenarioBank_sourceEffectCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_startRevoked_quickCancelled() {
@@ -58,7 +58,7 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesSimultaneously() {
-        slottedStimulationBank_sourceEffectCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEffectCellUpdates.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -96,7 +96,7 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesRevokedSimultaneously() {
-        slottedStimulationBank_sourceEffectCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEffectCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -134,7 +134,7 @@ class Cell_actuate_startRevoked_quickCancelled_tests {
 
     @Test
     fun test_startRevoked_quickCancelled_sourceUpdatesCorrectedSimultaneously() {
-        slottedStimulationBank_sourceEffectCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEffectCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelled_sourceUpdatesCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

@@ -26,23 +26,27 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionEventStreamEmits =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmits =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmits =
-        slottedStimulationBank_sourceActionEventStreamEmits.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.get(0)
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsRevoked =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsRevoked.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsRevoked =
-        slottedStimulationBank_sourceActionEventStreamEmitsRevoked.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.get(0)
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsCorrected =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsCorrected.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsCorrected =
-        slottedStimulationBank_sourceActionEventStreamEmitsCorrected.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.get(0)
 
     @Test
     fun test_start_quickCancelled_subscribed() {
@@ -90,7 +94,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
     @Test
     fun test_start_quickCancelled_sourceEmitsSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_start_quickCancelled_sourceEmitsSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -135,7 +139,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
     @Test
     fun test_start_quickCancelled_sourceEmitsRevokedSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_start_quickCancelled_sourceEmitsRevokedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -180,7 +184,7 @@ class EventStream_executeEach_start_quickCancelled_tests {
 
     @Test
     fun test_start_quickCancelled_sourceEmitsCorrectedSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_start_quickCancelled_sourceEmitsCorrectedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,

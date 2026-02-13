@@ -13,25 +13,25 @@ import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object Cell_executeEvery_testUtils {
     data object SourceActionCellTag : TestInputCellTag
 
-    val stimulationBank_sourceActionCellUpdates = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdates = TestStimulationScenarioBank.build(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationBank_sourceActionCellUpdatesRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdatesRevoked = TestStimulationScenarioBank.build(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationBank_sourceActionCellUpdatesCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionCellUpdatesCorrected = TestStimulationScenarioBank.build(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),

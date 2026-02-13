@@ -24,7 +24,7 @@ import dev.azide.core.test_utils.collections.reactive_list.ReactiveBag_sampling_
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
@@ -886,11 +886,11 @@ class ReactiveBag_fuse_tests {
         sourceBagStimulationScenario: SourceBagStimulationScenario,
         sourceBagChangeVariety: SourceBagChangeVariety,
     ) {
-        val stimulationBank = TestStimulationBank.build(
+        val stimulationScenarioBank = TestStimulationScenarioBank.build(
             sourceBagStimulationScenario.outerSourceBagStimulationScenario,
         )
 
-        stimulationBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
+        stimulationScenarioBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
             sourceBagStimulationScenario.test(
                 sourceBagChangeVariety = sourceBagChangeVariety,
                 dynamicCellStimulationScenario = DynamicCellStimulationScenario.None,
@@ -902,11 +902,11 @@ class ReactiveBag_fuse_tests {
     @Test
     fun test_dynamicCellsUpdate_only_matrix() {
         DynamicCellStimulationScenario.allEffective.forEach { dynamicSourceCellStimulationStrategy ->
-            val stimulationBank = TestStimulationBank.build(
+            val stimulationScenarioBank = TestStimulationScenarioBank.build(
                 *dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarios,
             )
 
-            stimulationBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
+            stimulationScenarioBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
                 test_dynamicCellsUpdate_only(
                     dynamicCellStimulationScenario = dynamicSourceCellStimulationStrategy,
                     slottedStimulationScenario = slottedStimulationScenario,
@@ -1081,14 +1081,14 @@ class ReactiveBag_fuse_tests {
         sourceBagChangeVariety: SourceBagChangeVariety,
     ) {
         DynamicCellStimulationScenario.allEffective.forEach { dynamicSourceCellStimulationStrategy ->
-            val stimulationBank = TestStimulationBank.build(
+            val stimulationScenarioBank = TestStimulationScenarioBank.build(
                 sourceBagStimulationScenario.outerSourceBagStimulationScenario,
                 *dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarios,
             )
 
-            val slottedStimulationBank = stimulationBank.distribute(SuitableSlotCount)
+            val slottedStimulationScenarioBank = stimulationScenarioBank.distribute(SuitableSlotCount)
 
-            slottedStimulationBank.forEach { slottedStimulationScenario ->
+            slottedStimulationScenarioBank.forEach { slottedStimulationScenario ->
                 sourceBagStimulationScenario.test(
                     sourceBagChangeVariety = sourceBagChangeVariety,
                     dynamicCellStimulationScenario = dynamicSourceCellStimulationStrategy,
