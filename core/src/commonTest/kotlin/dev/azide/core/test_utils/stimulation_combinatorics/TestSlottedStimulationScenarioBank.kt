@@ -1,6 +1,6 @@
 package dev.azide.core.test_utils.stimulation_combinatorics
 
-data class TestSlottedStimulationBank<SlotCountT : TestSlotCount>(
+data class TestSlottedStimulationScenarioBank<SlotCountT : TestSlotCount>(
     val slottedStimulationScenarios: List<TestSlottedStimulationScenario<SlotCountT>>,
 ) {
     fun get(

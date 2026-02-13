@@ -11,25 +11,25 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object EventStream_executeEach_testUtils {
     data object SourceActionEventStreamTag : TestInputEventStreamTag
 
-    val stimulationBank_sourceActionEventStreamEmits = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmits = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.emissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceActionEventStreamEmitsRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsRevoked = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.revokedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceActionEventStreamEmitsCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsCorrected = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.correctedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),

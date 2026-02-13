@@ -28,14 +28,14 @@ class ReactiveList_ofSingle_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesRevoked =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesCorrected =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_passiveSample() {
@@ -55,7 +55,7 @@ class ReactiveList_ofSingle_tests {
 
     @Test
     fun test_sourceCellUpdates() {
-        slottedStimulationBank_sourceCellUpdates.forEach {
+        slottedStimulationScenarioBank_sourceCellUpdates.forEach {
             test_sourceCellUpdates(
                 slottedStimulationScenario = it,
             )
@@ -86,7 +86,7 @@ class ReactiveList_ofSingle_tests {
 
     @Test
     fun test_sourceCellUpdatesRevoked() {
-        slottedStimulationBank_sourceCellUpdatesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach {
             test_sourceCellUpdatesRevoked(
                 slottedStimulationScenario = it,
             )
@@ -117,7 +117,7 @@ class ReactiveList_ofSingle_tests {
 
     @Test
     fun test_sourceCellUpdatesCorrected() {
-        slottedStimulationBank_sourceCellUpdatesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach {
             test_sourceCellUpdatesCorrected(
                 slottedStimulationScenario = it,
             )

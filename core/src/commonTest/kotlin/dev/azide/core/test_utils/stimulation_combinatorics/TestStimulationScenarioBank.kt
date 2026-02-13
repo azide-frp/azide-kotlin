@@ -2,17 +2,17 @@ package dev.azide.core.test_utils.stimulation_combinatorics
 
 import dev.azide.core.impl.utils.list.uncons
 
-data class TestStimulationBank(
+data class TestStimulationScenarioBank(
     val stimulationScenarios: List<TestStimulationScenario>,
 ) {
     companion object {
         fun build(
             vararg stimulationScenarios: TestStimulationScenario,
-        ): TestStimulationBank {
+        ): TestStimulationScenarioBank {
             val (firstStimulationScenario, otherStimulationScenarios) = stimulationScenarios.toList().uncons()
                 ?: throw IllegalArgumentException("At least one stimulation sequence is required.")
 
-            return TestStimulationBank(
+            return TestStimulationScenarioBank(
                 otherStimulationScenarios.fold(
                     initial = sequenceOf(firstStimulationScenario),
                 ) { combinedStimulationScenarios: Sequence<TestStimulationScenario>, nextStimulationScenario: TestStimulationScenario ->
@@ -28,7 +28,7 @@ data class TestStimulationBank(
 
     fun <SlotCountT : TestSlotCount> distribute(
         slotCount: SlotCountT,
-    ): TestSlottedStimulationBank<SlotCountT> = TestSlottedStimulationBank(
+    ): TestSlottedStimulationScenarioBank<SlotCountT> = TestSlottedStimulationScenarioBank(
         slottedStimulationScenarios = stimulationScenarios.flatMap { stimulationScenario ->
             stimulationScenario.distribute(
                 slotCount = slotCount,

@@ -31,23 +31,23 @@ class ReactiveBag_actuate_cancelled_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEffectBagChanges =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectBagChanges =
+        ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChanges =
-        slottedStimulationBank_sourceEffectBagChanges.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChanges.slottedStimulationScenarios[0]
 
-    private val slottedStimulationBank_sourceEffectBagChangesRevoked =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectBagChangesRevoked =
+        ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesRevoked =
-        slottedStimulationBank_sourceEffectBagChangesRevoked.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.slottedStimulationScenarios[0]
 
-    private val slottedStimulationBank_sourceEffectBagChangesCorrected =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectBagChangesCorrected =
+        ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceEffectBagChangesCorrected =
-        slottedStimulationBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.slottedStimulationScenarios[0]
 
     @Test
     fun test_initial_cancelled_observed() {
@@ -141,7 +141,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChanges_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -151,7 +151,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChanges_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -225,7 +225,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChanges_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -235,7 +235,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChanges_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -309,7 +309,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChanges_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -319,7 +319,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChanges_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -401,7 +401,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChanges_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
@@ -421,7 +421,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChanges_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_cancelled_sourceEffectBagChanges_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
@@ -528,7 +528,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -538,7 +538,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -612,7 +612,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -622,7 +622,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -696,7 +696,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -706,7 +706,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -783,7 +783,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesRevoked_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
@@ -803,7 +803,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesRevoked_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesRevoked.forEach {
             test_cancelled_sourceEffectBagChangesRevoked_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
@@ -910,7 +910,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -920,7 +920,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_addedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_addedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -1008,7 +1008,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -1018,7 +1018,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_removedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_removedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -1098,7 +1098,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 slottedStimulationScenario = it,
@@ -1108,7 +1108,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_replacedOnly() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_replacedOnly(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 slottedStimulationScenario = it,
@@ -1201,7 +1201,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_initial_cancelled_sourceEffectBagChangesCorrected_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.InitialContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
@@ -1221,7 +1221,7 @@ class ReactiveBag_actuate_cancelled_tests {
 
     @Test
     fun test_subsequent_cancelled_sourceEffectBagChangesCorrected_observed_mixed() {
-        slottedStimulationBank_sourceEffectBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChangesCorrected.forEach {
             test_cancelled_sourceEffectBagChangesCorrected_mixed(
                 sourceEffectReactiveBagConstructionStrategy = SourceEffectReactiveBagConstructionStrategy.SubsequentContentStrategy,
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,

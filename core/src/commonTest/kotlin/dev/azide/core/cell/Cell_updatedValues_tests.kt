@@ -21,17 +21,17 @@ class Cell_updatedValues_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesRevoked =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesCorrected =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_sourceUpdates() {
-        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_sourceUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -61,7 +61,7 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_revoked() {
-        slottedStimulationBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_sourceUpdates_revoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -91,7 +91,7 @@ class Cell_updatedValues_tests {
 
     @Test
     fun test_sourceUpdates_corrected() {
-        slottedStimulationBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_sourceUpdates_corrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

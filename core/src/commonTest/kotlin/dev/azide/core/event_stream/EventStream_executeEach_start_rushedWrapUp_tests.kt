@@ -23,8 +23,8 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionEventStreamEmits =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmits =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_start_rushedWrapUp() {
@@ -41,7 +41,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
     @Test
     fun test_start_rushedWrapUp_sourceEmitsSimultaneously() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_start_rushedWrapUp_sourceEmitsSimultaneously(slottedStimulationScenario = slottedStimulationScenario)
         }
     }

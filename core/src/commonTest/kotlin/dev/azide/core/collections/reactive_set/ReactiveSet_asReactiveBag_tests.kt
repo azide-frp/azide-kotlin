@@ -22,18 +22,18 @@ class ReactiveSet_asReactiveBag_tests {
 
     private val slotCount = TestSlotCount.Count2
 
-    private val slottedStimulationBank_sourceSetChanges =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChanges.distribute(slotCount = slotCount)
+    private val slottedStimulationScenarioBank_sourceSetChanges =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChanges.distribute(slotCount = slotCount)
 
-    private val slottedStimulationBank_sourceSetChangesRevoked =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChangesRevoked.distribute(slotCount = slotCount)
+    private val slottedStimulationScenarioBank_sourceSetChangesRevoked =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesRevoked.distribute(slotCount = slotCount)
 
-    private val slottedStimulationBank_sourceSetChangesCorrected =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChangesCorrected.distribute(slotCount = slotCount)
+    private val slottedStimulationScenarioBank_sourceSetChangesCorrected =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesCorrected.distribute(slotCount = slotCount)
 
     @Test
     fun test_sourceSetChanges_additionsOnly() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -83,7 +83,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceSetChanges_removalsOnly() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -134,7 +134,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceSetChanges_mixed() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_mixed(
                 slottedStimulationScenario = it,
             )
@@ -194,7 +194,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesRevoked_additionsOnly() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceChangesRevoked_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -246,7 +246,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesRevoked_removalsOnly() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceChangesRevoked_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -295,7 +295,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesRevoked_mixed() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceChangesRevoked_mixed(
                 slottedStimulationScenario = it,
             )
@@ -348,7 +348,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesCorrected_additionsOnly() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceChangesCorrected_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -420,7 +420,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesCorrected_removalsOnly() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceChangesCorrected_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -488,7 +488,7 @@ class ReactiveSet_asReactiveBag_tests {
 
     @Test
     fun test_sourceChangesCorrected_mixed() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceChangesCorrected_mixed(
                 slottedStimulationScenario = it,
             )

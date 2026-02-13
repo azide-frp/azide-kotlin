@@ -24,14 +24,18 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionEventStreamEmits =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmits =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsRevoked =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsRevoked.distribute(
+            slotCount = SuitableSlotCount
+        )
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsCorrected =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsCorrected.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     @Test
     fun test_startRevoked_quickCancelledRevoked() {
@@ -51,7 +55,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
     @Test
     fun test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelledRevoked_sourceEmitsSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -83,7 +87,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
     @Test
     fun test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously() {
-        slottedStimulationBank_sourceActionEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -115,7 +119,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
     @Test
     fun test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously() {
-        slottedStimulationBank_sourceActionEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_startRevoked_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

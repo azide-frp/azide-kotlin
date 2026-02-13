@@ -1,24 +1,24 @@
 package dev.azide.core.test_utils.event_stream
 
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object EventStream_generic_testUtils {
     data object SourceEventStreamTag : TestInputEventStreamTag
 
-    val stimulationBank_sourceEventStreamEmits = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEventStreamEmits = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.emissionScenario(
             inputEventStreamTag = SourceEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceEventStreamEmitsRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEventStreamEmitsRevoked = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.revokedEmissionScenario(
             inputEventStreamTag = SourceEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceEventStreamEmitsCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEventStreamEmitsCorrected = TestStimulationScenarioBank.build(
         TestInputEventStreamTag.correctedEmissionScenario(
             inputEventStreamTag = SourceEventStreamTag,
         ),

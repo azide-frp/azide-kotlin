@@ -25,18 +25,18 @@ class EventStream_sampleEach_reaction_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEventStreamEmits =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEventStreamEmitsRevoked =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEventStreamEmitsCorrected =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_step_sourceEmits() {
-        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_step_sourceEmits(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -66,7 +66,7 @@ class EventStream_sampleEach_reaction_tests {
 
     @Test
     fun test_step_sourceEmitsRevoked() {
-        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_step_sourceEmitsRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -96,7 +96,7 @@ class EventStream_sampleEach_reaction_tests {
 
     @Test
     fun test_step_sourceEmitsCorrected() {
-        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_step_sourceEmitsCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

@@ -22,14 +22,14 @@ class ReactiveBag_map_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceBagChanges =
-        ReactiveBag_generic_testUtils.stimulationBank_sourceBagChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceBagChanges =
+        ReactiveBag_generic_testUtils.stimulationScenarioBank_sourceBagChanges.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceBagChangesRevoked =
-        ReactiveBag_generic_testUtils.stimulationBank_sourceBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceBagChangesRevoked =
+        ReactiveBag_generic_testUtils.stimulationScenarioBank_sourceBagChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceBagChangesCorrected =
-        ReactiveBag_generic_testUtils.stimulationBank_sourceBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceBagChangesCorrected =
+        ReactiveBag_generic_testUtils.stimulationScenarioBank_sourceBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_passiveSample() {
@@ -59,7 +59,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceBagChanges_additionsOnly() {
-        slottedStimulationBank_sourceBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceBagChanges.forEach {
             test_sourceBagChanges_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -114,7 +114,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChanges_removalsOnly() {
-        slottedStimulationBank_sourceBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceBagChanges.forEach {
             test_sourceChanges_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -169,7 +169,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChanges_replacementsOnly() {
-        slottedStimulationBank_sourceBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceBagChanges.forEach {
             test_sourceChanges_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -234,7 +234,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChanges_mixed() {
-        slottedStimulationBank_sourceBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceBagChanges.forEach {
             test_sourceChanges_mixed(
                 slottedStimulationScenario = it,
             )
@@ -299,7 +299,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_additionsOnly() {
-        slottedStimulationBank_sourceBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesRevoked.forEach {
             test_sourceChangesRevoked_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -353,7 +353,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_removalsOnly() {
-        slottedStimulationBank_sourceBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesRevoked.forEach {
             test_sourceChangesRevoked_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -404,7 +404,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_replacementsOnly() {
-        slottedStimulationBank_sourceBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesRevoked.forEach {
             test_sourceChangesRevoked_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -461,7 +461,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_mixed() {
-        slottedStimulationBank_sourceBagChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesRevoked.forEach {
             test_sourceChangesRevoked_mixed(
                 slottedStimulationScenario = it,
             )
@@ -520,7 +520,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_additionsOnly() {
-        slottedStimulationBank_sourceBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesCorrected.forEach {
             test_sourceChangesCorrected_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -594,7 +594,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_removalsOnly() {
-        slottedStimulationBank_sourceBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesCorrected.forEach {
             test_sourceChangesCorrected_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -664,7 +664,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_replacementsOnly() {
-        slottedStimulationBank_sourceBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesCorrected.forEach {
             test_sourceChangesCorrected_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -738,7 +738,7 @@ class ReactiveBag_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_mixed() {
-        slottedStimulationBank_sourceBagChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceBagChangesCorrected.forEach {
             test_sourceChangesCorrected_mixed(
                 slottedStimulationScenario = it,
             )

@@ -7,25 +7,25 @@ import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.schedule.Schedule_step_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object Cell_triggerEvery_testUtils {
     data object SourceTriggerCellTag : TestInputCellTag
 
-    val stimulationBank_sourceTriggerCellUpdates = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdates = TestStimulationScenarioBank.build(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),
     )
 
-    val stimulationBank_sourceTriggerCellUpdatesRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdatesRevoked = TestStimulationScenarioBank.build(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),
     )
 
-    val stimulationBank_sourceTriggerCellUpdatesCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdatesCorrected = TestStimulationScenarioBank.build(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),

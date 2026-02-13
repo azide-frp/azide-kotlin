@@ -25,8 +25,8 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEffectBagChanges =
-        ReactiveBag_actuate_testUtils.stimulationBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEffectBagChanges =
+        ReactiveBag_actuate_testUtils.stimulationScenarioBank_sourceEffectBagChanges.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_start_rushedWrapUp() {
@@ -68,7 +68,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
 
     @Test
     fun test_start_rushedWrapUp_sourceEffectBagChanges() {
-        slottedStimulationBank_sourceEffectBagChanges.forEach {
+        slottedStimulationScenarioBank_sourceEffectBagChanges.forEach {
             test_start_rushedWrapUp_sourceEffectBagChanges(
                 slottedStimulationScenario = it,
             )

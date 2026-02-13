@@ -20,8 +20,8 @@ class EventStream_hold_spawn_nonObserved_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEventStreamEmits =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
     @Test
     fun test_spawn() {
         val sourceEventStream = TestInputEventStream<Int>()
@@ -41,7 +41,7 @@ class EventStream_hold_spawn_nonObserved_tests {
 
     @Test
     fun test_spawn_sourceEmitsSimultaneously() {
-        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_spawn_sourceEmitsSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

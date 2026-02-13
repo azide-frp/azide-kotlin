@@ -23,14 +23,14 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceTriggerCellUpdates =
-        Cell_triggerEvery_testUtils.stimulationBank_sourceTriggerCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceTriggerCellUpdates =
+        Cell_triggerEvery_testUtils.stimulationScenarioBank_sourceTriggerCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceTriggerCellUpdatesRevoked =
-        Cell_triggerEvery_testUtils.stimulationBank_sourceTriggerCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceTriggerCellUpdatesRevoked =
+        Cell_triggerEvery_testUtils.stimulationScenarioBank_sourceTriggerCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceTriggerCellUpdatesCorrected =
-        Cell_triggerEvery_testUtils.stimulationBank_sourceTriggerCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceTriggerCellUpdatesCorrected =
+        Cell_triggerEvery_testUtils.stimulationScenarioBank_sourceTriggerCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_cancelledRevoked() {
@@ -56,7 +56,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdates() {
-        slottedStimulationBank_sourceTriggerCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceTriggerCellUpdates.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -96,7 +96,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdatesRevoked() {
-        slottedStimulationBank_sourceTriggerCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceTriggerCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdatesRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -136,7 +136,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdatesCorrected() {
-        slottedStimulationBank_sourceTriggerCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceTriggerCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdatesCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
