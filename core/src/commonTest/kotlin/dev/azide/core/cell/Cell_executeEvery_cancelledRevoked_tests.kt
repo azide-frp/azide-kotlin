@@ -31,19 +31,19 @@ class Cell_executeEvery_cancelledRevoked_tests {
         Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdates =
-        slottedStimulationScenarioBank_sourceActionCellUpdates.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdates.first()
 
     private val slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked =
         Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdatesRevoked =
-        slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked.first()
 
     private val slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected =
         Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdatesCorrected =
-        slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected.first()
 
     @Test
     fun test_cancelledRevoked_observed() {
