@@ -4,6 +4,7 @@ import dev.azide.core.collections.fuse
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
 import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.cell.TestInputCellStimulationTag
 import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.cell.correctingUpdate
@@ -696,51 +697,980 @@ class ReactiveBag_fuse_tests {
         /**
          * The dynamic inner source cells update, some (but not all) of these updates are revoked.
          */
-        data object SomeUpdateSomeRevoked : DynamicCellStimulationScenario() {
+        data object UpdateSomeRevoked : DynamicCellStimulationScenario() {
+            private val updateX = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateY = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateRevocationY = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateZ = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateRevocationZ = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateW = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
+            private val updateRevocationW = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
             override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesEffectively
             override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellZStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellWStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
+
+            override val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+                get() = TestStimulationScenarioBank.of(
+                    // Each revoked immediately (in order, X effective)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateRevocationW,
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateRevocationZ,
+                    ),
+                    // Each revoked immediately (in reversed order, X effective)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                        updateW,
+                        updateRevocationW,
+                    ),
+                    // Each revoked immediately (shuffled 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateRevocationZ,
+                        updateX,
+                        updateW,
+                        updateRevocationW,
+                    ),
+                    // Each revoked immediately (shuffled 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                    // Each revoked immediately (shuffled 3)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                    ),
+                    // All updates, then all revoked (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateRevocationW,
+                        updateRevocationY,
+                        updateRevocationZ,
+                    ),
+                    // All updates, then all revoked (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateY,
+                        updateX,
+                        updateW,
+                        updateRevocationZ,
+                        updateRevocationY,
+                        updateRevocationW,
+                    ),
+                    // All updates, then all revoked (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateRevocationY,
+                        updateRevocationZ,
+                        updateRevocationW,
+                    ),
+                    // All updates, then all revoked (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateZ,
+                        updateY,
+                        updateRevocationW,
+                        updateRevocationZ,
+                        updateRevocationY,
+                    ),
+                    // All updates, then all revoked (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateX,
+                        updateW,
+                        updateY,
+                        updateRevocationZ,
+                        updateRevocationW,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationY,
+                        updateRevocationZ,
+                    ),
+                    // Interleaved (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateX,
+                        updateRevocationW,
+                    ),
+                    // Interleaved (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateW,
+                        updateRevocationW,
+                        updateX,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 4)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateW,
+                        updateRevocationZ,
+                        updateRevocationW,
+                    ),
+                    // Interleaved (shuffle 5)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateRevocationW,
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                )
         }
 
         /**
          * The dynamic inner source cells update, all of these updates are revoked.
          */
-        data object SomeUpdateAllRevoked : DynamicCellStimulationScenario() {
+        data object UpdateAllRevoked : DynamicCellStimulationScenario() {
+            private val updateX = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateRevocationX = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateY = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateRevocationY = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateZ = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateRevocationZ = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateW = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
+            private val updateRevocationW = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
             override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellZStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellWStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
+
+            override val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+                get() = TestStimulationScenarioBank.of(
+                    // Each revoked immediately (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateRevocationW,
+                        updateX,
+                        updateRevocationX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateRevocationZ,
+                    ),
+                    // Each revoked immediately (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                        updateRevocationX,
+                        updateW,
+                        updateRevocationW,
+                    ),
+                    // Each revoked immediately (shuffled 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateRevocationZ,
+                        updateX,
+                        updateRevocationX,
+                        updateW,
+                        updateRevocationW,
+                    ),
+                    // Each revoked immediately (shuffled 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateRevocationX,
+                        updateW,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                    // Each revoked immediately (shuffled 3)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                        updateRevocationX,
+                    ),
+                    // All updates, then all revoked (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateRevocationW,
+                        updateRevocationX,
+                        updateRevocationY,
+                        updateRevocationZ,
+                    ),
+                    // All updates, then all revoked (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateY,
+                        updateX,
+                        updateW,
+                        updateRevocationZ,
+                        updateRevocationY,
+                        updateRevocationX,
+                        updateRevocationW,
+                    ),
+                    // All updates, then all revoked (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateRevocationY,
+                        updateRevocationZ,
+                        updateRevocationW,
+                        updateRevocationX,
+                    ),
+                    // All updates, then all revoked (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateZ,
+                        updateY,
+                        updateRevocationX,
+                        updateRevocationW,
+                        updateRevocationZ,
+                        updateRevocationY,
+                    ),
+                    // All updates, then all revoked (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateX,
+                        updateW,
+                        updateY,
+                        updateRevocationZ,
+                        updateRevocationX,
+                        updateRevocationW,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateRevocationX,
+                        updateY,
+                        updateRevocationW,
+                        updateZ,
+                        updateRevocationY,
+                        updateRevocationZ,
+                    ),
+                    // Interleaved (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateX,
+                        updateRevocationW,
+                        updateRevocationX,
+                    ),
+                    // Interleaved (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateW,
+                        updateRevocationW,
+                        updateX,
+                        updateRevocationZ,
+                        updateY,
+                        updateRevocationX,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 4)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateRevocationX,
+                        updateW,
+                        updateRevocationZ,
+                        updateRevocationW,
+                    ),
+                    // Interleaved (shuffle 5)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateRevocationZ,
+                        updateRevocationW,
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateRevocationX,
+                    ),
+                )
         }
 
         /**
          * The dynamic inner source cells update, some (but not all) of these updates are corrected.
          */
-        data object SomeUpdateSomeCorrected : DynamicCellStimulationScenario() {
+        data object UpdateSomeCorrected : DynamicCellStimulationScenario() {
+            private val updateX = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateCorrectionX = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateY = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateZ = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateCorrectionZ = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateW = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
             override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesEffectively
             override val dynamicCellZStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellWStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesEffectively
+
+            override val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+                get() = TestStimulationScenarioBank.of(
+                    // Each corrected immediately (in order, Y and W effective)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateCorrectionX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionZ,
+                    ),
+                    // Each corrected immediately (in reversed order, Y and W effective)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                    ),
+                    // Each corrected immediately (shuffled 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                    ),
+                    // Each corrected immediately (shuffled 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                    ),
+                    // Each corrected immediately (shuffled 3)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateX,
+                        updateCorrectionX,
+                    ),
+                    // All updates, then all corrected (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionX,
+                        updateCorrectionZ,
+                    ),
+                    // All updates, then all corrected (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateY,
+                        updateX,
+                        updateW,
+                        updateCorrectionZ,
+                        updateCorrectionX,
+                    ),
+                    // All updates, then all corrected (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateCorrectionZ,
+                        updateCorrectionX,
+                    ),
+                    // All updates, then all corrected (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateZ,
+                        updateY,
+                        updateCorrectionX,
+                        updateCorrectionZ,
+                    ),
+                    // All updates, then all corrected (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateX,
+                        updateW,
+                        updateY,
+                        updateCorrectionZ,
+                        updateCorrectionX,
+                    ),
+                    // Interleaved (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionX,
+                        updateCorrectionZ,
+                    ),
+                    // Interleaved (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateCorrectionX,
+                    ),
+                    // Interleaved (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateCorrectionZ,
+                        updateY,
+                        updateCorrectionX,
+                    ),
+                    // Interleaved (shuffle 4)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionX,
+                        updateW,
+                        updateCorrectionZ,
+                    ),
+                    // Interleaved (shuffle 5)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateY,
+                        updateCorrectionX,
+                    ),
+                )
         }
 
         /**
          * The dynamic inner source cells update, all of these updates are corrected.
          */
-        data object SomeUpdateAllCorrected : DynamicCellStimulationScenario() {
+        data object UpdateAllCorrected : DynamicCellStimulationScenario() {
+            private val updateX = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateCorrectionX = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateY = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateCorrectionY = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateZ = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateCorrectionZ = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateW = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
+            private val updateCorrectionW = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
             override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellZStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellWStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
+
+            override val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+                get() = TestStimulationScenarioBank.of(
+                    // Each corrected immediately (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateCorrectionW,
+                        updateX,
+                        updateCorrectionX,
+                        updateY,
+                        updateCorrectionY,
+                        updateZ,
+                        updateCorrectionZ,
+                    ),
+                    // Each corrected immediately (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateCorrectionY,
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                        updateCorrectionW,
+                    ),
+                    // Each corrected immediately (shuffled 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateCorrectionY,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                        updateCorrectionW,
+                    ),
+                    // Each corrected immediately (shuffled 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateCorrectionX,
+                        updateW,
+                        updateCorrectionW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateCorrectionY,
+                    ),
+                    // Each corrected immediately (shuffled 3)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateCorrectionW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateCorrectionY,
+                        updateX,
+                        updateCorrectionX,
+                    ),
+                    // All updates, then all corrected (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionW,
+                        updateCorrectionX,
+                        updateCorrectionY,
+                        updateCorrectionZ,
+                    ),
+                    // All updates, then all corrected (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateY,
+                        updateX,
+                        updateW,
+                        updateCorrectionZ,
+                        updateCorrectionY,
+                        updateCorrectionX,
+                        updateCorrectionW,
+                    ),
+                    // All updates, then all corrected (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateCorrectionY,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                        updateCorrectionX,
+                    ),
+                    // All updates, then all corrected (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateZ,
+                        updateY,
+                        updateCorrectionX,
+                        updateCorrectionW,
+                        updateCorrectionZ,
+                        updateCorrectionY,
+                    ),
+                    // All updates, then all corrected (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateX,
+                        updateW,
+                        updateY,
+                        updateCorrectionZ,
+                        updateCorrectionX,
+                        updateCorrectionW,
+                        updateCorrectionY,
+                    ),
+                    // Interleaved (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateCorrectionX,
+                        updateY,
+                        updateCorrectionW,
+                        updateZ,
+                        updateCorrectionY,
+                        updateCorrectionZ,
+                    ),
+                    // Interleaved (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateCorrectionY,
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateCorrectionW,
+                        updateCorrectionX,
+                    ),
+                    // Interleaved (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateW,
+                        updateCorrectionW,
+                        updateX,
+                        updateCorrectionZ,
+                        updateY,
+                        updateCorrectionX,
+                        updateCorrectionY,
+                    ),
+                    // Interleaved (shuffle 4)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateY,
+                        updateCorrectionY,
+                        updateZ,
+                        updateCorrectionX,
+                        updateW,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                    ),
+                    // Interleaved (shuffle 5)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                        updateX,
+                        updateY,
+                        updateCorrectionY,
+                        updateCorrectionX,
+                    ),
+                )
         }
 
         /**
          * The dynamic inner source cells update, some of these updates are corrected and some are revoked.
          */
-        data object SomeUpdateSomeCorrectedSomeRevoked : DynamicCellStimulationScenario() {
-            override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
-            override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
+        data object UpdateSomeCorrectedSomeRevoked : DynamicCellStimulationScenario() {
+            private val updateX = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellX,
+            )
+
+            private val updateY = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateRevocationY = TestInputCellStimulationTag.UpdateRevocation(
+                inputTag = DynamicCellStimulationTag.DynamicCellY,
+            )
+
+            private val updateZ = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateCorrectionZ = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellZ,
+            )
+
+            private val updateW = TestInputCellStimulationTag.Update(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
+            private val updateCorrectionW = TestInputCellStimulationTag.UpdateCorrection(
+                inputTag = DynamicCellStimulationTag.DynamicCellW,
+            )
+
+            override val dynamicCellXStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesEffectively
+            override val dynamicCellYStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesRevoked
             override val dynamicCellZStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
             override val dynamicCellWStimulationKind = DynamicInnerSourceCellStimulationKind.UpdatesCorrected
+
+            override val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+                get() = TestStimulationScenarioBank.of(
+                    // Each revoked/corrected immediately (in order, X effective)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateCorrectionW,
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateCorrectionZ,
+                    ),
+                    // Each revoked/corrected immediately (in reversed order, X effective)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                        updateW,
+                        updateCorrectionW,
+                    ),
+                    // Each revoked/corrected immediately (shuffled 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateW,
+                        updateCorrectionW,
+                    ),
+                    // Each revoked/corrected immediately (shuffled 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateCorrectionW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                    // Each revoked/corrected immediately (shuffled 3)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateCorrectionW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateY,
+                        updateRevocationY,
+                        updateX,
+                    ),
+                    // All updates, then all revoked/corrected (in order)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateZ,
+                        updateCorrectionW,
+                        updateRevocationY,
+                        updateCorrectionZ,
+                    ),
+                    // All updates, then all revoked/corrected (in reversed order)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateY,
+                        updateX,
+                        updateW,
+                        updateCorrectionZ,
+                        updateRevocationY,
+                        updateCorrectionW,
+                    ),
+                    // All updates, then all revoked/corrected (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateZ,
+                        updateW,
+                        updateX,
+                        updateRevocationY,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                    ),
+                    // All updates, then all revoked/corrected (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateW,
+                        updateZ,
+                        updateY,
+                        updateCorrectionW,
+                        updateCorrectionZ,
+                        updateRevocationY,
+                    ),
+                    // All updates, then all revoked/corrected (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateX,
+                        updateW,
+                        updateY,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 1)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateX,
+                        updateY,
+                        updateCorrectionW,
+                        updateZ,
+                        updateRevocationY,
+                        updateCorrectionZ,
+                    ),
+                    // Interleaved (shuffle 2)
+                    TestStimulationScenario.of(
+                        updateY,
+                        updateRevocationY,
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateX,
+                        updateCorrectionW,
+                    ),
+                    // Interleaved (shuffle 3)
+                    TestStimulationScenario.of(
+                        updateZ,
+                        updateW,
+                        updateCorrectionW,
+                        updateX,
+                        updateCorrectionZ,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                    // Interleaved (shuffle 4)
+                    TestStimulationScenario.of(
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                        updateZ,
+                        updateW,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                    ),
+                    // Interleaved (shuffle 5)
+                    TestStimulationScenario.of(
+                        updateW,
+                        updateZ,
+                        updateCorrectionZ,
+                        updateCorrectionW,
+                        updateX,
+                        updateY,
+                        updateRevocationY,
+                    ),
+                )
         }
 
         companion object {
@@ -750,29 +1680,13 @@ class ReactiveBag_fuse_tests {
 
             val allEffective: List<DynamicCellStimulationScenario> = listOf(
                 Update,
-                SomeUpdateSomeRevoked,
-                SomeUpdateAllRevoked,
-                SomeUpdateSomeCorrected,
-                SomeUpdateAllCorrected,
-                SomeUpdateSomeCorrectedSomeRevoked,
+                UpdateSomeRevoked,
+                UpdateAllRevoked,
+                UpdateSomeCorrected,
+                UpdateAllCorrected,
+                UpdateSomeCorrectedSomeRevoked,
             )
         }
-
-        val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
-            get() = TestStimulationScenarioBank.build(
-                dynamicCellXStimulationKind.toStimulationScenario(
-                    tag = DynamicCellStimulationTag.DynamicCellX,
-                ),
-                dynamicCellYStimulationKind.toStimulationScenario(
-                    tag = DynamicCellStimulationTag.DynamicCellY,
-                ),
-                dynamicCellZStimulationKind.toStimulationScenario(
-                    tag = DynamicCellStimulationTag.DynamicCellZ,
-                ),
-                dynamicCellWStimulationKind.toStimulationScenario(
-                    tag = DynamicCellStimulationTag.DynamicCellW,
-                ),
-            )
 
         val expectedNewSymbolX: Char
             get() = dynamicCellXStimulationKind.expectedNewSymbol
@@ -815,6 +1729,23 @@ class ReactiveBag_fuse_tests {
         abstract val dynamicCellYStimulationKind: DynamicInnerSourceCellStimulationKind
         abstract val dynamicCellZStimulationKind: DynamicInnerSourceCellStimulationKind
         abstract val dynamicCellWStimulationKind: DynamicInnerSourceCellStimulationKind
+
+        open val dynamicCellStimulationScenarioBank: TestStimulationScenarioBank
+            // By default, build all combinations of the dynamic cell stimulations
+            get() = TestStimulationScenarioBank.build(
+                dynamicCellXStimulationKind.toStimulationScenario(
+                    tag = DynamicCellStimulationTag.DynamicCellX,
+                ),
+                dynamicCellYStimulationKind.toStimulationScenario(
+                    tag = DynamicCellStimulationTag.DynamicCellY,
+                ),
+                dynamicCellZStimulationKind.toStimulationScenario(
+                    tag = DynamicCellStimulationTag.DynamicCellZ,
+                ),
+                dynamicCellWStimulationKind.toStimulationScenario(
+                    tag = DynamicCellStimulationTag.DynamicCellW,
+                ),
+            )
     }
 
     @Test
@@ -898,6 +1829,8 @@ class ReactiveBag_fuse_tests {
     fun test_dynamicCellsUpdate_only_matrix() {
         DynamicCellStimulationScenario.allEffective.forEach { dynamicSourceCellStimulationStrategy ->
             val stimulationScenarioBank = dynamicSourceCellStimulationStrategy.dynamicCellStimulationScenarioBank
+
+            val foo = stimulationScenarioBank.stimulationScenarios.count()
 
             stimulationScenarioBank.distribute(SuitableSlotCount).forEach { slottedStimulationScenario ->
                 test_dynamicCellsUpdate_only(

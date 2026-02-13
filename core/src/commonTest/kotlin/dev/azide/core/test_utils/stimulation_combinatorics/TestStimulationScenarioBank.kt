@@ -6,6 +6,16 @@ data class TestStimulationScenarioBank(
     val stimulationScenarios: Sequence<TestStimulationScenario>,
 ) {
     companion object {
+        val Empty: TestStimulationScenarioBank = TestStimulationScenarioBank(
+            stimulationScenarios = emptySequence(),
+        )
+
+        fun of(
+            vararg stimulationScenarios: TestStimulationScenario,
+        ): TestStimulationScenarioBank = TestStimulationScenarioBank(
+            stimulationScenarios = stimulationScenarios.asSequence(),
+        )
+
         fun build(
             vararg stimulationScenarios: TestStimulationScenario,
         ): TestStimulationScenarioBank {
