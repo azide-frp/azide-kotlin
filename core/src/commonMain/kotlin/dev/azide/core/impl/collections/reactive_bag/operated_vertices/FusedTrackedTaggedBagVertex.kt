@@ -45,6 +45,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
             when (cellOngoingUpdate) {
                 null -> { // Update revocation
+                    // FIXME: Untested expression
                     updatedUntouchedStableInnerCellVertexTags.remove(tag)
                 }
 
@@ -246,6 +247,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         handle = previousAddedListenerHandle,
                     )
 
+                    // FIXME: Untested expression
                     true // (Remove)
                 }
 
@@ -264,6 +266,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         throw IllegalStateException("Inconsistent replaced cell vertex for tag $previouslyChangedTag")
                     }
 
+                    // FIXME: Untested expression
                     previousChangedInnerCellVertex.unregisterListener(
                         handle = previousReplacingListenerHandle,
                     )
@@ -380,6 +383,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                     throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
                                 }
 
+                                // FIXME: Untested expression
                                 replacedListenedCellVertex.unregisterListener(
                                     handle = replacedListenerHandle,
                                 )
@@ -420,6 +424,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                     throw IllegalStateException("Inconsistent added cell vertex for tag $newlyChangedTag")
                                 }
 
+                                // FIXME: Untested expression
                                 previousAddedListenedCellVertex.unregisterListener(
                                     handle = previousAddedListenerHandle,
                                 )
@@ -453,6 +458,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                     throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
                                 }
 
+                                // FIXME: Untested expression
                                 previouslyReplacingCellVertex.unregisterListener(
                                     handle = previousReplacingListenerHandle,
                                 )
@@ -495,6 +501,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                             throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                         }
 
+                        // FIXME: Untested expression
                         previousAddedListenedCellVertex.unregisterListener(
                             handle = previousAddedListenerHandle,
                         )
@@ -517,6 +524,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                             throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                         }
 
+                        // FIXME: Untested expression
                         previousReplacingListenedCellVertex.unregisterListener(
                             handle = previousReplacingListenerHandle,
                         )
@@ -773,16 +781,18 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
         this.upstreamNewInnerCellListenerEntryByTag = null
 
-        // Unregister from source vertex
+        // Unregister from source bag vertex
+        // FIXME: Untested expression (this might require listener check on the inputs)
         outerSourceBagVertex.unregisterListener(
             handle = upstreamSourceListenerHandle,
         )
 
         // Unregister from all inner cell vertices
-        for ((tag, listenerEntry) in upstreamNewInnerCellListenerEntryByTag) {
+        for ((_, listenerEntry) in upstreamNewInnerCellListenerEntryByTag) {
             val newCellVertex = listenerEntry.cellVertex
             val newListenerHandle = listenerEntry.listenerHandle
 
+            // FIXME: Untested expression (this might require listener check on the inputs)
             newCellVertex.unregisterListener(
                 handle = newListenerHandle,
             )
@@ -825,7 +835,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
-
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         val untouchedInnerCellUpdatedValueByTag =
@@ -865,10 +874,12 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         this.updatedUntouchedStableInnerCellVertexTags = null
 
         removedInnerCellVertexTags?.forEach { tag ->
+            // FIXME: Untested expression
             stableInnerSourceCellVertexByTag.remove(tag)
         }
 
         changedInnerCellVertexByTag?.forEach { (tag, changedCellVertex) ->
+            // FIXME: Untested expression
             stableInnerSourceCellVertexByTag[tag] = changedCellVertex
         }
     }
