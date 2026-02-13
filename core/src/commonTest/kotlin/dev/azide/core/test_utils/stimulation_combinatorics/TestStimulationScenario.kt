@@ -17,6 +17,10 @@ data class TestStimulationScenario(
         )
     }
 
+    fun toBank(): TestStimulationScenarioBank = TestStimulationScenarioBank(
+        stimulationScenarios = sequenceOf(this),
+    )
+
     fun combineWith(
         otherStimulationScenario: TestStimulationScenario,
     ): Sequence<TestStimulationScenario> = generateInterleavings(
@@ -47,5 +51,6 @@ data class TestStimulationScenario(
     ): TestStimulation = TestStimulation.combine(
         stimulations = stimulationTags.map { stimulationTag: TestStimulationTag ->
             stimulationMap[stimulationTag]
-        })
+        },
+    )
 }
