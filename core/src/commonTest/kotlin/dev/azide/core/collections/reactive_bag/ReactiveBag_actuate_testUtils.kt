@@ -111,19 +111,19 @@ data object ReactiveBag_actuate_testUtils {
         return subjectOutcome
     }
 
-    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),

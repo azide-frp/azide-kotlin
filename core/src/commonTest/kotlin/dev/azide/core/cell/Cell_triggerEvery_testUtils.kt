@@ -13,19 +13,19 @@ import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenar
 data object Cell_triggerEvery_testUtils {
     data object SourceTriggerCellTag : TestInputCellTag
 
-    val stimulationScenarioBank_sourceTriggerCellUpdates = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdates = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceTriggerCellUpdatesRevoked = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceTriggerCellUpdatesCorrected = TestStimulationScenarioBank.build(
+    val stimulationScenarioBank_sourceTriggerCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceTriggerCellTag,
         ),

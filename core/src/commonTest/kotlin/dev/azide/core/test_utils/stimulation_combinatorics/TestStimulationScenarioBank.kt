@@ -16,7 +16,7 @@ data class TestStimulationScenarioBank(
             stimulationScenarios = stimulationScenarios.asSequence(),
         )
 
-        fun build(
+        fun mixAll(
             vararg stimulationScenarios: TestStimulationScenario,
         ): TestStimulationScenarioBank {
             val (firstStimulationScenario, otherStimulationScenarios) = stimulationScenarios.toList().uncons()
