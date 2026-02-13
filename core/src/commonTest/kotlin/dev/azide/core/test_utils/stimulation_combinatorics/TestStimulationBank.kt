@@ -3,22 +3,22 @@ package dev.azide.core.test_utils.stimulation_combinatorics
 import dev.azide.core.impl.utils.list.uncons
 
 data class TestStimulationBank(
-    val stimulationSequences: List<TestStimulationScenario>,
+    val stimulationScenarios: List<TestStimulationScenario>,
 ) {
     companion object {
         fun build(
-            vararg stimulationSequences: TestStimulationScenario,
+            vararg stimulationScenarios: TestStimulationScenario,
         ): TestStimulationBank {
-            val (firstStimulationSequence, otherStimulationSequences) = stimulationSequences.toList().uncons()
+            val (firstStimulationScenario, otherStimulationScenarios) = stimulationScenarios.toList().uncons()
                 ?: throw IllegalArgumentException("At least one stimulation sequence is required.")
 
             return TestStimulationBank(
-                otherStimulationSequences.fold(
-                    initial = sequenceOf(firstStimulationSequence),
-                ) { combinedStimulationSequences: Sequence<TestStimulationScenario>, nextStimulationSequence: TestStimulationScenario ->
-                    combinedStimulationSequences.flatMap { oldStimulationSequence ->
-                        oldStimulationSequence.combineWith(
-                            otherStimulationSequence = nextStimulationSequence,
+                otherStimulationScenarios.fold(
+                    initial = sequenceOf(firstStimulationScenario),
+                ) { combinedStimulationScenarios: Sequence<TestStimulationScenario>, nextStimulationScenario: TestStimulationScenario ->
+                    combinedStimulationScenarios.flatMap { oldStimulationScenario ->
+                        oldStimulationScenario.combineWith(
+                            otherStimulationScenario = nextStimulationScenario,
                         )
                     }
                 }.toList(),
@@ -29,8 +29,8 @@ data class TestStimulationBank(
     fun <SlotCountT : TestSlotCount> distribute(
         slotCount: SlotCountT,
     ): TestSlottedStimulationBank<SlotCountT> = TestSlottedStimulationBank(
-        slottedStimulationScenarios = stimulationSequences.flatMap { stimulationSequence ->
-            stimulationSequence.distribute(
+        slottedStimulationScenarios = stimulationScenarios.flatMap { stimulationScenario ->
+            stimulationScenario.distribute(
                 slotCount = slotCount,
             )
         }.toList(),

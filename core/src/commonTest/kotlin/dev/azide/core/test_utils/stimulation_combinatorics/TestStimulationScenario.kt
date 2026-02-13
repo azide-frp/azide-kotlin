@@ -18,10 +18,10 @@ data class TestStimulationScenario(
     }
 
     fun combineWith(
-        otherStimulationSequence: TestStimulationScenario,
+        otherStimulationScenario: TestStimulationScenario,
     ): Sequence<TestStimulationScenario> = generateInterleavings(
         firstList = this.stimulationTags,
-        secondList = otherStimulationSequence.stimulationTags,
+        secondList = otherStimulationScenario.stimulationTags,
     ).map { interleavedTags ->
         TestStimulationScenario(
             stimulationTags = interleavedTags,
