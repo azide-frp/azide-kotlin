@@ -223,7 +223,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
     ) {
         // Unregister the listeners for all previously changed inner cell vertices
-        changedInnerCellVertexByTag?.entries?.removeAll { (previouslyChangedTag, previousChangedInnerCellVertex) ->
+        changedInnerCellVertexByTag?.entries?.forEach { (previouslyChangedTag, previousChangedInnerCellVertex) ->
             val previouslyReplacedCellVertex: CellVertex<ElementT>? =
                 stableInnerSourceCellVertexByTag[previouslyChangedTag]
 
@@ -246,8 +246,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         handle = previousAddedListenerHandle,
                     )
 
-                    // FIXME: Untested expression
-                    true // (Remove)
                 }
 
                 else -> { // Replacement revocation
@@ -286,8 +284,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                             throw IllegalStateException("Tag $previouslyChangedTag was already marked as updated in stable inner cell vertices")
                         }
                     }
-
-                    false // (Don't remove)
                 }
             }
         }
@@ -854,8 +850,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             }
         }
 
+        val changedElementByTag = changedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag
+
         return TaggedBagChange.of(
-            changedElementByTag = changedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag,
+            changedElementByTag = changedElementByTag,
             removedTags = removedInnerCellVertexTags ?: emptySet(),
         )
     }
