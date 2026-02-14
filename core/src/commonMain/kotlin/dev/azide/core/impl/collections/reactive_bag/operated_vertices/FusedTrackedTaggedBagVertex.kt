@@ -229,8 +229,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
             when (previouslyReplacedCellVertex) {
                 null -> { // Addition revocation
-                    val previousAddedCellVertex = previousChangedInnerCellVertex
-
                     val previouslyAddedListenerEntry =
                         upstreamNewInnerCellListenerEntryByTag.remove(previouslyChangedTag)
                             ?: throw IllegalStateException("Inner listener entry not found for tag")
@@ -238,19 +236,16 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     val previousAddedListenedCellVertex = previouslyAddedListenerEntry.cellVertex
                     val previousAddedListenerHandle = previouslyAddedListenerEntry.listenerHandle
 
-                    if (previousAddedListenedCellVertex != previousAddedCellVertex) {
+                    if (previousAddedListenedCellVertex != previousChangedInnerCellVertex) {
                         throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                     }
 
-                    previousAddedCellVertex.unregisterListener(
+                    previousAddedListenedCellVertex.unregisterListener(
                         handle = previousAddedListenerHandle,
                     )
-
                 }
 
                 else -> { // Replacement revocation
-                    val previousReplacingCellVertex = previousChangedInnerCellVertex
-
                     val changedListenerEntry = upstreamNewInnerCellListenerEntryByTag[previouslyChangedTag]
                         ?: throw IllegalStateException("Inner listener entry not found for tag")
 
@@ -259,7 +254,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     val previousReplacingListenedCellVertex = changedListenerEntry.cellVertex
                     val previousReplacingListenerHandle = changedListenerEntry.listenerHandle
 
-                    if (previousReplacingListenedCellVertex != previousReplacingCellVertex) {
+                    if (previousReplacingListenedCellVertex != previousChangedInnerCellVertex) {
                         throw IllegalStateException("Inconsistent replaced cell vertex for tag $previouslyChangedTag")
                     }
 
