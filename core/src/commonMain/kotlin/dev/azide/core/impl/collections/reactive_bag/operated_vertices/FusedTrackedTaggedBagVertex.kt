@@ -19,34 +19,47 @@ import kotlin.collections.component2
 class FusedTrackedTaggedBagVertex<ElementT>(
     private val outerSourceBagVertex: TrackedTaggedBagVertex<Cell<ElementT>>,
 ) : AbstractStatelessTrackedTaggedBagVertex<ElementT>(), BoundListener {
-    private inner class InnerCellListenerEntry(
-        var cellVertex: CellVertex<ElementT>,
-        var listenerHandle: ListenerHandle,
-    )
-
-    private inner class InnerCellListener(
+    private class InnerCellListener<ElementT> private constructor(
+        private val parent: FusedTrackedTaggedBagVertex<ElementT>,
         private val tag: Tag,
+        initialSourceCellVertex: CellVertex<ElementT>,
+        propagationContext: Transactions.PropagationContext,
     ) : BoundListener {
+        companion object {
+            fun <ElementT> attach(
+                parent: FusedTrackedTaggedBagVertex<ElementT>,
+                tag: Tag,
+                initialSourceCellVertex: CellVertex<ElementT>,
+                propagationContext: Transactions.PropagationContext,
+            ): InnerCellListener<ElementT> = InnerCellListener(
+                parent = parent,
+                tag = tag,
+                initialSourceCellVertex = initialSourceCellVertex,
+                propagationContext = propagationContext,
+            )
+        }
+
+        private var sourceCellVertex: CellVertex<ElementT> = initialSourceCellVertex
+
+        private var listenerHandle: ListenerHandle = initialSourceCellVertex.registerBoundListenerOnline(
+            propagationContext = propagationContext,
+            listener = this,
+        )
+
         override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
-            val stableInnerSourceCellVertexByTag = this@FusedTrackedTaggedBagVertex.stableInnerSourceCellVertexByTag
+            val stableInnerSourceCellVertexByTag = parent.stableInnerSourceCellVertexByTag
                 ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-            val updatedUntouchedStableInnerCellVertexTags =
-                this@FusedTrackedTaggedBagVertex.updatedUntouchedStableInnerCellVertexTags
+            val updatedUntouchedStableInnerCellVertexTags = parent.updatedUntouchedStableInnerCellVertexTags
                     ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-            val changedInnerCellVertexByTag = this@FusedTrackedTaggedBagVertex.changedInnerCellVertexByTag
+            val changedInnerCellVertexByTag = parent.changedInnerCellVertexByTag
 
-            val listenerEntry = upstreamNewInnerCellListenerEntryByTag?.get(tag)
-                ?: throw IllegalStateException("Inner listener entry not found for tag: $tag")
+            val sourceOngoingUpdate = sourceCellVertex.ongoingUpdate
 
-            val cellVertex = listenerEntry.cellVertex
-
-            val cellOngoingUpdate = cellVertex.ongoingUpdate
-
-            when (cellOngoingUpdate) {
+            when (sourceOngoingUpdate) {
                 null -> { // Update revocation
                     updatedUntouchedStableInnerCellVertexTags.remove(tag)
                 }
@@ -63,14 +76,14 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 }
             }
 
-            val builtChange = buildChange(
+            val builtChange = parent.buildChange(
                 propagationContext = propagationContext,
             )
 
             when (builtChange) {
                 null -> {
-                    if (ongoingChange != null) {
-                        exposeChangeNotifyingListeners(
+                    if (parent.ongoingChange != null) {
+                        parent.exposeChangeNotifyingListeners(
                             propagationContext = propagationContext,
                             change = null,
                         )
@@ -78,12 +91,43 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 }
 
                 else -> {
-                    exposeChangeNotifyingListeners(
+                    parent.exposeChangeNotifyingListeners(
                         propagationContext = propagationContext,
                         change = builtChange,
                     )
                 }
             }
+        }
+
+        fun reattach(
+            propagationContext: Transactions.PropagationContext,
+            newSourceCellVertex: CellVertex<ElementT>,
+        ): CellVertex<ElementT> {
+            val previousSourceCellVertex = this.sourceCellVertex
+            val previousListenerHandle = this.listenerHandle
+
+            previousSourceCellVertex.unregisterListener(
+                handle = previousListenerHandle,
+            )
+
+            this.sourceCellVertex = newSourceCellVertex
+            this.listenerHandle = newSourceCellVertex.registerBoundListenerOnline(
+                propagationContext = propagationContext,
+                listener = this,
+            )
+
+            return previousSourceCellVertex
+        }
+
+        fun detach(): CellVertex<ElementT> {
+            val currentSourceCellVertex = this.sourceCellVertex
+            val currentListenerHandle = this.listenerHandle
+
+            currentSourceCellVertex.unregisterListener(
+                handle = currentListenerHandle,
+            )
+
+            return currentSourceCellVertex
         }
     }
 
@@ -150,7 +194,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
      * - Otherwise: The listener is registered in the respective stable inner cell vertex from
      *   [stableInnerSourceCellVertexByTag].
      */
-    private var upstreamNewInnerCellListenerEntryByTag: MutableMap<Tag, InnerCellListenerEntry>? = null
+    private var upstreamNewInnerCellListenerByTag: MutableMap<Tag, InnerCellListener<ElementT>>? = null
 
     /**
      * Handle the change of the source bag vertex.
@@ -168,7 +212,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
-        val upstreamNewInnerCellListenerEntryByTag = this.upstreamNewInnerCellListenerEntryByTag
+        val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
             ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
         val sourceBagOngoingChange = outerSourceBagVertex.ongoingChange
@@ -180,7 +224,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     updatedUntouchedStableInnerCellVertexTags = updatedUntouchedStableInnerCellVertexTags,
                     changedInnerCellVertexByTag = changedInnerCellVertexByTag,
                     removedInnerCellVertexTags = removedInnerCellVertexTags,
-                    upstreamNewInnerCellListenerEntryByTag = upstreamNewInnerCellListenerEntryByTag,
+                    upstreamNewInnerCellListenerByTag = upstreamNewInnerCellListenerByTag,
                     propagationContext = propagationContext,
                 )
             }
@@ -191,7 +235,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     updatedUntouchedStableInnerCellVertexTags = updatedUntouchedStableInnerCellVertexTags,
                     changedInnerCellVertexByTag = changedInnerCellVertexByTag,
                     removedInnerCellVertexTags = removedInnerCellVertexTags,
-                    upstreamNewInnerCellListenerEntryByTag = upstreamNewInnerCellListenerEntryByTag,
+                    upstreamNewInnerCellListenerByTag = upstreamNewInnerCellListenerByTag,
                     propagationContext = propagationContext,
                     sourceBagOngoingChange = sourceBagOngoingChange,
                 )
@@ -226,7 +270,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         updatedUntouchedStableInnerCellVertexTags: MutableSet<Tag>,
         changedInnerCellVertexByTag: MutableMap<Tag, CellVertex<ElementT>>?,
         removedInnerCellVertexTags: MutableSet<Tag>?,
-        upstreamNewInnerCellListenerEntryByTag: MutableMap<Tag, InnerCellListenerEntry>,
+        upstreamNewInnerCellListenerByTag: MutableMap<Tag, InnerCellListener<ElementT>>,
         propagationContext: Transactions.PropagationContext,
     ) {
         // Unregister the listeners for all previously changed inner cell vertices
@@ -236,48 +280,32 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
             when (previouslyReplacedCellVertex) {
                 null -> { // Addition revocation
-                    val previouslyAddedListenerEntry =
-                        upstreamNewInnerCellListenerEntryByTag.remove(previouslyChangedTag)
+                    val previouslyAddedListener = upstreamNewInnerCellListenerByTag.remove(previouslyChangedTag)
                             ?: throw IllegalStateException("Inner listener entry not found for tag")
 
-                    val previousAddedListenedCellVertex = previouslyAddedListenerEntry.cellVertex
-                    val previousAddedListenerHandle = previouslyAddedListenerEntry.listenerHandle
+                    // FIXME: Likely partially tested expression
+                    val previousAddedListenedCellVertex = previouslyAddedListener.detach()
 
                     if (previousAddedListenedCellVertex != previousChangedInnerCellVertex) {
                         throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                     }
-
-                    previousAddedListenedCellVertex.unregisterListener(
-                        handle = previousAddedListenerHandle,
-                    )
                 }
 
                 else -> { // Replacement revocation
-                    val changedListenerEntry = upstreamNewInnerCellListenerEntryByTag[previouslyChangedTag]
+                    val changedListener = upstreamNewInnerCellListenerByTag[previouslyChangedTag]
                         ?: throw IllegalStateException("Inner listener entry not found for tag")
 
                     // Unregister listener from previous replacing cell vertex
 
-                    val previousReplacingListenedCellVertex = changedListenerEntry.cellVertex
-                    val previousReplacingListenerHandle = changedListenerEntry.listenerHandle
+                    // FIXME: Likely partially tested expression
+                    val previousReplacingListenedCellVertex = changedListener.reattach(
+                        propagationContext = propagationContext,
+                        newSourceCellVertex = previouslyReplacedCellVertex,
+                    )
 
                     if (previousReplacingListenedCellVertex != previousChangedInnerCellVertex) {
                         throw IllegalStateException("Inconsistent replaced cell vertex for tag $previouslyChangedTag")
                     }
-
-                    // FIXME: Untested expression
-                    previousChangedInnerCellVertex.unregisterListener(
-                        handle = previousReplacingListenerHandle,
-                    )
-
-                    // Reregister the listener for the stable inner cell vertex
-                    val fallbackListenerHandle = previouslyReplacedCellVertex.registerBoundListenerOnline(
-                        propagationContext = propagationContext,
-                        listener = InnerCellListener(tag = previouslyChangedTag),
-                    )
-
-                    changedListenerEntry.cellVertex = previouslyReplacedCellVertex
-                    changedListenerEntry.listenerHandle = fallbackListenerHandle
 
                     if (previouslyReplacedCellVertex.ongoingUpdate != null) {
                         val wasAdded = updatedUntouchedStableInnerCellVertexTags.add(previouslyChangedTag)
@@ -294,20 +322,19 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             val previouslyRemovedCellVertex = stableInnerSourceCellVertexByTag[previouslyRemovedTag]
                 ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
 
-            val fallbackListenerHandle = previouslyRemovedCellVertex.registerBoundListenerOnline(
+            val fallbackListener = InnerCellListener.attach(
+                parent = this,
+                tag = previouslyRemovedTag,
+                initialSourceCellVertex = previouslyRemovedCellVertex,
                 propagationContext = propagationContext,
-                listener = InnerCellListener(tag = previouslyRemovedTag),
             )
 
-            val previousListenerEntry = upstreamNewInnerCellListenerEntryByTag.put(
+            val previousListener = upstreamNewInnerCellListenerByTag.put(
                 key = previouslyRemovedTag,
-                value = InnerCellListenerEntry(
-                    cellVertex = previouslyRemovedCellVertex,
-                    listenerHandle = fallbackListenerHandle,
-                ),
+                value = fallbackListener,
             )
 
-            if (previousListenerEntry != null) {
+            if (previousListener != null) {
                 throw IllegalStateException("Listener entry already exists for tag $previouslyRemovedTag")
             }
 
@@ -329,7 +356,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         updatedUntouchedStableInnerCellVertexTags: MutableSet<Tag>,
         changedInnerCellVertexByTag: MutableMap<Tag, CellVertex<ElementT>>?,
         removedInnerCellVertexTags: MutableSet<Tag>?,
-        upstreamNewInnerCellListenerEntryByTag: MutableMap<Tag, InnerCellListenerEntry>,
+        upstreamNewInnerCellListenerByTag: MutableMap<Tag, InnerCellListener<ElementT>>,
         propagationContext: Transactions.PropagationContext,
         sourceBagOngoingChange: TaggedBagChange<Cell<ElementT>>,
     ) {
@@ -345,20 +372,19 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 val addedInnerCellVertex = newlyChangedCell.vertex
 
                                 // Register listener to the newly added inner cell vertex
-                                val addedListenerHandle = addedInnerCellVertex.registerBoundListenerOnline(
+                                val addedListener = InnerCellListener.attach(
+                                    parent = this,
+                                    tag = newlyChangedTag,
+                                    initialSourceCellVertex = addedInnerCellVertex,
                                     propagationContext = propagationContext,
-                                    listener = InnerCellListener(tag = newlyChangedTag),
                                 )
 
-                                val previousListenerEntry = upstreamNewInnerCellListenerEntryByTag.put(
+                                val previousListener = upstreamNewInnerCellListenerByTag.put(
                                     key = newlyChangedTag,
-                                    value = InnerCellListenerEntry(
-                                        cellVertex = addedInnerCellVertex,
-                                        listenerHandle = addedListenerHandle,
-                                    ),
+                                    value = addedListener,
                                 )
 
-                                if (previousListenerEntry != null) {
+                                if (previousListener != null) {
                                     throw IllegalStateException("Listener entry already exists for added tag $newlyChangedTag")
                                 }
 
@@ -368,35 +394,21 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                             else -> { // Replacement (new)
                                 val replacingInnerCellVertex = newlyChangedCell.vertex
 
-                                val changedListenerEntry = upstreamNewInnerCellListenerEntryByTag[newlyChangedTag]
+                                val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
                                     ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // Unregister listener from the replaced stable inner cell vertex
-
-                                val replacedListenedCellVertex = changedListenerEntry.cellVertex
-                                val replacedListenerHandle = changedListenerEntry.listenerHandle
+                                // FIXME: Likely partially tested expression
+                                val replacedListenedCellVertex = changedListener.reattach(
+                                    propagationContext = propagationContext,
+                                    newSourceCellVertex = replacingInnerCellVertex,
+                                )
 
                                 if (replacedListenedCellVertex != replacedCellVertex) {
                                     throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
                                 }
 
-                                // FIXME: Untested expression
-                                replacedListenedCellVertex.unregisterListener(
-                                    handle = replacedListenerHandle,
-                                )
-
                                 // Ensure that the replaced stable inner cell vertex is not marked as updated
                                 updatedUntouchedStableInnerCellVertexTags.remove(newlyChangedTag)
-
-                                // Register listener to the newly replacing inner cell vertex
-
-                                val replacingListenerHandle = replacingInnerCellVertex.registerBoundListenerOnline(
-                                    propagationContext = propagationContext,
-                                    listener = InnerCellListener(tag = newlyChangedTag),
-                                )
-
-                                changedListenerEntry.cellVertex = replacingInnerCellVertex
-                                changedListenerEntry.listenerHandle = replacingListenerHandle
 
                                 replacingInnerCellVertex
                             }
@@ -409,32 +421,18 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 val previouslyAddedCellVertex = previouslyChangedCellVertex
                                 val newAddedCellVertex = newlyChangedCell.vertex
 
-                                val changedListenerEntry = upstreamNewInnerCellListenerEntryByTag[newlyChangedTag]
+                                val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
                                     ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // Unregister listener from previous added cell vertex
-
-                                val previousAddedListenedCellVertex = changedListenerEntry.cellVertex
-                                val previousAddedListenerHandle = changedListenerEntry.listenerHandle
+                                // FIXME: Likely partially tested expression
+                                val previousAddedListenedCellVertex = changedListener.reattach(
+                                    propagationContext = propagationContext,
+                                    newSourceCellVertex = newAddedCellVertex,
+                                )
 
                                 if (previousAddedListenedCellVertex != previouslyAddedCellVertex) {
                                     throw IllegalStateException("Inconsistent added cell vertex for tag $newlyChangedTag")
                                 }
-
-                                // FIXME: Untested expression
-                                previousAddedListenedCellVertex.unregisterListener(
-                                    handle = previousAddedListenerHandle,
-                                )
-
-                                // Register listener to new added cell vertex
-
-                                val newAddedListenerHandle = newAddedCellVertex.registerBoundListenerOnline(
-                                    propagationContext = propagationContext,
-                                    listener = InnerCellListener(tag = newlyChangedTag),
-                                )
-
-                                changedListenerEntry.cellVertex = newAddedCellVertex
-                                changedListenerEntry.listenerHandle = newAddedListenerHandle
 
                                 newAddedCellVertex
                             }
@@ -443,32 +441,18 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 val previouslyReplacingCellVertex = previouslyChangedCellVertex
                                 val newReplacingCellVertex = newlyChangedCell.vertex
 
-                                val changedListenerEntry = upstreamNewInnerCellListenerEntryByTag[newlyChangedTag]
+                                val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
                                     ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // Unregister listener from previous replacing cell vertex
-
-                                val previousReplacingListenedCellVertex = changedListenerEntry.cellVertex
-                                val previousReplacingListenerHandle = changedListenerEntry.listenerHandle
+                                // FIXME: Likely partially tested expression
+                                val previousReplacingListenedCellVertex = changedListener.reattach(
+                                    propagationContext = propagationContext,
+                                    newSourceCellVertex = newReplacingCellVertex,
+                                )
 
                                 if (previousReplacingListenedCellVertex != previouslyReplacingCellVertex) {
                                     throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
                                 }
-
-                                // FIXME: Untested expression
-                                previouslyReplacingCellVertex.unregisterListener(
-                                    handle = previousReplacingListenerHandle,
-                                )
-
-                                // Register listener to new replacing cell vertex
-
-                                val newReplacingListenerHandle = newReplacingCellVertex.registerBoundListenerOnline(
-                                    propagationContext = propagationContext,
-                                    listener = InnerCellListener(tag = newlyChangedTag),
-                                )
-
-                                changedListenerEntry.cellVertex = newReplacingCellVertex
-                                changedListenerEntry.listenerHandle = newReplacingListenerHandle
 
                                 newReplacingCellVertex
                             }
@@ -485,56 +469,34 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     null -> { // Un-addition
                         val previousAddedCellVertex = previousChangedCellVertex
 
-                        val previouslyAddedListenerEntry =
-                            upstreamNewInnerCellListenerEntryByTag.remove(previouslyChangedTag)
+                        val previouslyAddedListener = upstreamNewInnerCellListenerByTag.remove(previouslyChangedTag)
                                 ?: throw IllegalStateException("Inner listener entry not found for tag: $previouslyChangedTag")
 
-                        // Unregister listener from the previously added cell vertex
-
-                        val previousAddedListenedCellVertex = previouslyAddedListenerEntry.cellVertex
-                        val previousAddedListenerHandle = previouslyAddedListenerEntry.listenerHandle
+                        // FIXME: Likely partially tested expression
+                        val previousAddedListenedCellVertex = previouslyAddedListener.detach()
 
                         if (previousAddedListenedCellVertex != previousAddedCellVertex) {
                             throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                         }
-
-                        // FIXME: Untested expression
-                        previousAddedListenedCellVertex.unregisterListener(
-                            handle = previousAddedListenerHandle,
-                        )
                     }
 
                     else -> { // Un-replacement
                         val previousReplacingCellVertex = previousChangedCellVertex
 
-                        val changedListenerEntry =
-                            upstreamNewInnerCellListenerEntryByTag[previouslyChangedTag] ?: throw IllegalStateException(
+                        val changedListener =
+                            upstreamNewInnerCellListenerByTag[previouslyChangedTag] ?: throw IllegalStateException(
                                 "Inner listener entry not found for tag: $previouslyChangedTag"
                             )
 
-                        // Unregister listener from previous replacing cell vertex
-
-                        val previousReplacingListenedCellVertex = changedListenerEntry.cellVertex
-                        val previousReplacingListenerHandle = changedListenerEntry.listenerHandle
+                        // FIXME: Likely partially tested expression
+                        val previousReplacingListenedCellVertex = changedListener.reattach(
+                            propagationContext = propagationContext,
+                            newSourceCellVertex = previouslyReplacedCellVertex,
+                        )
 
                         if (previousReplacingListenedCellVertex != previousReplacingCellVertex) {
                             throw IllegalStateException("Inconsistent added cell vertex for tag $previouslyChangedTag")
                         }
-
-                        // FIXME: Untested expression
-                        previousReplacingListenedCellVertex.unregisterListener(
-                            handle = previousReplacingListenerHandle,
-                        )
-
-                        // Reregister listener to the previously replaced stable inner cell vertex
-
-                        val fallbackListenerHandle = previouslyReplacedCellVertex.registerBoundListenerOnline(
-                            propagationContext = propagationContext,
-                            listener = InnerCellListener(tag = previouslyChangedTag),
-                        )
-
-                        changedListenerEntry.cellVertex = previouslyReplacedCellVertex
-                        changedListenerEntry.listenerHandle = fallbackListenerHandle
 
                         if (previouslyReplacedCellVertex.ongoingUpdate != null) {
                             val wasAdded = updatedUntouchedStableInnerCellVertexTags.add(previouslyChangedTag)
@@ -559,19 +521,15 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 val newlyRemovedCellVertex = stableInnerSourceCellVertexByTag[newlyRemovedTag]
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
 
-                val newlyRemovedListenerEntry = upstreamNewInnerCellListenerEntryByTag.remove(newlyRemovedTag)
+                val newlyRemovedListener = upstreamNewInnerCellListenerByTag.remove(newlyRemovedTag)
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
 
-                val newlyRemovedListenedCellVertex = newlyRemovedListenerEntry.cellVertex
-                val newlyRemovedListenerHandle = newlyRemovedListenerEntry.listenerHandle
+                // FIXME: Likely partially tested expression
+                val newlyRemovedListenedCellVertex = newlyRemovedListener.detach()
 
                 if (newlyRemovedListenedCellVertex != newlyRemovedCellVertex) {
                     throw IllegalStateException("Inconsistent removed cell vertex for tag $newlyRemovedTag")
                 }
-
-                newlyRemovedListenedCellVertex.unregisterListener(
-                    handle = newlyRemovedListenerHandle,
-                )
 
                 updatedUntouchedStableInnerCellVertexTags.remove(newlyRemovedTag)
             }
@@ -585,20 +543,19 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 val previouslyRemovedCellVertex = stableInnerSourceCellVertexByTag[previouslyRemovedTag]
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
 
-                val fallbackListenerHandle = previouslyRemovedCellVertex.registerBoundListenerOnline(
+                val fallbackListener = InnerCellListener.attach(
+                    parent = this,
+                    tag = previouslyRemovedTag,
+                    initialSourceCellVertex = previouslyRemovedCellVertex,
                     propagationContext = propagationContext,
-                    listener = InnerCellListener(tag = previouslyRemovedTag),
                 )
 
-                val previousListenerEntry = upstreamNewInnerCellListenerEntryByTag.put(
+                val previousListener = upstreamNewInnerCellListenerByTag.put(
                     key = previouslyRemovedTag,
-                    value = InnerCellListenerEntry(
-                        cellVertex = previouslyRemovedCellVertex,
-                        listenerHandle = fallbackListenerHandle,
-                    ),
+                    value = fallbackListener,
                 )
 
-                if (previousListenerEntry != null) {
+                if (previousListener != null) {
                     throw IllegalStateException("Listener entry already exists for tag $previouslyRemovedTag")
                 }
 
@@ -619,7 +576,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
         mode: Vertex.ActivationMode,
     ): TaggedBagChange<ElementT>? {
-        if (upstreamSourceListenerHandle != null || upstreamNewInnerCellListenerEntryByTag != null) {
+        if (upstreamSourceListenerHandle != null || upstreamNewInnerCellListenerByTag != null) {
             throw IllegalStateException("Vertex seems to be already active")
         }
 
@@ -646,18 +603,16 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         return when (initialSourceBagOngoingChange) {
             null -> { // The outer source bag doesn't have an ongoing change
                 // Register listeners for all stable inner cells and collect their updates
-                this.upstreamNewInnerCellListenerEntryByTag =
+                this.upstreamNewInnerCellListenerByTag =
                     initialStableInnerSourceCellVertexByTag.entries.associateTo(mutableMapOf()) { (stableTag, initialStableInnerCellVertex) ->
-                        val innerCellListenerHandle = initialStableInnerCellVertex.registerBoundListener(
+                        val initialCellListener = InnerCellListener.attach(
+                            parent = this,
+                            tag = stableTag,
+                            initialSourceCellVertex = initialStableInnerCellVertex,
                             propagationContext = propagationContext,
-                            listener = InnerCellListener(tag = stableTag),
-                            mode = mode,
                         )
 
-                        stableTag to InnerCellListenerEntry(
-                            cellVertex = initialStableInnerCellVertex,
-                            listenerHandle = innerCellListenerHandle,
-                        )
+                        stableTag to initialCellListener
                     }
 
                 val initialStableInnerSourceCellUpdatedValueByTag: Map<Tag, ElementT> =
@@ -698,22 +653,20 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         }
                     }
 
-                val initialUpstreamNewInnerCellListenerEntryByTag = mutableMapOf<Tag, InnerCellListenerEntry>()
+                val initialUpstreamNewInnerCellListenerByTag = mutableMapOf<Tag, InnerCellListener<ElementT>>()
 
-                this.upstreamNewInnerCellListenerEntryByTag = initialUpstreamNewInnerCellListenerEntryByTag
+                this.upstreamNewInnerCellListenerByTag = initialUpstreamNewInnerCellListenerByTag
 
                 // Register listeners for all untouched stable inner cells
-                initialUntouchedInnerSourceCellTaggedEntrySequence.associateTo(initialUpstreamNewInnerCellListenerEntryByTag) { (stableTag, initialStableInnerCellVertex) ->
-                    val listenerHandle = initialStableInnerCellVertex.registerBoundListener(
+                initialUntouchedInnerSourceCellTaggedEntrySequence.associateTo(initialUpstreamNewInnerCellListenerByTag) { (stableTag, initialStableInnerCellVertex) ->
+                    val initialCellListener = InnerCellListener.attach(
+                        parent = this,
+                        tag = stableTag,
+                        initialSourceCellVertex = initialStableInnerCellVertex,
                         propagationContext = propagationContext,
-                        listener = InnerCellListener(tag = stableTag),
-                        mode = mode,
                     )
 
-                    stableTag to InnerCellListenerEntry(
-                        cellVertex = initialStableInnerCellVertex,
-                        listenerHandle = listenerHandle,
-                    )
+                    stableTag to initialCellListener
                 }
 
                 // Collect the updated values of all untouched stable inner cell vertices
@@ -733,17 +686,15 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
                 this.changedInnerCellVertexByTag = initialChangedInnerCellVertexByTag
 
-                initialChangedInnerCellVertexByTag.entries.associateTo(initialUpstreamNewInnerCellListenerEntryByTag) { (changedTag, initialChangedInnerCellVertex) ->
-                    val listenerHandle = initialChangedInnerCellVertex.registerBoundListener(
+                initialChangedInnerCellVertexByTag.entries.associateTo(initialUpstreamNewInnerCellListenerByTag) { (changedTag, initialChangedInnerCellVertex) ->
+                    val initialChangedCellListener = InnerCellListener.attach(
+                        parent = this,
+                        tag = changedTag,
+                        initialSourceCellVertex = initialChangedInnerCellVertex,
                         propagationContext = propagationContext,
-                        listener = InnerCellListener(tag = changedTag),
-                        mode = mode,
                     )
 
-                    changedTag to InnerCellListenerEntry(
-                        cellVertex = initialChangedInnerCellVertex,
-                        listenerHandle = listenerHandle,
-                    )
+                    changedTag to initialChangedCellListener
                 }
 
                 val initialChangedInnerSourceCellNewValueByTag: Map<Tag, ElementT> =
@@ -773,10 +724,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
         this.upstreamSourceListenerHandle = null
 
-        val upstreamNewInnerCellListenerEntryByTag = this.upstreamNewInnerCellListenerEntryByTag
+        val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
             ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
-        this.upstreamNewInnerCellListenerEntryByTag = null
+        this.upstreamNewInnerCellListenerByTag = null
 
         // Unregister from source bag vertex
         // FIXME: Untested expression (this might require listener check on the inputs)
@@ -785,14 +736,9 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         )
 
         // Unregister from all inner cell vertices
-        for ((_, listenerEntry) in upstreamNewInnerCellListenerEntryByTag) {
-            val newCellVertex = listenerEntry.cellVertex
-            val newListenerHandle = listenerEntry.listenerHandle
-
-            // FIXME: Untested expression (this might require listener check on the inputs)
-            newCellVertex.unregisterListener(
-                handle = newListenerHandle,
-            )
+        for ((_, newInnerCellListener) in upstreamNewInnerCellListenerByTag) {
+            // FIXME: Likely partially tested expression
+            newInnerCellListener.detach()
         }
 
         this.stableInnerSourceCellVertexByTag = null
