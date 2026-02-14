@@ -30,6 +30,9 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
+            val stableInnerSourceCellVertexByTag = this@FusedTrackedTaggedBagVertex.stableInnerSourceCellVertexByTag
+                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+
             val updatedUntouchedStableInnerCellVertexTags =
                 this@FusedTrackedTaggedBagVertex.updatedUntouchedStableInnerCellVertexTags
                     ?: throw IllegalStateException("Vertex doesn't seem to be active")
@@ -50,6 +53,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
                 else -> { // Initial update / update correction
                     if (changedInnerCellVertexByTag == null || tag !in changedInnerCellVertexByTag) { // This inner cell vertex is stable (untouched)
+                        if (tag !in stableInnerSourceCellVertexByTag) {
+                            throw IllegalStateException("Stable cell vertex not found for tag: $tag")
+                        }
+
                         // Ensure that it's marked that this stable inner updates
                         updatedUntouchedStableInnerCellVertexTags.add(tag)
                     }
