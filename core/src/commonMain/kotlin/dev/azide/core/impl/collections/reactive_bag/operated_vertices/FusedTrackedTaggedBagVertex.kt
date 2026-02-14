@@ -45,7 +45,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
             when (cellOngoingUpdate) {
                 null -> { // Update revocation
-                    // FIXME: Untested expression
                     updatedUntouchedStableInnerCellVertexTags.remove(tag)
                 }
 
@@ -838,11 +837,14 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         val untouchedInnerCellUpdatedValueByTag =
-            updatedUntouchedStableInnerCellVertexTags.mapNotNull { updatedStableTag ->
+            updatedUntouchedStableInnerCellVertexTags.associateWith { updatedStableTag ->
                 val stableCellVertex = this.stableInnerSourceCellVertexByTag?.get(updatedStableTag)
-                    ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
+                    ?: throw IllegalStateException("Stable inner cell vertex not found for tag: $updatedStableTag")
 
-                stableCellVertex.ongoingUpdate?.let { updatedStableTag to it.updatedValue }
+                val ongoingUpdate = stableCellVertex.ongoingUpdate
+                    ?: throw IllegalStateException("Ongoing update not found for 'updated' cell vertex with tag $updatedStableTag")
+
+                ongoingUpdate.updatedValue
             }.toMap()
 
         val changedInnerCellNewValueByTag = when (changedInnerCellVertexByTag) {
