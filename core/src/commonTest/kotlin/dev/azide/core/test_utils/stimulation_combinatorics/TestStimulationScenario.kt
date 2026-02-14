@@ -40,7 +40,7 @@ data class TestStimulationScenario(
     ).map { tagBuckets: List<List<TestStimulationTag>> ->
         TestSlottedStimulationScenario.of(
             slotCount = slotCount,
-            slotStimulations = tagBuckets.map { stimulationTags: List<TestStimulationTag> ->
+            slotStimulationScenarios = tagBuckets.map { stimulationTags: List<TestStimulationTag> ->
                 TestStimulationScenario(stimulationTags = stimulationTags)
             },
         )

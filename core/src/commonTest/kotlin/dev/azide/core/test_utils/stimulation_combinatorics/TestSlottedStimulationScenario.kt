@@ -6,14 +6,14 @@ data class TestSlottedStimulationScenario<@Suppress("unused") SlotCountT : TestS
     companion object {
         fun <SlotCountT : TestSlotCount> of(
             slotCount: SlotCountT,
-            slotStimulations: List<TestStimulationScenario>,
+            slotStimulationScenarios: List<TestStimulationScenario>,
         ): TestSlottedStimulationScenario<SlotCountT> {
-            require(slotStimulations.size == slotCount.count) {
-                "Expected ${slotCount.count} slot stimulations, but got ${slotStimulations.size}."
+            require(slotStimulationScenarios.size == slotCount.count) {
+                "Expected ${slotCount.count} slot stimulations, but got ${slotStimulationScenarios.size}."
             }
 
             return TestSlottedStimulationScenario(
-                slotStimulationScenarios = slotStimulations,
+                slotStimulationScenarios = slotStimulationScenarios,
             )
         }
     }
