@@ -36,7 +36,7 @@ data class TestStimulationScenario(
         slotCount: SlotCountT,
     ): Sequence<TestSlottedStimulationScenario<SlotCountT>> = generateBucketSplits(
         list = stimulationTags,
-        n = slotCount.count,
+        bucketCount = slotCount.count,
     ).map { tagBuckets: List<List<TestStimulationTag>> ->
         TestSlottedStimulationScenario.of(
             slotCount = slotCount,
