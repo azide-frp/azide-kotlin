@@ -111,3 +111,17 @@ private fun <T, R> Iterable<T>.zipWithNextExtra(
 
     return result
 }
+
+fun binomialCoefficient(n: Int, k: Int): Long {
+    if (k !in 0..n) return 0
+    if (k == 0 || k == n) return 1
+
+    val kOptimized = minOf(k, n - k)
+
+    var result = 1L
+    for (i in 0 until kOptimized) {
+        result = result * (n - i) / (i + 1)
+    }
+
+    return result
+}
