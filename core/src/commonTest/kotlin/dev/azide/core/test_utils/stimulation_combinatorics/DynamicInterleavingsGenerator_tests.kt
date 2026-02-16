@@ -398,25 +398,35 @@ private fun <T> assertGeneratesConsistentInterleavings(
             message = "Inconsistent generation for interleaving #$index",
         )
 
-        // Verify order preservation for each input list
-        lists.forEach { inputList ->
-            val recoveredList = generatedInterleaving.filter { it in inputList }
-
-            assertEquals(
-                expected = inputList,
-                actual = recoveredList,
-                message = "Interleaving $generatedInterleaving does not preserve order of list $inputList",
-            )
-        }
-
-        // Verify total size
-        val expectedSize = lists.sumOf { it.size }
-
-        assertEquals(
-            expected = expectedSize,
-            actual = generatedInterleaving.size,
-            message = "Interleaving $generatedInterleaving has wrong size (expected $expectedSize)",
-        )
+        assertIsProperInterleaving(lists, generatedInterleaving)
     }
 }
 
+/**
+ * Asserts that the given [potentialInterleaving] is a proper interleaving of the input [lists], meaning that it
+ * contains all elements from all lists, and the order of elements from each individual list is preserved.
+ */
+fun <T> assertIsProperInterleaving(
+    lists: List<List<T>>,
+    potentialInterleaving: List<T>,
+) {
+    // Verify order preservation for each input list
+    lists.forEach { inputList ->
+        val recoveredList = potentialInterleaving.filter { it in inputList }
+
+        assertEquals(
+            expected = inputList,
+            actual = recoveredList,
+            message = "Interleaving $potentialInterleaving does not preserve order of list $inputList",
+        )
+    }
+
+    // Verify total size
+    val expectedSize = lists.sumOf { it.size }
+
+    assertEquals(
+        expected = expectedSize,
+        actual = potentialInterleaving.size,
+        message = "Interleaving $potentialInterleaving has wrong size (expected $expectedSize)",
+    )
+}
