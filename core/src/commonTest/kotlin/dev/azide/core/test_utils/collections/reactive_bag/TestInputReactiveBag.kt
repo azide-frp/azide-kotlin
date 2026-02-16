@@ -29,7 +29,29 @@ class TestInputReactiveBag<ElementT>(
         val replacedElementByTag: Map<Tag, ElementT> = emptyMap(),
         val removedTags: Set<Tag> = emptySet(),
     ) {
+        companion object {
+            fun <ElementT> of(
+                addedElementByTag: Map<Tag, ElementT> = emptyMap(),
+                replacedElementByTag: Map<Tag, ElementT> = emptyMap(),
+                removedTags: Set<Tag> = emptySet(),
+            ): ChangeDescription<ElementT>? {
+                if (addedElementByTag.isEmpty() && replacedElementByTag.isEmpty() && removedTags.isEmpty()) {
+                    return null
+                }
+
+                return ChangeDescription(
+                    addedElementByTag = addedElementByTag,
+                    replacedElementByTag = replacedElementByTag,
+                    removedTags = removedTags,
+                )
+            }
+        }
+
         init {
+            require(addedElementByTag.isNotEmpty() || replacedElementByTag.isNotEmpty() || removedTags.isNotEmpty()) {
+                "A change description must have at least one added, replaced, or removed element."
+            }
+
             for (tag in addedElementByTag.keys) {
                 require(tag !in replacedElementByTag.keys) {
                     "Tag $tag cannot be both added and replaced in the same change."
