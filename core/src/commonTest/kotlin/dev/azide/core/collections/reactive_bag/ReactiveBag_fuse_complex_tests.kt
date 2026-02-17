@@ -27,7 +27,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
-class ReactiveBag_fuse_tests {
+class ReactiveBag_fuse_complex_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
