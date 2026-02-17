@@ -1,25 +1,45 @@
 package dev.azide.core.test_utils.schedule
 
-import dev.azide.core.Effect
+import dev.azide.core.ScheduleOutcome
+import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
-import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Schedule_cancelledRevoked_testUtils {
     fun executeCancelTransaction(
-        subjectOutcome: Effect.Outcome<Unit>,
+        subjectOutcome: ScheduleOutcome,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
-            subjectOutcome = subjectOutcome,
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+        val subjectHandle = subjectOutcome.handle
+
+        Schedule_testUtils.executeTransactionWithImpactVerification(
             expectedTargetImpact = expectedTargetImpact,
-        )
+        ) { propagationContext ->
+            // 0. Pre-stimulation
+            slottedInputStimulation?.slotStimulation0?.stimulate(
+                propagationContext = propagationContext,
+            )
+
+            // 1. Cancel the schedule
+            val cancelRevocable = subjectHandle.cancel.executeInternallyWrappedUp(
+                propagationContext = propagationContext,
+            ).revocable
+
+            slottedInputStimulation?.slotStimulation1?.stimulate(
+                propagationContext = propagationContext,
+            )
+
+            // 2. Revoke the schedule's cancellation
+            cancelRevocable.revoke()
+
+            slottedInputStimulation?.slotStimulation2?.stimulate(
+                propagationContext = propagationContext,
+            )
+        }
     }
 }

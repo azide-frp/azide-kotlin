@@ -9,18 +9,18 @@ import dev.azide.core.test_utils.generic.verifyReactionUninstalling
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {
-    fun <SubjectT> executeStepTransaction(
+    fun <SubjectT, NotificationT : Any> executeStepTransaction(
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestStimulation,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
-            val subjectReactionVerifier: TestSubjectReactionVerifier? =
+            val subjectReactionVerifier: TestSubjectReactionVerifier<SubjectT, NotificationT>? =
                 expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
                     propagationContext = propagationContext,
                     subject = subject,

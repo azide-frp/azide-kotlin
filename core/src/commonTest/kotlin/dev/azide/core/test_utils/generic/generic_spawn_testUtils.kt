@@ -9,10 +9,10 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_testUtils {
-    fun <SubjectT> executeSpawnTransaction(
+    fun <SubjectT, NotificationT : Any> executeSpawnTransaction(
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
     ) {
         generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,

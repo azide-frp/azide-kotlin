@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.schedule
 
 import dev.azide.core.Schedule
+import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.test_utils.TestSlottedStimulation2
-import dev.azide.core.test_utils.effect_generic.Effect_generic_start_testUtils
-import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Schedule_start_testUtils {
@@ -14,12 +14,22 @@ data object Schedule_start_testUtils {
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_start_testUtils.executeStartTransaction(
-            subjectEffect = subjectSchedule,
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
-            slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
+        Schedule_testUtils.executeTransactionWithImpactVerification(
             expectedTargetImpact = expectedTargetImpact,
-        )
+        ) { propagationContext ->
+            // 0. Pre-stimulation
+            slottedInputStimulation?.slotStimulation0?.stimulate(
+                propagationContext = propagationContext,
+            )
+
+            // 1. Start the schedule
+            subjectSchedule.start.executeInternallyWrappedUp(
+                propagationContext = propagationContext,
+            )
+
+            slottedInputStimulation?.slotStimulation1?.stimulate(
+                propagationContext = propagationContext,
+            )
+        }
     }
 }

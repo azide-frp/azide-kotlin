@@ -6,6 +6,7 @@ import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.ExpectedEventStreamEmission
+import dev.azide.core.test_utils.event_stream.asTransition
 import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
@@ -21,7 +22,7 @@ data object Effect_EventStream_cancelledRevoked_testUtils {
             subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectEmission,
+            expectedSubjectTransition = expectedSubjectEmission.asTransition(),
             expectedTargetImpact = expectedTargetImpact,
         )
     }

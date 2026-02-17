@@ -4,6 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.EventStream
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
@@ -57,13 +58,13 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
-            subjectEventStream = Unit,
+        Effect_generic_step_testUtils.executeStepTransaction(
+            subject = Unit,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetActionRecorder.recordedAction,
             ),
-            expectedSubjectEmission = ExpectedTestSubjectTransition.None,
+            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }

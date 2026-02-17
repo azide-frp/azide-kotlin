@@ -15,11 +15,11 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_start_quickCancelled_testUtils {
-    fun <SubjectT> executeStartTransaction(
+    fun <SubjectT, NotificationT : Any> executeStartTransaction(
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
     ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -44,7 +44,7 @@ data object Effect_generic_start_quickCancelled_testUtils {
             propagationContext = propagationContext,
         )
 
-        val subjectReactionVerifier: TestSubjectReactionVerifier? =
+        val subjectReactionVerifier: TestSubjectReactionVerifier<SubjectT, NotificationT>? =
             expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
                 propagationContext = propagationContext,
                 subject = subject,

@@ -14,7 +14,7 @@ data object EventStream_reaction_testUtils {
         generic_reaction_testUtils.executeReactionTransaction(
             subject = subjectEventStream,
             slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectEmission,
+            expectedSubjectTransition = expectedSubjectEmission.asTransition(),
         )
     }
 }

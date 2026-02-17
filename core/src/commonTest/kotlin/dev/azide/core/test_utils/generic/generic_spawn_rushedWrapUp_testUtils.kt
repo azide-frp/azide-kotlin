@@ -12,10 +12,10 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_rushedWrapUp_testUtils {
-    fun <SubjectT : Any> executeSpawnTransaction(
+    fun <SubjectT : Any, NotificationT : Any> executeSpawnTransaction(
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
     ) {
         generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
@@ -27,7 +27,7 @@ data object generic_spawn_rushedWrapUp_testUtils {
 
             val (
                 subject: SubjectT,
-                subjectReactionVerifier: TestSubjectReactionVerifier,
+                subjectReactionVerifier: TestSubjectReactionVerifier<SubjectT, NotificationT>,
             ) = WrapUpContext.wrapUp(
                 propagationContext = propagationContext,
             ) { wrapUpContext ->

@@ -15,7 +15,7 @@ data object EventStream_spawn_testUtils {
         generic_spawn_testUtils.executeSpawnTransaction(
             subjectSpawnMoment = subjectEventStreamSpawnMoment,
             slottedInputStimulation = slottedInputStimulation,
-            expectedSubjectTransition = expectedSubjectEmission,
+            expectedSubjectTransition = expectedSubjectEmission.asTransition(),
         )
     }
 }

@@ -6,6 +6,7 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.generic.ExpectedBasicTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -13,92 +14,97 @@ import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-interface ExpectedCellUpdate<ValueT> : ExpectedTestSubjectReaction<Cell<ValueT>>
+interface TestCellReactionVerifier<ValueT> :
+    ExpectedTestSubjectReaction.TestSubjectReactionVerifier<Cell<ValueT>, CellVertex.Update<ValueT>>
+
+typealias ExpectedBasicCellUpdate<ValueT> = ExpectedBasicTestSubjectReaction<Cell<ValueT>, CellVertex.Update<ValueT>>
 
 interface ExpectedCellValue<ValueT> : ExpectedTestSubjectState<Cell<ValueT>>
 
-interface ExpectedCellValueTransition<ValueT> : ExpectedTestSubjectTransition<Cell<ValueT>>
+interface ExpectedCellValueTransition<ValueT> : ExpectedTestSubjectTransition<Cell<ValueT>, CellVertex.Update<ValueT>>
 
-private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedCellUpdate<ValueT> {
+private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedBasicCellUpdate<ValueT>() {
+    final override val expectedSubjectNotification: CellVertex.Update<ValueT>?
+        get() = expectedEffectiveUpdate
+
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<Cell<ValueT>>,
-    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, BoundListener {
-            private val subjectVertex: CellVertex<ValueT>
-                get() = subjectLazy.value.vertex
+    ): TestCellReactionVerifier<ValueT> = object : TestCellReactionVerifier<ValueT>, BoundListener {
+        private val subjectVertex: CellVertex<ValueT>
+            get() = subjectLazy.value.vertex
 
-            private var listenerHandle: ListenerHandle? = null
+        private var listenerHandle: ListenerHandle? = null
 
-            private var initialUpdate: CellVertex.Update<ValueT>? = null
+        private var initialUpdate: CellVertex.Update<ValueT>? = null
 
-            private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
+        private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
 
-            override fun install() {
-                if (listenerHandle != null) {
-                    throw IllegalStateException("Cell verifier is already installed")
-                }
-
-                listenerHandle = subjectVertex.registerBoundListenerOnline(
-                    propagationContext = propagationContext,
-                    listener = this,
-                )
-
-                initialUpdate = subjectVertex.ongoingUpdate
+        override fun install() {
+            if (listenerHandle != null) {
+                throw IllegalStateException("Cell verifier is already installed")
             }
 
-            override fun verifyReaction() {
-                if (listenerHandle == null) {
-                    throw IllegalStateException("A non-installed verifier cannot be used for verification")
-                }
+            listenerHandle = subjectVertex.registerBoundListenerOnline(
+                propagationContext = propagationContext,
+                listener = this,
+            )
 
-                assertEquals(
-                    expected = expectedEffectiveUpdate,
-                    actual = subjectVertex.ongoingUpdate,
-                    message = "Exposed ongoing update did not match the expected update.",
-                )
+            initialUpdate = subjectVertex.ongoingUpdate
+        }
 
-                val effectiveUpdate = when {
-                    receivedUpdates.isNotEmpty() -> receivedUpdates.last()
-                    else -> initialUpdate
-                }
-
-                assertEquals(
-                    expected = expectedEffectiveUpdate,
-                    actual = effectiveUpdate,
-                    message = "The effective received update did not match the expected update.",
-                )
-
-                when (intermediatePropagationTolerance) {
-                    IntermediatePropagationTolerance.DoNotTolerate -> {
-                        assertTrue(
-                            actual = receivedUpdates.size <= 1,
-                            message = "Expected at most one update to be propagated, but received ${receivedUpdates.size} updates (intermediate propagation is not tolerated).",
-                        )
-                    }
-
-                    IntermediatePropagationTolerance.Tolerate -> {}
-                }
+        override fun verifyReaction() {
+            if (listenerHandle == null) {
+                throw IllegalStateException("A non-installed verifier cannot be used for verification")
             }
 
-            override fun uninstall() {
-                val listenerHandle =
-                    this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
+            assertEquals(
+                expected = expectedEffectiveUpdate,
+                actual = subjectVertex.ongoingUpdate,
+                message = "Exposed ongoing update did not match the expected update.",
+            )
 
-                subjectVertex.unregisterListener(
-                    handle = listenerHandle,
-                )
-
-                this.listenerHandle = null
-                this.initialUpdate = null
+            val effectiveUpdate = when {
+                receivedUpdates.isNotEmpty() -> receivedUpdates.last()
+                else -> initialUpdate
             }
 
-            override fun handle(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                receivedUpdates.add(subjectVertex.ongoingUpdate)
+            assertEquals(
+                expected = expectedEffectiveUpdate,
+                actual = effectiveUpdate,
+                message = "The effective received update did not match the expected update.",
+            )
+
+            when (intermediatePropagationTolerance) {
+                IntermediatePropagationTolerance.DoNotTolerate -> {
+                    assertTrue(
+                        actual = receivedUpdates.size <= 1,
+                        message = "Expected at most one update to be propagated, but received ${receivedUpdates.size} updates (intermediate propagation is not tolerated).",
+                    )
+                }
+
+                IntermediatePropagationTolerance.Tolerate -> {}
             }
         }
+
+        override fun uninstall() {
+            val listenerHandle =
+                this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
+
+            subjectVertex.unregisterListener(
+                handle = listenerHandle,
+            )
+
+            this.listenerHandle = null
+            this.initialUpdate = null
+        }
+
+        override fun handle(
+            propagationContext: Transactions.PropagationContext,
+        ) {
+            receivedUpdates.add(subjectVertex.ongoingUpdate)
+        }
+    }
 
     abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
 
@@ -132,7 +138,7 @@ object Cell_expectations_testUtils {
 
         override val expectedNewValue: ValueT = expectedNewValue
 
-        override val expectedReaction: ExpectedCellUpdate<ValueT> = expectUpdate(
+        override val expectedReaction: ExpectedBasicCellUpdate<ValueT> = expectUpdate(
             intermediatePropagationTolerance = intermediatePropagationTolerance,
             expectedUpdatedValue = expectedNewValue,
         )
@@ -146,7 +152,7 @@ object Cell_expectations_testUtils {
 
         override val expectedNewValue: ValueT = expectedUnaffectedValue
 
-        override val expectedReaction: ExpectedCellUpdate<ValueT> = expectNoUpdate(
+        override val expectedReaction: ExpectedBasicCellUpdate<ValueT> = expectNoUpdate(
             intermediatePropagationTolerance = intermediatePropagationTolerance,
         )
     }
@@ -171,7 +177,7 @@ object Cell_expectations_testUtils {
     private fun <ValueT> expectUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
         expectedUpdatedValue: ValueT,
-    ): ExpectedCellUpdate<ValueT> = object : AbstractExpectedCellUpdate<ValueT>() {
+    ): ExpectedBasicCellUpdate<ValueT> = object : AbstractExpectedCellUpdate<ValueT>() {
         override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
             intermediatePropagationTolerance
 
@@ -182,7 +188,7 @@ object Cell_expectations_testUtils {
 
     private fun <ValueT> expectNoUpdate(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
-    ): ExpectedCellUpdate<ValueT> = object : AbstractExpectedCellUpdate<ValueT>() {
+    ): ExpectedBasicCellUpdate<ValueT> = object : AbstractExpectedCellUpdate<ValueT>() {
         override val expectedEffectiveUpdate: CellVertex.Update<ValueT>? = null
 
         override val intermediatePropagationTolerance = intermediatePropagationTolerance

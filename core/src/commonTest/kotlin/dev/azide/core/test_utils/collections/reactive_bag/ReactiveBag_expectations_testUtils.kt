@@ -9,6 +9,7 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.generic.ExpectedBasicTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -16,18 +17,24 @@ import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-interface ExpectedReactiveBagChange<ElementT> : ExpectedTestSubjectReaction<ReactiveBag<ElementT>>
+interface TestReactiveBagReactionVerifier<ElementT> :
+    ExpectedTestSubjectReaction.TestSubjectReactionVerifier<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
+
+typealias ExpectedBasicReactiveBagChange<ElementT> = ExpectedBasicTestSubjectReaction<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
 interface ExpectedReactiveBagContent<ElementT> : ExpectedTestSubjectState<ReactiveBag<ElementT>>
 
-interface ExpectedReactiveBagContentTransition<ElementT> : ExpectedTestSubjectTransition<ReactiveBag<ElementT>>
+interface ExpectedReactiveBagContentTransition<ElementT> :
+    ExpectedTestSubjectTransition<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
-private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedReactiveBagChange<ElementT> {
+private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedBasicReactiveBagChange<ElementT>() {
+    final override val expectedSubjectNotification: TaggedBagChange<ElementT>?
+        get() = expectedEffectiveChange
+
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<ReactiveBag<ElementT>>,
-    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, BoundListener {
+    ): TestReactiveBagReactionVerifier<ElementT> = object : TestReactiveBagReactionVerifier<ElementT>, BoundListener {
             private val subjectVertex: TrackedTaggedBagVertex<ElementT>
                 get() = subjectLazy.value.trackedVertex
 
@@ -84,7 +91,7 @@ private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedRea
                 }
             }
 
-            override fun uninstall() {
+        override fun uninstall() {
                 val listenerHandle =
                     this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
 
@@ -148,7 +155,7 @@ object ReactiveBag_expectations_testUtils {
 
             override val expectedNewTaggedContent: Map<Tag, ElementT> = expectedNewTaggedContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveBag<ElementT>> =
+            override val expectedReaction: ExpectedBasicReactiveBagChange<ElementT> =
                 object : AbstractExpectedReactiveBagChange<ElementT>() {
                     override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
                         intermediatePropagationTolerance
@@ -194,7 +201,7 @@ object ReactiveBag_expectations_testUtils {
 
             override val expectedNewTaggedContent: Map<Tag, ElementT> = expectedUnaffectedTaggedContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveBag<ElementT>> =
+            override val expectedReaction: ExpectedBasicReactiveBagChange<ElementT> =
                 object : AbstractExpectedReactiveBagChange<ElementT>() {
                     override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
                         intermediatePropagationTolerance

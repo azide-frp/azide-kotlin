@@ -12,23 +12,33 @@ import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.TestSubjectObserver
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-interface ExpectedReactiveListChange<ElementT> : ExpectedTestSubjectReaction<ReactiveList<ElementT>>
+interface TestReactiveListReactionVerifier<ElementT> :
+    ExpectedTestSubjectReaction.TestSubjectReactionVerifier<ReactiveList<ElementT>, ListChange<ElementT>>
+
+typealias ExpectedReactiveListChange<ElementT> = ExpectedTestSubjectReaction<ReactiveList<ElementT>, ListChange<ElementT>>
 
 interface ExpectedReactiveListContent<ElementT> : ExpectedTestSubjectState<ReactiveList<ElementT>>
 
-interface ExpectedReactiveListContentTransition<ElementT> : ExpectedTestSubjectTransition<ReactiveList<ElementT>>
+interface ExpectedReactiveListContentTransition<ElementT> :
+    ExpectedTestSubjectTransition<ReactiveList<ElementT>, ListChange<ElementT>>
 
 private abstract class AbstractExpectedReactiveListChange<ElementT> : ExpectedReactiveListChange<ElementT> {
+    override fun verifyReaction(
+        subjectObserver: TestSubjectObserver<ReactiveList<ElementT>, ListChange<ElementT>>,
+    ) {
+        TODO("Not yet implemented")
+    }
+
     final override fun prepareReactionVerifier(
         propagationContext: Transactions.PropagationContext,
         subjectLazy: Lazy<ReactiveList<ElementT>>,
-    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, BoundListener {
+    ): TestReactiveListReactionVerifier<ElementT> = object : TestReactiveListReactionVerifier<ElementT>, BoundListener {
             private val subjectVertex: TrackedListVertex<ElementT>
                 get() = subjectLazy.value.trackedVertex
 
@@ -81,7 +91,7 @@ private abstract class AbstractExpectedReactiveListChange<ElementT> : ExpectedRe
                 }
             }
 
-            override fun uninstall() {
+        override fun uninstall() {
                 val listenerHandle =
                     this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
 
@@ -136,7 +146,7 @@ object ReactiveList_expectations_testUtils {
 
             override val expectedNewContent: List<ElementT> = expectedNewContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveList<ElementT>> =
+            override val expectedReaction: ExpectedReactiveListChange<ElementT> =
                 object : AbstractExpectedReactiveListChange<ElementT>() {
                     override fun verifyEffectiveChange(effectiveChange: ListChange<ElementT>?) {
                         assertNotNull(
@@ -169,7 +179,7 @@ object ReactiveList_expectations_testUtils {
 
             override val expectedNewContent: List<ElementT> = expectedUnaffectedContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveList<ElementT>> =
+            override val expectedReaction: ExpectedReactiveListChange<ElementT> =
                 object : AbstractExpectedReactiveListChange<ElementT>() {
                     override fun verifyEffectiveChange(effectiveChange: ListChange<ElementT>?) {
                         assertNull(
