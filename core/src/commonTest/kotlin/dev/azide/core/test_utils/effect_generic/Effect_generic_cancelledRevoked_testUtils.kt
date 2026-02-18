@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.generic.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.deprecated_verifyReactionUninstalling
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
@@ -69,7 +69,7 @@ data object Effect_generic_cancelledRevoked_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier?.verifyReactionUninstalling()
+            subjectReactionVerifier?.deprecated_verifyReactionUninstalling()
 
             subject
         }

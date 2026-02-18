@@ -5,7 +5,7 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.generic.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.deprecated_verifyReactionUninstalling
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {
@@ -43,7 +43,7 @@ data object Effect_generic_step_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier?.verifyReactionUninstalling()
+            subjectReactionVerifier?.deprecated_verifyReactionUninstalling()
 
             subject
         }

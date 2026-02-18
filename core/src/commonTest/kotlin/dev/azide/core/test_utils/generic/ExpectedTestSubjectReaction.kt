@@ -124,7 +124,8 @@ abstract class AbstractExplicitExpectedTestSubjectReaction<SubjectT, Notificatio
     abstract val expectedSubjectNotification: NotificationT?
 }
 
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, NotificationT>.prepareReactionVerifierInstalled(
+@Deprecated("Migrate to `TestSubjectObserver`")
+fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, NotificationT>.deprecated_prepareReactionVerifierInstalled(
     propagationContext: Transactions.PropagationContext,
     subject: SubjectT,
 ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT> = prepareReactionVerifier(
@@ -134,6 +135,7 @@ fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, Notifi
     install()
 }
 
+@Deprecated("Migrate to `TestSubjectObserver`")
 fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, NotificationT>.prepareReactionVerifierWithStrategyInstalled(
     propagationContext: Transactions.PropagationContext,
     subject: SubjectT,
@@ -141,17 +143,19 @@ fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, Notifi
 ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>? = when (strategy) {
     TestSubjectPerceptionStrategy.NonPerceived -> null
 
-    TestSubjectPerceptionStrategy.Perceived -> prepareReactionVerifierInstalled(
+    TestSubjectPerceptionStrategy.Perceived -> deprecated_prepareReactionVerifierInstalled(
         propagationContext = propagationContext,
         subject = subject,
     )
 }
 
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>.verifyReactionUninstalling() {
+@Deprecated("Migrate to `TestSubjectObserver`")
+fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>.deprecated_verifyReactionUninstalling() {
     verifyReaction()
     uninstall()
 }
 
+@Deprecated("Migrate to `TestSubjectObserver`")
 fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>.installLater(
     wrapUpContext: Transactions.WrapUpContext,
 ) {

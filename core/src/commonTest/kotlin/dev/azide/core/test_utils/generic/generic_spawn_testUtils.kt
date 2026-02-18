@@ -31,8 +31,8 @@ data object generic_spawn_testUtils {
                 propagationContext = propagationContext,
             )
 
-            // 2. Perceive the subject
-            val subjectReactionVerifier = expectedSubjectTransition.expectedReaction.prepareReactionVerifierInstalled(
+            // 2. Observe the subject
+            val subjectReactionVerifier = expectedSubjectTransition.expectedReaction.deprecated_prepareReactionVerifierInstalled(
                 propagationContext = propagationContext,
                 subject = subject,
             )
@@ -46,7 +46,7 @@ data object generic_spawn_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier.verifyReactionUninstalling()
+            subjectReactionVerifier.deprecated_verifyReactionUninstalling()
 
             subject
         }

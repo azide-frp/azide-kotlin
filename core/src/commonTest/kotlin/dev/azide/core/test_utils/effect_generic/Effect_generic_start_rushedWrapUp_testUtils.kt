@@ -44,7 +44,7 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
                     subjectLazy = loopedSubjectLazy,
                 )
 
-                // Perceive the subject later in a wrap-up operation, before the subject itself had a chance to
+                // Observe the subject later in a wrap-up operation, before the subject itself had a chance to
                 // wrap up (hence the "rush"). This is the earliest legal point to attempt perceiving the subject.
                 subjectReactionVerifier.installLater(
                     wrapUpContext = wrapUpContext,

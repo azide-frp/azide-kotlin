@@ -56,7 +56,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = sourceReactiveSet.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.changing(
                 tag = SourceReactiveSetTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -66,9 +66,7 @@ class ReactiveList_sortedUniquely_tests {
                         ".60" withSortKey 60,
                     ),
                 ),
-            ).bind(
-                slottedStimulationScenario,
-            ),
+            ).bind(slottedStimulationScenario),
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf(
                     "^0",
