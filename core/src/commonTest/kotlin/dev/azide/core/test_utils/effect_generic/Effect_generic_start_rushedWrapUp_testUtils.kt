@@ -7,9 +7,9 @@ import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.generic.installLater
+import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
+import dev.azide.core.test_utils.generic.TestSubjectObserver
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
@@ -17,6 +17,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 @Suppress("ClassName")
 data object Effect_generic_start_rushedWrapUp_testUtils {
     fun <SubjectT, NotificationT : Any> executeStartTransaction(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
@@ -32,21 +33,20 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
 
         val (
             subject: SubjectT,
-            subjectReactionVerifier: TestSubjectReactionVerifier<SubjectT, NotificationT>,
+            subjectObserver: TestSubjectObserver<SubjectT, NotificationT>,
         ) = WrapUpContext.wrapUp(
             propagationContext = propagationContext,
         ) { wrapUpContext ->
             LoopUtils.looped { loopedEffectOutcomeLazy: Lazy<Effect.Outcome<SubjectT>> ->
                 val loopedSubjectLazy: Lazy<SubjectT> = loopedEffectOutcomeLazy.map { it.result }
 
-                val subjectReactionVerifier = expectedSubjectTransition.expectedReaction.prepareReactionVerifier(
-                    propagationContext = propagationContext,
+                val subjectObserver = TestSubjectObserver(
+                    trait = trait,
                     subjectLazy = loopedSubjectLazy,
                 )
-
                 // Observe the subject later in a wrap-up operation, before the subject itself had a chance to
                 // wrap up (hence the "rush"). This is the earliest legal point to attempt perceiving the subject.
-                subjectReactionVerifier.installLater(
+                subjectObserver.observeLater(
                     wrapUpContext = wrapUpContext,
                 )
 
@@ -63,7 +63,7 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
                 LoopClosure(
                     result = Pair(
                         effectOutcome.result,
-                        subjectReactionVerifier,
+                        subjectObserver,
                     ),
                     loopedValue = effectOutcome,
                 )
@@ -80,7 +80,11 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
             subject = subject,
         )
 
-        subjectReactionVerifier.verifyReaction()
+        expectedSubjectTransition.expectedReaction.verifyReaction(
+            trait = trait,
+            subject = subject,
+            subjectObserver = subjectObserver,
+        )
 
         subject
     }

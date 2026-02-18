@@ -5,10 +5,9 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
-class TestSubjectObserver<in SubjectT, out NotificationT : Any> private constructor(
+class TestSubjectObserver<in SubjectT, out NotificationT : Any>(
     private val trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
-    private val subject: SubjectT,
-    propagationContext: Transactions.PropagationContext,
+    private val subjectLazy: Lazy<SubjectT>,
 ) : Vertex.BoundListener {
     companion object {
         fun <SubjectT, NotificationT : Any> observe(
@@ -17,9 +16,12 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
             propagationContext: Transactions.PropagationContext,
         ): TestSubjectObserver<SubjectT, NotificationT> = TestSubjectObserver(
             trait = trait,
-            subject = subject,
-            propagationContext = propagationContext,
-        )
+            subjectLazy = lazyOf(subject),
+        ).also {
+            it.observe(
+                propagationContext = propagationContext,
+            )
+        }
 
         fun <SubjectT, NotificationT : Any> observeWithStrategy(
             trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
@@ -36,20 +38,20 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         }
     }
 
-    private var listenerHandle: Vertex.ListenerHandle? = trait.extractVertex(subject).registerBoundListenerOnline(
-        propagationContext = propagationContext,
-        listener = this,
-    )
+    private var listenerHandle: Vertex.ListenerHandle? = null
 
-    private var observedNotifications: MutableList<NotificationT?> = listOfNotNull(
-        trait.extractOngoingNotification(subject),
-    ).toMutableList()
+    private var observedNotifications: MutableList<NotificationT?>? = null
 
     private var isEnqueuedForCommitment = false
 
     override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
+        val observedNotifications =
+            this.observedNotifications ?: throw IllegalStateException("The subject is not being observed")
+
+        val subject = subjectLazy.value
+
         observedNotifications.add(
             trait.extractOngoingNotification(subject),
         )
@@ -60,11 +62,14 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
     }
 
     fun retrieveObservedNotifications(): List<NotificationT?> {
-        val observedNotifications = this.observedNotifications.toList()
+        val observedNotifications =
+            this.observedNotifications ?: throw IllegalStateException("The subject is not being observed")
 
-        this.observedNotifications.clear()
+        val copiedObservedNotifications = observedNotifications.toList()
 
-        return observedNotifications
+        observedNotifications.clear()
+
+        return copiedObservedNotifications
     }
 
     private fun ensureEnqueuedForCommitment(
@@ -72,7 +77,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
     ) {
         if (!isEnqueuedForCommitment) {
             propagationContext.enqueueCallbackForCommitment {
-                observedNotifications.clear()
+                observedNotifications?.clear()
 
                 isEnqueuedForCommitment = false
             }
@@ -81,19 +86,48 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         }
     }
 
+    fun observe(
+        propagationContext: Transactions.PropagationContext,
+    ) {
+        if (listenerHandle != null) {
+            throw IllegalStateException("The subject is already being observed")
+        }
+
+        val subject = subjectLazy.value
+
+        listenerHandle = trait.extractVertex(subject).registerBoundListenerOnline(
+            propagationContext = propagationContext,
+            listener = this,
+        )
+
+        observedNotifications = listOfNotNull(
+            trait.extractOngoingNotification(subject),
+        ).toMutableList()
+
+        ensureEnqueuedForCommitment(
+            propagationContext = propagationContext,
+        )
+    }
+
+    fun observeLater(
+        wrapUpContext: Transactions.WrapUpContext,
+    ) {
+        wrapUpContext.enqueueForWrapUp { propagationContext ->
+            this.observe(
+                propagationContext = propagationContext,
+            )
+        }
+    }
+
     fun unobserve() {
         val listenerHandle = this.listenerHandle ?: throw IllegalStateException("The subject is already unobserved")
+
+        val subject = subjectLazy.value
 
         trait.extractVertex(subject).unregisterListener(
             handle = listenerHandle,
         )
 
         this.listenerHandle = null
-    }
-
-    init {
-        ensureEnqueuedForCommitment(
-            propagationContext = propagationContext,
-        )
     }
 }

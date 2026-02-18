@@ -122,12 +122,3 @@ abstract class AbstractExplicitExpectedTestSubjectReaction<SubjectT, Notificatio
 
     abstract val expectedSubjectNotification: NotificationT?
 }
-
-@Deprecated("Migrate to `TestSubjectObserver`")
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>.installLater(
-    wrapUpContext: Transactions.WrapUpContext,
-) {
-    wrapUpContext.enqueueForWrapUp {
-        install()
-    }
-}

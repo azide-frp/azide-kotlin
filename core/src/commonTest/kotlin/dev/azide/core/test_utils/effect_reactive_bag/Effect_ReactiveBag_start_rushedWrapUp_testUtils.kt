@@ -6,6 +6,7 @@ import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.collections.reactive_bag.ExpectedReactiveBagContentTransition
 import dev.azide.core.test_utils.effect_generic.Effect_generic_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
 
 @Suppress("ClassName")
 data object Effect_ReactiveBag_start_rushedWrapUp_testUtils {
@@ -15,6 +16,7 @@ data object Effect_ReactiveBag_start_rushedWrapUp_testUtils {
         expectedSubjectContentTransition: ExpectedReactiveBagContentTransition<ElementT>,
         expectedTargetImpact: ExpectedImpact,
     ): ReactiveBag<ElementT> = Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+        trait = ReactiveBagObservationTrait(),
         subjectEffect = subjectReactiveBagEffect,
         slottedInputStimulation = slottedInputStimulation,
         expectedSubjectTransition = expectedSubjectContentTransition,
