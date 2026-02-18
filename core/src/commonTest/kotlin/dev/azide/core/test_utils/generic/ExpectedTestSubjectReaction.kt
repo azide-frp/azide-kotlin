@@ -4,9 +4,10 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 interface ExpectedTestSubjectReaction<SubjectT, NotificationT : Any> {
-    data object None : AbstractBasicExpectedTestSubjectReaction<Any, Nothing>() {
+    data object None : AbstractExplicitExpectedTestSubjectReaction<Any, Nothing>() {
         override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
             IntermediatePropagationTolerance.DoNotTolerate
 
@@ -63,16 +64,6 @@ abstract class AbstractBasicExpectedTestSubjectReaction<SubjectT, NotificationT 
         subject: SubjectT,
         subjectObserver: TestSubjectObserver<SubjectT, NotificationT>,
     ) {
-        // The final exposed ongoing notifications (after all potential revocations and corrections) should be the
-        // expected one.
-        val finalOngoingNotification: NotificationT? = trait.extractOngoingNotification(subject)
-
-        assertEquals(
-            expected = expectedSubjectNotification,
-            actual = finalOngoingNotification,
-            message = "Final ongoing notification did not match the expected one.",
-        )
-
         val observedNotifications: List<NotificationT?> = subjectObserver.retrieveObservedNotifications()
 
         // This will be null both when no notification was observed (which means that the subject didn't have an ongoing
@@ -80,16 +71,55 @@ abstract class AbstractBasicExpectedTestSubjectReaction<SubjectT, NotificationT 
         // revocation).
         val lastObservedNotification: NotificationT? = observedNotifications.lastOrNull()
 
-        // The last observed notification (including the potentially ongoing one when the observation started) should be
-        // the expected one.
+        // The final exposed ongoing notifications (after all potential revocations and corrections) should be the
+        // same as the last observed one.
+        val finalOngoingNotification: NotificationT? = trait.extractOngoingNotification(subject)
+
         assertEquals(
-            expected = expectedSubjectNotification,
-            actual = lastObservedNotification,
-            message = "Last observed notification did not match the expected one.",
+            expected = lastObservedNotification,
+            actual = finalOngoingNotification,
+            message = "Final ongoing notification did not match the expected one.",
         )
+
+        // The last observed notification (including the potentially ongoing one when the observation started) should be
+        // as expected.
+        verifyEffectiveNotification(
+            effectiveNotification = lastObservedNotification,
+        )
+
+        when (intermediatePropagationTolerance) {
+            IntermediatePropagationTolerance.DoNotTolerate -> {
+                val observedNotificationCount = observedNotifications.size
+
+                assertTrue(
+                    actual = observedNotificationCount <= 2,
+                    message = "Expected at most one notification to be observed, but received $observedNotificationCount changes (intermediate propagation is not tolerated).",
+                )
+            }
+
+            IntermediatePropagationTolerance.Tolerate -> {}
+        }
     }
 
+    abstract fun verifyEffectiveNotification(
+        effectiveNotification: NotificationT?,
+    )
+
     abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
+}
+
+abstract class AbstractExplicitExpectedTestSubjectReaction<SubjectT, NotificationT : Any> :
+    AbstractBasicExpectedTestSubjectReaction<SubjectT, NotificationT>() {
+
+    final override fun verifyEffectiveNotification(
+        effectiveNotification: NotificationT?,
+    ) {
+        assertEquals(
+            expected = expectedSubjectNotification,
+            actual = effectiveNotification,
+            message = "The effective notification did not match the expected one.",
+        )
+    }
 
     abstract val expectedSubjectNotification: NotificationT?
 }

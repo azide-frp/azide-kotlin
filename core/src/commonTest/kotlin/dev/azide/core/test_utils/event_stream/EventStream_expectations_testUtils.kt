@@ -6,7 +6,7 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
-import dev.azide.core.test_utils.generic.AbstractBasicExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -19,7 +19,7 @@ interface TestEventStreamReactionVerifier<EventT> :
 
 typealias ExpectedEventStreamEmission<EventT> = ExpectedTestSubjectReaction<EventStream<EventT>, EventStreamVertex.Emission<EventT>>
 
-typealias ExpectedBasicEventStreamEmission<EventT> = AbstractBasicExpectedTestSubjectReaction<EventStream<EventT>, EventStreamVertex.Emission<EventT>>
+typealias ExpectedBasicEventStreamEmission<EventT> = AbstractExplicitExpectedTestSubjectReaction<EventStream<EventT>, EventStreamVertex.Emission<EventT>>
 
 typealias ExpectedEventStreamTransition<EventT> = ExpectedTestSubjectTransition<EventStream<EventT>, EventStreamVertex.Emission<EventT>>
 

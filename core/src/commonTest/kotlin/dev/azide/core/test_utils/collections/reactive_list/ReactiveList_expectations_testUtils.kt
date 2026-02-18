@@ -8,6 +8,7 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
 import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.generic.AbstractBasicExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -24,18 +25,21 @@ interface TestReactiveListReactionVerifier<ElementT> :
 
 typealias ExpectedReactiveListChange<ElementT> = ExpectedTestSubjectReaction<ReactiveList<ElementT>, ListChange<ElementT>>
 
+typealias AbstractBasicExpectedReactiveListChange<ElementT> = AbstractBasicExpectedTestSubjectReaction<ReactiveList<ElementT>, ListChange<ElementT>>
+
 interface ExpectedReactiveListContent<ElementT> : ExpectedTestSubjectState<ReactiveList<ElementT>>
 
 interface ExpectedReactiveListContentTransition<ElementT> :
     ExpectedTestSubjectTransition<ReactiveList<ElementT>, ListChange<ElementT>>
 
-private abstract class AbstractExpectedReactiveListChange<ElementT> : ExpectedReactiveListChange<ElementT> {
-    override fun verifyReaction(
-        trait: TestSubjectObservationTrait<ReactiveList<ElementT>, ListChange<ElementT>>,
-        subject: ReactiveList<ElementT>,
-        subjectObserver: TestSubjectObserver<ReactiveList<ElementT>, ListChange<ElementT>>,
+private abstract class AbstractExpectedReactiveListChange<ElementT> :
+    AbstractBasicExpectedReactiveListChange<ElementT>() {
+    final override fun verifyEffectiveNotification(
+        effectiveNotification: ListChange<ElementT>?,
     ) {
-        TODO("Not yet implemented")
+        verifyEffectiveChange(
+            effectiveChange = effectiveNotification,
+        )
     }
 
     final override fun prepareReactionVerifier(
@@ -116,8 +120,6 @@ private abstract class AbstractExpectedReactiveListChange<ElementT> : ExpectedRe
     abstract fun verifyEffectiveChange(
         effectiveChange: ListChange<ElementT>?,
     )
-
-    abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
 }
 
 abstract class AbstractExpectedReactiveListContentTransition<ElementT> :

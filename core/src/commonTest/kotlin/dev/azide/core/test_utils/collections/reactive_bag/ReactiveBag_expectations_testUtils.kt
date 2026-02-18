@@ -9,7 +9,7 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListenerOnline
-import dev.azide.core.test_utils.generic.AbstractBasicExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -20,7 +20,7 @@ import kotlin.test.assertTrue
 interface TestReactiveBagReactionVerifier<ElementT> :
     ExpectedTestSubjectReaction.TestSubjectReactionVerifier<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
-typealias ExpectedBasicReactiveBagChange<ElementT> = AbstractBasicExpectedTestSubjectReaction<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
+typealias ExpectedBasicReactiveBagChange<ElementT> = AbstractExplicitExpectedTestSubjectReaction<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
 interface ExpectedReactiveBagContent<ElementT> : ExpectedTestSubjectState<ReactiveBag<ElementT>>
 
