@@ -5,16 +5,16 @@ import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.generic.deprecated_verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
+import dev.azide.core.test_utils.generic.TestSubjectObserver
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Effect_generic_start_testUtils {
     fun <SubjectT, NotificationT : Any> executeStartTransaction(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation2? = null,
@@ -40,19 +40,27 @@ data object Effect_generic_start_testUtils {
             propagationContext = propagationContext,
         )
 
-        val subjectReactionVerifier: ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>? =
-            expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
-                propagationContext = propagationContext,
-                subject = subject,
-                strategy = subjectPerceptionStrategy,
-            )
+        val subjectObserver = TestSubjectObserver.observeWithStrategy(
+            trait = trait,
+            subject = subject,
+            propagationContext = propagationContext,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+        )
 
         expectedSubjectTransition.expectedOldState.verifyStableState(
             propagationContext = propagationContext,
             subject = subject,
         )
 
-        subjectReactionVerifier?.deprecated_verifyReactionUninstalling()
+        subjectObserver?.let {
+            expectedSubjectTransition.expectedReaction.verifyReaction(
+                trait = trait,
+                subject = subject,
+                subjectObserver = it,
+            )
+
+            it.unobserve()
+        }
 
         subject
     }

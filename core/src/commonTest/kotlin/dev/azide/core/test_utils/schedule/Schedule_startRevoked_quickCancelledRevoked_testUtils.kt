@@ -4,6 +4,7 @@ import dev.azide.core.Schedule
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.TestSlottedStimulation5
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.generic_testUtils
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
@@ -17,7 +18,7 @@ data object Schedule_startRevoked_quickCancelledRevoked_testUtils {
         slottedInputStimulation: TestSlottedStimulation5? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Schedule_testUtils.executeTransactionWithImpactVerification(
+        generic_testUtils.executeTransactionWithImpactVerification(
             expectedTargetImpact = expectedTargetImpact,
         ) { propagationContext ->
             // 0. Pre-stimulation

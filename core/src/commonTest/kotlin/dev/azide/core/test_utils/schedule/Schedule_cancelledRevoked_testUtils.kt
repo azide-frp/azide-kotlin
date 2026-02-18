@@ -4,6 +4,7 @@ import dev.azide.core.ScheduleOutcome
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.generic_testUtils
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
@@ -17,7 +18,7 @@ data object Schedule_cancelledRevoked_testUtils {
     ) {
         val subjectHandle = subjectOutcome.handle
 
-        Schedule_testUtils.executeTransactionWithImpactVerification(
+        generic_testUtils.executeTransactionWithImpactVerification(
             expectedTargetImpact = expectedTargetImpact,
         ) { propagationContext ->
             // 0. Pre-stimulation

@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelled_testUti
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.ExpectedEventStreamEmission
 import dev.azide.core.test_utils.event_stream.asTransition
+import dev.azide.core.test_utils.generic.EventStreamObservationTrait
 import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
@@ -20,6 +21,7 @@ data object Effect_EventStream_cancelled_testUtils {
         cancelCount: Int = 1,
     ) {
         Effect_generic_cancelled_testUtils.executeCancelTransaction(
+            trait = EventStreamObservationTrait(),
             subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = slottedInputStimulation,

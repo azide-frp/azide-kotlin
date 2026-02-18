@@ -1,7 +1,6 @@
 package dev.azide.core.test_utils.generic
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -122,37 +121,6 @@ abstract class AbstractExplicitExpectedTestSubjectReaction<SubjectT, Notificatio
     }
 
     abstract val expectedSubjectNotification: NotificationT?
-}
-
-@Deprecated("Migrate to `TestSubjectObserver`")
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, NotificationT>.deprecated_prepareReactionVerifierInstalled(
-    propagationContext: Transactions.PropagationContext,
-    subject: SubjectT,
-): ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT> = prepareReactionVerifier(
-    propagationContext = propagationContext,
-    subjectLazy = lazyOf(subject),
-).apply {
-    install()
-}
-
-@Deprecated("Migrate to `TestSubjectObserver`")
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction<SubjectT, NotificationT>.prepareReactionVerifierWithStrategyInstalled(
-    propagationContext: Transactions.PropagationContext,
-    subject: SubjectT,
-    strategy: TestSubjectPerceptionStrategy,
-): ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>? = when (strategy) {
-    TestSubjectPerceptionStrategy.NonPerceived -> null
-
-    TestSubjectPerceptionStrategy.Perceived -> deprecated_prepareReactionVerifierInstalled(
-        propagationContext = propagationContext,
-        subject = subject,
-    )
-}
-
-@Deprecated("Migrate to `TestSubjectObserver`")
-fun <SubjectT, NotificationT : Any> ExpectedTestSubjectReaction.TestSubjectReactionVerifier<SubjectT, NotificationT>.deprecated_verifyReactionUninstalling() {
-    verifyReaction()
-    uninstall()
 }
 
 @Deprecated("Migrate to `TestSubjectObserver`")

@@ -6,6 +6,7 @@ import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.ExpectedEventStreamEmission
 import dev.azide.core.test_utils.event_stream.asTransition
+import dev.azide.core.test_utils.generic.EventStreamObservationTrait
 import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
@@ -18,6 +19,7 @@ data object Effect_EventStream_step_testUtils {
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_step_testUtils.executeStepTransaction(
+            trait = EventStreamObservationTrait(),
             subject = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = inputStimulation,
