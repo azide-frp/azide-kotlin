@@ -6,7 +6,7 @@ import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.registerBoundListenerOnline
-import dev.azide.core.test_utils.generic.ExpectedBasicTestSubjectReaction
+import dev.azide.core.test_utils.generic.AbstractBasicExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 interface TestCellReactionVerifier<ValueT> :
     ExpectedTestSubjectReaction.TestSubjectReactionVerifier<Cell<ValueT>, CellVertex.Update<ValueT>>
 
-typealias ExpectedBasicCellUpdate<ValueT> = ExpectedBasicTestSubjectReaction<Cell<ValueT>, CellVertex.Update<ValueT>>
+typealias ExpectedBasicCellUpdate<ValueT> = AbstractBasicExpectedTestSubjectReaction<Cell<ValueT>, CellVertex.Update<ValueT>>
 
 interface ExpectedCellValue<ValueT> : ExpectedTestSubjectState<Cell<ValueT>>
 
@@ -105,8 +105,6 @@ private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedBasicCellUpd
             receivedUpdates.add(subjectVertex.ongoingUpdate)
         }
     }
-
-    abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
 
     abstract val expectedEffectiveUpdate: CellVertex.Update<ValueT>?
 }

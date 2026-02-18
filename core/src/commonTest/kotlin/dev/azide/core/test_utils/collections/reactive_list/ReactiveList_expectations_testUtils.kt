@@ -12,6 +12,7 @@ import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
 import dev.azide.core.test_utils.generic.TestSubjectObserver
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -30,6 +31,8 @@ interface ExpectedReactiveListContentTransition<ElementT> :
 
 private abstract class AbstractExpectedReactiveListChange<ElementT> : ExpectedReactiveListChange<ElementT> {
     override fun verifyReaction(
+        trait: TestSubjectObservationTrait<ReactiveList<ElementT>, ListChange<ElementT>>,
+        subject: ReactiveList<ElementT>,
         subjectObserver: TestSubjectObserver<ReactiveList<ElementT>, ListChange<ElementT>>,
     ) {
         TODO("Not yet implemented")
