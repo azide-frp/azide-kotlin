@@ -2,26 +2,16 @@ package dev.azide.core.test_utils.collections.reactive_list
 
 import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
-import dev.azide.core.impl.collections.reactive_collection.TrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
-import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.generic.AbstractBasicExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
-import dev.azide.core.test_utils.generic.TestSubjectObserver
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
-
-interface TestReactiveListReactionVerifier<ElementT> :
-    ExpectedTestSubjectReaction.TestSubjectReactionVerifier<ReactiveList<ElementT>, ListChange<ElementT>>
 
 typealias ExpectedReactiveListChange<ElementT> = ExpectedTestSubjectReaction<ReactiveList<ElementT>, ListChange<ElementT>>
 
@@ -41,81 +31,6 @@ private abstract class AbstractExpectedReactiveListChange<ElementT> :
             effectiveChange = effectiveNotification,
         )
     }
-
-    final override fun prepareReactionVerifier(
-        propagationContext: Transactions.PropagationContext,
-        subjectLazy: Lazy<ReactiveList<ElementT>>,
-    ): TestReactiveListReactionVerifier<ElementT> = object : TestReactiveListReactionVerifier<ElementT>, BoundListener {
-            private val subjectVertex: TrackedListVertex<ElementT>
-                get() = subjectLazy.value.trackedVertex
-
-            private var listenerHandle: ListenerHandle? = null
-
-            private var initialChange: ListChange<ElementT>? = null
-
-            private val receivedChanges = mutableListOf<ListChange<ElementT>?>()
-
-            override fun install() {
-                if (listenerHandle != null) {
-                    throw IllegalStateException("ReactiveList verifier is already installed")
-                }
-
-                listenerHandle = subjectVertex.registerBoundListenerOnline(
-                    propagationContext = propagationContext,
-                    listener = this,
-                )
-
-                initialChange = subjectVertex.ongoingChange
-            }
-
-            override fun verifyReaction() {
-                if (listenerHandle == null) {
-                    throw IllegalStateException("A non-installed verifier cannot be used for verification")
-                }
-
-                verifyEffectiveChange(
-                    effectiveChange = subjectVertex.ongoingChange,
-                )
-
-                val effectiveReceivedChange = when {
-                    receivedChanges.isNotEmpty() -> receivedChanges.last()
-                    else -> initialChange
-                }
-
-                verifyEffectiveChange(
-                    effectiveChange = effectiveReceivedChange,
-                )
-
-                when (intermediatePropagationTolerance) {
-                    IntermediatePropagationTolerance.DoNotTolerate -> {
-                        assertTrue(
-                            actual = receivedChanges.size <= 1,
-                            message = "Expected at most one change to be propagated, but received ${receivedChanges.size} changes (intermediate propagation is not tolerated).",
-                        )
-                    }
-
-                    IntermediatePropagationTolerance.Tolerate -> {}
-                }
-            }
-
-        override fun uninstall() {
-                val listenerHandle =
-                    this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
-
-                subjectVertex.unregisterListener(
-                    handle = listenerHandle,
-                )
-
-                this.listenerHandle = null
-                this.initialChange = null
-            }
-
-            override fun handle(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                receivedChanges.add(subjectVertex.ongoingChange)
-            }
-        }
 
     abstract fun verifyEffectiveChange(
         effectiveChange: ListChange<ElementT>?,

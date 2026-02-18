@@ -1,6 +1,5 @@
 package dev.azide.core.test_utils.generic
 
-import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -12,27 +11,6 @@ interface ExpectedTestSubjectReaction<SubjectT, NotificationT : Any> {
 
         override val expectedSubjectNotification: Nothing? = null
 
-        override fun prepareReactionVerifier(
-            propagationContext: Transactions.PropagationContext,
-            subjectLazy: Lazy<Any>,
-        ): TestSubjectReactionVerifier<Any, Any> = object : TestSubjectReactionVerifier<Any, Any> {
-            override fun install() {
-            }
-
-            override fun verifyReaction() {
-            }
-
-            override fun uninstall() {
-            }
-        }
-    }
-
-    interface TestSubjectReactionVerifier<out SubjectT, in NotificationT : Any> {
-        fun install()
-
-        fun verifyReaction()
-
-        fun uninstall()
     }
 
     enum class IntermediatePropagationTolerance {
@@ -48,11 +26,6 @@ interface ExpectedTestSubjectReaction<SubjectT, NotificationT : Any> {
         subject: SubjectT,
         subjectObserver: TestSubjectObserver<SubjectT, NotificationT>,
     )
-
-    fun prepareReactionVerifier(
-        propagationContext: Transactions.PropagationContext,
-        subjectLazy: Lazy<SubjectT>,
-    ): TestSubjectReactionVerifier<SubjectT, NotificationT>
 }
 
 abstract class AbstractBasicExpectedTestSubjectReaction<SubjectT, NotificationT : Any> :

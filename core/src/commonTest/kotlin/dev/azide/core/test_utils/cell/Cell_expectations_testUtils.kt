@@ -2,20 +2,13 @@ package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
-
-interface TestCellReactionVerifier<ValueT> :
-    ExpectedTestSubjectReaction.TestSubjectReactionVerifier<Cell<ValueT>, CellVertex.Update<ValueT>>
 
 typealias ExpectedBasicCellUpdate<ValueT> = AbstractExplicitExpectedTestSubjectReaction<Cell<ValueT>, CellVertex.Update<ValueT>>
 
@@ -26,85 +19,6 @@ interface ExpectedCellValueTransition<ValueT> : ExpectedTestSubjectTransition<Ce
 private abstract class AbstractExpectedCellUpdate<ValueT> : ExpectedBasicCellUpdate<ValueT>() {
     final override val expectedSubjectNotification: CellVertex.Update<ValueT>?
         get() = expectedEffectiveUpdate
-
-    final override fun prepareReactionVerifier(
-        propagationContext: Transactions.PropagationContext,
-        subjectLazy: Lazy<Cell<ValueT>>,
-    ): TestCellReactionVerifier<ValueT> = object : TestCellReactionVerifier<ValueT>, BoundListener {
-        private val subjectVertex: CellVertex<ValueT>
-            get() = subjectLazy.value.vertex
-
-        private var listenerHandle: ListenerHandle? = null
-
-        private var initialUpdate: CellVertex.Update<ValueT>? = null
-
-        private val receivedUpdates = mutableListOf<CellVertex.Update<ValueT>?>()
-
-        override fun install() {
-            if (listenerHandle != null) {
-                throw IllegalStateException("Cell verifier is already installed")
-            }
-
-            listenerHandle = subjectVertex.registerBoundListenerOnline(
-                propagationContext = propagationContext,
-                listener = this,
-            )
-
-            initialUpdate = subjectVertex.ongoingUpdate
-        }
-
-        override fun verifyReaction() {
-            if (listenerHandle == null) {
-                throw IllegalStateException("A non-installed verifier cannot be used for verification")
-            }
-
-            assertEquals(
-                expected = expectedEffectiveUpdate,
-                actual = subjectVertex.ongoingUpdate,
-                message = "Exposed ongoing update did not match the expected update.",
-            )
-
-            val effectiveUpdate = when {
-                receivedUpdates.isNotEmpty() -> receivedUpdates.last()
-                else -> initialUpdate
-            }
-
-            assertEquals(
-                expected = expectedEffectiveUpdate,
-                actual = effectiveUpdate,
-                message = "The effective received update did not match the expected update.",
-            )
-
-            when (intermediatePropagationTolerance) {
-                IntermediatePropagationTolerance.DoNotTolerate -> {
-                    assertTrue(
-                        actual = receivedUpdates.size <= 1,
-                        message = "Expected at most one update to be propagated, but received ${receivedUpdates.size} updates (intermediate propagation is not tolerated).",
-                    )
-                }
-
-                IntermediatePropagationTolerance.Tolerate -> {}
-            }
-        }
-
-        override fun uninstall() {
-            val listenerHandle =
-                this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
-
-            subjectVertex.unregisterListener(
-                handle = listenerHandle,
-            )
-
-            this.listenerHandle = null
-            this.initialUpdate = null
-        }
-
-        override fun handle(
-            propagationContext: Transactions.PropagationContext,
-        ) {
-            receivedUpdates.add(subjectVertex.ongoingUpdate)
-        }
-    }
 
     abstract val expectedEffectiveUpdate: CellVertex.Update<ValueT>?
 }
