@@ -34,7 +34,7 @@ data object generic_spawn_rushedWrapUp_testUtils {
                 LoopUtils.looped { loopedSubjectLazy: Lazy<SubjectT> ->
                     // Observe the subject later in a wrap-up operation, before the subject itself had a chance to
                     // wrap up (hence the "rush"). This is the earliest legal point to attempt perceiving the subject.
-                    val subjectObserver = TestSubjectObserver(
+                    val subjectObserver = TestSubjectObserver.prepare(
                         trait = trait,
                         subjectLazy = loopedSubjectLazy,
                     )

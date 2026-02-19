@@ -34,7 +34,7 @@ data object generic_testUtils {
     fun <SubjectT> executeTransactionWithNewStateVerification(
         expectedNewState: ExpectedTestSubjectState<SubjectT>?,
         propagate: (Transactions.PropagationContext) -> SubjectT,
-    ): SubjectT {
+    ) {
         val subject = Transactions.executeWithResult { propagationContext ->
             val subject = propagate(propagationContext)
 
@@ -50,7 +50,5 @@ data object generic_testUtils {
                 )
             }
         }
-
-        return subject
     }
 }

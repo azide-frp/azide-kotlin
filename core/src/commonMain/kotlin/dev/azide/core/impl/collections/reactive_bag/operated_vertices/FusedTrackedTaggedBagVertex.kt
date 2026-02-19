@@ -46,6 +46,9 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             listener = this,
         )
 
+        /**
+         * Handle the change of the listened inner cell vertex.
+         */
         override fun handle(
             propagationContext: Transactions.PropagationContext,
         ) {
@@ -160,7 +163,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
     private var updatedUntouchedStableInnerCellVertexTags: MutableSet<Tag>? = null
 
     /**
-     * Map of the changed inner cell vertices.
+     * Map from the tags to respective changed inner cell vertices (included both added and replaced cells).
      *
      * If the vertex is inactive: `null`
      *
@@ -283,7 +286,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     val previouslyAddedListener = upstreamNewInnerCellListenerByTag.remove(previouslyChangedTag)
                             ?: throw IllegalStateException("Inner listener entry not found for tag")
 
-                    // FIXME: Likely partially tested expression
                     val previousAddedListenedCellVertex = previouslyAddedListener.detach()
 
                     if (previousAddedListenedCellVertex != previousChangedInnerCellVertex) {
@@ -297,7 +299,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
                     // Unregister listener from previous replacing cell vertex
 
-                    // FIXME: Likely partially tested expression
                     val previousReplacingListenedCellVertex = changedListener.reattach(
                         propagationContext = propagationContext,
                         newSourceCellVertex = previouslyReplacedCellVertex,
@@ -360,13 +361,14 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
         sourceBagOngoingChange: TaggedBagChange<Cell<ElementT>>,
     ) {
-        val newChangedInnerCellVertexByTag =
-            sourceBagOngoingChange.changedElementByTag.mapValuesTo(mutableMapOf()) { (newlyChangedTag: Tag, newlyChangedCell: Cell<ElementT>) ->
+        val newChangedInnerCellVertexByTag = mutableMapOf<Tag, CellVertex<ElementT>>()
+
+        sourceBagOngoingChange.changedElementByTag.mapValuesTo(newChangedInnerCellVertexByTag) { (newlyChangedTag: Tag, newlyChangedCell: Cell<ElementT>) ->
                 val replacedCellVertex = stableInnerSourceCellVertexByTag[newlyChangedTag]
                 val previouslyChangedCellVertex = changedInnerCellVertexByTag?.get(newlyChangedTag)
 
                 when (previouslyChangedCellVertex) {
-                    null -> { // New change (addition/replacement)
+                    null -> { // New change (addition/replacement) or removal corrected to replacement
                         when (replacedCellVertex) {
                             null -> { // Addition (new)
                                 val addedInnerCellVertex = newlyChangedCell.vertex
@@ -391,20 +393,31 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 addedInnerCellVertex
                             }
 
-                            else -> { // Replacement (new)
+                            else -> { // Replacement (new) or removal corrected to replacement
                                 val replacingInnerCellVertex = newlyChangedCell.vertex
 
                                 val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
-                                    ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // FIXME: Likely partially tested expression
-                                val replacedListenedCellVertex = changedListener.reattach(
-                                    propagationContext = propagationContext,
-                                    newSourceCellVertex = replacingInnerCellVertex,
-                                )
+                                when (changedListener) {
+                                    null -> { // Removal corrected to replacement
+                                        upstreamNewInnerCellListenerByTag[newlyChangedTag] = InnerCellListener.attach(
+                                            parent = this,
+                                            tag = newlyChangedTag,
+                                            initialSourceCellVertex = replacingInnerCellVertex,
+                                            propagationContext = propagationContext,
+                                        )
+                                    }
 
-                                if (replacedListenedCellVertex != replacedCellVertex) {
-                                    throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
+                                    else -> { // Replacement (new)
+                                        val replacedListenedCellVertex = changedListener.reattach(
+                                            propagationContext = propagationContext,
+                                            newSourceCellVertex = replacingInnerCellVertex,
+                                        )
+
+                                        if (replacedListenedCellVertex != replacedCellVertex) {
+                                            throw IllegalStateException("Inconsistent replaced cell vertex for tag $newlyChangedTag")
+                                        }
+                                    }
                                 }
 
                                 // Ensure that the replaced stable inner cell vertex is not marked as updated
@@ -424,7 +437,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
                                     ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // FIXME: Likely partially tested expression
                                 val previousAddedListenedCellVertex = changedListener.reattach(
                                     propagationContext = propagationContext,
                                     newSourceCellVertex = newAddedCellVertex,
@@ -444,7 +456,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 val changedListener = upstreamNewInnerCellListenerByTag[newlyChangedTag]
                                     ?: throw IllegalStateException("Inner listener entry not found for tag: $newlyChangedTag")
 
-                                // FIXME: Likely partially tested expression
                                 val previousReplacingListenedCellVertex = changedListener.reattach(
                                     propagationContext = propagationContext,
                                     newSourceCellVertex = newReplacingCellVertex,
@@ -472,7 +483,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         val previouslyAddedListener = upstreamNewInnerCellListenerByTag.remove(previouslyChangedTag)
                                 ?: throw IllegalStateException("Inner listener entry not found for tag: $previouslyChangedTag")
 
-                        // FIXME: Likely partially tested expression
                         val previousAddedListenedCellVertex = previouslyAddedListener.detach()
 
                         if (previousAddedListenedCellVertex != previousAddedCellVertex) {
@@ -488,7 +498,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                 "Inner listener entry not found for tag: $previouslyChangedTag"
                             )
 
-                        // FIXME: Likely partially tested expression
                         val previousReplacingListenedCellVertex = changedListener.reattach(
                             propagationContext = propagationContext,
                             newSourceCellVertex = previouslyReplacedCellVertex,
@@ -524,7 +533,6 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 val newlyRemovedListener = upstreamNewInnerCellListenerByTag.remove(newlyRemovedTag)
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag")
 
-                // FIXME: Likely partially tested expression
                 val newlyRemovedListenedCellVertex = newlyRemovedListener.detach()
 
                 if (newlyRemovedListenedCellVertex != newlyRemovedCellVertex) {
@@ -536,7 +544,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         }
 
         removedInnerCellVertexTags?.forEach { previouslyRemovedTag ->
-            if (previouslyRemovedTag !in sourceBagOngoingChange.removedTags) { // Un-removal
+            if (previouslyRemovedTag !in sourceBagOngoingChange.removedTags && previouslyRemovedTag !in sourceBagOngoingChange.changedElementByTag) { // Un-removal
                 // If the tag is not removed in the current revision of the source bag change, re-register the
                 // listener for the respective stable inner cell vertex.
 
@@ -730,14 +738,12 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         this.upstreamNewInnerCellListenerByTag = null
 
         // Unregister from source bag vertex
-        // FIXME: Untested expression (this might require listener check on the inputs)
         outerSourceBagVertex.unregisterListener(
             handle = upstreamSourceListenerHandle,
         )
 
         // Unregister from all inner cell vertices
         for ((_, newInnerCellListener) in upstreamNewInnerCellListenerByTag) {
-            // FIXME: Likely partially tested expression
             newInnerCellListener.detach()
         }
 
@@ -781,14 +787,15 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         val untouchedInnerCellUpdatedValueByTag =
-            updatedUntouchedStableInnerCellVertexTags.associateWith { updatedStableTag ->
+            updatedUntouchedStableInnerCellVertexTags.asSequence().mapNotNull { updatedStableTag ->
                 val stableCellVertex = this.stableInnerSourceCellVertexByTag?.get(updatedStableTag)
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag: $updatedStableTag")
 
-                val ongoingUpdate = stableCellVertex.ongoingUpdate
-                    ?: throw IllegalStateException("Ongoing update not found for 'updated' cell vertex with tag $updatedStableTag")
+                // Filter out vertices without an ongoing update, which can happen in a case when a single cell vertex
+                // happens to be included both in the stable (untouched) cells and changed cells.
+                val ongoingUpdate = stableCellVertex.ongoingUpdate ?: return@mapNotNull null
 
-                ongoingUpdate.updatedValue
+                updatedStableTag to ongoingUpdate.updatedValue
             }.toMap()
 
         val changedInnerCellNewValueByTag = when (changedInnerCellVertexByTag) {
@@ -813,21 +820,20 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
 
+        // FIXME: Untested expression, unit tests don't fail after removing it
         this.changedInnerCellVertexByTag = null
 
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         this.removedInnerCellVertexTags = null
 
-        this.updatedUntouchedStableInnerCellVertexTags = null
+        this.updatedUntouchedStableInnerCellVertexTags = mutableSetOf()
 
         removedInnerCellVertexTags?.forEach { tag ->
-            // FIXME: Untested expression
             stableInnerSourceCellVertexByTag.remove(tag)
         }
 
         changedInnerCellVertexByTag?.forEach { (tag, changedCellVertex) ->
-            // FIXME: Untested expression
             stableInnerSourceCellVertexByTag[tag] = changedCellVertex
         }
     }

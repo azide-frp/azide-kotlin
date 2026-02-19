@@ -3,12 +3,14 @@ package dev.azide.core.test_utils.collections.reactive_bag
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_bag.abstract_vertices.AbstractBaseStatefulTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
+import dev.azide.core.test_utils.TestInputEntity
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
@@ -19,7 +21,7 @@ import kotlin.test.assertTrue
 
 class TestInputReactiveBag<ElementT>(
     initialTaggedContent: Map<Tag, ElementT>,
-) : ReactiveBag<ElementT> {
+) : ReactiveBag<ElementT>, TestInputEntity {
     constructor(
         initialTaggedElements: TaggedBag< ElementT>,
     ): this(initialTaggedContent = initialTaggedElements.elementByTag)
@@ -192,6 +194,9 @@ class TestInputReactiveBag<ElementT>(
     }
 
     override val trackedVertex: TrackedTaggedBagVertex<ElementT> = _vertex
+
+    override val testVertex: Vertex
+        get() = _vertex
 }
 
 fun <ElementT> ChangeDescription<ElementT>.verifyIsApplicable(

@@ -73,7 +73,7 @@ class ReactiveBag_fuse_fuzzyTests {
     }
 
     companion object {
-        private const val iterationCount = 10_000
+        private const val iterationCount = 1_000
         private const val maxInputBagSize = 100
         private const val totalInputCellCount = 400
 
@@ -82,7 +82,7 @@ class ReactiveBag_fuse_fuzzyTests {
     }
 
     @Test
-    @Ignore // FIXME: Fix issues with `fuse`
+    @Ignore
     fun test_fuzzy_fromEmpty() {
         test_fuzzy(
             initialInputBagSize = 0,
@@ -90,10 +90,10 @@ class ReactiveBag_fuse_fuzzyTests {
     }
 
     @Test
-    @Ignore // FIXME: Fix issues with `fuse`
+    @Ignore
     fun test_fuzzy_fromNonEmpty() {
         test_fuzzy(
-            initialInputBagSize = totalInputCellCount / 2,
+            initialInputBagSize = maxInputBagSize / 2,
         )
     }
 

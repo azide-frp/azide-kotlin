@@ -34,6 +34,19 @@ interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
     override val trackedVertex: TrackedTaggedBagVertex<ElementT>
 }
 
+val <ElementT> ReactiveBag<ElementT>.samplingTaggedElements: Moment<TaggedBag<ElementT>>
+    get() = object : Moment<TaggedBag<ElementT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): TaggedBag<ElementT> = trackedVertex.getOldContentView(
+            propagationContext = propagationContext,
+        )
+    }
+
+fun <ElementT> ReactiveBag<ElementT>.sampleTaggedElementsExternally(): TaggedBag<ElementT> =
+    samplingTaggedElements.pullExternally()
+
 val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, ElementT>>
     get() = object : Moment<Map<Tag, ElementT>> {
         override fun pullInternally(

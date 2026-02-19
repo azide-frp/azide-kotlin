@@ -40,10 +40,11 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
             LoopUtils.looped { loopedEffectOutcomeLazy: Lazy<Effect.Outcome<SubjectT>> ->
                 val loopedSubjectLazy: Lazy<SubjectT> = loopedEffectOutcomeLazy.map { it.result }
 
-                val subjectObserver = TestSubjectObserver(
+                val subjectObserver = TestSubjectObserver.prepare(
                     trait = trait,
                     subjectLazy = loopedSubjectLazy,
                 )
+
                 // Observe the subject later in a wrap-up operation, before the subject itself had a chance to
                 // wrap up (hence the "rush"). This is the earliest legal point to attempt perceiving the subject.
                 subjectObserver.observeLater(
