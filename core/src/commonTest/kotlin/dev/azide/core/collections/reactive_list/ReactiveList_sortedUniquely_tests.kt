@@ -2,10 +2,10 @@ package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.collections.helpers.withSortKey
 import dev.azide.core.collections.sortedUniquely
+import dev.azide.core.test_utils.collections.ReactiveCollection_generic_testUtils
+import dev.azide.core.test_utils.collections.ReactiveCollection_generic_testUtils.SourceReactiveCollectionTag
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_reaction_testUtils
-import dev.azide.core.test_utils.collections.reactive_set.ReactiveSet_generic_testUtils
-import dev.azide.core.test_utils.collections.reactive_set.ReactiveSet_generic_testUtils.SourceReactiveSetTag
 import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import dev.azide.core.test_utils.collections.reactive_set.changing
 import dev.azide.core.test_utils.collections.reactive_set.correctingChange
@@ -22,25 +22,27 @@ class ReactiveList_sortedUniquely_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationScenarioBank_sourceSetChanges =
-        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCollectionChanges =
+        ReactiveCollection_generic_testUtils.stimulationScenarioBank_sourceCollectionChanges.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationScenarioBank_sourceSetChangesRevoked =
-        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCollectionChangesRevoked =
+        ReactiveCollection_generic_testUtils.stimulationScenarioBank_sourceCollectionChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationScenarioBank_sourceSetChangesCorrected =
-        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCollectionChangesCorrected =
+        ReactiveCollection_generic_testUtils.stimulationScenarioBank_sourceCollectionChangesCorrected.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     @Test
-    fun test_sourceSetChanges_additionsOnly() {
-        slottedStimulationScenarioBank_sourceSetChanges.forEach {
-            test_sourceSetChanges_additionsOnly(
+    fun test_sourceCollectionChanges_additionsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
+            test_sourceCollectionChanges_additionsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChanges_additionsOnly(
+    private fun test_sourceCollectionChanges_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -58,7 +60,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.changing(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".11" withSortKey 11,
@@ -90,15 +92,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChanges_removalsOnly() {
-        slottedStimulationScenarioBank_sourceSetChanges.forEach {
-            test_sourceSetChanges_removalsOnly(
+    fun test_sourceCollectionChanges_removalsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
+            test_sourceCollectionChanges_removalsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChanges_removalsOnly(
+    private fun test_sourceCollectionChanges_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -116,7 +118,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.changing(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
                         "#10" withSortKey 10,
@@ -144,15 +146,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChanges_mixed() {
-        slottedStimulationScenarioBank_sourceSetChanges.forEach {
-            test_sourceSetChanges_mixed(
+    fun test_sourceCollectionChanges_mixed() {
+        slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
+            test_sourceCollectionChanges_mixed(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChanges_mixed(
+    private fun test_sourceCollectionChanges_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -171,7 +173,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.changing(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".15" withSortKey 15,
@@ -207,15 +209,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesRevoked_additionsOnly() {
-        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
-            test_sourceSetChangesRevoked_additionsOnly(
+    fun test_sourceCollectionChangesRevoked_additionsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesRevoked.forEach {
+            test_sourceCollectionChangesRevoked_additionsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesRevoked_additionsOnly(
+    private fun test_sourceCollectionChangesRevoked_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -234,7 +236,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".70" withSortKey 70,
@@ -259,15 +261,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesRevoked_removalsOnly() {
-        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
-            test_sourceSetChangesRevoked_removalsOnly(
+    fun test_sourceCollectionChangesRevoked_removalsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesRevoked.forEach {
+            test_sourceCollectionChangesRevoked_removalsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesRevoked_removalsOnly(
+    private fun test_sourceCollectionChangesRevoked_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -286,7 +288,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
                         "#10" withSortKey 10,
@@ -313,15 +315,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesRevoked_mixed() {
-        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
-            test_sourceSetChangesRevoked_mixed(
+    fun test_sourceCollectionChangesRevoked_mixed() {
+        slottedStimulationScenarioBank_sourceCollectionChangesRevoked.forEach {
+            test_sourceCollectionChangesRevoked_mixed(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesRevoked_mixed(
+    private fun test_sourceCollectionChangesRevoked_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -340,7 +342,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".70" withSortKey 70,
@@ -370,15 +372,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesCorrected_additionsOnly() {
-        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
-            test_sourceSetChangesCorrected_additionsOnly(
+    fun test_sourceCollectionChangesCorrected_additionsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesCorrected.forEach {
+            test_sourceCollectionChangesCorrected_additionsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesCorrected_additionsOnly(
+    private fun test_sourceCollectionChangesCorrected_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -397,7 +399,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".25" withSortKey 25, // not corrected
@@ -441,15 +443,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesCorrected_removalsOnly() {
-        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
-            test_sourceSetChangesCorrected_removalsOnly(
+    fun test_sourceCollectionChangesCorrected_removalsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesCorrected.forEach {
+            test_sourceCollectionChangesCorrected_removalsOnly(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesCorrected_removalsOnly(
+    private fun test_sourceCollectionChangesCorrected_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -468,7 +470,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
                         "#10" withSortKey 10, // corrected: not removed
@@ -508,15 +510,15 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
-    fun test_sourceSetChangesCorrected_mixed() {
-        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
-            test_sourceSetChangesCorrected_mixed(
+    fun test_sourceCollectionChangesCorrected_mixed() {
+        slottedStimulationScenarioBank_sourceCollectionChangesCorrected.forEach {
+            test_sourceCollectionChangesCorrected_mixed(
                 slottedStimulationScenario = it,
             )
         }
     }
 
-    private fun test_sourceSetChangesCorrected_mixed(
+    private fun test_sourceCollectionChangesCorrected_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
@@ -535,7 +537,7 @@ class ReactiveList_sortedUniquely_tests {
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
-                tag = SourceReactiveSetTag,
+                tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
                         ".5" withSortKey 5, // not corrected
