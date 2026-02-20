@@ -118,34 +118,29 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             propagationContext = propagationContext,
         )
 
-        sourceOngoingChange.introducedContentView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
-            val addedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
-
-            if (addedKeyRankResult.kind == RankKind.Existing) {
-                throw IllegalStateException("Added element with duplicate sort key found in current content")
-            }
-
-            changeBuilder.addAddition(
-                predictedIndex = addedKeyRankResult.rank,
-                sortKey = addedSortableElement.sortKey,
-                element = addedSortableElement.value,
-            )
-        }
-
         val abolishedContentView = sourceOngoingChange.getAbolishedContentView(
             oldContentView = oldContentView,
         )
 
         abolishedContentView.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
+            val abolishedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
 
-            val removedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
-
-            if (removedKeyRankResult.kind == RankKind.Potential) {
+            if (abolishedKeyRankResult.kind == RankKind.Potential) {
                 throw IllegalStateException("Removed element with non-existing sort key found in current content")
             }
 
-            changeBuilder.addRemoval(
-                removedIndex = removedKeyRankResult.rank,
+            changeBuilder.abolish(
+                abolishedIndex = abolishedKeyRankResult.rank,
+            )
+        }
+
+        sourceOngoingChange.introducedContentView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
+            val introducedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
+
+            changeBuilder.introduce(
+                predictedIndex = introducedKeyRankResult.rank,
+                sortKey = addedSortableElement.sortKey,
+                element = addedSortableElement.value,
             )
         }
 
@@ -155,13 +150,13 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     private inner class ChangeBuilder {
         private val partBuilderByFirstIndexInclusive: MutableSortedMap<Int, PartBuilder> = treeMapOf()
 
-        fun addRemoval(
-            removedIndex: Int,
+        fun abolish(
+            abolishedIndex: Int,
         ) {
-            getOrCreatePartBuilderForIndex(removedIndex).addRemoval()
+            getOrCreatePartBuilderForIndex(abolishedIndex).addRemoval()
         }
 
-        fun addAddition(
+        fun introduce(
             predictedIndex: Int,
             sortKey: SortKeyT,
             element: ElementT,
