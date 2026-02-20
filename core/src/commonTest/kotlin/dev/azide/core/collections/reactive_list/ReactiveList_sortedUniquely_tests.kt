@@ -47,11 +47,11 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
             ),
         )
 
@@ -63,9 +63,9 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".11" withSortKey 11,
-                        "!21" withSortKey 21,
-                        ".60" withSortKey 60,
+                        ".11" withSortKey 11.5,
+                        "!21" withSortKey 21.9,
+                        ".60" withSortKey 60.2,
                     ),
                 ),
             ).bind(slottedStimulationScenario),
@@ -105,11 +105,11 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
             ),
         )
 
@@ -121,8 +121,8 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
-                        "#10" withSortKey 10,
-                        "?30" withSortKey 30,
+                        "#10" withSortKey 10.8,
+                        "?30" withSortKey 30.1,
                     ),
                 ),
             ).bind(
@@ -159,12 +159,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -176,13 +176,13 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".15" withSortKey 15,
-                        ".16" withSortKey 16,
+                        ".15" withSortKey 15.2,
+                        ".16" withSortKey 16.9,
                     ),
                     removedElements = setOf(
-                        "$20" withSortKey 20,
-                        "?30" withSortKey 30,
-                        ".50" withSortKey 50,
+                        "$20" withSortKey 20.6,
+                        "?30" withSortKey 30.1,
+                        ".50" withSortKey 50.4,
                     ),
                 ),
             ).bind(
@@ -222,12 +222,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -239,8 +239,8 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".70" withSortKey 70,
-                        ".80" withSortKey 80,
+                        ".70" withSortKey 70.5,
+                        ".80" withSortKey 80.9,
                     ),
                 ),
             ).bind(
@@ -274,12 +274,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -291,10 +291,10 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
-                        "#10" withSortKey 10,
-                        "$20" withSortKey 20,
-                        "?30" withSortKey 30,
-                        ".50" withSortKey 50,
+                        "#10" withSortKey 10.8,
+                        "$20" withSortKey 20.6,
+                        "?30" withSortKey 30.1,
+                        ".50" withSortKey 50.4,
                     ),
                 ),
             ).bind(
@@ -328,12 +328,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -345,13 +345,13 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".70" withSortKey 70,
-                        ".80" withSortKey 80,
+                        ".70" withSortKey 70.5,
+                        ".80" withSortKey 80.9,
                     ),
                     removedElements = setOf(
-                        "$20" withSortKey 20,
-                        "?30" withSortKey 30,
-                        ".50" withSortKey 50,
+                        "$20" withSortKey 20.6,
+                        "?30" withSortKey 30.1,
+                        ".50" withSortKey 50.4,
                     ),
                 ),
             ).bind(
@@ -385,12 +385,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -402,16 +402,16 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".25" withSortKey 25, // not corrected
-                        ".26" withSortKey 26, // corrected: added differently
-                        ".70" withSortKey 70, // corrected: not added
+                        ".25" withSortKey 25.3, // not corrected
+                        ".26" withSortKey 26.7, // corrected: added differently
+                        ".70" withSortKey 70.5, // corrected: not added
                     ),
                 ),
                 correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".25" withSortKey 25,
-                        ".26" withSortKey 26,
-                        ".27" withSortKey 27, // (not mentioned before)
+                        ".25" withSortKey 25.3,
+                        ".26" withSortKey 26.7,
+                        ".27" withSortKey 27.4, // (not mentioned before)
                     ),
                 ),
             ).bind(
@@ -456,12 +456,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -473,19 +473,19 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
-                        "#10" withSortKey 10, // corrected: not removed
-                        "$20" withSortKey 20, // not corrected
-                        "?30" withSortKey 30, // not corrected
-                        "!60" withSortKey 60, // corrected: not removed
-                        ".50" withSortKey 50, // not corrected
+                        "#10" withSortKey 10.8, // corrected: not removed
+                        "$20" withSortKey 20.6, // not corrected
+                        "?30" withSortKey 30.1, // not corrected
+                        "!60" withSortKey 60.7, // corrected: not removed
+                        ".50" withSortKey 50.4, // not corrected
                     ),
                 ),
                 correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
-                        "$20" withSortKey 20,
-                        "?30" withSortKey 30,
-                        ".50" withSortKey 50,
-                        "#10" withSortKey 10, // (not mentioned before)
+                        "$20" withSortKey 20.6,
+                        "?30" withSortKey 30.1,
+                        ".50" withSortKey 50.4,
+                        "#10" withSortKey 10.8, // (not mentioned before)
                     ),
                 ),
             ).bind(
@@ -523,12 +523,12 @@ class ReactiveList_sortedUniquely_tests {
     ) {
         val sourceReactiveSet = TestInputReactiveSet(
             initialElements = setOf(
-                "#10" withSortKey 10,
-                "^0" withSortKey 0,
-                "?30" withSortKey 30,
-                "$20" withSortKey 20,
-                ".50" withSortKey 50,
-                "!60" withSortKey 60,
+                "#10" withSortKey 10.8,
+                "^0" withSortKey 0.3,
+                "?30" withSortKey 30.1,
+                "$20" withSortKey 20.6,
+                ".50" withSortKey 50.4,
+                "!60" withSortKey 60.7,
             ),
         )
 
@@ -540,23 +540,23 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".5" withSortKey 5, // not corrected
-                        ".70" withSortKey 70, // corrected: not added
+                        ".5" withSortKey 5.2, // not corrected
+                        ".70" withSortKey 70.5, // corrected: not added
                     ),
                     removedElements = setOf(
-                        "$20" withSortKey 20,
-                        ".50" withSortKey 50,
+                        "$20" withSortKey 20.6,
+                        ".50" withSortKey 50.4,
                     ),
                 ),
                 correctedChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
-                        ".5" withSortKey 5,
+                        ".5" withSortKey 5.2,
                     ),
                     removedElements = setOf(
-                        "$20" withSortKey 20,
-                        "?30" withSortKey 30,
-                        "!60" withSortKey 60, // (not mentioned before)
-                        ".50" withSortKey 50,
+                        "$20" withSortKey 20.6,
+                        "?30" withSortKey 30.1,
+                        "!60" withSortKey 60.7, // (not mentioned before)
+                        ".50" withSortKey 50.4,
                     ),
                 ),
             ).bind(
