@@ -1,8 +1,10 @@
 package dev.azide.core.test_utils.generic
 
 import dev.azide.core.collections.ReactiveBag
+import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
+import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
@@ -63,6 +65,8 @@ data object generic_reaction_testUtils {
     }
 
     typealias ReactiveBagHealthChecker<ElementT> = TestSubjectHealthChecker<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
+
+    typealias ReactiveListHealthChecker<ElementT> = TestSubjectHealthChecker<ReactiveList<ElementT>, ListChange<ElementT>>
 
     /**
      * Execute a transaction with the given stimulation, verifying whether the test subject reacts in the expected way.
