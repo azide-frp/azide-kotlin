@@ -5,11 +5,11 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
-abstract class AbstractTrackedGenericCollectionVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>>() :
+abstract class AbstractTrackedGenericCollectionVertex<ContentT : Collection<*>, ChangeT : GenericCollectionChange<*>>() :
     AbstractLiveVertex(),
     TrackedGenericCollectionVertex<ContentT, ChangeT> {
     private var _ongoingChange: ChangeT? = null

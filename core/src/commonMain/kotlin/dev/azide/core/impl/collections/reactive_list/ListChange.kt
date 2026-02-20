@@ -1,10 +1,10 @@
 package dev.azide.core.impl.collections.reactive_list
 
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 
 data class ListChange<out ElementT>(
     val parts: List<Part<ElementT>>,
-) : CollectionChange<ElementT> {
+) : GenericCollectionChange<List<ElementT>> {
     data class Part<out ElementT>(
         val firstIndexInclusive: Int,
         val lastIndexExclusive: Int,
@@ -61,11 +61,17 @@ data class ListChange<out ElementT>(
     override val sizeDelta: Int
         get() = parts.sumOf { it.sizeDelta }
 
-    override val addedElements: List<ElementT>
+    override val addedContent: List<ElementT>
         get() = parts.flatMap { it.newElements }
 
-    override val removedElements: List<ElementT>
-        get() = TODO()
+    override fun getRemovedContentView(
+        oldContentView: List<@UnsafeVariance ElementT>,
+    ): List<ElementT> = parts.flatMap { part ->
+        oldContentView.subList(
+            fromIndex = part.firstIndexInclusive,
+            toIndex = part.lastIndexExclusive,
+        )
+    }
 }
 
 /**

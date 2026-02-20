@@ -6,7 +6,7 @@ import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.registerBoundListener
@@ -37,6 +37,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             else -> {
                 val builtChange = buildChange(
                     sourceOngoingChange = sourceChange,
+                    propagationContext = propagationContext,
                 )
 
                 exposeChangeNotifyingListeners(
@@ -72,7 +73,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
         )
 
         return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
-            buildChange(sourceOngoingChange)
+            buildChange(sourceOngoingChange, propagationContext)
         }
     }
 
@@ -106,13 +107,24 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     }
 
     private fun buildChange(
-        sourceOngoingChange: CollectionChange<SortableValue<ElementT, SortKeyT>>,
+        sourceOngoingChange: TrackedGenericCollectionVertex.CollectionChange<SortableValue<ElementT, SortKeyT>>,
+        propagationContext: Transactions.PropagationContext,
     ): ListChange<ElementT> {
         val elementBySortKey = this.elementBySortKey ?: throw IllegalStateException("Vertex doesn't seem to be active")
 
         val changeBuilder = ChangeBuilder()
 
-        sourceOngoingChange.addedElements.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
+        val oldContentView = sourceVertex.getOldContentView(
+            propagationContext = propagationContext,
+        )
+
+        val addedElementsView: Collection<SortableValue<ElementT, SortKeyT>> = sourceOngoingChange.addedContent
+
+        val removedElementsView = sourceOngoingChange.getRemovedContentView(
+            oldContentView = oldContentView,
+        )
+
+        addedElementsView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
             val addedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
 
             if (addedKeyRankResult.kind == RankKind.Existing) {
@@ -126,7 +138,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             )
         }
 
-        sourceOngoingChange.removedElements.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
+        removedElementsView.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
             val removedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
 
             if (removedKeyRankResult.kind == RankKind.Potential) {

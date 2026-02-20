@@ -370,12 +370,9 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
 
                         if (changedStableEffectHandle != null) { // Inner effect replacement
                             // Cancel the stable replaced effect
-                            initialInnerEffectCancellationRevocableByTag.put(
-                                changedTag,
-                                changedStableEffectHandle.cancel.executeInternallyWrappedUp(
-                                    propagationContext = propagationContext,
-                                ).revocable,
-                            )
+                            initialInnerEffectCancellationRevocableByTag[changedTag] = changedStableEffectHandle.cancel.executeInternallyWrappedUp(
+                                propagationContext = propagationContext,
+                            ).revocable
                         }
 
                         newInnerEffect.start.executeInternallyWrappedUp(

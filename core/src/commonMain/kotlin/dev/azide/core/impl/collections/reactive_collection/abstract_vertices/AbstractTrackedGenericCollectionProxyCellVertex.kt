@@ -7,11 +7,11 @@ import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListener
 
-abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
+abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : GenericCollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
     cacheType = CacheType.Active,
@@ -34,6 +34,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
             else -> {
                 val builtUpdate = buildUpdate(
                     propagationContext = propagationContext,
+                    sourceVertex = sourceVertex,
                     sourceChange = change,
                 )
 
@@ -75,6 +76,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
         return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
             buildUpdate(
                 propagationContext = propagationContext,
+                sourceVertex = sourceVertex,
                 sourceChange = sourceOngoingChange,
             )
         }
@@ -105,6 +107,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
 
     protected abstract fun buildUpdate(
         propagationContext: PropagationContext,
+        sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
         sourceChange: ChangeT,
     ): CellVertex.Update<ValueT>?
 
@@ -113,6 +116,6 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     ): ValueT
 }
 
-typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, CollectionChange<ElementT>, ValueT>
+typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, TrackedGenericCollectionVertex.CollectionChange<ElementT>, ValueT>
 
 typealias AbstractTrackedSetProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Set<ElementT>, SetChange<ElementT>, ValueT>

@@ -7,16 +7,16 @@ import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListener
 
 abstract class AbstractTransformativeTrackedGenericCollectionVertex<
         ContentT : Collection<*>,
-        ChangeT : CollectionChange<*>,
+        ChangeT : GenericCollectionChange<*>,
         TransformedContentT : Collection<*>,
-        TransformedChangeT : CollectionChange<*>,
+        TransformedChangeT : GenericCollectionChange<*>,
         > :
     AbstractStatelessTrackedGenericCollectionVertex<TransformedContentT, TransformedChangeT>(), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null

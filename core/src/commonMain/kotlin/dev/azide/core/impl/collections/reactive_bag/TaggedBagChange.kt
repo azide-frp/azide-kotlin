@@ -1,12 +1,12 @@
 package dev.azide.core.impl.collections.reactive_bag
 
 import dev.azide.core.collections.ReactiveBag.Tag
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 
 data class TaggedBagChange<out ElementT>(
     val changedElementByTag: Map<Tag, ElementT>,
     val removedTags: Set<Tag>,
-) : CollectionChange<ElementT> {
+) : GenericCollectionChange<TaggedBag<ElementT>> {
     companion object {
         fun <ElementT> of(
             changedElementByTag: Map<Tag, ElementT>,
@@ -26,18 +26,24 @@ data class TaggedBagChange<out ElementT>(
         }
     }
 
-    override val addedElements: Collection<ElementT>
-        get() = TODO("addedElements")
-
-    override val removedElements: Collection<ElementT>
-        get() = TODO("removedElements")
-
     fun filter(
         predicate: (ElementT) -> Boolean,
     ): TaggedBagChange<ElementT>? = TODO("TaggedBagChange.filter")
 
     override val sizeDelta: Int
-        get() = addedElements.size - removedElements.size
+        get() = TODO()
+
+    override val addedContent: TaggedBag<ElementT>
+        get() = TODO("Not yet implemented")
+
+    override fun getRemovedContentView(
+        oldContentView: TaggedBag<@UnsafeVariance ElementT>,
+    ): TaggedBag<ElementT> = TaggedBag.ofTaggedContent(
+        elementByTag = removedTags.associateWith { removedTag ->
+            oldContentView.getByTag(removedTag)
+                ?: throw IllegalStateException("Removed tag $removedTag does not exist in the old content view.")
+        },
+    )
 }
 
 fun <ElementT, TransformedElementT> TaggedBagChange<ElementT>.map(
