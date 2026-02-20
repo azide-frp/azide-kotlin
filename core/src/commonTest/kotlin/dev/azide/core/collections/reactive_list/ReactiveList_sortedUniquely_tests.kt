@@ -117,7 +117,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveBag.ChangeDescription(
@@ -168,7 +168,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveBag.ChangeDescription(
@@ -224,7 +224,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveBag.ChangeDescription(
@@ -281,7 +281,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveBag.ChangeDescription(
@@ -343,7 +343,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -395,7 +395,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -444,7 +444,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -496,7 +496,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -552,7 +552,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -623,7 +623,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -679,7 +679,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
@@ -748,7 +748,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
