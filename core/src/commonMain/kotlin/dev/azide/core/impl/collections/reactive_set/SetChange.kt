@@ -36,10 +36,10 @@ data class SetChange<out ElementT>(
     override val sizeDelta: Int
         get() = addedElements.size - removedElements.size
 
-    override val addedContent: Set<ElementT>
+    override val introducedContentView: Set<ElementT>
         get() = addedElements
 
-    override fun getRemovedContentView(
+    override fun getAbolishedContentView(
         oldContentView: Set<@UnsafeVariance ElementT>,
     ): Set<ElementT> = removedElements
 }

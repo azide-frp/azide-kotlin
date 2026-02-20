@@ -61,10 +61,10 @@ data class ListChange<out ElementT>(
     override val sizeDelta: Int
         get() = parts.sumOf { it.sizeDelta }
 
-    override val addedContent: List<ElementT>
+    override val introducedContentView: List<ElementT>
         get() = parts.flatMap { it.newElements }
 
-    override fun getRemovedContentView(
+    override fun getAbolishedContentView(
         oldContentView: List<@UnsafeVariance ElementT>,
     ): List<ElementT> = parts.flatMap { part ->
         oldContentView.subList(

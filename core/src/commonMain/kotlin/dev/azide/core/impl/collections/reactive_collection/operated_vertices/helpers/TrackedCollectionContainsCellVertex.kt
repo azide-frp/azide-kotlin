@@ -21,18 +21,16 @@ class TrackedCollectionContainsCellVertex<ElementT>(
             propagationContext = propagationContext,
         )
 
-        val addedElementsView: Collection<ElementT> = sourceChange.addedContent
-
-        val removedElementsView: Collection<ElementT> = sourceChange.getRemovedContentView(
+        val abolishedContentView: Collection<ElementT> = sourceChange.getAbolishedContentView(
             oldContentView = oldContentView,
         )
 
         return when {
-            addedElementsView.contains(element) -> CellVertex.Update(
+            sourceChange.introducedContentView.contains(element) -> CellVertex.Update(
                 updatedValue = true,
             )
 
-            removedElementsView.contains(element) -> CellVertex.Update(
+            abolishedContentView.contains(element) -> CellVertex.Update(
                 updatedValue = false,
             )
 

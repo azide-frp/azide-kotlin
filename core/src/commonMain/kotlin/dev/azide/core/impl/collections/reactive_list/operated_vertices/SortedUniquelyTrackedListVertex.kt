@@ -118,13 +118,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             propagationContext = propagationContext,
         )
 
-        val addedElementsView: Collection<SortableValue<ElementT, SortKeyT>> = sourceOngoingChange.addedContent
-
-        val removedElementsView = sourceOngoingChange.getRemovedContentView(
-            oldContentView = oldContentView,
-        )
-
-        addedElementsView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
+        sourceOngoingChange.introducedContentView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
             val addedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
 
             if (addedKeyRankResult.kind == RankKind.Existing) {
@@ -138,7 +132,12 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             )
         }
 
-        removedElementsView.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
+        val abolishedContentView = sourceOngoingChange.getAbolishedContentView(
+            oldContentView = oldContentView,
+        )
+
+        abolishedContentView.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
+
             val removedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
 
             if (removedKeyRankResult.kind == RankKind.Potential) {

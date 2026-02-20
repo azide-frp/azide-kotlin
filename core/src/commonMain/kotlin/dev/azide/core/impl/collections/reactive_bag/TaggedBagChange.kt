@@ -43,13 +43,13 @@ data class TaggedBagChange<out ElementT>(
     override val sizeDelta: Int
         get() = TODO()
 
-    override val addedContent: TaggedBag<ElementT>
-        get() = TaggedBag.ofTaggedContent(elementByTag = addedElementByTag)
+    override val introducedContentView: TaggedBag<ElementT>
+        get() = TaggedBag.ofTaggedContent(elementByTag = changedElementByTag)
 
-    override fun getRemovedContentView(
+    override fun getAbolishedContentView(
         oldContentView: TaggedBag<@UnsafeVariance ElementT>,
     ): TaggedBag<ElementT> = TaggedBag.ofTaggedContent(
-        elementByTag = removedTags.associateWith { removedTag ->
+        elementByTag = (removedTags + replacedElementByTag.keys).associateWith { removedTag ->
             oldContentView.getByTag(removedTag)
                 ?: throw IllegalStateException("Removed tag $removedTag does not exist in the old content view.")
         },

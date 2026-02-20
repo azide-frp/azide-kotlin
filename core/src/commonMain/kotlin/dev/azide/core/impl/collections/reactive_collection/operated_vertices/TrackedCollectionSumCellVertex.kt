@@ -18,14 +18,12 @@ class TrackedCollectionSumCellVertex(
     ): CellVertex.Update<Int>? {
         val oldContentView = sourceVertex.getOldContentView(propagationContext)
 
-        val addedElementsView = sourceChange.addedContent
-
-        val removedElementsView = sourceChange.getRemovedContentView(
+        val abolishedContentView = sourceChange.getAbolishedContentView(
             oldContentView = oldContentView,
         )
 
-        val positiveDelta = addedElementsView.sum()
-        val negativeDelta = removedElementsView.sum()
+        val positiveDelta = sourceChange.introducedContentView.sum()
+        val negativeDelta = abolishedContentView.sum()
 
         val totalDelta = positiveDelta - negativeDelta
 

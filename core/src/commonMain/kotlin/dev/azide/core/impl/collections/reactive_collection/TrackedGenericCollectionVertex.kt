@@ -15,9 +15,15 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
     interface GenericCollectionChange<out ContentT : Collection<*>> {
         val sizeDelta: Int
 
-        val addedContent: ContentT
+        /**
+         * A view of the introduced content (i.e. added and replacement elements).
+         */
+        val introducedContentView: ContentT
 
-        fun getRemovedContentView(
+        /**
+         * A view of the abolished content (i.e. removed and replaced elements).
+         */
+        fun getAbolishedContentView(
             oldContentView: @UnsafeVariance ContentT,
         ): ContentT
     }
