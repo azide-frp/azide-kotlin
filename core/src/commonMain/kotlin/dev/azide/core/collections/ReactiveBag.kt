@@ -8,6 +8,7 @@ import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.ActuatedTaggedBagVertex
+import dev.azide.core.impl.collections.reactive_bag.operated_vertices.FusedTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_bag.operated_vertices.MappedTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.PureTrackedTaggedBagVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
@@ -32,6 +33,19 @@ interface ReactiveBag<out ElementT> : ReactiveCollection<ElementT> {
 
     override val trackedVertex: TrackedTaggedBagVertex<ElementT>
 }
+
+val <ElementT> ReactiveBag<ElementT>.samplingTaggedElements: Moment<TaggedBag<ElementT>>
+    get() = object : Moment<TaggedBag<ElementT>> {
+        override fun pullInternally(
+            propagationContext: Transactions.PropagationContext,
+            wrapUpContext: Transactions.WrapUpContext,
+        ): TaggedBag<ElementT> = trackedVertex.getOldContentView(
+            propagationContext = propagationContext,
+        )
+    }
+
+fun <ElementT> ReactiveBag<ElementT>.sampleTaggedElementsExternally(): TaggedBag<ElementT> =
+    samplingTaggedElements.pullExternally()
 
 val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, ElementT>>
     get() = object : Moment<Map<Tag, ElementT>> {
@@ -65,7 +79,11 @@ fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.map(
     ),
 )
 
-fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = TODO("ReactiveBag.fuse")
+fun <ElementT> ReactiveBag<Cell<ElementT>>.fuse(): ReactiveBag<ElementT> = ReactiveBag.Ordinary(
+    trackedVertex = FusedTrackedTaggedBagVertex(
+        outerSourceBagVertex = this.trackedVertex,
+    ),
+)
 
 fun <ElementT, TransformedElementT> ReactiveBag<ElementT>.fuseOf(
     selector: (ElementT) -> Cell<TransformedElementT>,

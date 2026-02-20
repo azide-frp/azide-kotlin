@@ -37,15 +37,15 @@ fun <T> generateInterleavings(
 }
 
 /**
- * Generates all ordered [n]-tuples of contiguous segments whose concatenation is the given [list].
+ * Generates all ordered [bucketCount]-tuples of contiguous segments whose concatenation is the given [list].
  *
- * [n] - the number of buckets.
+ * [bucketCount] - the number of buckets.
  */
-fun <T> generateBucketSplits(list: List<T>, n: Int): Sequence<List<List<T>>> = sequence {
-    require(n >= 1) { "n must be >= 1" }
+fun <T> generateBucketSplits(list: List<T>, bucketCount: Int): Sequence<List<List<T>>> = sequence {
+    require(bucketCount >= 1) { "n must be >= 1" }
 
     val m = list.size // The number of elements in the list
-    val kLimit = n - 1 // The number of cuts (one less than the number of buckets)
+    val kLimit = bucketCount - 1 // The number of cuts (one less than the number of buckets)
 
     // Nondecreasing indices within the given list (cut identifier [0 until c] -> cut index [0 .. m])
     val cutIndices = IntArray(kLimit)
@@ -77,7 +77,7 @@ fun <T> generateBucketSplits(list: List<T>, n: Int): Sequence<List<List<T>>> = s
         }
     }
 
-    when (n) {
+    when (bucketCount) {
         1 -> yield(listOf(list))
         else -> recurse(k = 0, minCutIndex = 0)
     }
@@ -108,6 +108,20 @@ private fun <T, R> Iterable<T>.zipWithNextExtra(
     }
 
     result.add(transform(current, extraLast))
+
+    return result
+}
+
+fun binomialCoefficient(n: Int, k: Int): Long {
+    if (k !in 0..n) return 0
+    if (k == 0 || k == n) return 1
+
+    val kOptimized = minOf(k, n - k)
+
+    var result = 1L
+    for (i in 0 until kOptimized) {
+        result = result * (n - i) / (i + 1)
+    }
 
     return result
 }

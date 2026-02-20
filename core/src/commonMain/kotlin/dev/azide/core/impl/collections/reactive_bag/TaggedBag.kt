@@ -127,3 +127,15 @@ inline fun <T, R> TaggedBag<T>.mapToKeepingTags(
 
     return destination
 }
+
+fun <T> TaggedBag<T>.expanded(
+    other: TaggedBag<T>,
+): TaggedBag<T> = TaggedBag.ofTaggedContent(
+    elementByTag = elementByTag + other.elementByTag,
+)
+
+fun <T> TaggedBag<T>.withoutTag(
+   tag: Tag,
+): TaggedBag<T> = TaggedBag.ofTaggedContent(
+    elementByTag = elementByTag - tag,
+)

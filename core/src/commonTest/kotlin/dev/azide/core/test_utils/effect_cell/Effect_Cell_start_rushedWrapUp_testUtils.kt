@@ -5,6 +5,7 @@ import dev.azide.core.Effect
 import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.cell.ExpectedCellValueTransition
 import dev.azide.core.test_utils.effect_generic.Effect_generic_start_rushedWrapUp_testUtils
+import dev.azide.core.test_utils.generic.CellObservationTrait
 import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
@@ -16,6 +17,7 @@ data object Effect_Cell_start_rushedWrapUp_testUtils {
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+            trait = CellObservationTrait(),
             subjectEffect = subjectCellEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedSubjectTransition = expectedSubjectValueTransition,

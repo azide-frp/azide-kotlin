@@ -27,23 +27,23 @@ class Cell_executeEvery_cancelledRevoked_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionCellUpdates =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdates =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdates =
-        slottedStimulationBank_sourceActionCellUpdates.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdates.first()
 
-    private val slottedStimulationBank_sourceActionCellUpdatesRevoked =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdatesRevoked =
-        slottedStimulationBank_sourceActionCellUpdatesRevoked.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked.first()
 
-    private val slottedStimulationBank_sourceActionCellUpdatesCorrected =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionCellUpdatesCorrected =
-        slottedStimulationBank_sourceActionCellUpdatesCorrected.get(0)
+        slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected.first()
 
     @Test
     fun test_cancelledRevoked_observed() {
@@ -89,7 +89,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdates_observed() {
-        slottedStimulationBank_sourceActionCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdates.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdates(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -146,7 +146,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdatesRevoked_observed() {
-        slottedStimulationBank_sourceActionCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdatesRevoked(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -202,7 +202,7 @@ class Cell_executeEvery_cancelledRevoked_tests {
 
     @Test
     fun test_cancelledRevoked_sourceUpdatesCorrected_observed() {
-        slottedStimulationBank_sourceActionCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_cancelledRevoked_sourceUpdatesCorrected(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,

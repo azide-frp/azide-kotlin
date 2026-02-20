@@ -3,109 +3,25 @@ package dev.azide.core.test_utils.collections.reactive_bag
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
-import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-interface ExpectedReactiveBagChange<ElementT> : ExpectedTestSubjectReaction<ReactiveBag<ElementT>>
+typealias ExpectedBasicReactiveBagChange<ElementT> = AbstractExplicitExpectedTestSubjectReaction<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
 interface ExpectedReactiveBagContent<ElementT> : ExpectedTestSubjectState<ReactiveBag<ElementT>>
 
-interface ExpectedReactiveBagContentTransition<ElementT> : ExpectedTestSubjectTransition<ReactiveBag<ElementT>>
+interface ExpectedReactiveBagContentTransition<ElementT> :
+    ExpectedTestSubjectTransition<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
-private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedReactiveBagChange<ElementT> {
-    final override fun prepareReactionVerifier(
-        propagationContext: Transactions.PropagationContext,
-        subjectLazy: Lazy<ReactiveBag<ElementT>>,
-    ): ExpectedTestSubjectReaction.TestSubjectReactionVerifier =
-        object : ExpectedTestSubjectReaction.TestSubjectReactionVerifier, BoundListener {
-            private val subjectVertex: TrackedTaggedBagVertex<ElementT>
-                get() = subjectLazy.value.trackedVertex
-
-            private var listenerHandle: ListenerHandle? = null
-
-            private var initialChange: TaggedBagChange<ElementT>? = null
-
-            private val receivedChanges = mutableListOf<TaggedBagChange<ElementT>?>()
-
-            override fun install() {
-                if (listenerHandle != null) {
-                    throw IllegalStateException("ReactiveBag verifier is already installed")
-                }
-
-                listenerHandle = subjectVertex.registerBoundListenerOnline(
-                    propagationContext = propagationContext,
-                    listener = this,
-                )
-
-                initialChange = subjectVertex.ongoingChange
-            }
-
-            override fun verifyReaction() {
-                if (listenerHandle == null) {
-                    throw IllegalStateException("A non-installed verifier cannot be used for verification")
-                }
-
-                assertEquals(
-                    expected = expectedEffectiveChange,
-                    actual = subjectVertex.ongoingChange,
-                    message = "Exposed ongoing change did not match the expected change.",
-                )
-
-                val effectiveChange = when {
-                    receivedChanges.isNotEmpty() -> receivedChanges.last()
-                    else -> initialChange
-                }
-
-                assertEquals(
-                    expected = expectedEffectiveChange,
-                    actual = effectiveChange,
-                    message = "The effective received change did not match the expected change.",
-                )
-
-                when (intermediatePropagationTolerance) {
-                    IntermediatePropagationTolerance.DoNotTolerate -> {
-                        assertTrue(
-                            actual = receivedChanges.size <= 1,
-                            message = "Expected at most one change to be propagated, but received ${receivedChanges.size} changes (intermediate propagation is not tolerated).",
-                        )
-                    }
-
-                    IntermediatePropagationTolerance.Tolerate -> {}
-                }
-            }
-
-            override fun uninstall() {
-                val listenerHandle =
-                    this.listenerHandle ?: throw IllegalStateException("Cannot uninstall a non-installed cell verifier")
-
-                subjectVertex.unregisterListener(
-                    handle = listenerHandle,
-                )
-
-                this.listenerHandle = null
-                this.initialChange = null
-            }
-
-            override fun handle(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                val perceivedChange = subjectVertex.ongoingChange
-
-                receivedChanges.add(perceivedChange)
-            }
-        }
-
-    abstract val intermediatePropagationTolerance: IntermediatePropagationTolerance
+private abstract class AbstractExpectedReactiveBagChange<ElementT> : ExpectedBasicReactiveBagChange<ElementT>() {
+    final override val expectedSubjectNotification: TaggedBagChange<ElementT>?
+        get() = expectedEffectiveChange
 
     abstract val expectedEffectiveChange: TaggedBagChange<ElementT>?
 }
@@ -148,7 +64,7 @@ object ReactiveBag_expectations_testUtils {
 
             override val expectedNewTaggedContent: Map<Tag, ElementT> = expectedNewTaggedContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveBag<ElementT>> =
+            override val expectedReaction: ExpectedBasicReactiveBagChange<ElementT> =
                 object : AbstractExpectedReactiveBagChange<ElementT>() {
                     override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
                         intermediatePropagationTolerance
@@ -158,8 +74,24 @@ object ReactiveBag_expectations_testUtils {
                         newTaggedContent = expectedNewTaggedContent,
                     )
                 }
-
         }
+
+    fun <ElementT> expectPotentialTaggedContentTransition(
+        intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
+        expectedOldTaggedElements: TaggedBag<ElementT>,
+        expectedNewTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContentTransition<ElementT> = when {
+        expectedOldTaggedElements == expectedNewTaggedElements -> expectNoTaggedContentTransition(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+            expectedUnaffectedTaggedElements = expectedOldTaggedElements,
+        )
+
+        else -> expectTaggedContentTransition(
+            intermediatePropagationTolerance = intermediatePropagationTolerance,
+            expectedOldTaggedElements = expectedOldTaggedElements,
+            expectedNewTaggedElements = expectedNewTaggedElements,
+        )
+    }
 
     fun <ElementT> expectNoTaggedContentTransition(
         intermediatePropagationTolerance: IntermediatePropagationTolerance = IntermediatePropagationTolerance.DoNotTolerate,
@@ -178,7 +110,7 @@ object ReactiveBag_expectations_testUtils {
 
             override val expectedNewTaggedContent: Map<Tag, ElementT> = expectedUnaffectedTaggedContent
 
-            override val expectedReaction: ExpectedTestSubjectReaction<ReactiveBag<ElementT>> =
+            override val expectedReaction: ExpectedBasicReactiveBagChange<ElementT> =
                 object : AbstractExpectedReactiveBagChange<ElementT>() {
                     override val intermediatePropagationTolerance: IntermediatePropagationTolerance =
                         intermediatePropagationTolerance
@@ -186,6 +118,12 @@ object ReactiveBag_expectations_testUtils {
                     override val expectedEffectiveChange: TaggedBagChange<ElementT>? = null
                 }
         }
+
+    fun <ElementT> expectStableTaggedContent(
+        expectedTaggedElements: TaggedBag<ElementT>,
+    ): ExpectedReactiveBagContent<ElementT> = expectStableTaggedContent(
+        expectedTaggedContent = expectedTaggedElements.elementByTag,
+    )
 
     fun <ElementT> expectStableTaggedContent(
         expectedTaggedContent: Map<Tag, ElementT>,

@@ -21,18 +21,18 @@ class EventStream_filter_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceEventStreamEmits =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmits =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEventStreamEmitsRevoked =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceEventStreamEmitsCorrected =
-        EventStream_generic_testUtils.stimulationBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected =
+        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_sourceEmits_predicateAccepted() {
-        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_sourceEmits_predicateAccepted(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -60,7 +60,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmits_predicateRejected() {
-        slottedStimulationBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
             test_sourceEmits_predicateRejected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -86,7 +86,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsRevoked_predicateAccepted() {
-        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_sourceEmitsRevoked_predicateAccepted(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -114,7 +114,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsRevoked_predicateRejected() {
-        slottedStimulationBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_sourceEmitsRevoked_predicateRejected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -140,7 +140,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsCorrected_predicateAcceptedBoth() {
-        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_sourceEmitsCorrected_predicateAcceptedBoth(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -170,7 +170,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsCorrected_predicateRejectedBoth() {
-        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_sourceEmitsCorrected_predicateRejectedBoth(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -197,7 +197,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsCorrected_predicateAcceptedFirst() {
-        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_sourceEmitsCorrected_predicateAcceptedFirst(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -226,7 +226,7 @@ class EventStream_filter_tests {
 
     @Test
     fun test_sourceEmitsCorrected_predicateAcceptedSecond() {
-        slottedStimulationBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_sourceEmitsCorrected_predicateAcceptedSecond(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

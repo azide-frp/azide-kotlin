@@ -9,10 +9,11 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_testUtils {
-    fun <SubjectT> executeSpawnTransaction(
+    fun <SubjectT, NotificationT : Any> executeSpawnTransaction(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
     ) {
         generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
@@ -31,10 +32,11 @@ data object generic_spawn_testUtils {
                 propagationContext = propagationContext,
             )
 
-            // 2. Perceive the subject
-            val subjectReactionVerifier = expectedSubjectTransition.expectedReaction.prepareReactionVerifierInstalled(
-                propagationContext = propagationContext,
+            // 2. Observe the subject
+            val subjectObserver = TestSubjectObserver.observe(
+                trait = trait,
                 subject = subject,
+                propagationContext = propagationContext,
             )
 
             slottedInputStimulation?.slotStimulation2?.stimulate(
@@ -46,7 +48,14 @@ data object generic_spawn_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier.verifyReactionUninstalling()
+            expectedSubjectTransition.expectedReaction.verifyReaction(
+                trait = trait,
+                subject = subject,
+                subjectObserver = subjectObserver,
+            )
+
+            // TODO: Test _without_ unobserving (other paths are triggered for stateless vertices!)
+            subjectObserver.unobserve()
 
             subject
         }

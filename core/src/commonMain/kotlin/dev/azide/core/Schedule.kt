@@ -10,9 +10,9 @@ typealias Schedule = Effect<Unit>
 val Schedule.launch: Action<Effect.Handle>
     get() = start.map { outcome -> outcome.handle }
 
-object Schedules {
-    typealias Outcome = Effect.Outcome<Unit>
+typealias ScheduleOutcome = Effect.Outcome<Unit>
 
+object Schedules {
     fun adapt(
         externalSchedule: ExternalSchedule,
     ): Schedule = ExternalizedSchedule(
@@ -31,7 +31,7 @@ object Schedules {
 }
 
 abstract class AbstractSchedule : Schedule {
-    final override val start: Action<Schedules.Outcome>
+    final override val start: Action<ScheduleOutcome>
         get() = launchImpl.map { handle ->
             Effect.Outcome.of(
                 result = Unit,

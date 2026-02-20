@@ -5,17 +5,17 @@ import dev.azide.core.impl.Transactions.WrapUpContext
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.test_utils.TestSlottedStimulation3
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_rushedWrapUp_testUtils {
-    fun <SubjectT : Any> executeSpawnTransaction(
+    fun <SubjectT : Any, NotificationT : Any> executeSpawnTransaction(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
     ) {
         generic_testUtils.executeTransactionWithNewStateVerification(
             expectedNewState = expectedSubjectTransition.expectedNewState,
@@ -27,25 +27,25 @@ data object generic_spawn_rushedWrapUp_testUtils {
 
             val (
                 subject: SubjectT,
-                subjectReactionVerifier: TestSubjectReactionVerifier,
+                subjectObserver: TestSubjectObserver<SubjectT, NotificationT>,
             ) = WrapUpContext.wrapUp(
                 propagationContext = propagationContext,
             ) { wrapUpContext ->
                 LoopUtils.looped { loopedSubjectLazy: Lazy<SubjectT> ->
-                    val subjectReactionVerifier = expectedSubjectTransition.expectedReaction.prepareReactionVerifier(
-                        propagationContext = propagationContext,
-                        subjectLazy = loopedSubjectLazy,
-                    )
-
-                    // Perceive the subject later in a wrap-up operation, before the subject itself had a chance to
+                    // Observe the subject later in a wrap-up operation, before the subject itself had a chance to
                     // wrap up (hence the "rush"). This is the earliest legal point to attempt perceiving the subject.
-                    subjectReactionVerifier.installLater(
-                        wrapUpContext = wrapUpContext,
+                    val subjectObserver = TestSubjectObserver.prepare(
+                        trait = trait,
+                        subjectLazy = loopedSubjectLazy,
                     )
 
                     // 1. Spawn the subject
                     val subject = subjectSpawnMoment.pullInternally(
                         propagationContext = propagationContext,
+                        wrapUpContext = wrapUpContext,
+                    )
+
+                    subjectObserver.observeLater(
                         wrapUpContext = wrapUpContext,
                     )
 
@@ -56,7 +56,7 @@ data object generic_spawn_rushedWrapUp_testUtils {
                     LoopClosure(
                         result = Pair(
                             subject,
-                            subjectReactionVerifier,
+                            subjectObserver,
                         ),
                         loopedValue = subject,
                     )
@@ -73,7 +73,11 @@ data object generic_spawn_rushedWrapUp_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier.verifyReaction()
+            expectedSubjectTransition.expectedReaction.verifyReaction(
+                trait = trait,
+                subject = subject,
+                subjectObserver = subjectObserver,
+            )
 
             subject
         }

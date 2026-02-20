@@ -35,7 +35,7 @@ object EventStream_divert_testUtils {
             ).bind(
                 TestSlottedStimulationScenario.of(
                     slotCount = SuitableSlotCount,
-                    slotStimulations = listOf(
+                    slotStimulationScenarios = listOf(
                         TestStimulationScenario.Empty,
                         TestStimulationScenario.of(
                             TestInputEventStreamStimulationTag.Emission(

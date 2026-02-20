@@ -1,11 +1,9 @@
 package dev.azide.core.test_utils.stimulation_combinatorics
 
-data class TestSlottedStimulationBank<SlotCountT : TestSlotCount>(
-    val slottedStimulationScenarios: List<TestSlottedStimulationScenario<SlotCountT>>,
+data class TestSlottedStimulationScenarioBank<SlotCountT : TestSlotCount>(
+    private val slottedStimulationScenarios: Sequence<TestSlottedStimulationScenario<SlotCountT>>,
 ) {
-    fun get(
-        index: Int,
-    ): TestSlottedStimulationScenario<SlotCountT> = slottedStimulationScenarios[index]
+    fun first(): TestSlottedStimulationScenario<SlotCountT> = slottedStimulationScenarios.first()
 
     fun bind(
         stimulationMap: TestStimulationMap,
@@ -13,6 +11,12 @@ data class TestSlottedStimulationBank<SlotCountT : TestSlotCount>(
         .map { slottedStimulationScenario: TestSlottedStimulationScenario<SlotCountT> ->
             stimulationMap.bind(slottedStimulationScenario)
         }
+
+    fun forEachIndexed(
+        block: (index: Int, TestSlottedStimulationScenario<SlotCountT>) -> Unit,
+    ) {
+        slottedStimulationScenarios.forEachIndexed(block)
+    }
 
     fun forEach(
         block: (TestSlottedStimulationScenario<SlotCountT>) -> Unit,

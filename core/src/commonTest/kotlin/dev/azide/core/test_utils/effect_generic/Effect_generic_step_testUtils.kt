@@ -2,30 +2,30 @@ package dev.azide.core.test_utils.effect_generic
 
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.TestSubjectReactionVerifier
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.generic.prepareReactionVerifierWithStrategyInstalled
-import dev.azide.core.test_utils.generic.verifyReactionUninstalling
+import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
+import dev.azide.core.test_utils.generic.TestSubjectObserver
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {
-    fun <SubjectT> executeStepTransaction(
+    fun <SubjectT, NotificationT : Any> executeStepTransaction(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestStimulation,
-        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT>,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
             expectedTargetImpact = expectedTargetImpact,
             expectedNewState = expectedSubjectTransition.expectedNewState,
         ) { propagationContext ->
-            val subjectReactionVerifier: TestSubjectReactionVerifier? =
-                expectedSubjectTransition.expectedReaction.prepareReactionVerifierWithStrategyInstalled(
-                    propagationContext = propagationContext,
-                    subject = subject,
-                    strategy = subjectPerceptionStrategy,
-                )
+            val subjectObserver = TestSubjectObserver.observeWithStrategy(
+                trait = trait,
+                subject = subject,
+                propagationContext = propagationContext,
+                subjectPerceptionStrategy = subjectPerceptionStrategy,
+            )
 
             // Verify the old state for the first time
             expectedSubjectTransition.expectedOldState.verifyStableState(
@@ -43,7 +43,14 @@ data object Effect_generic_step_testUtils {
                 subject = subject,
             )
 
-            subjectReactionVerifier?.verifyReactionUninstalling()
+            subjectObserver?.let {
+                expectedSubjectTransition.expectedReaction.verifyReaction(
+                    trait = trait,
+                    subject = subject,
+                    subjectObserver = it,
+                )
+                it.unobserve()
+            }
 
             subject
         }

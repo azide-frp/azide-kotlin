@@ -4,6 +4,7 @@ import dev.azide.core.Action
 import dev.azide.core.EventStream
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_testUtils
+import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
@@ -11,25 +12,26 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.generic.generic_testUtils
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object EventStream_executeEach_testUtils {
     data object SourceActionEventStreamTag : TestInputEventStreamTag
 
-    val stimulationBank_sourceActionEventStreamEmits = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmits = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.emissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceActionEventStreamEmitsRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsRevoked = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.revokedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
     )
 
-    val stimulationBank_sourceActionEventStreamEmitsCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceActionEventStreamEmitsCorrected = TestStimulationScenarioBank.mixAll(
         TestInputEventStreamTag.correctedEmissionScenario(
             inputEventStreamTag = SourceActionEventStreamTag,
         ),
@@ -57,13 +59,10 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
-            subjectEventStream = Unit,
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        generic_testUtils.executeTransactionWithImpactVerification(
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = targetActionRecorder.recordedAction,
             ),
-            expectedSubjectEmission = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetActionRecorder.expectIsNotExecuted(),
         )
     }

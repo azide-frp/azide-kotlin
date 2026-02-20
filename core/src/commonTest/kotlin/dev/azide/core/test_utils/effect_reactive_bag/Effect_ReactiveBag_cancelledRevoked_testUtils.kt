@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.collections.reactive_bag.ExpectedReactiveBagCon
 import dev.azide.core.test_utils.effect_generic.Effect_generic_cancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
 
 @Suppress("ClassName")
 data object Effect_ReactiveBag_cancelledRevoked_testUtils {
@@ -18,6 +19,7 @@ data object Effect_ReactiveBag_cancelledRevoked_testUtils {
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+            trait = ReactiveBagObservationTrait(),
             subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = slottedInputStimulation,

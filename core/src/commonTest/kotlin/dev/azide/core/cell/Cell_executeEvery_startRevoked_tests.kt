@@ -22,14 +22,14 @@ class Cell_executeEvery_startRevoked_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionCellUpdates =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdates =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceActionCellUpdatesRevoked =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceActionCellUpdatesCorrected =
-        Cell_executeEvery_testUtils.stimulationBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected =
+        Cell_executeEvery_testUtils.stimulationScenarioBank_sourceActionCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_startRevoked() {
@@ -53,7 +53,7 @@ class Cell_executeEvery_startRevoked_tests {
 
     @Test
     fun test_startRevoked_sourceUpdatesSimultaneously() {
-        slottedStimulationBank_sourceActionCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdates.forEach { slottedStimulationScenario ->
             test_startRevoked_sourceUpdatesSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -87,7 +87,7 @@ class Cell_executeEvery_startRevoked_tests {
 
     @Test
     fun test_startRevoked_sourceUpdatesRevokedSimultaneously() {
-        slottedStimulationBank_sourceActionCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_startRevoked_sourceUpdatesRevokedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -121,7 +121,7 @@ class Cell_executeEvery_startRevoked_tests {
 
     @Test
     fun test_startRevoked_sourceUpdatesCorrectedSimultaneously() {
-        slottedStimulationBank_sourceActionCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_startRevoked_sourceUpdatesCorrectedSimultaneously(
                 slottedStimulationScenario = slottedStimulationScenario,
             )

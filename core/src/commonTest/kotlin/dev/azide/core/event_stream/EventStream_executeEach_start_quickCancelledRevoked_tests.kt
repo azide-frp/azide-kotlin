@@ -28,23 +28,27 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceActionEventStreamEmits =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmits =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmits.distribute(slotCount = SuitableSlotCount)
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmits =
-        slottedStimulationBank_sourceActionEventStreamEmits.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.first()
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsRevoked =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsRevoked.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsRevoked =
-        slottedStimulationBank_sourceActionEventStreamEmitsRevoked.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.first()
 
-    private val slottedStimulationBank_sourceActionEventStreamEmitsCorrected =
-        EventStream_executeEach_testUtils.stimulationBank_sourceActionEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected =
+        EventStream_executeEach_testUtils.stimulationScenarioBank_sourceActionEventStreamEmitsCorrected.distribute(
+            slotCount = SuitableSlotCount
+        )
 
     private val arbitrarySlottedStimulationScenario_sourceActionEventStreamEmitsCorrected =
-        slottedStimulationBank_sourceActionEventStreamEmitsCorrected.get(0)
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.first()
 
     @Test
     fun test_start_quickCancelledRevoked_subscribed() {
@@ -82,7 +86,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmits.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -130,7 +134,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsRevokedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,
@@ -177,7 +181,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
     @Test
     fun test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously_subscribed() {
-        slottedStimulationBank_sourceActionEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceActionEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
             test_start_quickCancelledRevoked_sourceEmitsCorrectedSimultaneously(
                 subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
                 slottedStimulationScenario = slottedStimulationScenario,

@@ -22,18 +22,18 @@ class ReactiveList_sortedUniquely_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceSetChanges =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceSetChanges =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChanges.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceSetChangesRevoked =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceSetChangesRevoked =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceSetChangesCorrected =
-        ReactiveSet_generic_testUtils.stimulationBank_sourceSetChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceSetChangesCorrected =
+        ReactiveSet_generic_testUtils.stimulationScenarioBank_sourceSetChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_sourceSetChanges_additionsOnly() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -56,7 +56,7 @@ class ReactiveList_sortedUniquely_tests {
         val subjectReactiveList = sourceReactiveSet.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
-            subjectReactiveList,
+            subjectReactiveList = subjectReactiveList,
             slottedInputStimulation = sourceReactiveSet.changing(
                 tag = SourceReactiveSetTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -66,9 +66,7 @@ class ReactiveList_sortedUniquely_tests {
                         ".60" withSortKey 60,
                     ),
                 ),
-            ).bind(
-                slottedStimulationScenario,
-            ),
+            ).bind(slottedStimulationScenario),
             expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
                 expectedOldContent = listOf(
                     "^0",
@@ -93,7 +91,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChanges_removalsOnly() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -147,7 +145,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChanges_mixed() {
-        slottedStimulationBank_sourceSetChanges.forEach {
+        slottedStimulationScenarioBank_sourceSetChanges.forEach {
             test_sourceSetChanges_mixed(
                 slottedStimulationScenario = it,
             )
@@ -210,7 +208,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesRevoked_additionsOnly() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceSetChangesRevoked_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -262,7 +260,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesRevoked_removalsOnly() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceSetChangesRevoked_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -316,7 +314,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesRevoked_mixed() {
-        slottedStimulationBank_sourceSetChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesRevoked.forEach {
             test_sourceSetChangesRevoked_mixed(
                 slottedStimulationScenario = it,
             )
@@ -373,7 +371,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesCorrected_additionsOnly() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceSetChangesCorrected_additionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -444,7 +442,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesCorrected_removalsOnly() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceSetChangesCorrected_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -511,7 +509,7 @@ class ReactiveList_sortedUniquely_tests {
 
     @Test
     fun test_sourceSetChangesCorrected_mixed() {
-        slottedStimulationBank_sourceSetChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceSetChangesCorrected.forEach {
             test_sourceSetChangesCorrected_mixed(
                 slottedStimulationScenario = it,
             )

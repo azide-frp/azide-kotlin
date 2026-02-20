@@ -2,16 +2,18 @@ package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
+import dev.azide.core.test_utils.TestInputEntity
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
-) : Cell<ValueT> {
+) : Cell<ValueT>, TestInputEntity {
     private val _vertex = object : AbstractBaseStatefulCellVertex<ValueT>(
         initialValue = initialValue,
     ) {
@@ -98,6 +100,9 @@ class TestInputCell<ValueT>(
     }
 
     override val vertex: CellVertex<ValueT>
+        get() = _vertex
+
+    override val testVertex: Vertex
         get() = _vertex
 }
 

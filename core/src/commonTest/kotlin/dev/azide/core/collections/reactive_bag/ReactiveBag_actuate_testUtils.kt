@@ -16,7 +16,8 @@ import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_step_tes
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.generic.generic_testUtils
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object ReactiveBag_actuate_testUtils {
@@ -111,19 +112,19 @@ data object ReactiveBag_actuate_testUtils {
         return subjectOutcome
     }
 
-    val stimulationBank_sourceEffectBagChanges = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationBank_sourceEffectBagChangesRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationBank_sourceEffectBagChangesCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
@@ -159,9 +160,7 @@ data object ReactiveBag_actuate_testUtils {
     ) {
         val extraTargetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
-            subject = Unit,
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        generic_testUtils.executeTransactionWithImpactVerification(
             inputStimulation = sourceReactiveBag.change(
                 changeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
@@ -169,7 +168,6 @@ data object ReactiveBag_actuate_testUtils {
                     ),
                 ),
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = extraTargetEffect.expectIsNotStarted(),
         )
     }

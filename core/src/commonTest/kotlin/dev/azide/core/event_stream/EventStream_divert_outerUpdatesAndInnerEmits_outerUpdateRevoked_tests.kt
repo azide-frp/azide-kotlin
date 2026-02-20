@@ -14,14 +14,14 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
-    private val slottedStimulationBank = TestStimulationBank.build(
+    private val slottedStimulationScenarioBank = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceOuterCellTag,
         ),
@@ -34,7 +34,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
     @Test
     fun test_outerUpdatesAndOldInnerEmits_outerUpdateRevoked() {
-        slottedStimulationBank.forEach {
+        slottedStimulationScenarioBank.forEach {
             test_outerUpdatesAndOldInnerEmits_outerUpdateRevoked(
                 slottedStimulationScenario = it,
             )
@@ -81,7 +81,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
     @Test
     fun test_outerUpdatesAndNewInnerEmits_outerUpdateRevoked() {
-        slottedStimulationBank.forEach {
+        slottedStimulationScenarioBank.forEach {
             test_outerUpdatesAndNewInnerEmits_outerUpdateRevoked(
                 slottedStimulationScenario = it,
             )

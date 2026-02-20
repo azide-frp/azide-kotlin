@@ -6,10 +6,10 @@ import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
 data object ReactiveList_sampling_testUtils {
-    fun <ValueT> executeSamplingTransaction(
-        subjectReactiveList: ReactiveList<ValueT>,
+    fun <ElementT> executeSamplingTransaction(
+        subjectReactiveList: ReactiveList<ElementT>,
         inputStimulation: TestStimulation? = null,
-        expectedSubjectContent: ExpectedReactiveListContent<ValueT>,
+        expectedSubjectContent: ExpectedReactiveListContent<ElementT>,
     ) {
         Transactions.execute { propagationContext ->
             inputStimulation?.stimulate(

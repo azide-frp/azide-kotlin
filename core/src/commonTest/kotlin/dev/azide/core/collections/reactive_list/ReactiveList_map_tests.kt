@@ -1,8 +1,11 @@
 package dev.azide.core.collections.reactive_list
 
+import dev.azide.core.collections.ReactiveList
 import dev.azide.core.collections.map
+import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_reaction_testUtils
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_sampling_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList
 import dev.azide.core.test_utils.collections.reactive_list.TestInputReactiveList.ChangeDescription
 import dev.azide.core.test_utils.collections.reactive_list.changing
@@ -20,18 +23,34 @@ class ReactiveList_map_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceListChanges =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChanges.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChanges =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChanges.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceListChangesRevoked =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChangesRevoked =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChangesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceListChangesCorrected =
-        ReactiveList_generic_testUtils.stimulationBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceListChangesCorrected =
+        ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
+
+    @Test
+    fun test_passiveSample() {
+        val sourceReactiveList = TestInputReactiveList(
+            initialElements = listOf(0, 10, 20, 30),
+        )
+
+        val subjectReactiveList = sourceReactiveList.map { it.toString() }
+
+        ReactiveList_sampling_testUtils.executeSamplingTransaction(
+            subjectReactiveList = subjectReactiveList,
+            expectedSubjectContent = ReactiveList_expectations_testUtils.expectStableContent(
+                expectedContent = listOf("0", "10", "20", "30"),
+            ),
+        )
+    }
 
     @Test
     fun test_sourceListChanges_insertionsOnly() {
-        slottedStimulationBank_sourceListChanges.forEach {
+        slottedStimulationScenarioBank_sourceListChanges.forEach {
             test_sourceListChanges_insertionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -73,7 +92,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChanges_removalsOnly() {
-        slottedStimulationBank_sourceListChanges.forEach {
+        slottedStimulationScenarioBank_sourceListChanges.forEach {
             test_sourceChanges_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -113,7 +132,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChanges_replacementsOnly() {
-        slottedStimulationBank_sourceListChanges.forEach {
+        slottedStimulationScenarioBank_sourceListChanges.forEach {
             test_sourceChanges_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -155,7 +174,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChanges_mixed() {
-        slottedStimulationBank_sourceListChanges.forEach {
+        slottedStimulationScenarioBank_sourceListChanges.forEach {
             test_sourceChanges_mixed(
                 slottedStimulationScenario = it,
             )
@@ -200,7 +219,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_insertionsOnly() {
-        slottedStimulationBank_sourceListChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceListChangesRevoked.forEach {
             test_sourceChangesRevoked_insertionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -242,7 +261,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_removalsOnly() {
-        slottedStimulationBank_sourceListChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceListChangesRevoked.forEach {
             test_sourceChangesRevoked_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -282,7 +301,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_replacementsOnly() {
-        slottedStimulationBank_sourceListChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceListChangesRevoked.forEach {
             test_sourceChangesRevoked_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -324,7 +343,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesRevoked_mixed() {
-        slottedStimulationBank_sourceListChangesRevoked.forEach {
+        slottedStimulationScenarioBank_sourceListChangesRevoked.forEach {
             test_sourceChangesRevoked_mixed(
                 slottedStimulationScenario = it,
             )
@@ -369,7 +388,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_insertionsOnly() {
-        slottedStimulationBank_sourceListChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceListChangesCorrected.forEach {
             test_sourceChangesCorrected_insertionsOnly(
                 slottedStimulationScenario = it,
             )
@@ -418,7 +437,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_removalsOnly() {
-        slottedStimulationBank_sourceListChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceListChangesCorrected.forEach {
             test_sourceChangesCorrected_removalsOnly(
                 slottedStimulationScenario = it,
             )
@@ -464,7 +483,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_replacementsOnly() {
-        slottedStimulationBank_sourceListChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceListChangesCorrected.forEach {
             test_sourceChangesCorrected_replacementsOnly(
                 slottedStimulationScenario = it,
             )
@@ -513,7 +532,7 @@ class ReactiveList_map_tests {
 
     @Test
     fun test_sourceChangesCorrected_mixed() {
-        slottedStimulationBank_sourceListChangesCorrected.forEach {
+        slottedStimulationScenarioBank_sourceListChangesCorrected.forEach {
             test_sourceChangesCorrected_mixed(
                 slottedStimulationScenario = it,
             )

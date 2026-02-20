@@ -7,30 +7,29 @@ import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.generic.generic_testUtils
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object Cell_actuate_testUtils {
     data object SourceEffectCellTag : TestInputCellTag
 
-    val stimulationBank_sourceEffectCellUpdates = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdates = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationBank_sourceEffectCellUpdatesRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationBank_sourceEffectCellUpdatesCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceEffectCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
@@ -62,13 +61,10 @@ data object Cell_actuate_testUtils {
     ) {
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_generic_step_testUtils.executeStepTransaction(
-            subject = Unit,
-            subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
+        generic_testUtils.executeTransactionWithImpactVerification(
             inputStimulation = sourceCell.update(
                 newValue = targetEffect,
             ),
-            expectedSubjectTransition = ExpectedTestSubjectTransition.None,
             expectedTargetImpact = targetEffect.expectIsNotStarted(),
         )
     }

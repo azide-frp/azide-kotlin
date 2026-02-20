@@ -7,6 +7,19 @@ data class TaggedBagChange<out ElementT>(
     val changedElementByTag: Map<Tag, ElementT>,
     val removedTags: Set<Tag>,
 ) : CollectionChange<ElementT> {
+    companion object {
+        fun <ElementT> of(
+            changedElementByTag: Map<Tag, ElementT>,
+            removedTags: Set<Tag>,
+        ): TaggedBagChange<ElementT>? = when {
+            changedElementByTag.isEmpty() && removedTags.isEmpty() -> null
+            else -> TaggedBagChange(
+                changedElementByTag = changedElementByTag,
+                removedTags = removedTags,
+            )
+        }
+    }
+
     init {
         require(changedElementByTag.isNotEmpty() || removedTags.isNotEmpty()) {
             "A TaggedBagChange must have at least one changed or removed element."
@@ -14,14 +27,14 @@ data class TaggedBagChange<out ElementT>(
     }
 
     override val addedElements: Collection<ElementT>
-        get() = TODO("Not yet implemented")
+        get() = TODO("addedElements")
 
     override val removedElements: Collection<ElementT>
-        get() = TODO("Not yet implemented")
+        get() = TODO("removedElements")
 
     fun filter(
         predicate: (ElementT) -> Boolean,
-    ): TaggedBagChange<ElementT>? = TODO()
+    ): TaggedBagChange<ElementT>? = TODO("TaggedBagChange.filter")
 
     override val sizeDelta: Int
         get() = addedElements.size - removedElements.size

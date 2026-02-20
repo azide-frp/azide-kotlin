@@ -1,25 +1,25 @@
 package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
 
 @Suppress("ClassName")
 data object ReactiveList_generic_testUtils {
     data object SourceReactiveListTag : TestInputReactiveCollectionTag
-    
-    val stimulationBank_sourceListChanges = TestStimulationBank.build(
+
+    val stimulationScenarioBank_sourceListChanges = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceReactiveListTag,
         ),
     )
 
-    val stimulationBank_sourceListChangesRevoked = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceListChangesRevoked = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceReactiveListTag,
         ),
     )
 
-    val stimulationBank_sourceListChangesCorrected = TestStimulationBank.build(
+    val stimulationScenarioBank_sourceListChangesCorrected = TestStimulationScenarioBank.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceReactiveListTag,
         ),

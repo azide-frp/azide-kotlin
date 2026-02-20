@@ -17,11 +17,15 @@ data class TestStimulationScenario(
         )
     }
 
+    fun toBank(): TestStimulationScenarioBank = TestStimulationScenarioBank(
+        stimulationScenarios = sequenceOf(this),
+    )
+
     fun combineWith(
-        otherStimulationSequence: TestStimulationScenario,
+        otherStimulationScenario: TestStimulationScenario,
     ): Sequence<TestStimulationScenario> = generateInterleavings(
         firstList = this.stimulationTags,
-        secondList = otherStimulationSequence.stimulationTags,
+        secondList = otherStimulationScenario.stimulationTags,
     ).map { interleavedTags ->
         TestStimulationScenario(
             stimulationTags = interleavedTags,
@@ -32,11 +36,11 @@ data class TestStimulationScenario(
         slotCount: SlotCountT,
     ): Sequence<TestSlottedStimulationScenario<SlotCountT>> = generateBucketSplits(
         list = stimulationTags,
-        n = slotCount.count,
+        bucketCount = slotCount.count,
     ).map { tagBuckets: List<List<TestStimulationTag>> ->
         TestSlottedStimulationScenario.of(
             slotCount = slotCount,
-            slotStimulations = tagBuckets.map { stimulationTags: List<TestStimulationTag> ->
+            slotStimulationScenarios = tagBuckets.map { stimulationTags: List<TestStimulationTag> ->
                 TestStimulationScenario(stimulationTags = stimulationTags)
             },
         )
@@ -47,5 +51,6 @@ data class TestStimulationScenario(
     ): TestStimulation = TestStimulation.combine(
         stimulations = stimulationTags.map { stimulationTag: TestStimulationTag ->
             stimulationMap[stimulationTag]
-        })
+        },
+    )
 }

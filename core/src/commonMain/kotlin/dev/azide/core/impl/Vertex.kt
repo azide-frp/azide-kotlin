@@ -59,6 +59,7 @@ interface Vertex {
         handle: ListenerHandle,
     )
 }
+
 fun Vertex.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
     listener: Listener,

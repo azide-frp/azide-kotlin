@@ -24,18 +24,18 @@ class Cell_sampleEvery_reaction_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdates =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesRevoked =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationBank_sourceCellUpdatesCorrected =
-        Cell_generic_testUtils.stimulationBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
+        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
     fun test_step_sourceUpdates() {
-        slottedStimulationBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
             test_step_sourceUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -69,7 +69,7 @@ class Cell_sampleEvery_reaction_tests {
 
     @Test
     fun test_step_sourceUpdatesRevoked() {
-        slottedStimulationBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
             test_step_sourceUpdatesRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
@@ -103,7 +103,7 @@ class Cell_sampleEvery_reaction_tests {
 
     @Test
     fun test_step_sourceUpdatesCorrected() {
-        slottedStimulationBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
             test_step_sourceUpdatesCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
