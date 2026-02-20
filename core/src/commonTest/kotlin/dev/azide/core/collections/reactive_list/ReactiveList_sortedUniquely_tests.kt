@@ -144,6 +144,118 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
+    fun test_sourceCollectionChanges_replacementsOnly_sameSortKey() {
+        slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
+            test_sourceCollectionChanges_replacementsOnly_sameSortKey(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_sourceCollectionChanges_replacementsOnly_sameSortKey(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val inputCollection = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                10 to ("#10a" withSortKey 10.8),
+                0 to ("^0" withSortKey 0.3),
+                30 to ("?30" withSortKey 30.1),
+                20 to ("$20a" withSortKey 20.6),
+                50 to (".50" withSortKey 50.4),
+            ),
+        )
+
+        val subjectReactiveList = inputCollection.sortedUniquely()
+
+        ReactiveList_reaction_testUtils.executeReactionTransaction(
+            subjectReactiveList,
+            slottedInputStimulation = inputCollection.changing(
+                tag = SourceReactiveCollectionTag,
+                changeDescription = TestInputReactiveBag.ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        10 to ("#10b" withSortKey 10.8), // tag 10: same sort key, only value changes
+                        20 to ("$20b" withSortKey 20.6), // tag 20: same sort key, only value changes
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
+            expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
+                expectedOldContent = listOf(
+                    "^0",
+                    "#10a",
+                    "$20a",
+                    "?30",
+                    ".50",
+                ),
+                expectedNewContent = listOf(
+                    "^0",
+                    "#10b",
+                    "$20b",
+                    "?30",
+                    ".50",
+                ),
+            ),
+        )
+    }
+
+    @Test
+    fun test_sourceCollectionChanges_replacementsOnly_newSortKey() {
+        slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
+            test_sourceCollectionChanges_replacementsOnly_newSortKey(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_sourceCollectionChanges_replacementsOnly_newSortKey(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val inputCollection = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                10 to ("#10" withSortKey 10.8),
+                0 to ("^0" withSortKey 0.3),
+                30 to ("?30" withSortKey 30.1),
+                20 to ("$20" withSortKey 20.6),
+                50 to (".50" withSortKey 50.4),
+            ),
+        )
+
+        val subjectReactiveList = inputCollection.sortedUniquely()
+
+        ReactiveList_reaction_testUtils.executeReactionTransaction(
+            subjectReactiveList,
+            slottedInputStimulation = inputCollection.changing(
+                tag = SourceReactiveCollectionTag,
+                changeDescription = TestInputReactiveBag.ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        10 to ("#35" withSortKey 35.6), // tag 10: moves after ?30 and before .50
+                        0 to ("^45" withSortKey 45.2),  // tag 0: moves after #35 and before .50
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
+            expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
+                expectedOldContent = listOf(
+                    "^0",
+                    "#10",
+                    "$20",
+                    "?30",
+                    ".50",
+                ),
+                expectedNewContent = listOf(
+                    "$20",
+                    "?30",
+                    "#35",
+                    "^45",
+                    ".50",
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun test_sourceCollectionChanges_mixed() {
         slottedStimulationScenarioBank_sourceCollectionChanges.forEach {
             test_sourceCollectionChanges_mixed(
@@ -177,6 +289,9 @@ class ReactiveList_sortedUniquely_tests {
                         15 to (".15" withSortKey 15.2),
                         16 to (".16" withSortKey 16.9),
                     ),
+                    replacedElementByTag = mapOf(
+                        60 to ("!5" withSortKey 5.5), // tag 60: moves from the end to the front
+                    ),
                     removedTags = setOf(20, 30, 50),
                 ),
             ).bind(
@@ -193,10 +308,10 @@ class ReactiveList_sortedUniquely_tests {
                 ),
                 expectedNewContent = listOf(
                     "^0",
+                    "!5",
                     "#10",
                     ".15",
                     ".16",
-                    "!60",
                 ),
             ),
         )
@@ -304,6 +419,58 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
+    fun test_sourceCollectionChangesRevoked_replacementsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesRevoked.forEach {
+            test_sourceCollectionChangesRevoked_replacementsOnly(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_sourceCollectionChangesRevoked_replacementsOnly(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val inputCollection = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                10 to ("#10" withSortKey 10.8),
+                0 to ("^0" withSortKey 0.3),
+                30 to ("?30" withSortKey 30.1),
+                20 to ("$20" withSortKey 20.6),
+                50 to (".50" withSortKey 50.4),
+                60 to ("!60" withSortKey 60.7),
+            ),
+        )
+
+        val subjectReactiveList = inputCollection.sortedUniquely()
+
+        ReactiveList_reaction_testUtils.executeReactionTransaction(
+            subjectReactiveList,
+            slottedInputStimulation = inputCollection.revokingChange(
+                tag = SourceReactiveCollectionTag,
+                temporaryChangeDescription = TestInputReactiveBag.ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        10 to ("#35" withSortKey 35.6), // tag 10: temporarily moves after ?30
+                        0 to ("^45" withSortKey 45.2),  // tag 0: temporarily moves after #35
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
+            expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectNoContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedUnaffectedContent = listOf(
+                    "^0",
+                    "#10",
+                    "$20",
+                    "?30",
+                    ".50",
+                    "!60",
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun test_sourceCollectionChangesRevoked_mixed() {
         slottedStimulationScenarioBank_sourceCollectionChangesRevoked.forEach {
             test_sourceCollectionChangesRevoked_mixed(
@@ -336,6 +503,9 @@ class ReactiveList_sortedUniquely_tests {
                     addedElementByTag = mapOf(
                         70 to (".70" withSortKey 70.5),
                         80 to (".80" withSortKey 80.9),
+                    ),
+                    replacedElementByTag = mapOf(
+                        60 to ("!5" withSortKey 5.5), // tag 60: temporarily moves to the front
                     ),
                     removedTags = setOf(20, 30, 50),
                 ),
@@ -484,6 +654,75 @@ class ReactiveList_sortedUniquely_tests {
     }
 
     @Test
+    fun test_sourceCollectionChangesCorrected_replacementsOnly() {
+        slottedStimulationScenarioBank_sourceCollectionChangesCorrected.forEach {
+            test_sourceCollectionChangesCorrected_replacementsOnly(
+                slottedStimulationScenario = it,
+            )
+        }
+    }
+
+    private fun test_sourceCollectionChangesCorrected_replacementsOnly(
+        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    ) {
+        val inputCollection = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                10 to ("#10" withSortKey 10.8),
+                0 to ("^0" withSortKey 0.3),
+                30 to ("?30" withSortKey 30.1),
+                20 to ("$20" withSortKey 20.6),
+                50 to (".50" withSortKey 50.4),
+                60 to ("!60" withSortKey 60.7),
+            ),
+        )
+
+        val subjectReactiveList = inputCollection.sortedUniquely()
+
+        ReactiveList_reaction_testUtils.executeReactionTransaction(
+            subjectReactiveList,
+            slottedInputStimulation = inputCollection.correctingChange(
+                tag = SourceReactiveCollectionTag,
+                intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        10 to ("#35" withSortKey 35.6), // not corrected
+                        0 to ("^45" withSortKey 45.2),  // corrected: replaced differently
+                        20 to ("$55" withSortKey 55.3), // corrected: not replaced
+                        60 to ("!65" withSortKey 65.1), // corrected: not replaced
+                    ),
+                ),
+                correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
+                    replacedElementByTag = mapOf(
+                        10 to ("#35" withSortKey 35.6),
+                        0 to ("^25" withSortKey 25.9),  // corrected to a different sort key
+                        30 to ("?1" withSortKey 1.1),   // (not mentioned before)
+                    ),
+                ),
+            ).bind(
+                slottedStimulationScenario,
+            ),
+            expectedSubjectElementTransition = ReactiveList_expectations_testUtils.expectContentTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldContent = listOf(
+                    "^0",
+                    "#10",
+                    "$20",
+                    "?30",
+                    ".50",
+                    "!60",
+                ),
+                expectedNewContent = listOf(
+                    "?1",
+                    "$20",
+                    "^25",
+                    "#35",
+                    ".50",
+                    "!60",
+                ),
+            ),
+        )
+    }
+
+    @Test
     fun test_sourceCollectionChangesCorrected_mixed() {
         slottedStimulationScenarioBank_sourceCollectionChangesCorrected.forEach {
             test_sourceCollectionChangesCorrected_mixed(
@@ -514,14 +753,21 @@ class ReactiveList_sortedUniquely_tests {
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
-                        5 to (".5" withSortKey 5.2), // not corrected
+                        5 to (".5" withSortKey 5.2),    // not corrected
                         70 to (".70" withSortKey 70.5), // corrected: not added
+                    ),
+                    replacedElementByTag = mapOf(
+                        10 to ("#55" withSortKey 55.5), // not corrected
+                        60 to ("!65" withSortKey 65.1), // corrected: removed instead
                     ),
                     removedTags = setOf(20, 50),
                 ),
                 correctedChangeDescription = TestInputReactiveBag.ChangeDescription(
                     addedElementByTag = mapOf(
                         5 to (".5" withSortKey 5.2),
+                    ),
+                    replacedElementByTag = mapOf(
+                        10 to ("#55" withSortKey 55.5),
                     ),
                     removedTags = setOf(20, 30, 60, 50),
                 ),
@@ -541,7 +787,7 @@ class ReactiveList_sortedUniquely_tests {
                 expectedNewContent = listOf(
                     "^0",
                     ".5",
-                    "#10",
+                    "#55",
                 ),
             ),
         )
