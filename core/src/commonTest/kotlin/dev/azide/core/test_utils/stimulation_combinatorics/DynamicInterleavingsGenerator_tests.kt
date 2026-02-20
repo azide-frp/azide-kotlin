@@ -11,9 +11,9 @@ class DynamicInterleavingsGenerator_tests {
     @Test
     fun test_noLists() {
         assertGeneratesExpectedInterleavings(
-            lists = emptyList<List<Int>>(),
+            lists = emptyList<List<String>>(),
             expectedInterleavings = setOf(
-                emptyList<Int>(),
+                emptyList<String>(),
             ),
         )
     }
@@ -21,7 +21,7 @@ class DynamicInterleavingsGenerator_tests {
     @Test
     fun test_singleEmptyList() {
         assertGeneratesExpectedInterleavings(
-            lists = listOf(emptyList<Int>()),
+            lists = listOf(emptyList<String>()),
             expectedInterleavings = setOf(
                 emptyList(),
             ),
@@ -31,9 +31,9 @@ class DynamicInterleavingsGenerator_tests {
     @Test
     fun test_singleListWithOneElement() {
         assertGeneratesExpectedInterleavings(
-            lists = listOf(listOf(1)),
+            lists = listOf(listOf("A")),
             expectedInterleavings = setOf(
-                listOf(1),
+                listOf("A"),
             ),
         )
     }
@@ -41,9 +41,9 @@ class DynamicInterleavingsGenerator_tests {
     @Test
     fun test_singleListWithMultipleElements() {
         assertGeneratesExpectedInterleavings(
-            lists = listOf(listOf(1, 2, 3)),
+            lists = listOf(listOf("A", "B", "C")),
             expectedInterleavings = setOf(
-                listOf(1, 2, 3),
+                listOf("A", "B", "C"),
             ),
         )
     }
@@ -52,8 +52,8 @@ class DynamicInterleavingsGenerator_tests {
     fun test_twoEmptyLists() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                emptyList(),
-                emptyList<Int>(),
+                emptyList<String>(),
+                emptyList<String>(),
             ),
             expectedInterleavings = setOf(
                 emptyList(),
@@ -65,11 +65,11 @@ class DynamicInterleavingsGenerator_tests {
     fun test_twoLists_oneEmpty() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf(1, 2),
-                emptyList<Int>(),
+                listOf("ONE", "TWO"),
+                emptyList<String>(),
             ),
             expectedInterleavings = setOf(
-                listOf(1, 2),
+                listOf("ONE", "TWO"),
             ),
         )
     }
@@ -78,12 +78,12 @@ class DynamicInterleavingsGenerator_tests {
     fun test_twoLists_bothSingle() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a'),
-                listOf(1),
+                listOf("A"),
+                listOf("ONE"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 1),
-                listOf(1, 'a'),
+                listOf("A", "ONE"),
+                listOf("ONE", "A"),
             ),
         )
     }
@@ -92,13 +92,13 @@ class DynamicInterleavingsGenerator_tests {
     fun test_twoLists_twoAndOne() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1),
+                listOf("A", "B"),
+                listOf("ONE"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 'b', 1),
-                listOf('a', 1, 'b'),
-                listOf(1, 'a', 'b'),
+                listOf("A", "B", "ONE"),
+                listOf("A", "ONE", "B"),
+                listOf("ONE", "A", "B"),
             ),
         )
     }
@@ -107,16 +107,16 @@ class DynamicInterleavingsGenerator_tests {
     fun test_twoLists_twoAndTwo() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1, 2),
+                listOf("A", "B"),
+                listOf("ONE", "TWO"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 'b', 1, 2),
-                listOf('a', 1, 'b', 2),
-                listOf('a', 1, 2, 'b'),
-                listOf(1, 'a', 'b', 2),
-                listOf(1, 'a', 2, 'b'),
-                listOf(1, 2, 'a', 'b'),
+                listOf("A", "B", "ONE", "TWO"),
+                listOf("A", "ONE", "B", "TWO"),
+                listOf("A", "ONE", "TWO", "B"),
+                listOf("ONE", "A", "B", "TWO"),
+                listOf("ONE", "A", "TWO", "B"),
+                listOf("ONE", "TWO", "A", "B"),
             ),
         )
     }
@@ -126,17 +126,17 @@ class DynamicInterleavingsGenerator_tests {
         // 3! / (1! * 1! * 1!) = 6
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a'),
-                listOf(1),
-                listOf("x"),
+                listOf("A"),
+                listOf("ONE"),
+                listOf("@@"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 1, "x"),
-                listOf('a', "x", 1),
-                listOf(1, 'a', "x"),
-                listOf(1, "x", 'a'),
-                listOf("x", 'a', 1),
-                listOf("x", 1, 'a'),
+                listOf("A", "ONE", "@@"),
+                listOf("A", "@@", "ONE"),
+                listOf("ONE", "A", "@@"),
+                listOf("ONE", "@@", "A"),
+                listOf("@@", "A", "ONE"),
+                listOf("@@", "ONE", "A"),
             ),
         )
     }
@@ -145,13 +145,13 @@ class DynamicInterleavingsGenerator_tests {
     fun test_threeLists_oneEmpty() {
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a'),
-                emptyList(),
-                listOf(1),
+                listOf("A"),
+                emptyList<String>(),
+                listOf("ONE"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 1),
-                listOf(1, 'a'),
+                listOf("A", "ONE"),
+                listOf("ONE", "A"),
             ),
         )
     }
@@ -161,23 +161,23 @@ class DynamicInterleavingsGenerator_tests {
         // 4! / (2! * 1! * 1!) = 12
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1),
-                listOf("x"),
+                listOf("A", "B"),
+                listOf("ONE"),
+                listOf("@@"),
             ),
             expectedInterleavings = setOf(
-                listOf('a', 'b', 1, "x"),
-                listOf('a', 'b', "x", 1),
-                listOf('a', 1, 'b', "x"),
-                listOf('a', 1, "x", 'b'),
-                listOf('a', "x", 'b', 1),
-                listOf('a', "x", 1, 'b'),
-                listOf(1, 'a', 'b', "x"),
-                listOf(1, 'a', "x", 'b'),
-                listOf(1, "x", 'a', 'b'),
-                listOf("x", 'a', 'b', 1),
-                listOf("x", 'a', 1, 'b'),
-                listOf("x", 1, 'a', 'b'),
+                listOf("A", "B", "ONE", "@@"),
+                listOf("A", "B", "@@", "ONE"),
+                listOf("A", "ONE", "B", "@@"),
+                listOf("A", "ONE", "@@", "B"),
+                listOf("A", "@@", "B", "ONE"),
+                listOf("A", "@@", "ONE", "B"),
+                listOf("ONE", "A", "B", "@@"),
+                listOf("ONE", "A", "@@", "B"),
+                listOf("ONE", "@@", "A", "B"),
+                listOf("@@", "A", "B", "ONE"),
+                listOf("@@", "A", "ONE", "B"),
+                listOf("@@", "ONE", "A", "B"),
             ),
         )
     }
@@ -187,9 +187,9 @@ class DynamicInterleavingsGenerator_tests {
         // 5! / (2! * 2! * 1!) = 30
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1, 2),
-                listOf("x"),
+                listOf("A", "B"),
+                listOf("ONE", "TWO"),
+                listOf("@@"),
             ),
             expectedInterleavingCount = 30,
         )
@@ -200,9 +200,9 @@ class DynamicInterleavingsGenerator_tests {
         // 6! / (2! * 2! * 2!) = 90
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1, 2),
-                listOf("x", "y"),
+                listOf("A", "B"),
+                listOf("ONE", "TWO"),
+                listOf("@@", "&&"),
             ),
             expectedInterleavingCount = 90,
         )
@@ -213,10 +213,10 @@ class DynamicInterleavingsGenerator_tests {
         // 4! / (1! * 1! * 1! * 1!) = 24
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a'),
-                listOf(1),
-                listOf("x"),
-                listOf(true),
+                listOf("A"),
+                listOf("ONE"),
+                listOf("@@"),
+                listOf("&&"),
             ),
             expectedInterleavingCount = 24,
         )
@@ -227,10 +227,10 @@ class DynamicInterleavingsGenerator_tests {
         // 5! / (2! * 1! * 1! * 1!) = 60
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1),
-                listOf("x"),
-                listOf(true),
+                listOf("A", "B"),
+                listOf("ONE"),
+                listOf("@@"),
+                listOf("&&"),
             ),
             expectedInterleavingCount = 60,
         )
@@ -241,10 +241,10 @@ class DynamicInterleavingsGenerator_tests {
         // 6! / (2! * 2! * 1! * 1!) = 180
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a', 'b'),
-                listOf(1, 2),
-                listOf("x"),
-                listOf(true),
+                listOf("A", "B"),
+                listOf("ONE", "TWO"),
+                listOf("@@"),
+                listOf("&&"),
             ),
             expectedInterleavingCount = 180,
         )
@@ -255,11 +255,11 @@ class DynamicInterleavingsGenerator_tests {
         // 5! / (1! * 1! * 1! * 1! * 1!) = 120
         assertGeneratesExpectedInterleavings(
             lists = listOf(
-                listOf('a'),
-                listOf(1),
-                listOf("x"),
-                listOf(true),
-                listOf(1.0),
+                listOf("A"),
+                listOf("ONE"),
+                listOf("@@"),
+                listOf("&&"),
+                listOf("%%"),
             ),
             expectedInterleavingCount = 120,
         )
@@ -269,8 +269,8 @@ class DynamicInterleavingsGenerator_tests {
     fun test_generateSingle_invalidIndex() {
         val generator = DynamicInterleavingsGenerator(
             lists = listOf(
-                listOf(1, 2),
-                listOf('a', 'b'),
+                listOf("A", "B"),
+                listOf("ONE", "TWO"),
             ),
         )
 
@@ -286,8 +286,8 @@ class DynamicInterleavingsGenerator_tests {
     fun test_equivalenceWithInterleavingsGenerator() {
         // Verify that DynamicInterleavingsGenerator with two lists produces the same results
         // as InterleavingsGenerator
-        val firstList = listOf(1, 2, 3)
-        val secondList = listOf('a', 'b')
+        val firstList = listOf("A", "B", "C")
+        val secondList = listOf("ONE", "TWO")
 
         val twoListGenerator = InterleavingsGenerator(
             firstList = firstList,
