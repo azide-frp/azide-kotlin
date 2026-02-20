@@ -45,7 +45,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChanges_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -55,11 +55,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList = subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.changing(
+            slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
@@ -103,7 +103,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChanges_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -113,11 +113,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.changing(
+            slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
@@ -157,7 +157,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChanges_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -168,11 +168,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.changing(
+            slottedInputStimulation = inputCollection.changing(
                 tag = SourceReactiveCollectionTag,
                 changeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
@@ -220,7 +220,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesRevoked_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -231,11 +231,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.revokingChange(
+            slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
@@ -272,7 +272,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesRevoked_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -283,11 +283,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.revokingChange(
+            slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
@@ -326,7 +326,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesRevoked_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -337,11 +337,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.revokingChange(
+            slottedInputStimulation = inputCollection.revokingChange(
                 tag = SourceReactiveCollectionTag,
                 temporaryChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
@@ -383,7 +383,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesCorrected_additionsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -394,11 +394,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.correctingChange(
+            slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
@@ -454,7 +454,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesCorrected_removalsOnly(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -465,11 +465,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.correctingChange(
+            slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     removedElements = setOf(
@@ -521,7 +521,7 @@ class ReactiveList_sortedUniquely_tests {
     private fun test_sourceCollectionChangesCorrected_mixed(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
-        val sourceReactiveSet = TestInputReactiveSet(
+        val inputCollection = TestInputReactiveSet(
             initialElements = setOf(
                 "#10" withSortKey 10.8,
                 "^0" withSortKey 0.3,
@@ -532,11 +532,11 @@ class ReactiveList_sortedUniquely_tests {
             ),
         )
 
-        val subjectReactiveList = sourceReactiveSet.sortedUniquely()
+        val subjectReactiveList = inputCollection.sortedUniquely()
 
         ReactiveList_reaction_testUtils.executeReactionTransaction(
             subjectReactiveList,
-            slottedInputStimulation = sourceReactiveSet.correctingChange(
+            slottedInputStimulation = inputCollection.correctingChange(
                 tag = SourceReactiveCollectionTag,
                 intermediateChangeDescription = TestInputReactiveSet.ChangeDescription(
                     addedElements = setOf(
