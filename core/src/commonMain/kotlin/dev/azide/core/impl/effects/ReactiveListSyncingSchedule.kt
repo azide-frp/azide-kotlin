@@ -11,8 +11,35 @@ import dev.azide.core.impl.registerBoundListener
 
 class ReactiveListSyncingSchedule<ElementT>(
     private val sourceReactiveList: ReactiveList<ElementT>,
-    private val externalMutableList: MutableList<ElementT>,
+    private val listSyncer: ListSyncer<ElementT>,
 ) : InternalSchedule {
+    interface ListSyncer<ElementT> {
+        class MutableListSyncer<ElementT>(
+            private val mutableList: MutableList<ElementT>,
+        ) : ListSyncer<ElementT> {
+            override fun syncContent(
+                content: List<ElementT>,
+            ) {
+                mutableList.clear()
+                mutableList.addAll(content)
+            }
+
+            override fun syncChange(
+                change: ListChange<ElementT>,
+            ) {
+                change.applyTo(mutableList)
+            }
+        }
+
+        fun syncContent(
+            content: List<ElementT>,
+        )
+
+        fun syncChange(
+            change: ListChange<ElementT>,
+        )
+    }
+
     private enum class InternalState {
         PreSync,
         Attached,
@@ -163,8 +190,7 @@ class ReactiveListSyncingSchedule<ElementT>(
             sourceInitialChange?.applyTo(mutableList = sourceInitialNewContent)
 
             propagationContext.enqueueForExecution {
-                externalMutableList.clear()
-                externalMutableList.addAll(sourceInitialNewContent)
+                listSyncer.syncContent(content = sourceInitialNewContent)
 
                 executionRevocable = null
 
@@ -179,7 +205,7 @@ class ReactiveListSyncingSchedule<ElementT>(
             propagationContext: Transactions.PropagationContext,
             sourceOngoingChange: ListChange<ElementT>,
         ): Revocable = propagationContext.enqueueForExecution {
-            sourceOngoingChange.applyTo(mutableList = externalMutableList)
+            listSyncer.syncChange(change = sourceOngoingChange)
 
             executionRevocable = null
         }

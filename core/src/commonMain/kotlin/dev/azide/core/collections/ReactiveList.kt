@@ -14,6 +14,7 @@ import dev.azide.core.impl.collections.reactive_list.operated_vertices.OfSingleT
 import dev.azide.core.impl.collections.reactive_list.operated_vertices.SortedUniquelyTrackedListVertex
 import dev.azide.core.impl.effects.ExternalizedEffect
 import dev.azide.core.impl.effects.ReactiveListSyncingSchedule
+import dev.azide.core.impl.effects.ReactiveListSyncingSchedule.ListSyncer
 import dev.azide.core.map
 
 interface ReactiveList<out ElementT> : ReactiveCollection<ElementT> {
@@ -100,6 +101,8 @@ fun <ElementT> ReactiveList<ElementT>.syncing(
 ): Schedule = ExternalizedEffect(
     internalEffect = ReactiveListSyncingSchedule(
         sourceReactiveList = this@syncing,
-        externalMutableList = externalMutableList,
-    )
+        listSyncer = ListSyncer.MutableListSyncer(
+            mutableList = externalMutableList,
+        ),
+    ),
 )
