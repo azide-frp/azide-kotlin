@@ -638,9 +638,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     // None of the inner cells have an ongoing update - no fused change
                     initialStableInnerSourceCellUpdatedValueByTag.isEmpty() -> null
 
-                    // Some inner cells have ongoing updates - build fused change
+                    // Some inner cells have ongoing updates - build fused change (all are replacements since tags already exist)
                     else -> TaggedBagChange(
-                        changedElementByTag = initialStableInnerSourceCellUpdatedValueByTag,
+                        addedElementByTag = emptyMap(),
+                        replacedElementByTag = initialStableInnerSourceCellUpdatedValueByTag,
                         removedTags = emptySet(),
                     )
                 }
@@ -718,8 +719,22 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
                 this.removedInnerCellVertexTags = initialRemovedInnerCellVertexTags
 
+                // Split changed cells into added (tag not in stable map) vs replaced (tag already existed)
+                val initialAddedInnerSourceCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+                val initialReplacedInnerSourceCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+
+                for ((changedTag, newValue) in initialChangedInnerSourceCellNewValueByTag) {
+                    if (changedTag in initialStableInnerSourceCellVertexByTag) {
+                        initialReplacedInnerSourceCellNewValueByTag[changedTag] = newValue
+                    } else {
+                        initialAddedInnerSourceCellNewValueByTag[changedTag] = newValue
+                    }
+                }
+
                 TaggedBagChange(
-                    changedElementByTag = initialChangedInnerSourceCellNewValueByTag + initialUntouchedInnerSourceCellUpdatedValueByTag,
+                    // Untouched stable cell updates are replacements (the tags already exist in stable map)
+                    addedElementByTag = initialAddedInnerSourceCellNewValueByTag,
+                    replacedElementByTag = initialReplacedInnerSourceCellNewValueByTag + initialUntouchedInnerSourceCellUpdatedValueByTag,
                     removedTags = initialRemovedInnerCellVertexTags,
                 )
             }
@@ -785,10 +800,11 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
+        val stableInnerSourceCellVertexByTag = this.stableInnerSourceCellVertexByTag
 
         val untouchedInnerCellUpdatedValueByTag =
             updatedUntouchedStableInnerCellVertexTags.asSequence().mapNotNull { updatedStableTag ->
-                val stableCellVertex = this.stableInnerSourceCellVertexByTag?.get(updatedStableTag)
+                val stableCellVertex = stableInnerSourceCellVertexByTag?.get(updatedStableTag)
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag: $updatedStableTag")
 
                 // Filter out vertices without an ongoing update, which can happen in a case when a single cell vertex
@@ -798,17 +814,26 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 updatedStableTag to ongoingUpdate.updatedValue
             }.toMap()
 
-        val changedInnerCellNewValueByTag = when (changedInnerCellVertexByTag) {
-            null -> emptyMap()
-            else -> changedInnerCellVertexByTag.entries.associate { (changedTag, changedInnerCellVertex) ->
-                changedTag to changedInnerCellVertex.getNewValue(propagationContext = propagationContext)
+        // Split changed cells into added (tag not in stable map) vs replaced (tag already existed)
+        val addedInnerCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+        val replacedInnerCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+
+        if (changedInnerCellVertexByTag != null) {
+            for ((changedTag, changedInnerCellVertex) in changedInnerCellVertexByTag) {
+                val newValue = changedInnerCellVertex.getNewValue(propagationContext = propagationContext)
+
+                if (stableInnerSourceCellVertexByTag != null && changedTag in stableInnerSourceCellVertexByTag) {
+                    replacedInnerCellNewValueByTag[changedTag] = newValue
+                } else {
+                    addedInnerCellNewValueByTag[changedTag] = newValue
+                }
             }
         }
 
-        val changedElementByTag = changedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag
-
         return TaggedBagChange.of(
-            changedElementByTag = changedElementByTag,
+            addedElementByTag = addedInnerCellNewValueByTag,
+            // Untouched stable cell updates are replacements (the tags already exist in stable map)
+            replacedElementByTag = replacedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag,
             removedTags = removedInnerCellVertexTags ?: emptySet(),
         )
     }

@@ -4,24 +4,34 @@ import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 
 data class TaggedBagChange<out ElementT>(
-    val changedElementByTag: Map<Tag, ElementT>,
+    val addedElementByTag: Map<Tag, ElementT>,
+    val replacedElementByTag: Map<Tag, ElementT>,
     val removedTags: Set<Tag>,
 ) : GenericCollectionChange<TaggedBag<ElementT>> {
     companion object {
         fun <ElementT> of(
-            changedElementByTag: Map<Tag, ElementT>,
+            addedElementByTag: Map<Tag, ElementT>,
+            replacedElementByTag: Map<Tag, ElementT>,
             removedTags: Set<Tag>,
         ): TaggedBagChange<ElementT>? = when {
-            changedElementByTag.isEmpty() && removedTags.isEmpty() -> null
+            addedElementByTag.isEmpty() && replacedElementByTag.isEmpty() && removedTags.isEmpty() -> null
+
             else -> TaggedBagChange(
-                changedElementByTag = changedElementByTag,
+                addedElementByTag = addedElementByTag,
+                replacedElementByTag = replacedElementByTag,
                 removedTags = removedTags,
             )
         }
     }
 
+    /**
+     * Added and replaced elements, keyed by their tags.
+     */
+    val changedElementByTag: Map<Tag, ElementT>
+        get() = addedElementByTag + replacedElementByTag
+
     init {
-        require(changedElementByTag.isNotEmpty() || removedTags.isNotEmpty()) {
+        require(addedElementByTag.isNotEmpty() || replacedElementByTag.isNotEmpty() || removedTags.isNotEmpty()) {
             "A TaggedBagChange must have at least one changed or removed element."
         }
     }
@@ -34,7 +44,7 @@ data class TaggedBagChange<out ElementT>(
         get() = TODO()
 
     override val addedContent: TaggedBag<ElementT>
-        get() = TODO("Not yet implemented")
+        get() = TaggedBag.ofTaggedContent(elementByTag = addedElementByTag)
 
     override fun getRemovedContentView(
         oldContentView: TaggedBag<@UnsafeVariance ElementT>,
@@ -49,7 +59,8 @@ data class TaggedBagChange<out ElementT>(
 fun <ElementT, TransformedElementT> TaggedBagChange<ElementT>.map(
     transform: (ElementT) -> TransformedElementT,
 ): TaggedBagChange<TransformedElementT> = TaggedBagChange(
-    changedElementByTag = changedElementByTag.mapValues { (_, element) -> transform(element) },
+    addedElementByTag = addedElementByTag.mapValues { (_, element) -> transform(element) },
+    replacedElementByTag = replacedElementByTag.mapValues { (_, element) -> transform(element) },
     removedTags = removedTags,
 )
 

@@ -72,7 +72,8 @@ class TestInputReactiveBag<ElementT>(
         }
 
         fun toTaggedBagChange(): TaggedBagChange<ElementT> = TaggedBagChange(
-            changedElementByTag = replacedElementByTag + addedElementByTag,
+            addedElementByTag = addedElementByTag,
+            replacedElementByTag = replacedElementByTag,
             removedTags = removedTags,
         )
 

@@ -19,7 +19,8 @@ class FromSetTaggedBagVertex<ElementT>(
     override fun transformChange(
         change: SetChange<ElementT>,
     ): TaggedBagChange<ElementT> = TaggedBagChange(
-        changedElementByTag = change.addedElements.associateBy { it },
+        addedElementByTag = change.addedElements.associateBy { it },
+        replacedElementByTag = emptyMap(),
         removedTags = change.removedElements,
     )
 }
