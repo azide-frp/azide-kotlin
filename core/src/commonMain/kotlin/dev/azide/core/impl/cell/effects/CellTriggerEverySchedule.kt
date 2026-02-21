@@ -1,13 +1,12 @@
 package dev.azide.core.impl.cell.effects
 
-import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.Trigger
 import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.effects.InternalEffect
@@ -35,14 +34,14 @@ class CellTriggerEverySchedule(
             wrapUpContext = wrapUpContext,
         ).revocable
 
-        class TriggerEveryRevocableOutcome : InternalEffect.RevocableOutcome<Unit>, Vertex.BoundListener,
+        class TriggerEveryRevocableOutcome : InternalEffect.RevocableOutcome<Unit>, ListenableVertex.BoundListener,
             CommittableVertex {
             private val sourceVertex: CellVertex<Trigger>
                 get() = sourceActionCell.vertex
 
             override val result = Unit
 
-            private var upstreamListenerHandle: Vertex.ListenerHandle? = null
+            private var upstreamListenerHandle: ListenableVertex.ListenerHandle? = null
 
             private var unstableNewInnerTriggerRevocable: Revocable? = null
 
@@ -123,7 +122,7 @@ class CellTriggerEverySchedule(
                 }
 
                 if (this@TriggerEveryRevocableOutcome.upstreamListenerHandle != null || this@TriggerEveryRevocableOutcome.unstableNewInnerTriggerRevocable != null) {
-                    throw IllegalStateException("Vertex seems to already be started up")
+                    throw IllegalStateException("ListenableVertex seems to already be started up")
                 }
 
                 // Re-register the listener

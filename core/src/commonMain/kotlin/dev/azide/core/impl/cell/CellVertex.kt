@@ -1,10 +1,10 @@
 package dev.azide.core.impl.cell
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import kotlin.jvm.JvmInline
 
-interface CellVertex<out ValueT> : Vertex {
+interface CellVertex<out ValueT> : ListenableVertex {
     @JvmInline
     value class Update<out ValueT>(
         val updatedValue: ValueT,

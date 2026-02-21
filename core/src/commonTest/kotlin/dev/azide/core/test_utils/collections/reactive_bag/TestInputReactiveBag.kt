@@ -3,7 +3,7 @@ package dev.azide.core.test_utils.collections.reactive_bag
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -196,7 +196,7 @@ class TestInputReactiveBag<ElementT>(
 
     override val trackedVertex: TrackedTaggedBagVertex<ElementT> = _vertex
 
-    override val testVertex: Vertex
+    override val testVertex: ListenableVertex
         get() = _vertex
 }
 

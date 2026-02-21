@@ -6,8 +6,8 @@ import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
@@ -145,7 +145,7 @@ class ExecutedEachEventStreamVertex<EventT>(
         propagationContext: PropagationContext,
     ): Emission<EventT>? {
         if (internalState != InternalState.Detached) {
-            throw IllegalStateException("Vertex is attached or disposed: $internalState")
+            throw IllegalStateException("ListenableVertex is attached or disposed: $internalState")
         }
 
         val sourceEventStream = this@ExecutedEachEventStreamVertex.sourceEventStream
@@ -179,7 +179,7 @@ class ExecutedEachEventStreamVertex<EventT>(
 
     private fun detach() {
         if (internalState != InternalState.Attached) {
-            throw IllegalStateException("Vertex is already detached or disposed: $internalState")
+            throw IllegalStateException("ListenableVertex is already detached or disposed: $internalState")
         }
 
         val sourceEventStream = this@ExecutedEachEventStreamVertex.sourceEventStream

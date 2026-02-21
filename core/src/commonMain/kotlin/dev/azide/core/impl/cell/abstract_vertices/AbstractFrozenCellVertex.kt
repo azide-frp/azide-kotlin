@@ -1,9 +1,9 @@
 package dev.azide.core.impl.cell.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.FrozenCellVertex
 
 abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
@@ -13,7 +13,7 @@ abstract class AbstractFrozenCellVertex<ValueT> : FrozenCellVertex<ValueT> {
     final override fun registerListener(
         propagationContext: Transactions.PropagationContext,
         listener: Listener,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ): FrozenCellVertex.FrozenListenerHandle = FrozenCellVertex.FrozenListenerHandle
 
     final override fun unregisterListener(

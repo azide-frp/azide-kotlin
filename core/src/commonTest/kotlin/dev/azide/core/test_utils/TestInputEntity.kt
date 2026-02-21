@@ -1,10 +1,10 @@
 package dev.azide.core.test_utils
 
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import kotlin.test.assertEquals
 
 interface TestInputEntity {
-    val testVertex: Vertex
+    val testVertex: ListenableVertex
 }
 
 val TestInputEntity.listenerCount: Int

@@ -1,7 +1,7 @@
 package dev.azide.core.impl.event_stream.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 
 abstract class AbstractStatefulEventStreamVertex<EventT>(
@@ -11,11 +11,11 @@ abstract class AbstractStatefulEventStreamVertex<EventT>(
 
     final override fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ) {
         if (isInitialized) return
 
-        if (mode == Vertex.ActivationMode.Offline) {
+        if (mode == ListenableVertex.ActivationMode.Offline) {
             throw UnsupportedOperationException("Offline initialization is not supported")
         }
 

@@ -1,9 +1,9 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
@@ -88,10 +88,10 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ): EventStreamVertex.Emission<ValueT>? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
@@ -129,7 +129,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,

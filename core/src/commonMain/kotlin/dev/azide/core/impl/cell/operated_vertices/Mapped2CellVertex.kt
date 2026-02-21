@@ -1,9 +1,9 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.registerBoundListener
@@ -20,14 +20,14 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ): CellVertex.Update<TransformedValueT>? {
         if (upstreamListenerHandle1 != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         if (upstreamListenerHandle2 != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         this.upstreamListenerHandle1 = sourceVertex1.registerBoundListener(

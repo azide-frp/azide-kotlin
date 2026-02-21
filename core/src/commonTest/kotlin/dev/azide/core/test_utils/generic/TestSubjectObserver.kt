@@ -1,14 +1,14 @@
 package dev.azide.core.test_utils.generic
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 class TestSubjectObserver<in SubjectT, out NotificationT : Any> private constructor(
     private val trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
     private val subjectLazy: Lazy<SubjectT>,
-) : Vertex.BoundListener {
+) : ListenableVertex.BoundListener {
     companion object {
         fun <SubjectT, NotificationT : Any> prepare(
             trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
@@ -54,7 +54,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         }
     }
 
-    private var listenerHandle: Vertex.ListenerHandle? = null
+    private var listenerHandle: ListenableVertex.ListenerHandle? = null
 
     private var observedNotifications: MutableList<NotificationT?> = mutableListOf()
 

@@ -3,8 +3,8 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.EventStream
 import dev.azide.core.impl.PostProcessableVertex
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.enqueueForPostProcessing
@@ -14,8 +14,8 @@ import dev.azide.core.impl.event_stream.registerBoundListener
 import dev.azide.core.impl.event_stream.registerBoundListenerOffline
 import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.registerBoundListenerOffline
-import dev.azide.core.impl.Vertex.BoundListener as BoundCellListener
-import dev.azide.core.impl.Vertex.BoundListener as BoundEventStreamListener
+import dev.azide.core.impl.ListenableVertex.BoundListener as BoundCellListener
+import dev.azide.core.impl.ListenableVertex.BoundListener as BoundEventStreamListener
 
 class DivertedEventStreamVertex<EventT>(
     private val outerSourceVertex: CellVertex<EventStream<EventT>>,
@@ -66,7 +66,7 @@ class DivertedEventStreamVertex<EventT>(
             propagationContext: Transactions.PropagationContext,
         ) {
             val stableInnerSourceVertex = this@DivertedEventStreamVertex.stableInnerSourceVertex
-                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             exposeEmissionNotifyingListeners(
                 propagationContext = propagationContext,
@@ -110,7 +110,7 @@ class DivertedEventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>? {
         if (upstreamOuterListenerHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         // Register the outer listener
@@ -166,7 +166,7 @@ class DivertedEventStreamVertex<EventT>(
         propagationContext: Transactions.PropagationContext,
     ) {
         if (upstreamOuterListenerHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamStableInnerListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         // Register the outer listener
@@ -204,7 +204,7 @@ class DivertedEventStreamVertex<EventT>(
         val upstreamStableInnerListenerHandle = this.upstreamStableInnerListenerHandle
 
         if (upstreamOuterListenerHandle == null || stableInnerSourceVertex == null) {
-            throw IllegalStateException("Vertex doesn't seem to be active")
+            throw IllegalStateException("ListenableVertex doesn't seem to be active")
         }
 
         // Unregister the outer source vertex listener
@@ -245,7 +245,7 @@ class DivertedEventStreamVertex<EventT>(
         }
 
         val upstreamStableInnerListenerHandle =
-            upstreamStableInnerListenerHandle ?: throw AssertionError("Vertex doesn't seem to be active")
+            upstreamStableInnerListenerHandle ?: throw AssertionError("ListenableVertex doesn't seem to be active")
 
         stableInnerSourceVertex.unregisterListener(
             handle = upstreamStableInnerListenerHandle,

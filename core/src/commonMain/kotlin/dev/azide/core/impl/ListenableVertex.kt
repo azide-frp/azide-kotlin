@@ -1,12 +1,12 @@
 package dev.azide.core.impl
 
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerHandle
-import dev.azide.core.impl.Vertex.ListenerStatus
+import dev.azide.core.impl.ListenableVertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex.ListenerStatus
 
-interface Vertex {
+interface ListenableVertex {
     enum class ActivationMode {
         /**
          * Online activation is the "full" activation mode, when the vertex is activated in the middle of the
@@ -60,7 +60,7 @@ interface Vertex {
     )
 }
 
-fun Vertex.registerListenerOnline(
+fun ListenableVertex.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
     listener: Listener,
 ): ListenerHandle = registerListener(
@@ -69,7 +69,7 @@ fun Vertex.registerListenerOnline(
     mode = ActivationMode.Online,
 )
 
-fun Vertex.registerListenerOffline(
+fun ListenableVertex.registerListenerOffline(
     propagationContext: Transactions.PropagationContext,
     listener: Listener,
 ): ListenerHandle = registerListener(
@@ -78,7 +78,7 @@ fun Vertex.registerListenerOffline(
     mode = ActivationMode.Offline,
 )
 
-fun Vertex.registerBoundListener(
+fun ListenableVertex.registerBoundListener(
     propagationContext: Transactions.PropagationContext,
     listener: BoundListener,
     mode: ActivationMode,
@@ -98,7 +98,7 @@ fun Vertex.registerBoundListener(
     mode = mode,
 )
 
-fun Vertex.registerBoundListenerOnline(
+fun ListenableVertex.registerBoundListenerOnline(
     propagationContext: Transactions.PropagationContext,
     listener: BoundListener,
 ): ListenerHandle = registerBoundListener(
@@ -107,7 +107,7 @@ fun Vertex.registerBoundListenerOnline(
     mode = ActivationMode.Online,
 )
 
-fun Vertex.registerBoundListenerOffline(
+fun ListenableVertex.registerBoundListenerOffline(
     propagationContext: Transactions.PropagationContext,
     listener: BoundListener,
 ): ListenerHandle = registerBoundListener(

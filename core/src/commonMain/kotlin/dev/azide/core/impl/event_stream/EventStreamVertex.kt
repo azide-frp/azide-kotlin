@@ -1,14 +1,14 @@
 package dev.azide.core.impl.event_stream
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import kotlin.jvm.JvmInline
 
-sealed interface EventStreamVertex<out EventT> : Vertex {
+sealed interface EventStreamVertex<out EventT> : ListenableVertex {
     @JvmInline
     value class Emission<out EventT>(
         val emittedEvent: EventT,
@@ -41,12 +41,12 @@ fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
     listener = object : Listener {
         override fun handle(
             propagationContext: Transactions.PropagationContext,
-        ): Vertex.ListenerStatus {
+        ): ListenableVertex.ListenerStatus {
             listener.handle(
                 propagationContext = propagationContext,
             )
 
-            return Vertex.ListenerStatus.Reachable
+            return ListenableVertex.ListenerStatus.Reachable
         }
     },
     mode = mode,

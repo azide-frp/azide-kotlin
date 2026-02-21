@@ -3,7 +3,7 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStream
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 

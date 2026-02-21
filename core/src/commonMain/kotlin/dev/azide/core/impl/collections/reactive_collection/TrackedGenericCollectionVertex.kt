@@ -1,7 +1,7 @@
 package dev.azide.core.impl.collections.reactive_collection
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -11,7 +11,8 @@ import dev.azide.core.impl.collections.reactive_collection.operated_vertices.hel
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
-interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : GenericCollectionChange<*>> : Vertex {
+interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : GenericCollectionChange<*>> :
+    ListenableVertex {
     interface GenericCollectionChange<out ContentT : Collection<*>> {
         val sizeDelta: Int
 

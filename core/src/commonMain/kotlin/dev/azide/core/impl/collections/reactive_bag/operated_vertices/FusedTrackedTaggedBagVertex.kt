@@ -3,9 +3,9 @@ package dev.azide.core.impl.collections.reactive_bag.operated_vertices
 import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveBag.Tag
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
@@ -53,10 +53,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             propagationContext: Transactions.PropagationContext,
         ) {
             val stableInnerSourceCellVertexByTag = parent.stableInnerSourceCellVertexByTag
-                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             val updatedUntouchedStableInnerCellVertexTags = parent.updatedUntouchedStableInnerCellVertexTags
-                    ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             val changedInnerCellVertexByTag = parent.changedInnerCellVertexByTag
 
@@ -206,17 +206,18 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
     ) {
         val stableInnerSourceCellVertexByTag =
-            this.stableInnerSourceCellVertexByTag ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.stableInnerSourceCellVertexByTag
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val updatedUntouchedStableInnerCellVertexTags = this.updatedUntouchedStableInnerCellVertexTags
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
 
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val sourceBagOngoingChange = outerSourceBagVertex.ongoingChange
 
@@ -582,10 +583,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ): TaggedBagChange<ElementT>? {
         if (upstreamSourceListenerHandle != null || upstreamNewInnerCellListenerByTag != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         // Register listener on source bag vertex
@@ -743,12 +744,13 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
     override fun deactivate() {
         val upstreamSourceListenerHandle =
-            this.upstreamSourceListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamSourceListenerHandle
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         this.upstreamSourceListenerHandle = null
 
         val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         this.upstreamNewInnerCellListenerByTag = null
 
@@ -796,7 +798,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
     ): TaggedBagChange<ElementT>? {
         val updatedUntouchedStableInnerCellVertexTags = this.updatedUntouchedStableInnerCellVertexTags
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags

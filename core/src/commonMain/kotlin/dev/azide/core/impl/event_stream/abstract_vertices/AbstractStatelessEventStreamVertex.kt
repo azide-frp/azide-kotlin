@@ -1,7 +1,7 @@
 package dev.azide.core.impl.event_stream.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
 
 abstract class AbstractStatelessEventStreamVertex<EventT> : AbstractLiveEventStreamVertex<EventT>() {

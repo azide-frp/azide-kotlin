@@ -3,8 +3,8 @@ package dev.azide.core.impl.effects
 import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.ActivationMode
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
 import dev.azide.core.impl.registerBoundListener
@@ -53,7 +53,7 @@ class ReactiveListSyncingSchedule<ElementT>(
     ): InternalEffect.RevocableOutcome<Unit> = object : InternalEffect.RevocableOutcome<Unit> {
         private var internalState = InternalState.PreSync
 
-        private var listenerHandle: Vertex.ListenerHandle? = null
+        private var listenerHandle: ListenableVertex.ListenerHandle? = null
 
         private var executionRevocable: Revocable? = null
 
@@ -134,7 +134,7 @@ class ReactiveListSyncingSchedule<ElementT>(
 
             listenerHandle = sourceReactiveList.trackedVertex.registerBoundListener(
                 propagationContext = propagationContext,
-                listener = object : Vertex.BoundListener {
+                listener = object : ListenableVertex.BoundListener {
                     override fun handle(propagationContext: Transactions.PropagationContext) {
                         executionRevocable?.revoke()
 

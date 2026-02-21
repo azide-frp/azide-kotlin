@@ -7,7 +7,7 @@ import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -26,7 +26,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
 ) : AbstractStatefulTrackedTaggedBagVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
     initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) { it.result },
-), Vertex.BoundListener, CommittableVertex {
+), ListenableVertex.BoundListener, CommittableVertex {
     class ActuationEffect<InnerResultT>(
         private val sourceEffectBag: ReactiveBag<Effect<InnerResultT>>,
     ) : InternalEffect<ReactiveBag<InnerResultT>> {
@@ -147,7 +147,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
 
     private var internalState = InternalState.ShutDown
 
-    private var upstreamListenerHandle: Vertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenableVertex.ListenerHandle? = null
 
     private var unstableInnerEffectCancellationRevocableByTag: MutableMap<ReactiveBag.Tag, Revocable>? = null
 
@@ -336,7 +336,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         }
 
         if (this@ActuatedTaggedBagVertex.upstreamListenerHandle != null || this@ActuatedTaggedBagVertex.unstableInnerEffectCancellationRevocableByTag != null || this@ActuatedTaggedBagVertex.unstableNewInnerEffectStartOutcomeByTag != null) {
-            throw IllegalStateException("Vertex seems to already be started up")
+            throw IllegalStateException("ListenableVertex seems to already be started up")
         }
 
         // Re-register the listener

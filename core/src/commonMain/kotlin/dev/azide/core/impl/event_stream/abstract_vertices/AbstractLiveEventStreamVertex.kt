@@ -3,9 +3,9 @@ package dev.azide.core.impl.event_stream.abstract_vertices
 import dev.azide.core.CausalLoopException
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerStatus
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerStatus
 import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
@@ -30,8 +30,8 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     override fun registerListener(
         propagationContext: Transactions.PropagationContext,
         listener: Listener,
-        mode: Vertex.ActivationMode,
-    ): Vertex.ListenerHandle {
+        mode: ListenableVertex.ActivationMode,
+    ): ListenableVertex.ListenerHandle {
         val internalHandle = _registeredListeners.add(listener)
 
         if (_registeredListeners.size == 1) {
@@ -47,7 +47,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     override fun unregisterListener(
-        handle: Vertex.ListenerHandle,
+        handle: ListenableVertex.ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
             handle as? LiveListenerHandle ?: throw IllegalArgumentException("Invalid handle")
@@ -135,7 +135,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
 
     protected open fun onFirstListenerRegistered(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ) {
     }
 

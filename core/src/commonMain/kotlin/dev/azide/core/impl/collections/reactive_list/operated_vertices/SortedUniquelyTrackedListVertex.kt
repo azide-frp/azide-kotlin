@@ -2,9 +2,9 @@ package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
 import dev.azide.core.collections.helpers.SortableValue
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedListVertex
@@ -50,10 +50,10 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
 
     override fun activate(
         propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        mode: ListenableVertex.ActivationMode,
     ): ListChange<ElementT>? {
         if (upstreamListenerHandle != null || elementBySortKey != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
@@ -79,7 +79,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
 
     override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -110,7 +110,8 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
         sourceOngoingChange: TrackedGenericCollectionVertex.CollectionChange<SortableValue<ElementT, SortKeyT>>,
         propagationContext: Transactions.PropagationContext,
     ): ListChange<ElementT> {
-        val elementBySortKey = this.elementBySortKey ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val elementBySortKey =
+            this.elementBySortKey ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changeBuilder = ChangeBuilder()
 

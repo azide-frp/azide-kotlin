@@ -6,7 +6,7 @@ import dev.azide.core.executeInternallyWrappedUp
 import dev.azide.core.impl.CommittableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
@@ -20,7 +20,7 @@ class ExecutedEveryCellVertex<InnerResultT> private constructor(
 ) : AbstractStatefulCellVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
     initialValue = initialInnerActionResult,
-), Vertex.BoundListener, CommittableVertex {
+), ListenableVertex.BoundListener, CommittableVertex {
     class ExecutionEffect<InnerResultT>(
         private val sourceActionCell: Cell<Action<InnerResultT>>,
     ) : InternalEffect<Cell<InnerResultT>> {
@@ -106,7 +106,7 @@ class ExecutedEveryCellVertex<InnerResultT> private constructor(
 
     private var internalState = InternalState.ShutDown
 
-    private var upstreamListenerHandle: Vertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenableVertex.ListenerHandle? = null
 
     private var unstableNewInnerActionExecutionOutcome: Action.Outcome<InnerResultT>? = null
 
@@ -184,7 +184,7 @@ class ExecutedEveryCellVertex<InnerResultT> private constructor(
         }
 
         if (this@ExecutedEveryCellVertex.upstreamListenerHandle != null || this@ExecutedEveryCellVertex.unstableNewInnerActionExecutionOutcome != null) {
-            throw IllegalStateException("Vertex seems to already be started up")
+            throw IllegalStateException("ListenableVertex seems to already be started up")
         }
 
         // Re-register the listener
