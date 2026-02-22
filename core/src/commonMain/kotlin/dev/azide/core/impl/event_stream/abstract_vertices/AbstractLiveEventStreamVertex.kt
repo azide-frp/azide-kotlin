@@ -58,7 +58,9 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         }
     }
 
-    final override fun commit() {
+    final override fun commit(
+        commitmentContext: Transactions.CommitmentContext,
+    ) {
         if (_ongoingEmission != null) {
             transit()
         }

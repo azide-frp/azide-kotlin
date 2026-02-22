@@ -76,7 +76,9 @@ abstract class AbstractExecutionMergingTrigger : Trigger, Committable {
         wrapUpContext: Transactions.WrapUpContext,
     ): Revocable
 
-    override fun commit() {
+    override fun commit(
+        commitmentContext: Transactions.CommitmentContext,
+    ) {
         executionCount = 0
     }
 }

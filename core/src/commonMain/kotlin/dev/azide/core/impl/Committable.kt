@@ -1,5 +1,7 @@
 package dev.azide.core.impl
 
 interface Committable {
-    fun commit()
+    fun commit(
+        commitmentContext: Transactions.CommitmentContext,
+    )
 }

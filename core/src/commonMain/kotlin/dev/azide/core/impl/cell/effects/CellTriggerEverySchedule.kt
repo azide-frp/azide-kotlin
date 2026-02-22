@@ -184,7 +184,9 @@ class CellTriggerEverySchedule(
                 }
             }
 
-            override fun commit() {
+            override fun commit(
+                commitmentContext: Transactions.CommitmentContext,
+            ) {
                 if (internalState != InternalState.StartedUp) {
                     return
                 }

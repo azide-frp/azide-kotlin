@@ -14,6 +14,7 @@ abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<V
         get() = _ongoingUpdate
 
     final override fun commit(
+        commitmentContext: Transactions.CommitmentContext,
     ) {
         persist(
             ongoingUpdate = _ongoingUpdate,

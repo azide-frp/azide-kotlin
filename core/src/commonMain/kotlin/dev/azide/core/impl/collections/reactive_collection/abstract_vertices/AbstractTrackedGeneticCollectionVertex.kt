@@ -19,7 +19,7 @@ abstract class AbstractTrackedGenericCollectionVertex<ContentT : Collection<*>, 
 
     final override val ongoingChange: ChangeT?
         get() = _ongoingChange
-    
+
     /**
      * If [change] is non-null (effective), expose it and notify listeners. If [change] is null (ineffective),
      * expose a revocation and notify listeners only if there's an ongoing change to revoke.
@@ -70,6 +70,7 @@ abstract class AbstractTrackedGenericCollectionVertex<ContentT : Collection<*>, 
     }
 
     final override fun commit(
+        commitmentContext: Transactions.CommitmentContext,
     ) {
         val ongoingChange = this._ongoingChange
 

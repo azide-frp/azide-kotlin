@@ -62,6 +62,8 @@ object Transactions {
         ): Revocable
     }
 
+    interface CommitmentContext
+
     enum class TransactionState {
         Open, Closed,
     }
@@ -115,8 +117,7 @@ object Transactions {
 
                 enqueuedCommittables.add(
                     object : Committable {
-                        override fun commit(
-                        ) {
+                        override fun commit(commitmentContext: CommitmentContext) {
                             callback()
                         }
                     },
@@ -186,6 +187,7 @@ object Transactions {
 
         enqueuedCommittables.asReversed().forEach { committable ->
             committable?.commit(
+                commitmentContext = object : CommitmentContext {},
             )
         }
 
