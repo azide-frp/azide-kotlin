@@ -155,6 +155,12 @@ context(momentContext: MomentContext) fun <ValueT, TransformedValueT> Cell<Value
     }
 }.pullInContext()
 
+fun <ValueT, TransformedValueT> Cell<ValueT>.divertOf(
+    transform: (ValueT) -> EventStream<TransformedValueT>,
+): EventStream<TransformedValueT> = Cell.divert(
+    outerCell = map(transform),
+)
+
 fun <ValueT> Cell<Moment<ValueT>>.sampleEvery(): Moment<Cell<ValueT>> = sampling.joinOf { initialMoment: Moment<ValueT> ->
     initialMoment.joinOf { initialValue: ValueT ->
         updatedValues.sampleEach().holding(initialValue = initialValue)
