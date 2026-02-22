@@ -3266,4 +3266,9 @@ class ReactiveBag_fuse_tests {
             subjectHealthCheckStrategy = subjectHealthCheckStrategy,
         )
     }
+
+    @Test
+    fun test_offlineActivation() {
+        // TODO
+    }
 }
