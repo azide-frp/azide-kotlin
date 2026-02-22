@@ -46,7 +46,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -74,7 +74,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -100,7 +100,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -128,7 +128,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -154,7 +154,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -184,7 +184,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -211,7 +211,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -240,7 +240,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,

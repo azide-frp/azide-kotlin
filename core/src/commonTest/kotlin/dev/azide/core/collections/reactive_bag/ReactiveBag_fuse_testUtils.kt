@@ -109,7 +109,7 @@ object ReactiveBag_fuse_testUtils {
         }
     }
 
-    fun executeReactionTransaction(
+    fun testReaction(
         inputReactiveBag: TestInputReactiveBag<TestInputCell<String>>,
         inputCellByLabel: Map<String, TestInputCell<String>>,
         inputStimulationPlan: generic_reaction_testUtils.InputStimulationPlan,
@@ -117,7 +117,7 @@ object ReactiveBag_fuse_testUtils {
         expectedSubjectContentTransition: ExpectedReactiveBagContentTransition<String>,
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
-        generic_reaction_testUtils.executeReactionTransaction(
+        generic_reaction_testUtils.testReaction(
             trait = ReactiveBagObservationTrait(),
             subject = subjectReactiveBag,
             inputStimulationPlan = inputStimulationPlan,

@@ -30,7 +30,7 @@ data object generic_reaction_testUtils {
      * The test subject is observed mid-transaction. After the reaction transaction, it's tested whether the subject
      * is in good health via [subjectHealthChecker] (using the given [subjectHealthCheckStrategy]).
      */
-    fun <SubjectT, NotificationT : Any> executeReactionTransaction(
+    fun <SubjectT, NotificationT : Any> testReaction(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         inputStimulationPlan: InputStimulationPlan,
@@ -112,13 +112,13 @@ data object generic_reaction_testUtils {
         }
     }
 
-    fun <SubjectT, NotificationT : Any> executeReactionTransaction(
+    fun <SubjectT, NotificationT : Any> testReaction(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         slottedInputStimulation: TestSlottedStimulation2,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
     ) {
-        executeReactionTransaction(
+        testReaction(
             trait = trait,
             subject = subject,
             inputStimulationPlan = InputStimulationPlan(

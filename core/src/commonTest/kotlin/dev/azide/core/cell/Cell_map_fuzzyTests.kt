@@ -58,7 +58,7 @@ class Cell_map_fuzzyTests {
                 } ?: TestStimulation.Noop
 
             // Execute the reaction transaction
-            Cell_reaction_testUtils.executeReactionTransaction(
+            Cell_reaction_testUtils.testReaction(
                 subjectCell = subjectCell,
                 slottedInputStimulation = TestSlottedStimulation2(
                     listOf(

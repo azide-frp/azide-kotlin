@@ -48,7 +48,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -115,7 +115,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -185,7 +185,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -258,7 +258,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -330,7 +330,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -407,7 +407,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -483,7 +483,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -555,7 +555,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -631,7 +631,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -710,7 +710,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -797,7 +797,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -881,7 +881,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -966,7 +966,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1053,7 +1053,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1127,7 +1127,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1200,7 +1200,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1279,7 +1279,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1360,7 +1360,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1443,7 +1443,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1530,7 +1530,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1622,7 +1622,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1709,7 +1709,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1797,7 +1797,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1888,7 +1888,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1967,7 +1967,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2044,7 +2044,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2126,7 +2126,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2206,7 +2206,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2289,7 +2289,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2370,7 +2370,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2455,7 +2455,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2541,7 +2541,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2634,7 +2634,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2728,7 +2728,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2822,7 +2822,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2918,7 +2918,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3010,7 +3010,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3104,7 +3104,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3189,7 +3189,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,

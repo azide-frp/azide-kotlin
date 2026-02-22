@@ -71,7 +71,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -102,7 +102,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -133,7 +133,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

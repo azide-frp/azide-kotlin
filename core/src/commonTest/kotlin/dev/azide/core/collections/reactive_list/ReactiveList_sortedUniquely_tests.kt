@@ -51,7 +51,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -109,7 +109,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -165,7 +165,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -224,7 +224,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -283,7 +283,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -348,7 +348,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -408,7 +408,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -470,7 +470,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -532,7 +532,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -601,7 +601,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -669,7 +669,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -739,7 +739,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -813,7 +813,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
@@ -885,7 +885,7 @@ class ReactiveList_sortedUniquely_tests {
 
         val subjectReactiveList = inputReactiveBag.sortedUniquely()
 
-        ReactiveList_sortedUniquely_testUtils.executeReactionTransaction(
+        ReactiveList_sortedUniquely_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(

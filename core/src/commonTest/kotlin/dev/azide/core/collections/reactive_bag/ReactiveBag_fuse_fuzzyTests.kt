@@ -188,7 +188,7 @@ class ReactiveBag_fuse_fuzzyTests {
             )
 
             // Execute the reaction transaction
-            ReactiveBag_reaction_testUtils.executeReactionTransaction(
+            ReactiveBag_reaction_testUtils.testReaction(
                 subjectReactiveBag = subjectReactiveBag,
                 slottedInputStimulation = TestSlottedStimulation2(
                     listOf(

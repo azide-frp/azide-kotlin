@@ -88,14 +88,14 @@ object ReactiveList_sortedUniquely_testUtils {
         }
     }
 
-    fun executeReactionTransaction(
+    fun testReaction(
         inputReactiveBag: TestInputReactiveBag<SortableValue<String, Double>>,
         inputStimulationPlan: generic_reaction_testUtils.InputStimulationPlan,
         subjectReactiveList: ReactiveList<String>,
         expectedSubjectContentTransition: ExpectedReactiveListContentTransition<String>,
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
-        generic_reaction_testUtils.executeReactionTransaction(
+        generic_reaction_testUtils.testReaction(
             trait = ReactiveListObservationTrait(),
             subject = subjectReactiveList,
             inputStimulationPlan = inputStimulationPlan,

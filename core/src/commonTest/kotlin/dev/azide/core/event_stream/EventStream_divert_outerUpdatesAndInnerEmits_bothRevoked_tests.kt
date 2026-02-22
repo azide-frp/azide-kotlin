@@ -54,7 +54,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = TestStimulationMap.union(
                 outerSourceCell.revokingUpdate(
@@ -101,7 +101,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = TestStimulationMap.union(
                 outerSourceCell.revokingUpdate(

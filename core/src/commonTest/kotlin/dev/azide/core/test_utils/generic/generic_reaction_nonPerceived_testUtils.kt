@@ -4,7 +4,7 @@ import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
 data object generic_reaction_nonPerceived_testUtils {
-    fun <SubjectT> executeReactionTransaction(
+    fun <SubjectT> testReaction(
         subject: SubjectT,
         inputStimulation: TestStimulation,
         expectedOldState: ExpectedTestSubjectState<SubjectT>,

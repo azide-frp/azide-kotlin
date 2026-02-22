@@ -27,7 +27,7 @@ object EventStream_divert_testUtils {
         innerSourceEventStream: TestInputEventStream<Int>,
         subjectEventStream: EventStream<Int>,
     ) {
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = innerSourceEventStream.emitting(
                 tag = SourceInnerEventStreamTag,

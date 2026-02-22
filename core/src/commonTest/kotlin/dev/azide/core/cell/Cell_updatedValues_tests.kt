@@ -47,7 +47,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -77,7 +77,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -107,7 +107,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

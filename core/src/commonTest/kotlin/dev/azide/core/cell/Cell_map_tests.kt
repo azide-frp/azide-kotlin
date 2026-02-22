@@ -66,7 +66,7 @@ class Cell_map_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -97,7 +97,7 @@ class Cell_map_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -128,7 +128,7 @@ class Cell_map_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

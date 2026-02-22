@@ -54,7 +54,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -88,7 +88,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -123,7 +123,7 @@ class Cell_sampleEvery_reaction_tests {
 
         val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

@@ -7,12 +7,12 @@ import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 
 @Suppress("ClassName")
 data object ReactiveBag_reaction_testUtils {
-    fun <ElementT> executeReactionTransaction(
+    fun <ElementT> testReaction(
         subjectReactiveBag: ReactiveBag<ElementT>,
         slottedInputStimulation: TestSlottedStimulation2,
         expectedSubjectElementTransition: ExpectedReactiveBagContentTransition<ElementT>,
     ) {
-        generic_reaction_testUtils.executeReactionTransaction(
+        generic_reaction_testUtils.testReaction(
             trait = ReactiveBagObservationTrait(),
             subject = subjectReactiveBag,
             slottedInputStimulation = slottedInputStimulation,

@@ -66,7 +66,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -108,7 +108,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -148,7 +148,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -190,7 +190,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -235,7 +235,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -277,7 +277,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -317,7 +317,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -359,7 +359,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -404,7 +404,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -453,7 +453,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -499,7 +499,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,
@@ -548,7 +548,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = ReactiveList_generic_testUtils.SourceReactiveListTag,

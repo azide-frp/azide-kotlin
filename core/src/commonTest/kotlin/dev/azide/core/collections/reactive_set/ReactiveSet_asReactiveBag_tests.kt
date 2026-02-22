@@ -53,7 +53,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.changing(
                 tag = SourceReactiveSetTag,
@@ -106,7 +106,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.changing(
                 tag = SourceReactiveSetTag,
@@ -158,7 +158,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.changing(
                 tag = SourceReactiveSetTag,
@@ -218,7 +218,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
                 tag = SourceReactiveSetTag,
@@ -270,7 +270,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
                 tag = SourceReactiveSetTag,
@@ -319,7 +319,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.revokingChange(
                 tag = SourceReactiveSetTag,
@@ -372,7 +372,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
                 tag = SourceReactiveSetTag,
@@ -444,7 +444,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
                 tag = SourceReactiveSetTag,
@@ -512,7 +512,7 @@ class ReactiveSet_asReactiveBag_tests {
 
         val subjectReactiveBag = sourceReactiveSet.asReactiveBag
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveSet.correctingChange(
                 tag = SourceReactiveSetTag,
