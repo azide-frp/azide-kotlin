@@ -32,7 +32,7 @@ class ReactiveBag_map_tests {
         ReactiveBag_generic_testUtils.stimulationScenarioBank_sourceBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedElements = taggedBagOf(
                 0 to 0.1,

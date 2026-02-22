@@ -10,7 +10,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class ReactiveSet_filter_tests {
     @Test
-    fun test_passiveSample_sourceConst() {
+    fun test_passiveSampling_sourceConst() {
         val sourceReactiveSet = ReactiveSet.Const(
             constElements = setOf(1, -2, 3, -4, 5),
         )
@@ -26,7 +26,7 @@ class ReactiveSet_filter_tests {
     }
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )

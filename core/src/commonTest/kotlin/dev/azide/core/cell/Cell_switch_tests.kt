@@ -10,7 +10,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class Cell_switch_tests {
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -28,7 +28,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_passiveSample_outerConst() {
+    fun test_passiveSampling_outerConst() {
         val innerSourceCell = TestInputCell(
             initialValue = 10,
         )
@@ -46,7 +46,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_passiveSample_outerAndInnerConst() {
+    fun test_passiveSampling_outerAndInnerConst() {
         val innerSourceCell = Cell.Const(
             constValue = 10,
         )
@@ -64,7 +64,7 @@ class Cell_switch_tests {
     }
 
     @Test
-    fun test_passiveSample_innerConst() {
+    fun test_passiveSampling_innerConst() {
         val innerSourceCell = Cell.Const(
             constValue = 10,
         )

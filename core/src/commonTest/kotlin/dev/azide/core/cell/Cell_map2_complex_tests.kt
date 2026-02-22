@@ -9,7 +9,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class Cell_map2_complex_tests {
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -32,7 +32,7 @@ class Cell_map2_complex_tests {
     }
 
     @Test
-    fun test_passiveSample_singleSourceConst() {
+    fun test_passiveSampling_singleSourceConst() {
         val sourceCell1 = TestInputCell(
             initialValue = 10,
         )
@@ -55,7 +55,7 @@ class Cell_map2_complex_tests {
     }
 
     @Test
-    fun test_passiveSample_allSourcesConst() {
+    fun test_passiveSampling_allSourcesConst() {
         val sourceCell1 = Cell.Const(
             constValue = 10,
         )

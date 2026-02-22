@@ -31,7 +31,7 @@ class ReactiveList_map_tests {
         ReactiveList_generic_testUtils.stimulationScenarioBank_sourceListChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceReactiveList = TestInputReactiveList(
             initialElements = listOf(0, 10, 20, 30),
         )

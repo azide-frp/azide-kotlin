@@ -11,7 +11,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class ReactiveSet_size_tests {
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )

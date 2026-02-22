@@ -35,7 +35,7 @@ class ReactiveList_ofSingle_tests {
         Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceCell = TestInputCell(
             initialValue = 10,
         )

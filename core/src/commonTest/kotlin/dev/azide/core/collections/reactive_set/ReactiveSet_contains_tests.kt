@@ -11,7 +11,7 @@ import kotlin.test.Test
 @Suppress("ClassName")
 class ReactiveSet_contains_tests {
     @Test
-    fun test_passiveSample_contained() {
+    fun test_passiveSampling_contained() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
@@ -26,7 +26,7 @@ class ReactiveSet_contains_tests {
     }
 
     @Test
-    fun test_passiveSample_notContained() {
+    fun test_passiveSampling_notContained() {
         val sourceReactiveSet = ReactiveSetTestUtils.createInputReactiveSet(
             initialElements = setOf(1, -2, 3, -4, 5),
         )
