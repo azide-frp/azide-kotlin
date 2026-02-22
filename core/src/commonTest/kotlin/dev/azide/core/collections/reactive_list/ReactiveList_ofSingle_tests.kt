@@ -45,7 +45,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_sampling_testUtils.executeSamplingTransaction(
+        ReactiveList_sampling_testUtils.testPassiveSampling(
             subjectReactiveList = subjectReactiveList,
             expectedSubjectContent = ReactiveList_expectations_testUtils.expectStableContent(
                 expectedContent = listOf(10),

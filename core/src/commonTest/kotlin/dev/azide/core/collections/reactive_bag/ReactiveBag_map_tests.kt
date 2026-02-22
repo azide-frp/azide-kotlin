@@ -44,7 +44,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_sampling_testUtils.executeSamplingTransaction(
+        ReactiveBag_sampling_testUtils.testPassiveSampling(
             subjectReactiveBag = subjectReactiveBag,
             expectedSubjectContent = ReactiveBag_expectations_testUtils.expectStableTaggedContent(
                 expectedTaggedElements = taggedBagOf(

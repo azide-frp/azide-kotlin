@@ -40,7 +40,7 @@ class Cell_map_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        Cell_sampling_testUtils.executeSamplingTransaction(
+        Cell_sampling_testUtils.testPassiveSampling(
             subjectCell = subjectCell,
             expectedSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedValue = "10",

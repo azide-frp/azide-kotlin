@@ -40,7 +40,7 @@ class ReactiveList_map_tests {
 
         val subjectReactiveList = sourceReactiveList.map { it.toString() }
 
-        ReactiveList_sampling_testUtils.executeSamplingTransaction(
+        ReactiveList_sampling_testUtils.testPassiveSampling(
             subjectReactiveList = subjectReactiveList,
             expectedSubjectContent = ReactiveList_expectations_testUtils.expectStableContent(
                 expectedContent = listOf("0", "10", "20", "30"),
