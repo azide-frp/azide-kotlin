@@ -3,9 +3,11 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.fuse
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
+import dev.azide.core.test_utils.RandomValueGenerator
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestStimulationSequence
+import dev.azide.core.test_utils.cell.Cell_fuzzyTestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_reaction_testUtils
@@ -305,179 +307,20 @@ class ReactiveBag_fuse_fuzzyTests {
         inputCellById: Map<InputCellId, TestInputCell<String>>,
         oldInputCellValueById: Map<InputCellId, String>,
         newInputCellValueById: Map<InputCellId, String>,
-    ): Set<TestStimulationSequence> {
-        return inputCellById.mapNotNull { (inputCellId, inputCell) ->
-            val oldValue = oldInputCellValueById[inputCellId]!!
-            val newValue = newInputCellValueById[inputCellId]!!
+    ): Set<TestStimulationSequence> = inputCellById.mapNotNull { (inputCellId, inputCell) ->
+        val oldValue = oldInputCellValueById[inputCellId]!!
+        val newValue = newInputCellValueById[inputCellId]!!
 
-            buildAppropriateInputCellStimulationSequence(
-                random = random,
-                inputCellId = inputCellId,
-                inputCell = inputCell,
-                oldValue = oldValue,
-                newValue = newValue,
-            )
-        }.toSet()
-    }
-
-    private fun buildAppropriateInputCellStimulationSequence(
-        random: Random,
-        inputCellId: InputCellId,
-        inputCell: TestInputCell<String>,
-        oldValue: String,
-        newValue: String,
-    ): TestStimulationSequence? {
-        fun buildSingleExtraRandomRevokedSequence(): TestStimulationSequence? {
-            val r = random.nextDouble()
-
-            return when {
-                r < 0.1 -> buildRandomRevokedInputCellStimulationSequence(
-                    random = random,
-                    inputCellId = inputCellId,
-                    inputCell = inputCell,
-                )
-
-                else -> null
-            }
-        }
-
-        return when {
-            oldValue == newValue -> TestStimulationSequence.concatAll(
-                sequences = listOfNotNull(
-                    // Build up to two ineffective revoked change sequences
-                    buildSingleExtraRandomRevokedSequence(),
-                    buildSingleExtraRandomRevokedSequence(),
-                ),
-            )
-
-            else -> buildRandomEffectiveInputCellStimulationSequence(
-                random = random,
-                inputCellId = inputCellId,
-                inputCell = inputCell,
-                newValue = newValue,
-            )
-        }
-    }
-
-    private fun buildRandomEffectiveInputCellStimulationSequence(
-        random: Random,
-        inputCellId: InputCellId,
-        inputCell: TestInputCell<String>,
-        newValue: String,
-    ): TestStimulationSequence {
-        fun buildSingleExtraRandomRevokedStimulationSequence(): TestStimulationSequence? {
-            val r = random.nextDouble()
-
-            return when {
-                r < 0.1 -> buildRandomRevokedInputCellStimulationSequence(
-                    random = random,
-                    inputCellId = inputCellId,
-                    inputCell = inputCell,
-                )
-
-                else -> null
-            }
-        }
-
-        fun buildSingleExtraRandomCorrectionStimulation(): TestStimulation? {
-            val r = random.nextDouble()
-
-            return when {
-                r < 0.1 -> inputCell.correctUpdate(
-                    correctedNewValue = buildRandomIntermediateInputCellValue(
-                        random = random,
-                        inputCellId = inputCellId,
-                    ),
-                )
-
-                else -> null
-            }
-        }
-
-        fun buildFinalStimulationSequence(): TestStimulationSequence {
-            val r = random.nextDouble()
-
-            return when {
-                // Final change is correction
-                r < 0.3 -> TestStimulationSequence(
-                    consecutiveStimulations = listOfNotNull(
-                        inputCell.update(
-                            newValue = buildRandomIntermediateInputCellValue(
-                                random = random,
-                                inputCellId = inputCellId,
-                            ),
-                        ),
-                        // Build a potential extra correction update
-                        buildSingleExtraRandomCorrectionStimulation(),
-                        inputCell.correctUpdate(
-                            correctedNewValue = newValue,
-                        ),
-                    ),
-                )
-
-                // Final change the initial change
-                else -> TestStimulationSequence(
-                    consecutiveStimulations = listOf(
-                        inputCell.update(
-                            newValue = newValue,
-                        ),
-                    ),
-                )
-            }
-        }
-
-        return TestStimulationSequence.concatAll(
-            sequences = listOfNotNull(
-                // Build up to two extra random revoked change sequences which should be totally ineffective
-                buildSingleExtraRandomRevokedStimulationSequence(),
-                buildSingleExtraRandomRevokedStimulationSequence(),
-                buildFinalStimulationSequence()
-            ),
-        )!!
-    }
-
-    private fun buildRandomRevokedInputCellStimulationSequence(
-        random: Random,
-        inputCellId: InputCellId,
-        inputCell: TestInputCell<String>,
-    ): TestStimulationSequence {
-        fun buildSingleExtraRandomCorrectionUpdateStimulation(): TestStimulation? {
-            val r = random.nextDouble()
-
-            return when {
-                r < 0.1 -> inputCell.correctUpdate(
-                    correctedNewValue = buildRandomIntermediateInputCellValue(
-                        random = random,
-                        inputCellId = inputCellId,
-                    ),
-                )
-
-                else -> null
-            }
-        }
-
-        return TestStimulationSequence(
-            consecutiveStimulations = listOfNotNull(
-                // We build at least one intermediate update
-                inputCell.update(
-                    newValue = buildRandomIntermediateInputCellValue(
-                        random = random,
-                        inputCellId = inputCellId,
-                    ),
-                ),
-                // But, with a small chance, we build up to two extra intermediate (correction) updates
-                buildSingleExtraRandomCorrectionUpdateStimulation(),
-                buildSingleExtraRandomCorrectionUpdateStimulation(),
-                // Finally, the update sequence is revoked
-                inputCell.revokeUpdate(),
-            ),
+        Cell_fuzzyTestUtils.buildAppropriateInputCellStimulationSequence(
+            random = random,
+            intermediateValueGenerator = object : RandomValueGenerator<String> {
+                override fun next(): String = inputCellId.nextStringValue(random = random) + "~"
+            },
+            inputCell = inputCell,
+            oldValue = oldValue,
+            newValue = newValue,
         )
-    }
-
-    private fun buildRandomIntermediateInputCellValue(
-        random: Random,
-        inputCellId: InputCellId,
-    ): String = inputCellId.nextStringValue(random = random) + "~"
+    }.toSet()
 
     private fun buildAppropriateInputBagStimulationSequence(
         random: Random,
