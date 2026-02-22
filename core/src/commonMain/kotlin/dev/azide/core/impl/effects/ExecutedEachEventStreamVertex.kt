@@ -42,8 +42,7 @@ class ExecutedEachEventStreamVertex<EventT>(
                     propagationContext: PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
                 ): Revocable {
-                    detach(
-                    )
+                    detach()
 
                     if (ongoingEmission != null) {
                         exposeEmissionNotifyingListeners(
@@ -78,8 +77,7 @@ class ExecutedEachEventStreamVertex<EventT>(
                  */
                 override fun revoke() {
                     if (internalState == InternalState.Attached) {
-                        detach(
-                        )
+                        detach()
                     }
 
                     internalState = InternalState.Disposed
