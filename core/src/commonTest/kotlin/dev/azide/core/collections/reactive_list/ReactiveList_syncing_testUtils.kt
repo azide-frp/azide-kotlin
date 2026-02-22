@@ -16,7 +16,7 @@ data object ReactiveList_syncing_testUtils {
 
         val targetMutableListSnapshot = targetMutableList.toList()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.change(
                 changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -42,7 +42,7 @@ data object ReactiveList_syncing_testUtils {
     ) {
         val targetMutableListSnapshot = targetMutableList.toList()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.change(
                 changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(

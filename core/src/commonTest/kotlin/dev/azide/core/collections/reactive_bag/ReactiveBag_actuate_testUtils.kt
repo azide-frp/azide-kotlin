@@ -138,7 +138,7 @@ data object ReactiveBag_actuate_testUtils {
 
         val extraTargetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+        Effect_ReactiveBag_step_testUtils.testStep(
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(
@@ -180,7 +180,7 @@ data object ReactiveBag_actuate_testUtils {
 
         val extraTargetEffect = TestTargetEffect.pure(result = 0)
 
-        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+        Effect_ReactiveBag_step_testUtils.testStep(
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(

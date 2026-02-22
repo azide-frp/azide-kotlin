@@ -6,7 +6,7 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.generic_testUtils
 @Suppress("ClassName")
 data object Schedule_step_testUtils {
-    fun executeStepTransaction(
+    fun testStep(
         inputStimulation: TestStimulation, expectedTargetImpact: ExpectedImpact,
     ) {
         generic_testUtils.executeTransactionWithImpactVerification(

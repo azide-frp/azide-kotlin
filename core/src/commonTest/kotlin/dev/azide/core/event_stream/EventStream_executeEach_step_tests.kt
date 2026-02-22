@@ -45,7 +45,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.emit(
@@ -83,7 +83,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.revokingEmission(
@@ -122,7 +122,7 @@ class EventStream_executeEach_step_tests {
 
         val subjectEventStream = subjectEffect.startExternally().result
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceEventStream.correctingEmission(

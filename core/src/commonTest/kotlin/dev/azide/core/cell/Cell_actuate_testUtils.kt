@@ -43,7 +43,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -77,7 +77,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = 0)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(

@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.generic.TestSubjectObserver
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {
-    fun <SubjectT, NotificationT : Any> executeStepTransaction(
+    fun <SubjectT, NotificationT : Any> testStep(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,

@@ -10,14 +10,14 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_Cell_step_testUtils {
-    fun <ValueT> executeStepTransaction(
+    fun <ValueT> testStep(
         subjectCell: Cell<ValueT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         inputStimulation: TestStimulation,
         expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_step_testUtils.executeStepTransaction(
+        Effect_generic_step_testUtils.testStep(
             trait = CellObservationTrait(),
             subject = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,

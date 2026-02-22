@@ -46,7 +46,7 @@ data object Cell_executeEvery_testUtils {
 
         val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -80,7 +80,7 @@ data object Cell_executeEvery_testUtils {
 
         val targetActionRecorder = TestTargetActionRecorder.pure(result = 0)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(

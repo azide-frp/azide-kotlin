@@ -36,7 +36,7 @@ data object Cell_triggerEvery_testUtils {
     ) {
         val targetTriggerRecorder = TestTargetActionRecorder.TriggerRecorder()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceTriggerCell.update(
                 newValue = targetTriggerRecorder.recordedAction,
             ),
@@ -49,7 +49,7 @@ data object Cell_triggerEvery_testUtils {
     ) {
         val targetTriggerRecorder = TestTargetActionRecorder.TriggerRecorder()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceTriggerCell.update(
                 newValue = targetTriggerRecorder.recordedAction,
             ),

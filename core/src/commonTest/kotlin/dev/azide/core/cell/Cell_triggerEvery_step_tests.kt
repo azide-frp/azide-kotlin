@@ -28,7 +28,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.update(
                 newValue = targetTriggerRecorder2.recordedAction,
             ),
@@ -52,7 +52,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.revokingUpdate(
                 newValue = targetTriggerRecorder2.recordedAction,
             ).joint(),
@@ -77,7 +77,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetTriggerRecorder2.recordedAction,
                 correctedNewValue = targetTriggerRecorder3.recordedAction,

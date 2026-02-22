@@ -51,7 +51,7 @@ class Cell_actuate_step_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.update(
@@ -98,7 +98,7 @@ class Cell_actuate_step_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.revokingUpdate(
@@ -146,7 +146,7 @@ class Cell_actuate_step_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.correctingUpdate(

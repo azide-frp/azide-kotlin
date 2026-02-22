@@ -47,7 +47,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.update(
@@ -92,7 +92,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.revokingUpdate(
@@ -138,7 +138,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.correctingUpdate(

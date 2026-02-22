@@ -43,7 +43,7 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
@@ -73,7 +73,7 @@ data object EventStream_executeEach_testUtils {
     ) {
         val targetActionRecorder = TestTargetActionRecorder.pure(result = 0)
 
-        Effect_EventStream_step_testUtils.executeStepTransaction(
+        Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceEventStream.emit(
