@@ -3,6 +3,7 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.TestSlottedStimulation5
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
@@ -12,9 +13,32 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation4
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started, but before it was canceled.
+         */
+        val preCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was canceled, but before the cancellation was revoked.
+         */
+        val postCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect's cancellation was revoked, but before the start was revoked.
+         */
+        val postCancelRevocationStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect's start was revoked.
+         */
+        val postStartRevocationStimulation: TestStimulation,
+    )
+
     fun <SubjectT> testStart(
         subjectEffect: Effect<SubjectT>,
-        slottedInputStimulation: TestSlottedStimulation5? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -22,8 +46,7 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
             expectedNewState = null,
         ) { propagationContext ->
             // 0. Pre-stimulation
-
-            slottedInputStimulation?.slotStimulation0?.stimulate(
+            inputStimulationPlan?.preStartStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -35,7 +58,7 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
             val subject = effectOutcome.result
             val effectHandle = effectOutcome.handle
 
-            slottedInputStimulation?.slotStimulation1?.stimulate(
+            inputStimulationPlan?.preCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -44,25 +67,45 @@ data object Effect_generic_startRevoked_quickCancelledRevoked_testUtils {
                 propagationContext = propagationContext,
             )
 
-            slottedInputStimulation?.slotStimulation2?.stimulate(
+            inputStimulationPlan?.postCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             // 3. Revoke the effect's cancellation
             cancelRevocable.revoke()
 
-            slottedInputStimulation?.slotStimulation3?.stimulate(
+            inputStimulationPlan?.postCancelRevocationStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             // 4. Revoke the effect's start
             startRevocable.revoke()
 
-            slottedInputStimulation?.slotStimulation4?.stimulate(
+            inputStimulationPlan?.postStartRevocationStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             subject
         }
+    }
+
+    fun <SubjectT> testStart(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation5? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        testStart(
+            subjectEffect = subjectEffect,
+            inputStimulationPlan = slottedInputStimulation?.let {
+                InputStimulationPlan(
+                    preStartStimulation = it.slotStimulation0,
+                    preCancelStimulation = it.slotStimulation1,
+                    postCancelStimulation = it.slotStimulation2,
+                    postCancelRevocationStimulation = it.slotStimulation3,
+                    postStartRevocationStimulation = it.slotStimulation4,
+                )
+            },
+            expectedTargetImpact = expectedTargetImpact,
+        )
     }
 }

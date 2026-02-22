@@ -6,6 +6,7 @@ import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.impl.utils.LoopUtils
 import dev.azide.core.impl.utils.map
 import dev.azide.core.test_utils.TestSlottedStimulation3
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
@@ -16,10 +17,25 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_start_rushedWrapUp_testUtils {
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started.
+         */
+        val postStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect construction was wrapped up.
+         */
+        val postWrapUpStimulation: TestStimulation,
+    )
+
     fun <SubjectT, NotificationT : Any> testStart(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
-        slottedInputStimulation: TestSlottedStimulation3? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -27,7 +43,7 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
         expectedNewState = expectedSubjectTransition.expectedNewState,
     ) { propagationContext ->
         // 0. Pre-stimulation
-        slottedInputStimulation?.slotStimulation0?.stimulate(
+        inputStimulationPlan?.preStartStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
@@ -57,7 +73,7 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
                     wrapUpContext = wrapUpContext,
                 ).result
 
-                slottedInputStimulation?.slotStimulation1?.stimulate(
+                inputStimulationPlan?.postStartStimulation?.stimulate(
                     propagationContext = propagationContext,
                 )
 
@@ -72,7 +88,7 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
         }
 
         // 2. Post-wrap-up stimulation
-        slottedInputStimulation?.slotStimulation2?.stimulate(
+        inputStimulationPlan?.postWrapUpStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
@@ -89,4 +105,24 @@ data object Effect_generic_start_rushedWrapUp_testUtils {
 
         subject
     }
+
+    fun <SubjectT, NotificationT : Any> testStart(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
+        expectedTargetImpact: ExpectedImpact,
+    ): SubjectT = testStart(
+        trait = trait,
+        subjectEffect = subjectEffect,
+        inputStimulationPlan = slottedInputStimulation?.let {
+            InputStimulationPlan(
+                preStartStimulation = it.slotStimulation0,
+                postStartStimulation = it.slotStimulation1,
+                postWrapUpStimulation = it.slotStimulation2,
+            )
+        },
+        expectedSubjectTransition = expectedSubjectTransition,
+        expectedTargetImpact = expectedTargetImpact,
+    )
 }

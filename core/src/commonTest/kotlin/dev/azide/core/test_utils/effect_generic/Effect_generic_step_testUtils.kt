@@ -8,11 +8,15 @@ import dev.azide.core.test_utils.generic.TestSubjectObserver
 
 @Suppress("ClassName")
 data object Effect_generic_step_testUtils {
+    data class InputStimulationPlan(
+        val inputStimulation: TestStimulation,
+    )
+
     fun <SubjectT, NotificationT : Any> testStep(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        inputStimulation: TestStimulation,
+        inputStimulationPlan: InputStimulationPlan,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
@@ -33,7 +37,7 @@ data object Effect_generic_step_testUtils {
                 subject = subject,
             )
 
-            inputStimulation.stimulate(
+            inputStimulationPlan.inputStimulation.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -54,5 +58,25 @@ data object Effect_generic_step_testUtils {
 
             subject
         }
+    }
+
+    fun <SubjectT, NotificationT : Any> testStep(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
+        subject: SubjectT,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        inputStimulation: TestStimulation,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        testStep(
+            trait = trait,
+            subject = subject,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            inputStimulationPlan = InputStimulationPlan(
+                inputStimulation = inputStimulation,
+            ),
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+        )
     }
 }
