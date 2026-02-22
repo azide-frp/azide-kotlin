@@ -1,18 +1,17 @@
 package dev.azide.core.impl.event_stream.abstract_vertices
 
 import dev.azide.core.CausalLoopException
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.Committable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.Listener
 import dev.azide.core.impl.ListenableVertex.ListenerStatus
-import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveListenerHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
-abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
+abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, Committable {
     private val _registeredListeners: MutableBag<Listener> = MutableBag()
 
     override val listenerCount: Int

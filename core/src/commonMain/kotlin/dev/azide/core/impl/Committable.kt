@@ -1,5 +1,5 @@
 package dev.azide.core.impl
 
-interface CommittableVertex {
+interface Committable {
     fun commit()
 }

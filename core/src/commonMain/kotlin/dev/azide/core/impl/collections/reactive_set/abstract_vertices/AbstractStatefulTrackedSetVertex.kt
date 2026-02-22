@@ -10,7 +10,7 @@ abstract class AbstractStatefulTrackedSetVertex<ElementT>(
 ) : AbstractTrackedSetVertex<ElementT>() {
     private var _stableElements: MutableSet<ElementT> = initialElements
 
-    final override fun commit(
+    final override fun persist(
         ongoingChange: SetChange<ElementT>?,
     ) {
         ongoingChange?.applyTo(_stableElements)

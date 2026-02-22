@@ -27,36 +27,12 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     final override fun handle(
         propagationContext: PropagationContext,
     ) {
-        when (val sourceOngoingChange: ChangeT? = sourceVertex.ongoingChange) {
-            null -> { // Revocation
-                if (ongoingChange != null) {
-                    exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = null,
-                    )
-                }
-            }
-
-            else -> { // Original change / change correction
-                when (val transformedChange = transformChange(sourceOngoingChange)) {
-                    null -> {
-                        if (ongoingChange != null) {
-                            exposeChangeNotifyingListeners(
-                                propagationContext = propagationContext,
-                                change = null,
-                            )
-                        }
-                    }
-
-                    else -> {
-                        exposeChangeNotifyingListeners(
-                            propagationContext = propagationContext,
-                            change = transformedChange,
-                        )
-                    }
-                }
-            }
-        }
+        exposeChangeNotifyingListeners(
+            propagationContext = propagationContext,
+            change = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                transformChange(sourceOngoingChange)
+            },
+        )
     }
 
     final override fun activate(

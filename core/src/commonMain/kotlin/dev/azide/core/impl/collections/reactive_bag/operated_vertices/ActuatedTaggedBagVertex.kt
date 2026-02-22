@@ -4,10 +4,9 @@ import dev.azide.core.Action
 import dev.azide.core.Effect
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -16,7 +15,6 @@ import dev.azide.core.impl.collections.reactive_bag.mapKeepingTags
 import dev.azide.core.impl.collections.reactive_bag.mapToKeepingTags
 import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVertex
 import dev.azide.core.impl.effects.InternalEffect
-import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
 
 class ActuatedTaggedBagVertex<InnerResultT> private constructor(
@@ -26,7 +24,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
 ) : AbstractStatefulTrackedTaggedBagVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
     initialTaggedElements = initialInnerEffectOutcomes.mapToKeepingTags(MutableTaggedBag.empty()) { it.result },
-), ListenableVertex.BoundListener, CommittableVertex {
+), ListenableVertex.BoundListener {
     class ActuationEffect<InnerResultT>(
         private val sourceEffectBag: ReactiveBag<Effect<InnerResultT>>,
     ) : InternalEffect<ReactiveBag<InnerResultT>> {
@@ -70,13 +68,10 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
                     ): Revocable {
                         shutDown()
 
-                        // Revoke the ongoing change (if any)
-                        if (ongoingChange != null) {
-                            exposeChangeNotifyingListeners(
-                                propagationContext = propagationContext,
-                                change = null,
-                            )
-                        }
+                        exposeChangeNotifyingListeners(
+                            propagationContext = propagationContext,
+                            change = null,
+                        )
 
                         // Cancel all stable inner effects
                         val stableInnerEffectCancellationRevocables =
@@ -298,7 +293,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
         )
     }
 
-    override fun commit() {
+    override fun transit() {
         if (internalState != InternalState.StartedUp) {
             return
         }

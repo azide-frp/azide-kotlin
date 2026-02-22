@@ -12,7 +12,7 @@ abstract class AbstractBaseStatefulTrackedTaggedBagVertex<ElementT>(
 ) : AbstractTrackedTaggedBagVertex<ElementT>() {
     private var _stableTaggedElements: MutableTaggedBag<ElementT> = initialTaggedElements
 
-    final override fun commit(
+    final override fun persist(
         ongoingChange: TaggedBagChange<ElementT>?,
     ) {
         ongoingChange?.applyTo(_stableTaggedElements)

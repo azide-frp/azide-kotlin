@@ -3,7 +3,7 @@ package dev.azide.core.impl.cell.effects
 import dev.azide.core.Cell
 import dev.azide.core.Trigger
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.Committable
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
@@ -11,7 +11,6 @@ import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.effects.InternalEffect
 import dev.azide.core.impl.effects.InternalSchedule
-import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
 
 class CellTriggerEverySchedule(
@@ -35,7 +34,7 @@ class CellTriggerEverySchedule(
         ).revocable
 
         class TriggerEveryRevocableOutcome : InternalEffect.RevocableOutcome<Unit>, ListenableVertex.BoundListener,
-            CommittableVertex {
+            Committable {
             private val sourceVertex: CellVertex<Trigger>
                 get() = sourceActionCell.vertex
 

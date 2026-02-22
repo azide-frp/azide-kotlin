@@ -3,10 +3,9 @@ package dev.azide.core.impl.cell.operated_vertices
 import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
@@ -20,7 +19,7 @@ class ExecutedEveryCellVertex<InnerResultT> private constructor(
 ) : AbstractStatefulCellVertex<InnerResultT>(
     wrapUpContext = wrapUpContext,
     initialValue = initialInnerActionResult,
-), ListenableVertex.BoundListener, CommittableVertex {
+), ListenableVertex.BoundListener {
     class ExecutionEffect<InnerResultT>(
         private val sourceActionCell: Cell<Action<InnerResultT>>,
     ) : InternalEffect<Cell<InnerResultT>> {

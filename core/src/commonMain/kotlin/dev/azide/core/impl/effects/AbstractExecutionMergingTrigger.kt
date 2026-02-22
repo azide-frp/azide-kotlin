@@ -3,12 +3,11 @@ package dev.azide.core.impl.effects
 import dev.azide.core.Trigger
 import dev.azide.core.Triggers
 import dev.azide.core.impl.AbstractGuardedRevocable
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.Committable
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.enqueueForCommitment
 
-abstract class AbstractExecutionMergingTrigger : Trigger, CommittableVertex {
+abstract class AbstractExecutionMergingTrigger : Trigger, Committable {
     /**
      * The number of times this trigger has been executed during this transaction.
      */

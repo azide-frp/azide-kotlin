@@ -53,6 +53,10 @@ object Transactions {
             callback: CommitmentCallback,
         )
 
+        fun enqueueForCommitment(
+            committable: Committable,
+        ): Revocable
+
         fun enqueueForExecution(
             callback: ExternalExecutionCallback,
         ): Revocable
@@ -83,7 +87,7 @@ object Transactions {
 
         val enqueuedPostProcessingCallbacks = linkedListOf<PropagationContext.PostProcessingCallback>()
 
-        val enqueuedCommitmentCallbacks = arrayListOf<PropagationContext.CommitmentCallback>()
+        val enqueuedCommittables = arrayListOf<Committable?>()
 
         val callbacksToExecuteExternally = linkedListOf<ExternalExecutionCallback>()
 
@@ -109,7 +113,28 @@ object Transactions {
             ) {
                 ensureIsOpen()
 
-                enqueuedCommitmentCallbacks.add(callback)
+                enqueuedCommittables.add(
+                    object : Committable {
+                        override fun commit(
+                        ) {
+                            callback()
+                        }
+                    },
+                )
+            }
+
+            override fun enqueueForCommitment(
+                committable: Committable,
+            ): Revocable {
+                val predictedIndex = enqueuedCommittables.size
+
+                enqueuedCommittables.add(committable)
+
+                return object : Revocable {
+                    override fun revoke() {
+                        enqueuedCommittables[predictedIndex] = null
+                    }
+                }
             }
 
             override fun enqueueForExecution(
@@ -159,8 +184,9 @@ object Transactions {
         // TODO: Figure out if upstream unregistration (e.g. of `EventStream.single`) shouldn't be moved to
         //  post-processing for consistency
 
-        enqueuedCommitmentCallbacks.forEach { callback ->
-            callback()
+        enqueuedCommittables.asReversed().forEach { committable ->
+            committable?.commit(
+            )
         }
 
         // ## Side effect execution phase
@@ -182,13 +208,5 @@ fun PropagationContext.enqueueForPostProcessing(
         vertex.postProcess(
             propagationContext = this,
         )
-    }
-}
-
-fun PropagationContext.enqueueForCommitment(
-    vertex: CommittableVertex,
-) {
-    this.enqueueCallbackForCommitment {
-        vertex.commit()
     }
 }

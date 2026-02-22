@@ -2,10 +2,10 @@ package dev.azide.core.impl.collections.reactive_bag.operated_vertices
 
 import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveBag.Tag
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
@@ -14,7 +14,6 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVerte
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.registerBoundListenerOnline
-import kotlin.collections.component2
 
 class FusedTrackedTaggedBagVertex<ElementT>(
     private val outerSourceBagVertex: TrackedTaggedBagVertex<Cell<ElementT>>,
@@ -83,23 +82,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 propagationContext = propagationContext,
             )
 
-            when (builtChange) {
-                null -> {
-                    if (parent.ongoingChange != null) {
-                        parent.exposeChangeNotifyingListeners(
-                            propagationContext = propagationContext,
-                            change = null,
-                        )
-                    }
-                }
-
-                else -> {
-                    parent.exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = builtChange,
-                    )
-                }
-            }
+            parent.exposeChangeNotifyingListeners(
+                propagationContext = propagationContext,
+                change = builtChange,
+            )
         }
 
         fun reattach(
@@ -840,9 +826,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         )
     }
 
-    override fun commit(
-        ongoingChange: TaggedBagChange<ElementT>?,
-    ) {
+    override fun transit() {
         val stableInnerSourceCellVertexByTag = this.stableInnerSourceCellVertexByTag ?: return
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag

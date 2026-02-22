@@ -10,7 +10,7 @@ abstract class AbstractStatefulTrackedListVertex<ElementT>(
 ) : AbstractTrackedListVertex<ElementT>() {
     private var _stableElements: MutableList<ElementT> = initialElements
 
-    final override fun commit(
+    final override fun persist(
         ongoingChange: ListChange<ElementT>?,
     ) {
         ongoingChange?.applyTo(

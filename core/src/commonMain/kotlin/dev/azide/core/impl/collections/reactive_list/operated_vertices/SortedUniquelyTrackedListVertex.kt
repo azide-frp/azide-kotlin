@@ -24,28 +24,15 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
-        when (val sourceChange = sourceVertex.ongoingChange) {
-            null -> {
-                if (ongoingChange != null) {
-                    exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = null,
-                    )
-                }
-            }
-
-            else -> {
-                val builtChange = buildChange(
-                    sourceOngoingChange = sourceChange,
+        exposeChangeNotifyingListeners(
+            propagationContext = propagationContext,
+            change = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                buildChange(
+                    sourceOngoingChange = sourceOngoingChange,
                     propagationContext = propagationContext,
                 )
-
-                exposeChangeNotifyingListeners(
-                    propagationContext = propagationContext,
-                    change = builtChange,
-                )
-            }
-        }
+            },
+        )
     }
 
     override fun activate(
