@@ -14,7 +14,6 @@ import dev.azide.core.impl.registerBoundListener
 abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : GenericCollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
-    cacheType = CacheType.Active,
 ), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 

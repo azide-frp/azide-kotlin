@@ -13,7 +13,6 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex2: CellVertex<ValueT2>,
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
-    cacheType = CacheType.Momentary,
 ), BoundListener {
     private var upstreamListenerHandle1: ListenerHandle? = null
     private var upstreamListenerHandle2: ListenerHandle? = null
