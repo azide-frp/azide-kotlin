@@ -71,7 +71,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -112,7 +112,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emitting(
@@ -160,7 +160,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -208,7 +208,7 @@ class EventStream_executeEach_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectEventStream = Effect_EventStream_start_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(

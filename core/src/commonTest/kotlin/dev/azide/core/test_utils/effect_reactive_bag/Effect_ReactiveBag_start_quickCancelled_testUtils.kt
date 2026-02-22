@@ -11,14 +11,14 @@ import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
 
 @Suppress("ClassName")
 data object Effect_ReactiveBag_start_quickCancelled_testUtils {
-    fun <ElementT> executeStartTransaction(
+    fun <ElementT> testStart(
         subjectReactiveBagEffect: Effect<ReactiveBag<ElementT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectContentTransition: ExpectedReactiveBagContentTransition<ElementT>,
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
-    ): ReactiveBag<ElementT> = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+    ): ReactiveBag<ElementT> = Effect_generic_start_quickCancelled_testUtils.testStart(
         trait = ReactiveBagObservationTrait(),
         subjectEffect = subjectReactiveBagEffect,
         subjectPerceptionStrategy = subjectPerceptionStrategy,

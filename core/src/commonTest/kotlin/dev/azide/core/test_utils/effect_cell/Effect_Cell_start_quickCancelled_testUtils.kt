@@ -11,14 +11,14 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_Cell_start_quickCancelled_testUtils {
-    fun <ValueT> executeStartTransaction(
+    fun <ValueT> testStart(
         subjectCellEffect: Effect<Cell<ValueT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
-    ): Cell<ValueT> = Effect_generic_start_quickCancelled_testUtils.executeStartTransaction(
+    ): Cell<ValueT> = Effect_generic_start_quickCancelled_testUtils.testStart(
         trait = CellObservationTrait(),
         subjectEffect = subjectCellEffect,
         subjectPerceptionStrategy = subjectPerceptionStrategy,

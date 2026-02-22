@@ -70,7 +70,7 @@ class EventStream_executeEach_start_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -106,7 +106,7 @@ class EventStream_executeEach_start_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emitting(
@@ -148,7 +148,7 @@ class EventStream_executeEach_start_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -189,7 +189,7 @@ class EventStream_executeEach_start_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(

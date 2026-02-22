@@ -34,7 +34,7 @@ class Cell_executeEvery_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_Cell_start_rushedWrapUp_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
@@ -64,7 +64,7 @@ class Cell_executeEvery_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_Cell_start_rushedWrapUp_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,

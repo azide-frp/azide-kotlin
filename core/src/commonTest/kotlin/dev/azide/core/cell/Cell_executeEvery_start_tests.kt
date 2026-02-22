@@ -69,7 +69,7 @@ class Cell_executeEvery_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_testUtils.executeStartTransaction(
+        Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -110,7 +110,7 @@ class Cell_executeEvery_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_testUtils.executeStartTransaction(
+        Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.updating(
@@ -159,7 +159,7 @@ class Cell_executeEvery_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_testUtils.executeStartTransaction(
+        Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -208,7 +208,7 @@ class Cell_executeEvery_start_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_start_testUtils.executeStartTransaction(
+        Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

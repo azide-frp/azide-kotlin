@@ -77,7 +77,7 @@ class Cell_executeEvery_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -126,7 +126,7 @@ class Cell_executeEvery_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.updating(
@@ -179,7 +179,7 @@ class Cell_executeEvery_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -233,7 +233,7 @@ class Cell_executeEvery_start_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

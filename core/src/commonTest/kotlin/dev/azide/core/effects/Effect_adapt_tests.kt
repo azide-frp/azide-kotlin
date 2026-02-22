@@ -75,7 +75,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_start_testUtils.executeStartTransaction(
+        Effect_EventStream_start_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -114,7 +114,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_start_quickCancelled_testUtils.executeStartTransaction(
+        Effect_EventStream_start_quickCancelled_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -153,7 +153,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_start_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -177,7 +177,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -199,7 +199,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_quickCancelled_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -221,7 +221,7 @@ class Effect_adapt_tests {
             ),
         )
 
-        Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )

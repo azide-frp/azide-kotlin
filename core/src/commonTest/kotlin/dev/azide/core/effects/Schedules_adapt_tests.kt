@@ -75,7 +75,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_start_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -101,7 +101,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -127,7 +127,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -153,7 +153,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -179,7 +179,7 @@ class Schedules_adapt_tests {
             ),
         )
 
-        Schedule_startRevoked_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.None,
         )

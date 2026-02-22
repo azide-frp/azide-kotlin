@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_testUtils {
-    fun <SubjectT> executeStartTransaction(
+    fun <SubjectT> testStart(
         subjectEffect: Effect<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,

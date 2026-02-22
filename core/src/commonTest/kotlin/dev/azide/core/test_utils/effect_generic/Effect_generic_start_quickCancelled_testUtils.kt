@@ -14,7 +14,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_start_quickCancelled_testUtils {
-    fun <SubjectT, NotificationT : Any> executeStartTransaction(
+    fun <SubjectT, NotificationT : Any> testStart(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,

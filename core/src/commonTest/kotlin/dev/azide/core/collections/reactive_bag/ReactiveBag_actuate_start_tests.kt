@@ -78,7 +78,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
@@ -130,7 +130,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -201,7 +201,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -273,7 +273,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -364,7 +364,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -450,7 +450,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -514,7 +514,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -580,7 +580,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -663,7 +663,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -745,7 +745,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -828,7 +828,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -908,7 +908,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -1009,7 +1009,7 @@ class ReactiveBag_actuate_start_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.correctingChange(

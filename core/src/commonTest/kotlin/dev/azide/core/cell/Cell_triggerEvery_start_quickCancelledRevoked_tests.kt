@@ -41,7 +41,7 @@ class Cell_triggerEvery_start_quickCancelledRevoked_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetTriggerRecorder1.expectIsExecutedOnce(),
@@ -74,7 +74,7 @@ class Cell_triggerEvery_start_quickCancelledRevoked_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -112,7 +112,7 @@ class Cell_triggerEvery_start_quickCancelledRevoked_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -151,7 +151,7 @@ class Cell_triggerEvery_start_quickCancelledRevoked_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        Schedule_start_quickCancelledRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,

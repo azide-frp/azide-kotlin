@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Schedule_start_testUtils {
-    fun executeStartTransaction(
+    fun testStart(
         subjectSchedule: Schedule,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedTargetImpact: ExpectedImpact,

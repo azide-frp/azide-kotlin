@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Schedule_start_quickCancelled_testUtils {
-    fun executeStartTransaction(
+    fun testStart(
         subjectSchedule: Schedule,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
