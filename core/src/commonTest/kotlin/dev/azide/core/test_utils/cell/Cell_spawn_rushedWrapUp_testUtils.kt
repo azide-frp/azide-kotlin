@@ -8,12 +8,12 @@ import dev.azide.core.test_utils.generic.generic_spawn_rushedWrapUp_testUtils
 
 @Suppress("ClassName")
 data object Cell_spawn_rushedWrapUp_testUtils {
-    fun <ValueT : Any> executeSpawnTransaction(
+    fun <ValueT : Any> testSpawn(
         subjectCellSpawnMoment: Moment<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
     ) {
-        generic_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+        generic_spawn_rushedWrapUp_testUtils.testSpawn(
             trait = CellObservationTrait(),
             subjectSpawnMoment = subjectCellSpawnMoment,
             slottedInputStimulation = slottedInputStimulation,

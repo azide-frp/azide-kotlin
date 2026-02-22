@@ -8,12 +8,12 @@ import dev.azide.core.test_utils.generic.generic_spawn_testUtils
 
 @Suppress("ClassName")
 data object EventStream_spawn_testUtils {
-    fun <EventT> executeSpawnTransaction(
+    fun <EventT> testSpawn(
         subjectEventStreamSpawnMoment: Moment<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
     ) {
-        generic_spawn_testUtils.executeSpawnTransaction(
+        generic_spawn_testUtils.testSpawn(
             trait = EventStreamObservationTrait(),
             subjectSpawnMoment = subjectEventStreamSpawnMoment,
             slottedInputStimulation = slottedInputStimulation,

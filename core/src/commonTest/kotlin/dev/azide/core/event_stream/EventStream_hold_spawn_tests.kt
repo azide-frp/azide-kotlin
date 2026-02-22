@@ -37,7 +37,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectMoment,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 0,
@@ -61,7 +61,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -90,7 +90,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -119,7 +119,7 @@ class EventStream_hold_spawn_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,

@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object generic_spawn_nonPerceived_testUtils {
-    fun <SubjectT> executeSpawnTransaction(
+    fun <SubjectT> testSpawn(
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedOldState: ExpectedTestSubjectState<SubjectT>,

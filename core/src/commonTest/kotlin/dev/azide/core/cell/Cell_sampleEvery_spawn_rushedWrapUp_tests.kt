@@ -34,7 +34,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+        Cell_spawn_rushedWrapUp_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectSpawnMoment,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
@@ -63,7 +63,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+        Cell_spawn_rushedWrapUp_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,

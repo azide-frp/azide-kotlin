@@ -29,7 +29,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+        Cell_spawn_rushedWrapUp_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectMoment,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 0,
@@ -53,7 +53,7 @@ class EventStream_hold_spawn_rushedWrapUp_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_rushedWrapUp_testUtils.executeSpawnTransaction(
+        Cell_spawn_rushedWrapUp_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,

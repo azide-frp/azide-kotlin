@@ -43,7 +43,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectSpawnMoment,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 expectedUnaffectedValue = 10,
@@ -72,7 +72,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -106,7 +106,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -141,7 +141,7 @@ class Cell_sampleEvery_spawn_tests {
 
         val subjectSpawnMoment: Moment<Cell<Int>> = sourceCell.sampleEvery()
 
-        Cell_spawn_testUtils.executeSpawnTransaction(
+        Cell_spawn_testUtils.testSpawn(
             subjectSpawnMoment = subjectSpawnMoment,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

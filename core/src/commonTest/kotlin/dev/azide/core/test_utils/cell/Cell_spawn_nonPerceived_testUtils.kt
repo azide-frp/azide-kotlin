@@ -7,13 +7,13 @@ import dev.azide.core.test_utils.generic.generic_spawn_nonPerceived_testUtils
 
 @Suppress("ClassName")
 data object Cell_spawn_nonPerceived_testUtils {
-    fun <ValueT> executeSpawnTransaction(
+    fun <ValueT> testSpawn(
         subjectCellSpawnMoment: Moment<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedOldSubjectValue: ExpectedCellValue<ValueT>,
         expectedNewSubjectValue: ExpectedCellValue<ValueT>,
     ) {
-        generic_spawn_nonPerceived_testUtils.executeSpawnTransaction(
+        generic_spawn_nonPerceived_testUtils.testSpawn(
             subjectSpawnMoment = subjectCellSpawnMoment,
             slottedInputStimulation = slottedInputStimulation,
             expectedOldState = expectedOldSubjectValue,

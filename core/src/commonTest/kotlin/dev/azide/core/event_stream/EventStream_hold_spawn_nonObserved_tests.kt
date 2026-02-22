@@ -32,7 +32,7 @@ class EventStream_hold_spawn_nonObserved_tests {
             expectedValue = 0,
         )
 
-        Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
+        Cell_spawn_nonPerceived_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectMoment,
             expectedOldSubjectValue = expectedUnaffectedState,
             expectedNewSubjectValue = expectedUnaffectedState,
@@ -55,7 +55,7 @@ class EventStream_hold_spawn_nonObserved_tests {
 
         val subjectMoment: Moment<Cell<Int>> = sourceEventStream.holding(initialValue = 0)
 
-        Cell_spawn_nonPerceived_testUtils.executeSpawnTransaction(
+        Cell_spawn_nonPerceived_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectMoment,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
