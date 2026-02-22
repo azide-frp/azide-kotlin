@@ -1,9 +1,9 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
@@ -59,26 +59,26 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     }
 
     override fun activate(
-        propagationContext: PropagationContext,
-        mode: ListenableVertex.ActivationMode,
-    ): CellVertex.Update<ValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
+    }
 
-        return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
-            buildUpdate(
-                propagationContext = propagationContext,
-                sourceVertex = sourceVertex,
-                sourceChange = sourceOngoingChange,
-            )
-        }
+    override fun buildInitialUpdate(
+        propagationContext: PropagationContext,
+    ): CellVertex.Update<ValueT>? = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+        buildUpdate(
+            propagationContext = propagationContext,
+            sourceVertex = sourceVertex,
+            sourceChange = sourceOngoingChange,
+        )
     }
 
     final override fun deactivate() {
@@ -93,10 +93,10 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     }
 
     final override fun computeOldValue(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT {
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return computeOldValue(

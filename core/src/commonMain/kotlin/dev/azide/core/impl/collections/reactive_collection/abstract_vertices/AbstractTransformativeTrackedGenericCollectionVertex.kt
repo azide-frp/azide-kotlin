@@ -1,9 +1,9 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
@@ -36,17 +36,15 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     }
 
     final override fun activate(
-        propagationContext: PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedChangeT? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingChange?.let(::transformChange)
@@ -64,10 +62,10 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     }
 
     final override fun getOldContentView(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedContentT {
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return transformOldContentView(

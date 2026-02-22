@@ -19,6 +19,6 @@ abstract class AbstractStatefulTrackedListVertex<ElementT>(
     }
 
     final override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> = _stableElements
 }

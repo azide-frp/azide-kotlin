@@ -56,13 +56,13 @@ val <ElementT> ReactiveList<ElementT>.samplingContent: Moment<List<ElementT>>
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): List<ElementT> = trackedVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         ).toList()
     }
 
 fun <ElementT> ReactiveList<ElementT>.sampleContentExternally(): List<ElementT> = Transactions.executeWithResult { propagationContext ->
     trackedVertex.getOldContentView(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     ).toList()
 }
 

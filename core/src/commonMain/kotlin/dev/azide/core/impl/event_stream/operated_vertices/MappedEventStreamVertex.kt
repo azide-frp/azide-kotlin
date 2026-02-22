@@ -43,17 +43,15 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<TransformedEventT>? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingEmission?.map(transform)

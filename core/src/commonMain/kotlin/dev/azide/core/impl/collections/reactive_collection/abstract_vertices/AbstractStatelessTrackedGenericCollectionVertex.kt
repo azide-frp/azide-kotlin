@@ -1,7 +1,6 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
-import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.ListenableVertex.ActivationMode
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
@@ -11,18 +10,26 @@ import dev.azide.core.impl.collections.reactive_set.SetChange
 abstract class AbstractStatelessTrackedGenericCollectionVertex<ContentT : Collection<*>, ChangeT : GenericCollectionChange<*>> :
     AbstractTrackedGenericCollectionVertex<ContentT, ChangeT>() {
     final override fun onFirstListenerRegistered(
-        propagationContext: PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
-        val changeOnActivation = activate(
-            propagationContext = propagationContext,
-            mode = mode,
-        )
+        when (processingContext) {
+            is Transactions.PropagationContext -> {
+                val changeOnActivation = activate(
+                    processingContext = processingContext,
+                )
 
-        exposeChange(
-            propagationContext = propagationContext,
-            change = changeOnActivation,
-        )
+                exposeChange(
+                    propagationContext = processingContext,
+                    change = changeOnActivation,
+                )
+            }
+
+            is Transactions.CommitmentContext -> {
+                activate(
+                    processingContext = processingContext,
+                )
+            }
+        }
     }
 
     final override fun onLastListenerUnregistered() {
@@ -32,8 +39,7 @@ abstract class AbstractStatelessTrackedGenericCollectionVertex<ContentT : Collec
     }
 
     abstract fun activate(
-        propagationContext: PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): ChangeT?
 
     abstract fun deactivate()

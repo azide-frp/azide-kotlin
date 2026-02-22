@@ -28,7 +28,7 @@ class ActuatedCellVertex<InnerResultT> private constructor(
             wrapUpContext: Transactions.WrapUpContext,
         ): InternalEffect.RevocableOutcome<Cell<InnerResultT>> {
             val initialInnerEffect: Effect<InnerResultT> = sourceEffectCell.vertex.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             val initialInnerEffectStartOutcome: Action.Outcome<Effect.Outcome<InnerResultT>> =
@@ -257,7 +257,7 @@ class ActuatedCellVertex<InnerResultT> private constructor(
         }
 
         ensureEnqueuedForCommitment(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
 
         internalState = InternalState.StartedUp

@@ -19,16 +19,14 @@ abstract class AbstractLiveVertex : ListenableVertex {
     private var _isNotifyingListeners = false
 
     override fun registerListener(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
         listener: ListenableVertex.Listener,
-        mode: ListenableVertex.ActivationMode,
     ): ListenableVertex.ListenerHandle {
         val internalHandle = _registeredListeners.append(listener)
 
         if (_registeredListeners.size == 1) {
             onFirstListenerRegistered(
-                propagationContext = propagationContext,
-                mode = mode,
+                processingContext = processingContext,
             )
         }
 
@@ -74,8 +72,7 @@ abstract class AbstractLiveVertex : ListenableVertex {
     }
 
     protected open fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
     }
 

@@ -104,7 +104,7 @@ internal object CellTestUtils {
 
             val preSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
             }
 
@@ -124,7 +124,7 @@ internal object CellTestUtils {
                     )
 
                     subjectVertex.getOldValue(
-                        propagationContext = propagationContext,
+                        processingContext = propagationContext,
                     )
                 },
             )
@@ -146,7 +146,7 @@ internal object CellTestUtils {
 
             val postSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
             }
 
@@ -205,7 +205,7 @@ internal object CellTestUtils {
 
         val passivelySampledValue = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
         }
 
@@ -222,7 +222,7 @@ internal object CellTestUtils {
             )
 
             val sampledValue = subjectVertex.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             subjectVertex.unregisterListener(

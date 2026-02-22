@@ -3,7 +3,6 @@ package dev.azide.core.impl.event_stream.operated_vertices
 import dev.azide.core.external.ExternalEventHandler
 import dev.azide.core.external.ExternalStream
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 
@@ -13,8 +12,7 @@ class AdaptedExternalEventStreamVertex<EventT>(
     private val externalSubscriptionHandle = externalStream.bind(handler = this)
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<EventT>? {
         externalSubscriptionHandle.register()
 

@@ -1,7 +1,7 @@
 package dev.azide.core.impl.collections.reactive_collection
 
-import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -34,7 +34,7 @@ interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out Chang
     val ongoingChange: ChangeT?
 
     fun getOldContentView(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ContentT
 }
 

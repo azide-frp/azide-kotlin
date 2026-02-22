@@ -18,17 +18,20 @@ interface CellVertex<out ValueT> : ListenableVertex {
 
     val ongoingUpdate: Update<ValueT>?
 
+    /**
+     * Get the cell's old value. If the cell is to be listened to, be sure to listen to the cell before getting its
+     * old value for performance reasons.
+     */
     fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT
 }
 
-
 fun <ValueT> CellVertex<ValueT>.getNewValue(
-    propagationContext: Transactions.PropagationContext,
+    processingContext: Transactions.ProcessingContext,
 ): ValueT = when (val ongoingUpdate = this.ongoingUpdate) {
     null -> getOldValue(
-        propagationContext = propagationContext,
+        processingContext = processingContext,
     )
 
     else -> ongoingUpdate.updatedValue

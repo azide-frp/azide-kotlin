@@ -4,7 +4,7 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import kotlin.jvm.JvmInline
 
-abstract class AbstractCachingCellVertex<ValueT> : AbstractSimpleStatelessCellVertex<ValueT>() {
+abstract class AbstractCachingCellVertex<ValueT> : AbstractStatelessCellVertex<ValueT>() {
     @JvmInline
     private value class OldValueCache<ValueT>(
         val cachedOldValue: ValueT,
@@ -16,24 +16,24 @@ abstract class AbstractCachingCellVertex<ValueT> : AbstractSimpleStatelessCellVe
     private var _oldValueCache: OldValueCache<ValueT>? = null
 
     final override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT {
         when (val oldValueCache = _oldValueCache) {
             null -> {
-                val computedOldValue = computeOldValue(propagationContext)
+                val computedOldValue = computeOldValue(processingContext)
 
                 _oldValueCache = OldValueCache(
                     cachedOldValue = computedOldValue,
                 )
 
                 ensureEnqueuedForCommitment(
-                    propagationContext = propagationContext,
+                    processingContext = processingContext,
                 )
 
                 return computedOldValue
             }
 
-            else -> {
+            else -> { // The old value was already cached in this transaction, return
                 return oldValueCache.cachedOldValue
             }
         }
@@ -50,6 +50,6 @@ abstract class AbstractCachingCellVertex<ValueT> : AbstractSimpleStatelessCellVe
     }
 
     protected abstract fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT
 }

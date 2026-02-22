@@ -17,6 +17,6 @@ abstract class AbstractBaseStatefulCellVertex<ValueT>(
     }
 
     final override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT = _stableValue
 }

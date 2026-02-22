@@ -32,7 +32,7 @@ class TrackedCollectionSumCellVertex(
 
             else -> {
                 val oldSum = getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
 
                 val newSum = oldSum + totalDelta

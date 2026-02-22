@@ -5,7 +5,7 @@ import dev.azide.core.impl.Committable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 
-abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<ValueT>, Committable {
+abstract class AbstractCellVertex<ValueT> : AbstractLiveVertex(), CellVertex<ValueT>, Committable {
     private var _ongoingUpdate: CellVertex.Update<ValueT>? = null
 
     private var _isEnqueuedForCommitment = false
@@ -47,7 +47,7 @@ abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<V
         _ongoingUpdate = update
 
         ensureEnqueuedForCommitment(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
     }
 
@@ -56,10 +56,10 @@ abstract class AbstractCellVertex<ValueT>() : AbstractLiveVertex(), CellVertex<V
     }
 
     protected fun ensureEnqueuedForCommitment(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ) {
         if (!_isEnqueuedForCommitment) {
-            propagationContext.enqueueForCommitment(this)
+            processingContext.enqueueForCommitment(this)
 
             _isEnqueuedForCommitment = true
         }

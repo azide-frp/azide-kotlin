@@ -121,7 +121,7 @@ object ReactiveList_expectations_testUtils {
             subject: ReactiveList<ElementT>,
         ) {
             val actualContent = subject.trackedVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             assertEquals(

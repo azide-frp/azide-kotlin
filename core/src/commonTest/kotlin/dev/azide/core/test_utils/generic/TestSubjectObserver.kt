@@ -2,6 +2,7 @@ package dev.azide.core.test_utils.generic
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.enqueueCallbackForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 

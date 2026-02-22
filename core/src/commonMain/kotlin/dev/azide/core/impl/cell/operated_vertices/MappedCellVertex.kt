@@ -1,7 +1,6 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
@@ -39,21 +38,21 @@ class MappedCellVertex<ValueT, TransformedValueT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
-    ): CellVertex.Update<TransformedValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
-
-        return sourceVertex.ongoingUpdate?.map(transform)
     }
+
+    override fun buildInitialUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<TransformedValueT>? = sourceVertex.ongoingUpdate?.map(transform)
 
     override fun deactivate() {
         val subscriptionHandle =
@@ -67,10 +66,10 @@ class MappedCellVertex<ValueT, TransformedValueT>(
     }
 
     override fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedValueT = transform(
         sourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         ),
     )
 }

@@ -122,7 +122,7 @@ internal object ReactiveSetTestUtils {
 
             val preSampledElements = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldContentView(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 ).toSet()
             }
 
@@ -141,7 +141,7 @@ internal object ReactiveSetTestUtils {
                 )
 
                 subjectVertex.getOldContentView(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 ).toSet()
             }
 
@@ -158,7 +158,7 @@ internal object ReactiveSetTestUtils {
 
             val postSampledElements = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldContentView(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 ).toSet()
             }
 
@@ -216,7 +216,7 @@ internal object ReactiveSetTestUtils {
 
         val sampledElements = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             ).toSet()
         }
 

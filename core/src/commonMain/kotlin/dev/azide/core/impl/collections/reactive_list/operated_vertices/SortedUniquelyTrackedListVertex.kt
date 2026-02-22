@@ -2,7 +2,6 @@ package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
 import dev.azide.core.collections.helpers.SortableValue
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
@@ -36,21 +35,19 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): ListChange<ElementT>? {
         if (upstreamListenerHandle != null || elementBySortKey != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         val initialOldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         elementBySortKey = treeMapOf(
@@ -59,9 +56,17 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             }.toTypedArray(),
         )
 
-        return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
-            buildChange(sourceOngoingChange, propagationContext)
+        return when (processingContext) {
+            is Transactions.PropagationContext -> sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                buildChange(
+                    sourceOngoingChange = sourceOngoingChange,
+                    propagationContext = processingContext,
+                )
+            }
+
+            is Transactions.CommitmentContext -> null
         }
+
     }
 
     override fun deactivate() {
@@ -78,12 +83,12 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> = when (val foundSortedElements = elementBySortKey) {
         // Inactive vertex
         null -> {
             val sourceContentView = sourceVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = processingContext,
             )
 
             sourceContentView.sortedBy { it.sortKey }.map { it.value }
@@ -103,7 +108,7 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
         val changeBuilder = ChangeBuilder()
 
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
 
         val abolishedContentView = sourceOngoingChange.getAbolishedContentView(

@@ -71,23 +71,20 @@ class Merged2EventStreamVertex<EventT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<EventT>? {
         if (upstreamListenerHandle1 != null || upstreamListenerHandle2 != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle1 = sourceVertex1.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = innerListener1,
-            mode = mode,
         )
 
         upstreamListenerHandle2 = sourceVertex2.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = innerListener2,
-            mode = mode,
         )
 
         return sourceVertex1.ongoingEmission ?: sourceVertex2.ongoingEmission

@@ -202,7 +202,10 @@ class ExecutedEachEventStreamVertex<EventT>(
         internalState = InternalState.Detached
     }
 
-    override fun transit() {
+    override fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: Emission<EventT>?,
+    ) {
         this.executedActionRevocable = null
     }
 

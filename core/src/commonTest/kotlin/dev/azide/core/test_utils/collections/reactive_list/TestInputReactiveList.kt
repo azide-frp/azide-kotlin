@@ -249,7 +249,7 @@ fun <ElementT> ChangeDescription<ElementT>.verifyIsApplicable(
     propagationContext: Transactions.PropagationContext,
 ) {
     val oldContentView: List<ElementT> = targetVertex.getOldContentView(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     )
 
     verifyIsApplicable(

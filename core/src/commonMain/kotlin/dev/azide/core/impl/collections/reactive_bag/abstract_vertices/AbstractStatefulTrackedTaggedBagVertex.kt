@@ -1,7 +1,6 @@
 package dev.azide.core.impl.collections.reactive_bag.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 
@@ -14,18 +13,21 @@ abstract class AbstractStatefulTrackedTaggedBagVertex<ElementT>(
     private var isInitialized = false
 
     final override fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
         if (isInitialized) return
 
-        if (mode == ListenableVertex.ActivationMode.Offline) {
-            throw UnsupportedOperationException("Offline initialization is not supported")
-        }
+        when (processingContext) {
+            is Transactions.PropagationContext -> {
+                ensureInitialized(
+                    propagationContext = processingContext,
+                )
+            }
 
-        ensureInitialized(
-            propagationContext = propagationContext,
-        )
+            is Transactions.CommitmentContext -> {
+                throw UnsupportedOperationException("Offline initialization is not supported")
+            }
+        }
     }
 
     final override fun onLastListenerUnregistered() {

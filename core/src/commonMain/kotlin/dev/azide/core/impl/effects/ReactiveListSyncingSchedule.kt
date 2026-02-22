@@ -1,10 +1,10 @@
 package dev.azide.core.impl.effects
 
 import dev.azide.core.collections.ReactiveList
+import dev.azide.core.impl.Committable
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_list.applyTo
 import dev.azide.core.impl.registerBoundListener
@@ -50,7 +50,7 @@ class ReactiveListSyncingSchedule<ElementT>(
     override fun startInternally(
         propagationContext: Transactions.PropagationContext,
         wrapUpContext: Transactions.WrapUpContext,
-    ): InternalEffect.RevocableOutcome<Unit> = object : InternalEffect.RevocableOutcome<Unit> {
+    ): InternalEffect.RevocableOutcome<Unit> = object : InternalEffect.RevocableOutcome<Unit>, Committable {
         private var internalState = InternalState.PreSync
 
         private var listenerHandle: ListenableVertex.ListenerHandle? = null
@@ -104,7 +104,6 @@ class ReactiveListSyncingSchedule<ElementT>(
 
                     attach(
                         propagationContext = propagationContext,
-                        mode = ActivationMode.Online,
                     )
                 }
             }
@@ -126,14 +125,13 @@ class ReactiveListSyncingSchedule<ElementT>(
 
         private fun attach(
             propagationContext: Transactions.PropagationContext,
-            mode: ActivationMode,
         ) {
             if (listenerHandle != null) {
                 throw IllegalStateException("The syncing effect is already attached.")
             }
 
             listenerHandle = sourceReactiveList.trackedVertex.registerBoundListener(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
                 listener = object : ListenableVertex.BoundListener {
                     override fun handle(propagationContext: Transactions.PropagationContext) {
                         executionRevocable?.revoke()
@@ -150,7 +148,6 @@ class ReactiveListSyncingSchedule<ElementT>(
                         }
                     }
                 },
-                mode = mode,
             )
 
             val sourceOngoingChange = sourceReactiveList.trackedVertex.ongoingChange
@@ -180,9 +177,22 @@ class ReactiveListSyncingSchedule<ElementT>(
 
         private fun enqueueInitialSyncExecution(
             propagationContext: Transactions.PropagationContext,
-        ): Revocable = propagationContext.enqueueCallbackForPostProcessing {
+        ): Revocable = propagationContext.enqueueForCommitment(this)
+
+        private fun enqueueChangeApplicationForExecution(
+            propagationContext: Transactions.PropagationContext,
+            sourceOngoingChange: ListChange<ElementT>,
+        ): Revocable = propagationContext.enqueueForExecution {
+            listSyncer.syncChange(change = sourceOngoingChange)
+
+            executionRevocable = null
+        }
+
+        override fun commit(
+            commitmentContext: Transactions.CommitmentContext,
+        ) {
             val sourceInitialNewContent = sourceReactiveList.trackedVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             ).toMutableList()
 
             val sourceInitialChange = sourceReactiveList.trackedVertex.ongoingChange
@@ -196,18 +206,8 @@ class ReactiveListSyncingSchedule<ElementT>(
 
                 attach(
                     propagationContext = propagationContext, // HACK (we're past the propagation phase)
-                    mode = ActivationMode.Offline,
                 )
             }
-        }
-
-        private fun enqueueChangeApplicationForExecution(
-            propagationContext: Transactions.PropagationContext,
-            sourceOngoingChange: ListChange<ElementT>,
-        ): Revocable = propagationContext.enqueueForExecution {
-            listSyncer.syncChange(change = sourceOngoingChange)
-
-            executionRevocable = null
         }
 
         init {

@@ -205,7 +205,7 @@ fun <ElementT> ChangeDescription<ElementT>.verifyIsApplicable(
     propagationContext: Transactions.PropagationContext,
 ) {
     val oldContentView: TaggedBag<ElementT> = targetVertex.getOldContentView(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     )
 
     verifyIsApplicable(

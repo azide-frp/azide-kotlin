@@ -27,16 +27,14 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         get() = _ongoingEmission
 
     override fun registerListener(
-        propagationContext: Transactions.PropagationContext,
-        listener: Listener,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
+        listener: Listener
     ): ListenableVertex.ListenerHandle {
         val internalHandle = _registeredListeners.add(listener)
 
         if (_registeredListeners.size == 1) {
             onFirstListenerRegistered(
-                propagationContext = propagationContext,
-                mode = mode,
+                processingContext = processingContext,
             )
         }
 
@@ -61,9 +59,10 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     final override fun commit(
         commitmentContext: Transactions.CommitmentContext,
     ) {
-        if (_ongoingEmission != null) {
-            transit()
-        }
+        transit(
+            commitmentContext = commitmentContext,
+            ongoingEmission = _ongoingEmission,
+        )
 
         _ongoingEmission = null
         _isEnqueuedForCommitment = false
@@ -135,14 +134,16 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     protected open fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
     }
 
     protected open fun onLastListenerUnregistered() {
     }
 
-    protected open fun transit() {
+    protected open fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: EventStreamVertex.Emission<EventT>?,
+    ) {
     }
 }

@@ -46,23 +46,25 @@ class SampledEachEventStreamVertex<EventT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<EventT>? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
-        return sourceVertex.ongoingEmission?.map { eventMoment: Moment<EventT> ->
-            eventMoment.pullInternallyWrappedUp(
-                propagationContext = propagationContext,
-            )
+        return when (processingContext) {
+            is Transactions.CommitmentContext -> null
+
+            is Transactions.PropagationContext -> sourceVertex.ongoingEmission?.map { eventMoment: Moment<EventT> ->
+                eventMoment.pullInternallyWrappedUp(
+                    propagationContext = processingContext,
+                )
+            }
         }
     }
 

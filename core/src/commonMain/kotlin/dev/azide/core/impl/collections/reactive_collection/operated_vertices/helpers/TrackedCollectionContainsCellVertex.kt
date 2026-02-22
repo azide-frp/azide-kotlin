@@ -18,7 +18,7 @@ class TrackedCollectionContainsCellVertex<ElementT>(
         sourceChange: TrackedGenericCollectionVertex.GenericCollectionChange<Collection<ElementT>>
     ): CellVertex.Update<Boolean>? {
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
 
         val abolishedContentView: Collection<ElementT> = sourceChange.getAbolishedContentView(

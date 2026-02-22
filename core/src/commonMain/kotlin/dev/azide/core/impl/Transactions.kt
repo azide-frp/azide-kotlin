@@ -1,6 +1,6 @@
 package dev.azide.core.impl
 
-import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.Transactions.PropagationContext.CommitmentCallback
 import dev.azide.core.impl.Transactions.PropagationContext.ExternalExecutionCallback
 import dev.kmpx.collections.lists.linkedListOf
 
@@ -38,31 +38,23 @@ object Transactions {
         )
     }
 
-    interface PropagationContext {
-        typealias PostProcessingCallback = () -> Unit
-
-        typealias CommitmentCallback = () -> Unit
-
-        typealias ExternalExecutionCallback = () -> Unit
-
-        fun enqueueCallbackForPostProcessing(
-            callback: PostProcessingCallback,
-        ): Revocable
-
-        fun enqueueCallbackForCommitment(
-            callback: CommitmentCallback,
-        )
-
+    sealed interface ProcessingContext {
         fun enqueueForCommitment(
             committable: Committable,
         ): Revocable
+    }
+
+    interface PropagationContext : ProcessingContext {
+        typealias CommitmentCallback = () -> Unit
+
+        typealias ExternalExecutionCallback = () -> Unit
 
         fun enqueueForExecution(
             callback: ExternalExecutionCallback,
         ): Revocable
     }
 
-    interface CommitmentContext
+    interface CommitmentContext : ProcessingContext
 
     enum class TransactionState {
         Open, Closed,
@@ -87,42 +79,11 @@ object Transactions {
             }
         }
 
-        val enqueuedPostProcessingCallbacks = linkedListOf<PropagationContext.PostProcessingCallback>()
-
         val enqueuedCommittables = arrayListOf<Committable?>()
 
         val callbacksToExecuteExternally = linkedListOf<ExternalExecutionCallback>()
 
         val propagationContext = object : PropagationContext {
-            override fun enqueueCallbackForPostProcessing(
-                callback: PropagationContext.PostProcessingCallback,
-            ): Revocable {
-                ensureIsOpen()
-
-                val innerHandle = enqueuedPostProcessingCallbacks.append(callback)
-
-                return object : Revocable {
-                    override fun revoke() {
-                        ensureIsOpen()
-
-                        enqueuedPostProcessingCallbacks.removeVia(innerHandle)
-                    }
-                }
-            }
-
-            override fun enqueueCallbackForCommitment(
-                callback: PropagationContext.CommitmentCallback,
-            ) {
-                ensureIsOpen()
-
-                enqueuedCommittables.add(
-                    object : Committable {
-                        override fun commit(commitmentContext: CommitmentContext) {
-                            callback()
-                        }
-                    },
-                )
-            }
 
             override fun enqueueForCommitment(
                 committable: Committable,
@@ -165,29 +126,21 @@ object Transactions {
             propagationContext,
         )
 
-        // ## Post-processing phase
-        //
-        // The part of the transaction after all information was propagated, but vertices haven't yet commited to the
-        // new state. Some vertices can adjust their subscriptions / observations for the sake of future transactions.
-        // Enqueueing for commitment is still possible. Enqueueing for further post-processing is prohibited. Enqueueing
-        // side effects is not expected or needed.
-
-        enqueuedPostProcessingCallbacks.forEach { callback ->
-            callback()
-        }
-
         // ## Commitment phase
         //
         // The part of the transaction when the vertices commit to the new state. The volatile state influences the
-        // stable state, after which the volatile state is cleared. Accessing other vertices' state (stable or volatile)
-        // is prohibited, as it's undefined whether they are before or after their own commitment. Removing listeners
-        // / listeners and (in consequence) deactivation is allowed.
-        // TODO: Figure out if upstream unregistration (e.g. of `EventStream.single`) shouldn't be moved to
-        //  post-processing for consistency
-
+        // stable state, after which the volatile state is cleared. Each vertex is committed before the vertices
+        // that caused it to update / emit / change.
         enqueuedCommittables.asReversed().forEach { committable ->
             committable?.commit(
-                commitmentContext = object : CommitmentContext {},
+                commitmentContext = object : CommitmentContext {
+                    override fun enqueueForCommitment(
+                        committable: Committable,
+                    ): Revocable {
+                        // TODO: Figure out why this doesn't make tests fail
+                        TODO("Not yet implemented")
+                    }
+                },
             )
         }
 
@@ -203,12 +156,16 @@ object Transactions {
     }
 }
 
-fun PropagationContext.enqueueForPostProcessing(
-    vertex: PostProcessableVertex,
+fun Transactions.ProcessingContext.enqueueCallbackForCommitment(
+    callback: CommitmentCallback,
 ) {
-    this.enqueueCallbackForPostProcessing {
-        vertex.postProcess(
-            propagationContext = this,
-        )
-    }
+    enqueueForCommitment(
+        committable = object : Committable {
+            override fun commit(
+                commitmentContext: Transactions.CommitmentContext,
+            ) {
+                callback()
+            }
+        },
+    )
 }

@@ -40,13 +40,13 @@ val <ElementT> ReactiveSet<ElementT>.samplingContent: Moment<Set<ElementT>>
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): Set<ElementT> = trackedVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         ).toSet()
     }
 
 fun <ElementT> ReactiveSet<ElementT>.sampleContentExternally(): Set<ElementT> = Transactions.executeWithResult { propagationContext ->
     trackedVertex.getOldContentView(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     ).toSet()
 }
 

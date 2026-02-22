@@ -2,7 +2,6 @@ package dev.azide.core.impl.event_stream
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.Listener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
@@ -27,17 +26,15 @@ fun <EventT> EventStreamVertex<EventT>.registerListenerOnline(
     propagationContext: Transactions.PropagationContext,
     listener: Listener,
 ): ListenerHandle = registerListener(
-    propagationContext = propagationContext,
+    processingContext = propagationContext,
     listener = listener,
-    mode = ActivationMode.Online,
 )
 
 fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
-    propagationContext: Transactions.PropagationContext,
+    propagationContext: Transactions.ProcessingContext,
     listener: BoundListener,
-    mode: ActivationMode,
 ): ListenerHandle = registerListener(
-    propagationContext = propagationContext,
+    processingContext = propagationContext,
     listener = object : Listener {
         override fun handle(
             propagationContext: Transactions.PropagationContext,
@@ -49,7 +46,6 @@ fun <EventT> EventStreamVertex<EventT>.registerBoundListener(
             return ListenableVertex.ListenerStatus.Reachable
         }
     },
-    mode = mode,
 )
 
 fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOnline(
@@ -58,7 +54,6 @@ fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOnline(
 ): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
     listener = listener,
-    mode = ActivationMode.Online,
 )
 
 fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOffline(
@@ -67,5 +62,4 @@ fun <EventT> EventStreamVertex<EventT>.registerBoundListenerOffline(
 ): ListenerHandle = registerBoundListener(
     propagationContext = propagationContext,
     listener = listener,
-    mode = ActivationMode.Offline,
 )

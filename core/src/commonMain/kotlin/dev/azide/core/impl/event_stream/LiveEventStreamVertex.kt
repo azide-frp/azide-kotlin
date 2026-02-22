@@ -3,7 +3,6 @@ package dev.azide.core.impl.event_stream
 import dev.azide.core.impl.ReactiveFinalizationRegistry
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.Listener
 import dev.azide.core.impl.ListenableVertex.ListenerStatus
@@ -62,17 +61,15 @@ fun <EventT> BoundListener.weaklyReferenced(
  * In a special (supported) case, [dependentVertex] and [listener] might be the same object.
  */
 fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
-    propagationContext: Transactions.PropagationContext,
+    processingContext: Transactions.ProcessingContext,
     dependentVertex: ListenableVertex,
     listener: BoundListener,
-    mode: ActivationMode,
 ): LiveEventStreamVertex.WeakListenerHandle {
     val innerListenerHandle: ListenableVertex.ListenerHandle = registerListener(
-        propagationContext = propagationContext,
+        processingContext = processingContext,
         listener = listener.weaklyReferenced(
             sourceEventStreamVertex = this@registerEmissionListenerWeakly,
         ),
-        mode = mode,
     )
 
     /*
@@ -90,11 +87,13 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
      * short-lived loose listeners, the abandoned listener entries would constitute a significant memory leak.
      */
     val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
-        target = dependentVertex, finalizationCallback = {
+        target = dependentVertex,
+        finalizationCallback = {
             this@registerEmissionListenerWeakly.unregisterListener(
                 handle = innerListenerHandle,
             )
-        })
+        },
+    )
 
     return object : LiveEventStreamVertex.WeakListenerHandle {
         override fun cancel() {

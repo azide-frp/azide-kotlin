@@ -101,7 +101,7 @@ class TestInputReactiveSet<ElementT>(
         ) {
             changeDescription.verifyIsApplicable(
                 targetSet = _vertex.getOldContentView(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 ),
             )
 
@@ -120,7 +120,7 @@ class TestInputReactiveSet<ElementT>(
         ) {
             correctedChangeDescription.verifyIsApplicable(
                 targetSet = _vertex.getOldContentView(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 ),
             )
 

@@ -13,10 +13,9 @@ class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
         get() = 0
 
     override fun registerListener(
-        propagationContext: Transactions.PropagationContext,
-        listener: ListenableVertex.Listener,
-        mode: ListenableVertex.ActivationMode,
-    ): TerminatedListenerHandle = TerminatedListenerHandle
+        processingContext: Transactions.ProcessingContext,
+        listener: ListenableVertex.Listener
+    ): ListenableVertex.ListenerHandle = TerminatedListenerHandle
 
     override fun unregisterListener(
         handle: ListenableVertex.ListenerHandle,

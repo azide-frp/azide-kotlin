@@ -1,7 +1,6 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
@@ -40,17 +39,15 @@ class UpdatedValuesEventStreamVertex<ValueT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<ValueT>? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         val sourceOngoingUpdate = sourceVertex.ongoingUpdate

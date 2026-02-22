@@ -23,7 +23,7 @@ class TrackedCollectionSizeCellVertex(
 
             else -> {
                 val oldSize = getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
 
                 val newSize = oldSize + sizeDelta

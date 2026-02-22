@@ -100,7 +100,7 @@ val <ValueT> Cell<ValueT>.sampling: Moment<ValueT>
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): ValueT = vertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
     }
 
@@ -134,7 +134,7 @@ context(momentContext: MomentContext) fun <ValueT> Cell<ValueT>.sample(): ValueT
     val propagationContext = momentContext.propagationContext
 
     return vertex.getOldValue(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     )
 }
 
@@ -187,7 +187,7 @@ fun <ValueT, TransformedValueT> Cell<ValueT>.executeEveryOf(
 
 fun <ValueT> Cell<ValueT>.sampleExternally(): ValueT = Transactions.executeWithResult { propagationContext ->
     vertex.getOldValue(
-        propagationContext = propagationContext,
+        processingContext = propagationContext,
     )
 }
 

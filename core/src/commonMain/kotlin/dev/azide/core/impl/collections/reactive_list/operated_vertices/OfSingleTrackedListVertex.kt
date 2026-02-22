@@ -1,7 +1,6 @@
 package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
@@ -55,17 +54,15 @@ class OfSingleTrackedListVertex<ElementT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ListenableVertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): ListChange<ElementT>? {
         if (upstreamListenerHandle != null) {
             throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
@@ -85,10 +82,10 @@ class OfSingleTrackedListVertex<ElementT>(
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> {
         val sourceValue = sourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return listOf(sourceValue)

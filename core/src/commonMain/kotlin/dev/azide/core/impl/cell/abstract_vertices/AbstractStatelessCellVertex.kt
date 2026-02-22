@@ -1,47 +1,55 @@
 package dev.azide.core.impl.cell.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.ListenableVertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 
 abstract class AbstractStatelessCellVertex<ValueT> : AbstractCellVertex<ValueT>() {
     final override fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
-        when (mode) {
-            ActivationMode.Online -> {
-                val updateOnActivation = activateOnline(
-                    propagationContext = propagationContext,
-                )
+        activate(
+            processingContext = processingContext,
+        )
 
-                exposeUpdate(
-                    propagationContext = propagationContext,
-                    update = updateOnActivation,
-                )
-            }
+        prepare() // FIXME: Here?
 
-            ActivationMode.Offline -> {
-                activateOffline(
-                    propagationContext = propagationContext,
-                )
-            }
+        if (processingContext is Transactions.PropagationContext) {
+            exposeUpdate(
+                propagationContext = processingContext,
+                update = buildInitialUpdate(
+                    propagationContext = processingContext,
+                ),
+            )
         }
     }
 
     final override fun onLastListenerUnregistered() {
+        reset()
+
         deactivate()
 
         clearExposedUpdate()
     }
 
-    abstract fun activateOnline(
+    /**
+     *
+     */
+    open fun prepare() {
+    }
+
+    abstract fun activate(
+        processingContext: Transactions.ProcessingContext,
+    )
+
+    abstract fun buildInitialUpdate(
         propagationContext: Transactions.PropagationContext,
     ): CellVertex.Update<ValueT>?
 
-    abstract fun activateOffline(
-        propagationContext: Transactions.PropagationContext,
-    )
-
     abstract fun deactivate()
+
+    /**
+     *
+     */
+    open fun reset() {
+    }
 }

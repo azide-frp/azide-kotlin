@@ -25,7 +25,7 @@ class CellTriggerEverySchedule(
         wrapUpContext: Transactions.WrapUpContext,
     ): InternalEffect.RevocableOutcome<Unit> {
         val initialInnerTrigger: Trigger = sourceActionCell.vertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
 
         val initialInnerTriggerRevocable = initialInnerTrigger.executeInternally(

@@ -33,7 +33,7 @@ class ActuatedTaggedBagVertex<InnerResultT> private constructor(
             wrapUpContext: Transactions.WrapUpContext,
         ): InternalEffect.RevocableOutcome<ReactiveBag<InnerResultT>> {
             val initialInnerEffects: TaggedBag<Effect<InnerResultT>> = sourceEffectBag.trackedVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             val initialInnerEffectStartOutcomes: TaggedBag<Action.Outcome<Effect.Outcome<InnerResultT>>> =
