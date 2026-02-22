@@ -14,7 +14,8 @@ import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_expectat
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ReactiveListObservationTrait
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils.TestSubjectHealthCheckStrategy
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
+import dev.azide.core.test_utils.generic.TestSubjectHealthChecker
 
 @Suppress("ClassName")
 object ReactiveList_sortedUniquely_testUtils {
@@ -38,7 +39,7 @@ object ReactiveList_sortedUniquely_testUtils {
 
         override fun prepareHealthCheck(
             subject: ReactiveList<String>,
-        ): generic_reaction_testUtils.TestSubjectHealthChecker.HealthCheckDescription<ReactiveList<String>, ListChange<String>> {
+        ): TestSubjectHealthChecker.HealthCheckDescription<ReactiveList<String>, ListChange<String>> {
             val preHealthCheckSortedContent = subject.sampleContentExternally()
 
             // Two extra entries added during the health check, with sort keys placing them last
@@ -66,7 +67,7 @@ object ReactiveList_sortedUniquely_testUtils {
                     .sortedBy { it.sortKey }
                     .map { it.value }
 
-            return generic_reaction_testUtils.TestSubjectHealthChecker.HealthCheckDescription(
+            return TestSubjectHealthChecker.HealthCheckDescription(
                 inputStimulation = TestStimulation.combine(
                     inputReactiveBag.change(
                         changeDescription = TestInputReactiveBag.ChangeDescription(

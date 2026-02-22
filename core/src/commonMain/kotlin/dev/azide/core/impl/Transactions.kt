@@ -137,7 +137,6 @@ object Transactions {
                     override fun enqueueForCommitment(
                         committable: Committable,
                     ): Revocable {
-                        // TODO: Figure out why this doesn't make tests fail
                         TODO("Not yet implemented")
                     }
                 },

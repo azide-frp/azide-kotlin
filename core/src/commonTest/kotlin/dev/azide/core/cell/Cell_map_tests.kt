@@ -14,6 +14,7 @@ import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.Intermediat
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -139,6 +140,21 @@ class Cell_map_tests {
                 expectedOldValue = "10",
                 expectedNewValue = "12",
             ),
+        )
+    }
+
+    @Test
+    @Ignore // FIXME: Fix offline activation
+    fun test_offlineActivation() {
+        val inputCell = TestInputCell(
+            initialValue = 10,
+        )
+
+        val subjectCell = inputCell.map { it.toString() }
+
+        Cell_map_testUtils.executeOfflineActivationTransaction(
+            inputCell = inputCell,
+            subjectCell = subjectCell,
         )
     }
 }
