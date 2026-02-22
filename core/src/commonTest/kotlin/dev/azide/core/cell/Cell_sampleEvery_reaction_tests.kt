@@ -24,39 +24,39 @@ class Cell_sampleEvery_reaction_tests {
 
     private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
 
-    private val slottedStimulationScenarioBank_sourceCellUpdates =
+    private val slottedStimulationScenarioBank_inputCellUpdates =
         Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
+    private val slottedStimulationScenarioBank_inputCellUpdatesRevoked =
         Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
 
-    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
+    private val slottedStimulationScenarioBank_inputCellUpdatesCorrected =
         Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_step_sourceUpdates() {
-        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
-            test_step_sourceUpdates(
+    fun test_reaction_inputCellUpdates() {
+        slottedStimulationScenarioBank_inputCellUpdates.forEach { slottedStimulationScenario ->
+            test_reaction_inputCellUpdates(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
-    private fun test_step_sourceUpdates(
+    private fun test_reaction_inputCellUpdates(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = TestInputCell(
+        val inputCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
-        val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
+        val subjectCell: Cell<Int> = inputCell.sampleEvery().pullExternally()
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = inputCell.updating(
                 tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
@@ -68,29 +68,29 @@ class Cell_sampleEvery_reaction_tests {
     }
 
     @Test
-    fun test_step_sourceUpdatesRevoked() {
-        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
-            test_step_sourceUpdatesRevoked(
+    fun test_reaction_inputCellUpdatesRevoked() {
+        slottedStimulationScenarioBank_inputCellUpdatesRevoked.forEach { slottedStimulationScenario ->
+            test_reaction_inputCellUpdatesRevoked(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
-    private fun test_step_sourceUpdatesRevoked(
+    private fun test_reaction_inputCellUpdatesRevoked(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
 
-        val sourceCell = TestInputCell(
+        val inputCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
-        val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
+        val subjectCell: Cell<Int> = inputCell.sampleEvery().pullExternally()
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = inputCell.revokingUpdate(
                 tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
@@ -102,30 +102,30 @@ class Cell_sampleEvery_reaction_tests {
     }
 
     @Test
-    fun test_step_sourceUpdatesCorrected() {
-        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
-            test_step_sourceUpdatesCorrected(
+    fun test_reaction_inputCellUpdatesCorrected() {
+        slottedStimulationScenarioBank_inputCellUpdatesCorrected.forEach { slottedStimulationScenario ->
+            test_reaction_inputCellUpdatesCorrected(
                 slottedStimulationScenario = slottedStimulationScenario,
             )
         }
     }
 
-    private fun test_step_sourceUpdatesCorrected(
+    private fun test_reaction_inputCellUpdatesCorrected(
         slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
     ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
         val helperCell3 = TestInputCell(initialValue = 30)
 
-        val sourceCell = TestInputCell(
+        val inputCell = TestInputCell(
             initialValue = helperCell1.sampling,
         )
 
-        val subjectCell: Cell<Int> = sourceCell.sampleEvery().pullExternally()
+        val subjectCell: Cell<Int> = inputCell.sampleEvery().pullExternally()
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = inputCell.correctingUpdate(
                 tag = SourceCellTag,
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,
