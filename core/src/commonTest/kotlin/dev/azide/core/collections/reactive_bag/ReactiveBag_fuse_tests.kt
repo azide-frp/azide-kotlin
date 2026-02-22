@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveBag_sampling_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
@@ -14,6 +15,34 @@ import kotlin.test.Test
 
 @Suppress("ClassName")
 class ReactiveBag_fuse_tests {
+    @Test
+    fun test_passiveSampling() {
+        val initialInputCell1 = TestInputCell(initialValue = "#1a")
+        val initialInputCell2 = TestInputCell(initialValue = "#2")
+        val initialInputCell3 = TestInputCell(initialValue = "#3a")
+
+        val inputReactiveBag = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                FuseEntryTag.Tag1 to initialInputCell1,
+                FuseEntryTag.Tag2 to initialInputCell2,
+                FuseEntryTag.Tag3 to initialInputCell3,
+            ),
+        )
+
+        val subjectReactiveBag = inputReactiveBag.fuse()
+
+        ReactiveBag_sampling_testUtils.testPassiveSampling(
+            subjectReactiveBag = subjectReactiveBag,
+            expectedSubjectContent = ReactiveBag_expectations_testUtils.expectStableTaggedContent(
+                expectedTaggedElements = taggedBagOf(
+                    FuseEntryTag.Tag1 to "#1a",
+                    FuseEntryTag.Tag2 to "#2",
+                    FuseEntryTag.Tag3 to "#3a",
+                ),
+            ),
+        )
+    }
+
     @Test
     fun test_initialCellsUpdate_deactivated() {
         test_initialCellsUpdate(
