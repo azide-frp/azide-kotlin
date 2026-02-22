@@ -44,7 +44,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             expectedTargetImpact = targetTriggerRecorder1.expectIsNotExecuted(),
         )
@@ -77,7 +77,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -117,7 +117,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -158,7 +158,7 @@ class Cell_triggerEvery_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,

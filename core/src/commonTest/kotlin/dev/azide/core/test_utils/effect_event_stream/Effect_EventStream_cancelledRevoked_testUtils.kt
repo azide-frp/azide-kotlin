@@ -13,14 +13,14 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_EventStream_cancelledRevoked_testUtils {
-    fun <EventT> executeCancelTransaction(
+    fun <EventT> testCancel(
         subjectEffectOutcome: Effect.Outcome<EventStream<EventT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_generic_cancelledRevoked_testUtils.testCancel(
             trait = EventStreamObservationTrait(),
             subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,

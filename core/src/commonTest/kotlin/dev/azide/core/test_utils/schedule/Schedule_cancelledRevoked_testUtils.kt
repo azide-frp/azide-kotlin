@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Schedule_cancelledRevoked_testUtils {
-    fun executeCancelTransaction(
+    fun testCancel(
         subjectOutcome: ScheduleOutcome,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,

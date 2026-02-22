@@ -299,7 +299,7 @@ class Effect_adapt_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -327,7 +327,7 @@ class Effect_adapt_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.NonPerceived,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),

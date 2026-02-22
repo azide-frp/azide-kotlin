@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
 
 @Suppress("ClassName")
 data object Effect_ReactiveBag_cancelled_testUtils {
-    fun <ElementT> executeCancelTransaction(
+    fun <ElementT> testCancel(
         subjectEffectOutcome: Effect.Outcome<ReactiveBag<ElementT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation2? = null,
@@ -19,7 +19,7 @@ data object Effect_ReactiveBag_cancelled_testUtils {
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
     ) {
-        Effect_generic_cancelled_testUtils.executeCancelTransaction(
+        Effect_generic_cancelled_testUtils.testCancel(
             trait = ReactiveBagObservationTrait(),
             subjectOutcome = subjectEffectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,

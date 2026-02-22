@@ -14,7 +14,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_cancelledRevoked_testUtils {
-    fun <SubjectT, NotificationT : Any> executeCancelTransaction(
+    fun <SubjectT, NotificationT : Any> testCancel(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectOutcome: Effect.Outcome<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,

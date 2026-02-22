@@ -56,7 +56,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = SourceReactiveListTag,
@@ -107,7 +107,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = SourceReactiveListTag,
@@ -158,7 +158,7 @@ class ReactiveList_syncing_cancelledRevoked_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = SourceReactiveListTag,

@@ -265,7 +265,7 @@ class Schedules_adapt_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelledRevoked_testUtils.executeCancelTransaction(
+        Schedule_cancelledRevoked_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             expectedTargetImpact = ExpectedImpact.None,
         )

@@ -84,7 +84,7 @@ class EventStream_executeEach_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
@@ -128,7 +128,7 @@ class EventStream_executeEach_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.emitting(
@@ -177,7 +177,7 @@ class EventStream_executeEach_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.revokingEmission(
@@ -227,7 +227,7 @@ class EventStream_executeEach_cancelled_tests {
 
         val subjectOutcome = subjectEffect.startExternally()
 
-        Effect_EventStream_cancelled_testUtils.executeCancelTransaction(
+        Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceEventStream.correctingEmission(
