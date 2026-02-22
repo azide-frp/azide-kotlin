@@ -3,11 +3,11 @@ package dev.azide.core.impl.effects
 import dev.azide.core.Action
 import dev.azide.core.EventStream
 import dev.azide.core.executeInternallyWrappedUpUnpacked
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.ListenableVertex.BoundListener
-import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline

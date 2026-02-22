@@ -2,7 +2,6 @@ package dev.azide.core.impl.collections.reactive_bag.utils
 
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
-import kotlin.collections.mapValues
 
 class LazyMappedTaggedBag<ElementT, TransformedElementT>(
     private val sourceTaggedBag: TaggedBag<ElementT>,

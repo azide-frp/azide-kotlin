@@ -1,10 +1,10 @@
 package dev.azide.core.impl.event_stream
 
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.Listener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import kotlin.jvm.JvmInline
 
 sealed interface EventStreamVertex<out EventT> : ListenableVertex {

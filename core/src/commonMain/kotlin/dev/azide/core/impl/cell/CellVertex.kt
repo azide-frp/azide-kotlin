@@ -1,7 +1,7 @@
 package dev.azide.core.impl.cell
 
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.Transactions
 import kotlin.jvm.JvmInline
 
 interface CellVertex<out ValueT> : ListenableVertex {

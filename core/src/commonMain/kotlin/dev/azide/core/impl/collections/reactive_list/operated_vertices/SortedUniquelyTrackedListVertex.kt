@@ -1,9 +1,9 @@
 package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
 import dev.azide.core.collections.helpers.SortableValue
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedListVertex

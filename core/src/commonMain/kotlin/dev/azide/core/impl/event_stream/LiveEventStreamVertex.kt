@@ -1,11 +1,11 @@
 package dev.azide.core.impl.event_stream
 
-import dev.azide.core.impl.ReactiveFinalizationRegistry
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.Listener
 import dev.azide.core.impl.ListenableVertex.ListenerStatus
+import dev.azide.core.impl.ReactiveFinalizationRegistry
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
 import kotlin.jvm.JvmInline

@@ -14,9 +14,9 @@ import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectatio
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
 import dev.azide.core.test_utils.generic.TestSubjectHealthChecker
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 
 @Suppress("ClassName")
 object ReactiveBag_fuse_testUtils {

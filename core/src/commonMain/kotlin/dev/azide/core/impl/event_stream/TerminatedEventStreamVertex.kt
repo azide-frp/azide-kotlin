@@ -1,7 +1,7 @@
 package dev.azide.core.impl.event_stream
 
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.Transactions
 
 class TerminatedEventStreamVertex<EventT> : EventStreamVertex<EventT> {
     data object TerminatedListenerHandle : ListenableVertex.ListenerHandle

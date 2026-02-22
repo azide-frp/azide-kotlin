@@ -1,10 +1,10 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.Cell
-import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
+import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue

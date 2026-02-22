@@ -1,8 +1,8 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
-import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
