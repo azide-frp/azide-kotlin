@@ -6,7 +6,7 @@ import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.test_utils.RandomValueGenerator
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.TestStimulationSequence
+import dev.azide.core.test_utils.TestSequentialStimulation
 import dev.azide.core.test_utils.cell.Cell_fuzzyTestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
@@ -307,7 +307,7 @@ class ReactiveBag_fuse_fuzzyTests {
         inputCellById: Map<InputCellId, TestInputCell<String>>,
         oldInputCellValueById: Map<InputCellId, String>,
         newInputCellValueById: Map<InputCellId, String>,
-    ): Set<TestStimulationSequence> = inputCellById.mapNotNull { (inputCellId, inputCell) ->
+    ): Set<TestSequentialStimulation> = inputCellById.mapNotNull { (inputCellId, inputCell) ->
         val oldValue = oldInputCellValueById[inputCellId]!!
         val newValue = newInputCellValueById[inputCellId]!!
 
@@ -328,8 +328,8 @@ class ReactiveBag_fuse_fuzzyTests {
         inputReactiveBag: TestInputReactiveBag<TestInputCell<String>>,
         oldExposedCellIdByTag: Map<MyBagTag, InputCellId>,
         newExposedCellIdByTag: Map<MyBagTag, InputCellId>,
-    ): TestStimulationSequence? {
-        fun buildSingleExtraRandomRevokedSequence(): TestStimulationSequence? {
+    ): TestSequentialStimulation? {
+        fun buildSingleExtraRandomRevokedSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
 
             return when {
@@ -353,7 +353,7 @@ class ReactiveBag_fuse_fuzzyTests {
         return when {
             // There's no actual change in the structure
             effectiveChangeDescription == null -> {
-                TestStimulationSequence.concatAll(
+                TestSequentialStimulation.concatAll(
                     sequences = listOfNotNull(
                         // We build up to two ineffective revoked change sequences
                         buildSingleExtraRandomRevokedSequence(),
@@ -379,8 +379,8 @@ class ReactiveBag_fuse_fuzzyTests {
         inputReactiveBag: TestInputReactiveBag<TestInputCell<String>>,
         oldExposedCellIdByTag: Map<MyBagTag, InputCellId>,
         finalChangeDescription: TestInputReactiveBag.ChangeDescription<TestInputCell<String>>,
-    ): TestStimulationSequence {
-        fun buildSingleExtraRandomRevokedStimulationSequence(): TestStimulationSequence? {
+    ): TestSequentialStimulation {
+        fun buildSingleExtraRandomRevokedStimulationSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
 
             return when {
@@ -411,12 +411,12 @@ class ReactiveBag_fuse_fuzzyTests {
             }
         }
 
-        fun buildFinalStimulationSequence(): TestStimulationSequence {
+        fun buildFinalStimulationSequence(): TestSequentialStimulation {
             val r = random.nextDouble()
 
             return when {
                 // Final change is correction
-                r < 0.3 -> TestStimulationSequence(
+                r < 0.3 -> TestSequentialStimulation(
                     consecutiveStimulations = listOfNotNull(
                         inputReactiveBag.change(
                             changeDescription = buildRandomEffectiveInputBagChangeDescription(
@@ -434,7 +434,7 @@ class ReactiveBag_fuse_fuzzyTests {
                 )
 
                 // Final change the initial change
-                else -> TestStimulationSequence(
+                else -> TestSequentialStimulation(
                     consecutiveStimulations = listOf(
                         inputReactiveBag.change(
                             changeDescription = finalChangeDescription,
@@ -444,7 +444,7 @@ class ReactiveBag_fuse_fuzzyTests {
             }
         }
 
-        return TestStimulationSequence.concatAll(
+        return TestSequentialStimulation.concatAll(
             sequences = listOfNotNull(
                 // Build up to two extra random revoked change sequences which should be totally ineffective
                 buildSingleExtraRandomRevokedStimulationSequence(),
@@ -459,7 +459,7 @@ class ReactiveBag_fuse_fuzzyTests {
         inputCellById: Map<InputCellId, TestInputCell<String>>,
         inputReactiveBag: TestInputReactiveBag<TestInputCell<String>>,
         oldExposedCellIdByTag: Map<MyBagTag, InputCellId>,
-    ): TestStimulationSequence {
+    ): TestSequentialStimulation {
         fun buildSingleExtraRandomCorrectionChangeStimulation(): TestStimulation? {
             val r = random.nextDouble()
 
@@ -476,7 +476,7 @@ class ReactiveBag_fuse_fuzzyTests {
             }
         }
 
-        return TestStimulationSequence(
+        return TestSequentialStimulation(
             consecutiveStimulations = listOfNotNull(
                 // We build at least one intermediate change
                 inputReactiveBag.change(

@@ -2,7 +2,7 @@ package dev.azide.core.test_utils.cell
 
 import dev.azide.core.test_utils.RandomValueGenerator
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.TestStimulationSequence
+import dev.azide.core.test_utils.TestSequentialStimulation
 import kotlin.random.Random
 
 @Suppress("ClassName")
@@ -13,8 +13,8 @@ object Cell_fuzzyTestUtils {
         inputCell: TestInputCell<ValueT>,
         oldValue: ValueT,
         newValue: ValueT,
-    ): TestStimulationSequence? {
-        fun buildSingleExtraRandomRevokedSequence(): TestStimulationSequence? {
+    ): TestSequentialStimulation? {
+        fun buildSingleExtraRandomRevokedSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
 
             return when {
@@ -29,7 +29,7 @@ object Cell_fuzzyTestUtils {
         }
 
         return when {
-            oldValue == newValue -> TestStimulationSequence.concatAll(
+            oldValue == newValue -> TestSequentialStimulation.concatAll(
                 sequences = listOfNotNull(
                     // Build up to two ineffective revoked change sequences
                     buildSingleExtraRandomRevokedSequence(),
@@ -51,8 +51,8 @@ object Cell_fuzzyTestUtils {
         intermediateValueGenerator: RandomValueGenerator<ValueT>,
         inputCell: TestInputCell<ValueT>,
         newValue: ValueT,
-    ): TestStimulationSequence {
-        fun buildSingleExtraRandomRevokedStimulationSequence(): TestStimulationSequence? {
+    ): TestSequentialStimulation {
+        fun buildSingleExtraRandomRevokedStimulationSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
 
             return when {
@@ -78,12 +78,12 @@ object Cell_fuzzyTestUtils {
             }
         }
 
-        fun buildFinalStimulationSequence(): TestStimulationSequence {
+        fun buildFinalStimulationSequence(): TestSequentialStimulation {
             val r = random.nextDouble()
 
             return when {
                 // Final change is correction
-                r < 0.3 -> TestStimulationSequence(
+                r < 0.3 -> TestSequentialStimulation(
                     consecutiveStimulations = listOfNotNull(
                         inputCell.update(
                             newValue = intermediateValueGenerator.next(),
@@ -97,7 +97,7 @@ object Cell_fuzzyTestUtils {
                 )
 
                 // Final change is the initial change
-                else -> TestStimulationSequence(
+                else -> TestSequentialStimulation(
                     consecutiveStimulations = listOf(
                         inputCell.update(
                             newValue = newValue,
@@ -107,7 +107,7 @@ object Cell_fuzzyTestUtils {
             }
         }
 
-        return TestStimulationSequence.concatAll(
+        return TestSequentialStimulation.concatAll(
             sequences = listOfNotNull(
                 // Build up to two extra random revoked change sequences which should be totally ineffective
                 buildSingleExtraRandomRevokedStimulationSequence(),
@@ -122,7 +122,7 @@ object Cell_fuzzyTestUtils {
         random: Random,
         intermediateValueGenerator: RandomValueGenerator<ValueT>,
         inputCell: TestInputCell<ValueT>,
-    ): TestStimulationSequence {
+    ): TestSequentialStimulation {
         fun buildSingleExtraRandomCorrectionUpdateStimulation(): TestStimulation? {
             val r = random.nextDouble()
 
@@ -135,7 +135,7 @@ object Cell_fuzzyTestUtils {
             }
         }
 
-        return TestStimulationSequence(
+        return TestSequentialStimulation(
             consecutiveStimulations = listOfNotNull(
                 // We build at least one intermediate update
                 inputCell.update(

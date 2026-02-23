@@ -1,15 +1,15 @@
 package dev.azide.core.test_utils
 
-data class TestStimulationSequence(
+data class TestSequentialStimulation(
     val consecutiveStimulations: List<TestStimulation>,
 ) {
     companion object {
         fun concatAll(
-            sequences: Collection<TestStimulationSequence>,
-        ): TestStimulationSequence? {
+            sequences: Collection<TestSequentialStimulation>,
+        ): TestSequentialStimulation? {
             return when {
                 sequences.isEmpty() -> null
-                else -> TestStimulationSequence(
+                else -> TestSequentialStimulation(
                     consecutiveStimulations = sequences.flatMap { it.consecutiveStimulations },
                 )
             }
@@ -18,19 +18,19 @@ data class TestStimulationSequence(
 
     init {
         require(consecutiveStimulations.isNotEmpty()) {
-            "A TestStimulationSequence cannot be empty."
+            "A TestSequentialStimulation cannot be empty."
         }
     }
 
     fun withFinalStimulation(
         finalStimulation: TestStimulation,
-    ): TestStimulationSequence = copy(
+    ): TestSequentialStimulation = copy(
         consecutiveStimulations = consecutiveStimulations + finalStimulation,
     )
 
     fun withAppended(
-        other: TestStimulationSequence,
-    ): TestStimulationSequence = copy(
+        other: TestSequentialStimulation,
+    ): TestSequentialStimulation = copy(
         consecutiveStimulations = consecutiveStimulations + other.consecutiveStimulations,
     )
 }
