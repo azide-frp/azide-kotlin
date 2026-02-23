@@ -498,8 +498,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are added. The bag change is revoked, then one of the added cells revokes
-     * its updates.
+     * The input bag changes. Some tags/cells are added. The bag change is revoked; after the change is revoked,
+     * one of the added cells revokes its updates.
      */
     private fun test_bagChanges_addedCells_bagChangeRevoked_addedCellUpdateRevoked(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -577,7 +577,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are added. The bag change is revoked, then one of the initial cells updates.
+     * The input bag changes. Some tags/cells are added. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_addedCells_bagChangeRevoked_initialCellUpdate(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -733,6 +734,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags/cells are not part of the change anymore. One of the previously added cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsUnadded_previouslyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -904,6 +910,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags are now added with different cells. One of the previously added cells updates after the correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsAddedDifferently_previouslyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -990,6 +1000,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags are now added with different cells. One of the newly added cells updates after the correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsAddedDifferently_newlyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1304,8 +1318,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are removed. The bag change is revoked, then one of the removed cells
-     * updates.
+     * The input bag changes. Some tags/cells are removed. The bag change is revoked; after the change is revoked,
+     * one of the removed cells updates.
      */
     private fun test_bagChanges_removedCells_bagChangeRevoked_removedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -1386,8 +1400,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are removed. The bag change is revoked, then one of the initial cells
-     * updates.
+     * The input bag changes. Some tags/cells are removed. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_removedCells_bagChangeRevoked_initialCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -1558,6 +1572,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are not part of the change anymore. One of the temporarily removed cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someCellsUnremoved_temporarilyRemovedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1738,6 +1757,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are replaced with other cells in the change correction. One of the temporarily removed cells
+     * updates after the correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someRemovedCellsNowReplaced_temporarilyRemovedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1827,6 +1851,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are replaced with other cells in the change correction. One of the replacement cells updates
+     * after the correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someRemovedCellsNowReplaced_replacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -2411,8 +2440,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are replaced. The bag change is revoked, then one of the replaced cells
-     * updates.
+     * The input bag changes. Some tags/cells are replaced. The bag change is revoked; after the change is revoked,
+     * one of the replaced cells updates.
      */
     private fun test_bagChanges_replacedCells_bagChangeRevoked_replacedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -2502,8 +2531,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are replaced. The bag change is revoked, then one of the initial cells
-     * updates.
+     * The input bag changes. Some tags/cells are replaced. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_replacedCells_bagChangeRevoked_initialCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -3061,6 +3090,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are replaced. The input bag change is corrected. Some of the previously
+     * replaced tags/cells are now replaced to a different cell. One of the final replacement cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_replacedCells_bagChangeCorrected_someCellsReplacedDifferently_finalReplacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -3248,6 +3282,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are replaced. The input bag change is corrected. Some of the previously
+     * replaced tags/cells are now removed. One of the temporary replacement cells updates after the correction.
+     */
     private fun test_bagChanges_replacedCells_bagChangeCorrected_someReplacedCellsNowRemoved_temporaryReplacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
