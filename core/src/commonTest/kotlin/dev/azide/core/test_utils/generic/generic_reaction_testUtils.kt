@@ -1,12 +1,14 @@
 package dev.azide.core.test_utils.generic
 
 import dev.azide.core.Cell
+import dev.azide.core.EventStream
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.ReactiveList
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_list.ListChange
+import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
@@ -20,6 +22,8 @@ data object generic_reaction_testUtils {
     )
 
     typealias CellHealthChecker<ValueT> = TestSubjectHealthChecker<Cell<ValueT>, CellVertex.Update<ValueT>>
+
+    typealias EventStreamHealthChecker<EventT> = TestSubjectHealthChecker<EventStream<EventT>, EventStreamVertex.Emission<EventT>>
 
     typealias ReactiveBagHealthChecker<ElementT> = TestSubjectHealthChecker<ReactiveBag<ElementT>, TaggedBagChange<ElementT>>
 
