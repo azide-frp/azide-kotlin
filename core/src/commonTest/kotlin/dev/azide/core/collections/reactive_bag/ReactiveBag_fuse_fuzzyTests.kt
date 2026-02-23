@@ -4,16 +4,16 @@ import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.fuse
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.test_utils.RandomValueGenerator
+import dev.azide.core.test_utils.TestSequentialStimulation
+import dev.azide.core.test_utils.TestSequentialStimulationSet
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.TestSequentialStimulation
 import dev.azide.core.test_utils.cell.Cell_fuzzyTestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_reaction_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.stimulation_combinatorics.DynamicInterleavingUtils
 import kotlin.jvm.JvmInline
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -165,12 +165,9 @@ class ReactiveBag_fuse_fuzzyTests {
                 newExposedCellIdByTag = newExposedCellIdByTag,
             )
 
-            val allStimulationSequences = cellStimulationSequences + bagStimulationSequence
-
-            val combinedInputStimulation = TestStimulation.combineInProvidedOrder(
-                stimulations = DynamicInterleavingUtils.generateRandom(
-                    random = random,
-                    lists = allStimulationSequences.mapNotNull { it?.consecutiveStimulations },
+            val totalStimulationSet = TestSequentialStimulationSet(
+                includedStimulations = cellStimulationSequences.includedStimulations + setOfNotNull(
+                    bagStimulationSequence
                 ),
             )
 
@@ -193,7 +190,7 @@ class ReactiveBag_fuse_fuzzyTests {
                 slottedInputStimulation = TestSlottedStimulation2(
                     listOf(
                         TestStimulation.Noop,
-                        combinedInputStimulation,
+                        totalStimulationSet.determinizeRandomly(random = random),
                     ),
                 ),
                 expectedSubjectElementTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -307,20 +304,22 @@ class ReactiveBag_fuse_fuzzyTests {
         inputCellById: Map<InputCellId, TestInputCell<String>>,
         oldInputCellValueById: Map<InputCellId, String>,
         newInputCellValueById: Map<InputCellId, String>,
-    ): Set<TestSequentialStimulation> = inputCellById.mapNotNull { (inputCellId, inputCell) ->
-        val oldValue = oldInputCellValueById[inputCellId]!!
-        val newValue = newInputCellValueById[inputCellId]!!
+    ): TestSequentialStimulationSet = TestSequentialStimulationSet(
+        includedStimulations = inputCellById.mapNotNull { (inputCellId, inputCell) ->
+            val oldValue = oldInputCellValueById[inputCellId]!!
+            val newValue = newInputCellValueById[inputCellId]!!
 
-        Cell_fuzzyTestUtils.buildAppropriateInputCellStimulationSequence(
-            random = random,
-            intermediateValueGenerator = object : RandomValueGenerator<String> {
-                override fun next(): String = inputCellId.nextStringValue(random = random) + "~"
-            },
-            inputCell = inputCell,
-            oldValue = oldValue,
-            newValue = newValue,
-        )
-    }.toSet()
+            Cell_fuzzyTestUtils.buildAppropriateInputCellStimulationSequence(
+                random = random,
+                intermediateValueGenerator = object : RandomValueGenerator<String> {
+                    override fun next(): String = inputCellId.nextStringValue(random = random) + "~"
+                },
+                inputCell = inputCell,
+                oldValue = oldValue,
+                newValue = newValue,
+            )
+        }.toSet(),
+    )
 
     private fun buildAppropriateInputBagStimulationSequence(
         random: Random,

@@ -3,6 +3,7 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.collections.fuse
 import dev.azide.core.collections.reactive_bag.ReactiveBag_fuse_testUtils.FuseEntryTag
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
+import dev.azide.core.test_utils.TestSequentialStimulationSet
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
@@ -373,17 +374,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    addedInputCell1.update(newValue = "+1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to addedInputCell1,
-                                FuseEntryTag.Tag4 to addedInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                addedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to addedInputCell1,
+                                    FuseEntryTag.Tag4 to addedInputCell2,
+                                ),
                             ),
                         ),
+                        addedInputCell1.update(newValue = "+1b"),
+                        addedInputCell2.update(newValue = "+2b"),
                     ),
-                    addedInputCell2.update(newValue = "+2b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -449,15 +452,17 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                addedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        sharedCell.update(newValue = "shared-b"),
                     ),
-                    sharedCell.update(newValue = "shared-b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -526,19 +531,25 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    addedInputCell1.update(newValue = "+1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to addedInputCell1,
-                                FuseEntryTag.Tag4 to addedInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            addedInputCell1.update(newValue = "+1b"),
+                            addedInputCell1.revokeUpdate(),
+                        ),
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    addedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to addedInputCell1,
+                                        FuseEntryTag.Tag4 to addedInputCell2,
+                                    ),
+                                ),
                             ),
+                            inputReactiveBag.revokeChange(),
                         ),
                     ),
-                    inputReactiveBag.revokeChange(),
-                    addedInputCell1.revokeUpdate(),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -764,6 +775,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The previously added cells updates _after_ the change
                     temporarilyAddedInputCell1.update(newValue = "+1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
@@ -935,6 +947,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The previously added cells updates _after_ the change
                     temporaryAddedInputCell1.update(newValue = "+1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
@@ -1028,6 +1041,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The newly added cell updates _after_ the change correction
                     finalAddedInputCell1.update(newValue = "+1!b"),
                 ),
             ),
@@ -1243,17 +1257,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    removedInputCell1.update(newValue = "-1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            removedTags = setOf(
-                                FuseEntryTag.Tag3,
-                                FuseEntryTag.Tag4,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                removedTags = setOf(
+                                    FuseEntryTag.Tag3,
+                                    FuseEntryTag.Tag4,
+                                ),
                             ),
                         ),
+                        removedInputCell1.update(newValue = "-1b"),
+                        removedInputCell2.update(newValue = "-2b"),
                     ),
-                    removedInputCell2.update(newValue = "-2b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -1332,6 +1348,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // The previously removed cell updates _after_ the change is revoked
                     removedInputCell1.update(newValue = "-1b"),
                 ),
             ),
@@ -1413,6 +1430,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // One of the initial cells updates _after_ the change is revoked
                     initialInputCell1.update(newValue = "#1b"),
                 ),
             ),
@@ -1591,6 +1609,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporarily removed cells updates _after_ the change correction
                     temporarilyRemovedInputCell2.update(newValue = "-2~~"),
                 ),
             ),
@@ -1763,7 +1782,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporarilyRemovedInputCell1.update(newValue = "-1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -1772,6 +1790,8 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporarily removed cells updates _after_ the change correction
+                    temporarilyRemovedInputCell1.update(newValue = "-1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -1842,25 +1862,31 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            removedTags = setOf(
-                                FuseEntryTag.Tag3,
-                                FuseEntryTag.Tag4,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    removedTags = setOf(
+                                        FuseEntryTag.Tag3,
+                                        FuseEntryTag.Tag4,
+                                    ),
+                                ),
+                            ),
+                            inputReactiveBag.correctChange(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to replacementInputCell1,
+                                        FuseEntryTag.Tag4 to replacementInputCell2,
+                                    ),
+                                ),
                             ),
                         ),
-                    ),
-                    inputReactiveBag.correctChange(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
-                            ),
+                        TestStimulation.combineInProvidedOrder(
+                            replacementInputCell1.update(newValue = "~1b"),
                         ),
                     ),
-                    replacementInputCell1.update(newValue = "~1b"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -2089,17 +2115,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    replacementInputCell1.update(newValue = "~1c"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to replacementInputCell1,
+                                    FuseEntryTag.Tag4 to replacementInputCell2,
+                                ),
                             ),
                         ),
+                        replacementInputCell1.update(newValue = "~1c"),
+                        replacementInputCell2.update(newValue = "~2c"),
                     ),
-                    replacementInputCell2.update(newValue = "~2c"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2169,15 +2197,17 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        sharedCell.update(newValue = "shared-b"),
                     ),
-                    sharedCell.update(newValue = "shared-b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2251,17 +2281,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    replacedInputCell1.update(newValue = "~1c"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to replacementInputCell1,
+                                    FuseEntryTag.Tag4 to replacementInputCell2,
+                                ),
                             ),
                         ),
+                        replacedInputCell1.update(newValue = "~1c"),
+                        replacedInputCell2.update(newValue = "~2c"),
                     ),
-                    replacedInputCell2.update(newValue = "~2c"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2332,14 +2364,16 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    replacedInputCell.update(newValue = "~1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        replacedInputCell.update(newValue = "~1b"),
                     ),
                 ),
             ),
@@ -2415,18 +2449,24 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to replacementInputCell1,
+                                        FuseEntryTag.Tag4 to replacementInputCell2,
+                                    ),
+                                ),
                             ),
+                            inputReactiveBag.revokeChange(),
+                        ),
+                        TestStimulation.combineInProvidedOrder(
+                            replacedInputCell1.update(newValue = "~1c"),
                         ),
                     ),
-                    inputReactiveBag.revokeChange(),
-                    replacedInputCell1.update(newValue = "~1c"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -2510,6 +2550,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // One of the initial cells updates _after_ the change is revoked
                     initialInputCell1.update(newValue = "#1b"),
                 ),
             ),
@@ -2696,6 +2737,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporary replacement cells updates _after_ the change is corrected
                     temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
@@ -2790,6 +2832,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the final replacement cells updates _after_ the change is corrected
                     finalReplacementInputCell1.update(newValue = "~1!b"),
                 ),
             ),
@@ -2974,7 +3017,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2983,6 +3025,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -3057,25 +3100,31 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combineInProvidedOrder(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to temporaryReplacementInputCell1,
-                                FuseEntryTag.Tag4 to temporaryReplacementInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to temporaryReplacementInputCell1,
+                                        FuseEntryTag.Tag4 to temporaryReplacementInputCell2,
+                                    ),
+                                ),
+                            ),
+                            inputReactiveBag.correctChange(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to finalReplacementInputCell1,
+                                        FuseEntryTag.Tag4 to finalReplacementInputCell2,
+                                    ),
+                                ),
                             ),
                         ),
-                    ),
-                    inputReactiveBag.correctChange(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to finalReplacementInputCell1,
-                                FuseEntryTag.Tag4 to finalReplacementInputCell2,
-                            ),
+                        TestStimulation.combineInProvidedOrder(
+                            finalReplacementInputCell1.update(newValue = "~1!b"),
                         ),
                     ),
-                    finalReplacementInputCell1.update(newValue = "~1!b"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -3243,7 +3292,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -3252,6 +3300,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
