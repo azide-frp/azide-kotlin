@@ -29,7 +29,9 @@ interface TestStimulation {
          */
         fun combineInProvidedOrder(
             stimulations: Iterable<TestStimulation>,
-        ): TestStimulation = combineInProvidedOrder(*stimulations.toList().toTypedArray())
+        ): TestStimulation = TestSequentialStimulation(
+            consecutiveStimulations = stimulations.toList(),
+        )
 
         /**
          * A thin wrapper around [combineInProvidedOrder] that allows for a more convenient vararg syntax when combining
@@ -37,17 +39,9 @@ interface TestStimulation {
          */
         fun combineInProvidedOrder(
             vararg stimulations: TestStimulation,
-        ): TestStimulation = object : TestStimulation {
-            override fun stimulate(
-                propagationContext: Transactions.PropagationContext,
-            ) {
-                for (stimulation in stimulations) {
-                    stimulation.stimulate(
-                        propagationContext = propagationContext,
-                    )
-                }
-            }
-        }
+        ): TestSequentialStimulation = TestSequentialStimulation(
+            consecutiveStimulations = stimulations.toList(),
+        )
 
         /**
          * Combine the given [stimulations] into a single [TestStimulation] that executes them in an arbitrary order.
