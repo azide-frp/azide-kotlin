@@ -352,7 +352,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -412,7 +412,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -474,7 +474,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -536,7 +536,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -605,7 +605,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -673,7 +673,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -743,7 +743,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -817,7 +817,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -889,7 +889,7 @@ class ReactiveList_sortedUniquely_tests {
             inputReactiveBag = inputReactiveBag,
             subjectReactiveList = subjectReactiveList,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(

@@ -49,7 +49,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect).map { 10 },
                 ),
@@ -75,7 +75,7 @@ class EventStream_executeEachForever_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1).map { 10 },
                 ),

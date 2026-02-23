@@ -121,7 +121,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeEffectively(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
@@ -146,7 +146,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeAtAll(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
@@ -171,7 +171,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeAtAll(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
@@ -201,7 +201,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(-6, -7),
@@ -232,7 +232,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyDoesNotChangeEffectively(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),
@@ -262,7 +262,7 @@ class ReactiveSet_filter_tests {
 
         ReactiveSetTestUtils.verifyChangesAsExpected(
             subjectReactiveSet = subjectReactiveSet,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(6, 7),

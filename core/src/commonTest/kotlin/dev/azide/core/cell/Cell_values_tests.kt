@@ -63,7 +63,7 @@ class Cell_values_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell.update(newValue = 20),
                 sourceCell.revokeUpdate(),
             ),
@@ -82,7 +82,7 @@ class Cell_values_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell.update(newValue = 20),
                 sourceCell.correctUpdate(correctedNewValue = 21),
             ),

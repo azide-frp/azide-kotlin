@@ -41,7 +41,7 @@ class EventStream_mapAt_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -62,7 +62,7 @@ class EventStream_mapAt_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = 11,
                 ),

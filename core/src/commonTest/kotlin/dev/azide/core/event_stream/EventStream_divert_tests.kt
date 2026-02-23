@@ -63,7 +63,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -84,7 +84,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -149,7 +149,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyDoesNotEmitEffectively(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -181,7 +181,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyEmitsAsExpected(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -276,7 +276,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -308,7 +308,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = intermediateInnerSourceEventStream,
                 ),
@@ -340,7 +340,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -365,7 +365,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceEventStream.emit(
                     emittedEvent = 21,
                 ),
@@ -390,7 +390,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -416,7 +416,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -442,7 +442,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 earlierInnerSourceEventStream.emit(
                     emittedEvent = 11,
                 ),
@@ -468,7 +468,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -494,7 +494,7 @@ class EventStream_divert_tests {
 
         EventStreamTestUtils.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceEventStream,
                 ),
@@ -549,7 +549,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 // B updates to A2, but C2 shouldn't even be subscribed to B during the propagation phase. _But_ when C2
                 // eventually activates, it should correctly subscribe to C2 for the sake of future transactions (_not_
                 // to C1, as it would if it was activated mid-transaction).
@@ -621,7 +621,7 @@ class EventStream_divert_tests {
         )
 
         subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 // D updates from C1 to C2. E should acknowledge it, yet keep subscribed to C1 for the duration of the
                 // propagation phase.
                 shallowOuterIntermediateCell.update(

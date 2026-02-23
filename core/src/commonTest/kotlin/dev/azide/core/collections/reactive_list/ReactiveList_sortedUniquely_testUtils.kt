@@ -68,7 +68,7 @@ object ReactiveList_sortedUniquely_testUtils {
                     .map { it.value }
 
             return TestSubjectHealthChecker.HealthCheckDescription(
-                inputStimulation = TestStimulation.combine(
+                inputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         changeDescription = TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(

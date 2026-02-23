@@ -86,9 +86,11 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    initialInputCell1.update(newValue = "#1b"),
-                    initialInputCell3.update(newValue = "#3b"),
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        initialInputCell1.update(newValue = "#1b"),
+                        initialInputCell3.update(newValue = "#3b"),
+                    ),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -153,9 +155,11 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    initialInputCell1.update(newValue = "#1b"),
-                    initialInputCell3.update(newValue = "#3b"),
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        initialInputCell1.update(newValue = "#1b"),
+                        initialInputCell3.update(newValue = "#3b"),
+                    ),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -369,7 +373,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     addedInputCell1.update(newValue = "+1b"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -445,7 +449,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -522,7 +526,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     addedInputCell1.update(newValue = "+1b"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -594,7 +598,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -670,7 +674,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -750,7 +754,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -838,7 +842,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -922,7 +926,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -1007,7 +1011,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -1239,7 +1243,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     removedInputCell1.update(newValue = "-1b"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -1318,7 +1322,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1399,7 +1403,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1483,7 +1487,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1570,7 +1574,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1663,7 +1667,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1750,7 +1754,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1838,7 +1842,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -2085,7 +2089,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     replacementInputCell1.update(newValue = "~1c"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -2165,7 +2169,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2247,7 +2251,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     replacedInputCell1.update(newValue = "~1c"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -2328,7 +2332,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     replacedInputCell.update(newValue = "~1b"),
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
@@ -2411,7 +2415,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2496,7 +2500,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2583,7 +2587,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2676,7 +2680,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2770,7 +2774,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2865,7 +2869,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2961,7 +2965,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -3053,7 +3057,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -3145,7 +3149,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -3230,7 +3234,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(

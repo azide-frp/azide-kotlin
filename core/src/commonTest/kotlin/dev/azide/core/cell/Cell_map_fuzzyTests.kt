@@ -52,7 +52,7 @@ class Cell_map_fuzzyTests {
 
             val combinedInputStimulation =
                 cellStimulationSequence?.consecutiveStimulations?.let { consecutiveStimulations ->
-                    TestStimulation.combine(
+                    TestStimulation.combineInProvidedOrder(
                         stimulations = consecutiveStimulations,
                     )
                 } ?: TestStimulation.Noop

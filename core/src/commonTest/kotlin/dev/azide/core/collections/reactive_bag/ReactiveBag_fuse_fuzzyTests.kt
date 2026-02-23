@@ -167,7 +167,7 @@ class ReactiveBag_fuse_fuzzyTests {
 
             val allStimulationSequences = cellStimulationSequences + bagStimulationSequence
 
-            val combinedInputStimulation = TestStimulation.combine(
+            val combinedInputStimulation = TestStimulation.combineInProvidedOrder(
                 stimulations = DynamicInterleavingUtils.generateRandom(
                     random = random,
                     lists = allStimulationSequences.mapNotNull { it?.consecutiveStimulations },

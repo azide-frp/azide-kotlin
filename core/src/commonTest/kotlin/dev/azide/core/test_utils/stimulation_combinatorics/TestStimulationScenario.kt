@@ -48,7 +48,7 @@ data class TestStimulationScenario(
 
     fun bind(
         stimulationMap: TestStimulationMap,
-    ): TestStimulation = TestStimulation.combine(
+    ): TestStimulation = TestStimulation.combineInProvidedOrder(
         stimulations = stimulationTags.map { stimulationTag: TestStimulationTag ->
             stimulationMap[stimulationTag]
         },

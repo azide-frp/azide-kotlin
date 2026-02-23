@@ -81,7 +81,7 @@ object ReactiveBag_fuse_testUtils {
 
             // Stimulate all input cells (including the ones not exposed in the subject bag anymore) to prove the health
             // of the input cells observation
-            val inputCellsStimulation = TestStimulation.combine(
+            val inputCellsStimulation = TestStimulation.combineInProvidedOrder(
                 inputCellByLabel.values.map { inputCell ->
                     val preHealthCheckValue = inputCell.sampleExternally()
 
@@ -90,7 +90,7 @@ object ReactiveBag_fuse_testUtils {
             )
 
             return TestSubjectHealthChecker.HealthCheckDescription(
-                inputStimulation = TestStimulation.combine(
+                inputStimulation = TestStimulation.combineInProvidedOrder(
                     inputCellsStimulation,
                     inputReactiveBag.change(
                         // Add some new cells to prove the health of the subject bag observation

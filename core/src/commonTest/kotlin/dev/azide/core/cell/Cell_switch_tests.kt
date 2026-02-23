@@ -139,7 +139,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerSourceCell.update(
                     newValue = 11,
                 ),
@@ -163,7 +163,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerSourceCell.update(
                     newValue = 11,
                 ),
@@ -238,7 +238,7 @@ class Cell_switch_tests {
         )
 
         observingVerifier.verifyDoesNotUpdateEffectively(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -275,7 +275,7 @@ class Cell_switch_tests {
         )
 
         observingVerifier.verifyUpdatesAsExpected(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -392,7 +392,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -432,7 +432,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = intermediateInnerSourceCell,
                 ),
@@ -471,7 +471,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -502,7 +502,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceCell.update(
                     newValue = 21,
                 ),
@@ -533,7 +533,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -567,7 +567,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -608,7 +608,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),
@@ -639,7 +639,7 @@ class Cell_switch_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
                     newValue = laterInnerSourceCell,
                 ),

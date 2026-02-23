@@ -200,7 +200,7 @@ class Cell_map2_complex_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell2.update(
                     newValue = 'B',
                 ),
@@ -229,7 +229,7 @@ class Cell_map2_complex_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell2.update(
                     newValue = 'B',
                 ),
@@ -264,7 +264,7 @@ class Cell_map2_complex_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(
                     newValue = 11,
                 ),
@@ -296,7 +296,7 @@ class Cell_map2_complex_tests {
 
         CellTestUtils.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(
                     newValue = 11,
                 ),
@@ -329,7 +329,7 @@ class Cell_map2_complex_tests {
 
         CellTestUtils.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(
                     newValue = 11,
                 ),
