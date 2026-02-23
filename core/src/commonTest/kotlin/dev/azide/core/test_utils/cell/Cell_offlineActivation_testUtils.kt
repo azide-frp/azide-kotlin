@@ -7,11 +7,11 @@ import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 
 @Suppress("ClassName")
 data object Cell_offlineActivation_testUtils {
-    fun <ValueT> executeOfflineActivationTransaction(
+    fun <ValueT> testOfflineActivation(
         subjectCell: Cell<ValueT>,
         subjectHealthChecker: generic_reaction_testUtils.CellHealthChecker<ValueT>,
     ) {
-        generic_offlineActivation_testUtils.executeOfflineActivationTransaction(
+        generic_offlineActivation_testUtils.testOfflineActivation(
             trait = CellObservationTrait(),
             subject = subjectCell,
             subjectHealthChecker = subjectHealthChecker,

@@ -152,7 +152,7 @@ class Cell_map_complex_tests {
 
         val subjectCell = inputCell.map { it.toString() }
 
-        Cell_map_testUtils.executeOfflineActivationTransaction(
+        Cell_map_testUtils.testOfflineActivation(
             inputCell = inputCell,
             subjectCell = subjectCell,
         )

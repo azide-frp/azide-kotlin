@@ -5,7 +5,7 @@ import dev.azide.core.impl.Transactions
 
 @Suppress("ClassName")
 data object generic_offlineActivation_testUtils {
-    fun <SubjectT, NotificationT : Any> executeOfflineActivationTransaction(
+    fun <SubjectT, NotificationT : Any> testOfflineActivation(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subject: SubjectT,
         subjectHealthChecker: TestSubjectHealthChecker<SubjectT, NotificationT>,

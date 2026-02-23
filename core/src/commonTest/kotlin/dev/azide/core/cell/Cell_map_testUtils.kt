@@ -39,11 +39,11 @@ object Cell_map_testUtils {
         }
     }
 
-    fun executeOfflineActivationTransaction(
+    fun testOfflineActivation(
         inputCell: TestInputCell<Int>,
         subjectCell: Cell<String>,
     ) {
-        Cell_offlineActivation_testUtils.executeOfflineActivationTransaction(
+        Cell_offlineActivation_testUtils.testOfflineActivation(
             subjectCell = subjectCell,
             subjectHealthChecker = MapHealthChecker(inputCell = inputCell),
         )
