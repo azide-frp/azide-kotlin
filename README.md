@@ -300,6 +300,17 @@ targeted unit test ensures it doesn't resurface. Beyond that, a well-designed un
 debugging — when a test fails, it points to a specific, named scenario, making it much easier to identify the cause
 than a failed fuzz test would.
 
+Each test suite can vary in structure depending on what it covers, but a typical unit test suite contains:
+
+- **At least one passive sampling test** (for cells and reactive collections) — verifies that the test subject
+  correctly exposes its stable state when sampled outside of a transaction.
+- **Multiple reaction tests** — reaction tests form the vast majority of tests in most suites; each test verifies how the
+  test subject responds to a specific input stimulation. The focus of each reaction test should be clear: it should
+  be obvious what exact scenario (in terms of the input stimulation order and content) is being exercised, so that a
+  failure can be quickly diagnosed.
+- **One offline activation test** — verifies that the test subject behaves correctly when activated in the commitment
+  phase
+
 #### Test utils
 
 Whether we write a unit test with a precise stimulation or a fuzz test with a generated one, common patterns emerge on
