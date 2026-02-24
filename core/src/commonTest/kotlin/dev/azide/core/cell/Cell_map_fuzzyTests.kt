@@ -40,9 +40,9 @@ class Cell_map_fuzzyTests {
             val newInputCellValue = random.nextInt(maxCellPayloadValue)
 
             // Build the stimulation sequence
-            val cellStimulationSequence = Cell_fuzzyTestUtils.buildAppropriateInputCellStimulationSequence(
+            val cellStimulationSequence = Cell_fuzzyTestUtils.buildRandomInputCellStimulationSequence(
                 random = random,
-                intermediateValueGenerator = object : RandomValueGenerator<Int> {
+                noiseValueGenerator = object : RandomValueGenerator<Int> {
                     override fun next(): Int = 0xBAADF00D.toInt()
                 },
                 inputCell = inputCell,

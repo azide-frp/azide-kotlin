@@ -177,6 +177,28 @@ class Cell_switch_tests {
     }
 
     @Test
+    fun test_onlyCurrentInnerUpdates_toSameValue() {
+        val innerSourceCell = TestInputCell(
+            initialValue = 10,
+        )
+
+        val outerSourceCell = TestInputCell(
+            initialValue = innerSourceCell,
+        )
+
+        val subjectCell = Cell.switch(outerSourceCell)
+
+        CellTestUtils.verifyUpdatesAsExpected(
+            subjectCell = subjectCell,
+            inputStimulation = innerSourceCell.update(
+                newValue = 10,
+            ),
+            expectedOldValue = 10,
+            expectedNewValue = 10,
+        )
+    }
+
+    @Test
     fun test_onlyCurrentInnerUpdates_subsequent() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
@@ -349,6 +371,28 @@ class Cell_switch_tests {
     }
 
     @Test
+    fun test_onlyOuterUpdates_toSameCell() {
+        val singleInnerSourceCell = TestInputCell(
+            initialValue = 10,
+        )
+
+        val outerSourceCell = TestInputCell(
+            initialValue = singleInnerSourceCell,
+        )
+
+        val subjectCell = Cell.switch(outerSourceCell)
+
+        CellTestUtils.verifyUpdatesAsExpected(
+            subjectCell = subjectCell,
+            inputStimulation = outerSourceCell.update(
+                newValue = singleInnerSourceCell,
+            ),
+            expectedOldValue = 10,
+            expectedNewValue = 10,
+        )
+    }
+
+    @Test
     fun test_onlyOuterUpdates_updatedInnerConst() {
         val earlierInnerSourceCell = TestInputCell(
             initialValue = 10,
@@ -512,6 +556,35 @@ class Cell_switch_tests {
             ),
             expectedOldValue = 10,
             expectedNewValue = 21,
+        )
+    }
+
+    @Test
+    fun test_outerAndInnerUpdate_toSameCell() {
+        val singleInnerSourceCell = TestInputCell(
+            initialValue = 10,
+        )
+
+        val outerSourceCell = TestInputCell(
+            initialValue = singleInnerSourceCell,
+        )
+
+        val subjectCell = Cell.switch(outerSourceCell)
+
+        CellTestUtils.verifyUpdatesAsExpected(
+            subjectCell = subjectCell,
+            inputStimulation = TestStimulation.combineInArbitraryOrder(
+                setOf(
+                    outerSourceCell.update(
+                        newValue = singleInnerSourceCell,
+                    ),
+                    singleInnerSourceCell.update(
+                        newValue = 11,
+                    ),
+                ),
+            ),
+            expectedOldValue = 10,
+            expectedNewValue = 11,
         )
     }
 

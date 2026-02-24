@@ -59,7 +59,7 @@ class ReactiveBag_fuse_fuzzyTests {
 
         init {
             require(id < totalInputCellCount) {
-                "InputCellId id must be less than $totalInputCellCount, but was $id."
+                "InnerCellLabel id must be less than $totalInputCellCount, but was $id."
             }
         }
 
@@ -309,9 +309,9 @@ class ReactiveBag_fuse_fuzzyTests {
             val oldValue = oldInputCellValueById[inputCellId]!!
             val newValue = newInputCellValueById[inputCellId]!!
 
-            Cell_fuzzyTestUtils.buildAppropriateInputCellStimulationSequence(
+            Cell_fuzzyTestUtils.buildRandomInputCellStimulationSequence(
                 random = random,
-                intermediateValueGenerator = object : RandomValueGenerator<String> {
+                noiseValueGenerator = object : RandomValueGenerator<String> {
                     override fun next(): String = inputCellId.nextStringValue(random = random) + "~"
                 },
                 inputCell = inputCell,

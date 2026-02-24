@@ -9,11 +9,88 @@ import dev.azide.core.impl.cell.abstract_vertices.AbstractBaseStatefulCellVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestInputEntity
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.semantic.AnySemanticCell
+import dev.azide.core.test_utils.semantic.SemanticCell
+import dev.azide.core.test_utils.semantic.Timestamp
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
 ) : Cell<ValueT>, TestInputEntity {
+    interface ValueRealizer<in SemanticValueT, out RealValueT> {
+        fun realize(
+            semanticValue: SemanticValueT,
+        ): RealValueT
+    }
+
+    companion object {
+        fun <ValueT> realizeInitially(
+            semanticCell: AnySemanticCell<ValueT>,
+        ): TestInputCell<ValueT> {
+            val initialSemanticValueSnapshot: SemanticCell.ValueSnapshot<ValueT> = semanticCell.evaluate(
+                timestamp = Timestamp.zero,
+            )
+
+            return TestInputCell(
+                initialValue = initialSemanticValueSnapshot.value,
+            )
+        }
+
+        fun <SemanticValueT, RealValueT> realizeInitially(
+            semanticCell: AnySemanticCell<SemanticValueT>,
+            valueRealizer: ValueRealizer<SemanticValueT, RealValueT>,
+        ): TestInputCell<RealValueT> {
+            val initialSemanticValueSnapshot: SemanticCell.ValueSnapshot<SemanticValueT> = semanticCell.evaluate(
+                timestamp = Timestamp.zero,
+            )
+
+            val initialRealValue: RealValueT = valueRealizer.realize(
+                semanticValue = initialSemanticValueSnapshot.value,
+            )
+
+            return TestInputCell(
+                initialValue = initialRealValue,
+            )
+        }
+
+        fun <SemanticValueT, RealValueT> realizeIndirectly(
+            semanticCell: AnySemanticCell<SemanticValueT>,
+            valueRealizer: ValueRealizer<SemanticValueT, RealValueT>,
+        ): Pair<TestInputCell<RealValueT>, AnySemanticCell<RealValueT>> {
+            val initialSemanticValueSnapshot: SemanticCell.ValueSnapshot<SemanticValueT> = semanticCell.evaluate(
+                timestamp = Timestamp.zero,
+            )
+
+            val initialRealValue: RealValueT = valueRealizer.realize(
+                semanticValue = initialSemanticValueSnapshot.value,
+            )
+
+            val inputCell = TestInputCell(
+                initialValue = initialRealValue,
+            )
+
+            val testStimulationProvider = object : AnySemanticCell<RealValueT> {
+                override val label: SemanticCell.Label = SemanticCell.Label.Dependent
+
+                override fun evaluate(
+                    timestamp: Timestamp,
+                ): SemanticCell.ValueSnapshot<RealValueT> =
+                    semanticCell.evaluate(timestamp = timestamp).let { semanticValueSnapshot ->
+                        semanticValueSnapshot.map {
+                            valueRealizer.realize(
+                                semanticValue = it,
+                            )
+                        }
+                    }
+            }
+
+            return Pair(
+                inputCell,
+                testStimulationProvider,
+            )
+        }
+    }
+
     private val _vertex = object : AbstractBaseStatefulCellVertex<ValueT>(
         initialValue = initialValue,
     ) {

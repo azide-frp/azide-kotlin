@@ -164,12 +164,6 @@ class SwitchedCellVertex<ValueT>(
 
                 val handledUpdatedInnerSourceVertex = handledUpdatedInnerSourceCell.vertex
 
-                if (handledUpdatedInnerSourceVertex == previousNewInnerSourceVertex) {
-                    // If the source inner vertex doesn't effectively change, we can just ignore the update.
-                    // TODO: Clarify the CellVertex-level contract
-                    return
-                }
-
                 // Store link to the updated inner source vertex
 
                 this.updatedInnerSourceVertex = handledUpdatedInnerSourceVertex
@@ -192,12 +186,14 @@ class SwitchedCellVertex<ValueT>(
 
                 // Propagate the update
 
+                val updatedValue = handledUpdatedInnerSourceVertex.getNewValue(
+                    processingContext = propagationContext,
+                )
+
                 exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = CellVertex.Update(
-                        updatedValue = handledUpdatedInnerSourceVertex.getNewValue(
-                            processingContext = propagationContext,
-                        ),
+                        updatedValue = updatedValue,
                     ),
                 )
             }

@@ -1,18 +1,35 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.test_utils.RandomValueGenerator
-import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestSequentialStimulation
+import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.semantic.SemanticCell
 import kotlin.random.Random
 
 @Suppress("ClassName")
 object Cell_fuzzyTestUtils {
-    fun <ValueT> buildAppropriateInputCellStimulationSequence(
+    fun <InputValueT> buildRandomInputCellStimulationSequence(
         random: Random,
-        intermediateValueGenerator: RandomValueGenerator<ValueT>,
-        inputCell: TestInputCell<ValueT>,
-        oldValue: ValueT,
-        newValue: ValueT,
+        noiseValueGenerator: RandomValueGenerator<InputValueT>,
+        inputCell: TestInputCell<InputValueT>,
+        oldValue: InputValueT,
+        newValue: InputValueT,
+    ): TestSequentialStimulation? = buildRandomInputCellStimulationSequence(
+        random = random,
+        noiseValueGenerator = noiseValueGenerator,
+        inputCell = inputCell,
+        semanticInputTransition = SemanticCell.Transition.Update(
+            oldValue = oldValue,
+            updatedValue = newValue,
+        ),
+    )
+
+    fun <InputValueT> buildRandomInputCellStimulationSequence(
+        random: Random,
+        noiseValueGenerator: RandomValueGenerator<InputValueT>,
+        inputCell: TestInputCell<InputValueT>,
+        semanticInputTransition: SemanticCell.Transition<InputValueT>,
     ): TestSequentialStimulation? {
         fun buildSingleExtraRandomRevokedSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
@@ -20,7 +37,7 @@ object Cell_fuzzyTestUtils {
             return when {
                 r < 0.1 -> buildRandomRevokedInputCellStimulationSequence(
                     random = random,
-                    intermediateValueGenerator = intermediateValueGenerator,
+                    noiseValueGenerator = noiseValueGenerator,
                     inputCell = inputCell,
                 )
 
@@ -28,20 +45,22 @@ object Cell_fuzzyTestUtils {
             }
         }
 
-        return when {
-            oldValue == newValue -> TestSequentialStimulation.concatAll(
-                sequences = listOfNotNull(
-                    // Build up to two ineffective revoked change sequences
-                    buildSingleExtraRandomRevokedSequence(),
-                    buildSingleExtraRandomRevokedSequence(),
-                ),
-            )
+        return when (semanticInputTransition) {
+            is SemanticCell.Transition.Pass -> {
+                TestSequentialStimulation.concatAll(
+                    sequences = listOfNotNull(
+                        // Build up to two ineffective revoked change sequences
+                        buildSingleExtraRandomRevokedSequence(),
+                        buildSingleExtraRandomRevokedSequence(),
+                    ),
+                )
+            }
 
-            else -> buildRandomEffectiveInputCellStimulationSequence(
+            is SemanticCell.Transition.Update -> buildRandomEffectiveInputCellStimulationSequence(
                 random = random,
-                intermediateValueGenerator = intermediateValueGenerator,
+                intermediateValueGenerator = noiseValueGenerator,
                 inputCell = inputCell,
-                newValue = newValue,
+                newInputValue = semanticInputTransition.updatedValue,
             )
         }
     }
@@ -50,7 +69,7 @@ object Cell_fuzzyTestUtils {
         random: Random,
         intermediateValueGenerator: RandomValueGenerator<ValueT>,
         inputCell: TestInputCell<ValueT>,
-        newValue: ValueT,
+        newInputValue: ValueT,
     ): TestSequentialStimulation {
         fun buildSingleExtraRandomRevokedStimulationSequence(): TestSequentialStimulation? {
             val r = random.nextDouble()
@@ -58,7 +77,7 @@ object Cell_fuzzyTestUtils {
             return when {
                 r < 0.1 -> buildRandomRevokedInputCellStimulationSequence(
                     random = random,
-                    intermediateValueGenerator = intermediateValueGenerator,
+                    noiseValueGenerator = intermediateValueGenerator,
                     inputCell = inputCell,
                 )
 
@@ -91,7 +110,7 @@ object Cell_fuzzyTestUtils {
                         // Build a potential extra correction update
                         buildSingleExtraRandomCorrectionStimulation(),
                         inputCell.correctUpdate(
-                            correctedNewValue = newValue,
+                            correctedNewValue = newInputValue,
                         ),
                     ),
                 )
@@ -100,7 +119,7 @@ object Cell_fuzzyTestUtils {
                 else -> TestSequentialStimulation(
                     consecutiveStimulations = listOf(
                         inputCell.update(
-                            newValue = newValue,
+                            newValue = newInputValue,
                         ),
                     ),
                 )
@@ -120,7 +139,7 @@ object Cell_fuzzyTestUtils {
 
     private fun <ValueT> buildRandomRevokedInputCellStimulationSequence(
         random: Random,
-        intermediateValueGenerator: RandomValueGenerator<ValueT>,
+        noiseValueGenerator: RandomValueGenerator<ValueT>,
         inputCell: TestInputCell<ValueT>,
     ): TestSequentialStimulation {
         fun buildSingleExtraRandomCorrectionUpdateStimulation(): TestStimulation? {
@@ -128,7 +147,7 @@ object Cell_fuzzyTestUtils {
 
             return when {
                 r < 0.1 -> inputCell.correctUpdate(
-                    correctedNewValue = intermediateValueGenerator.next(),
+                    correctedNewValue = noiseValueGenerator.next(),
                 )
 
                 else -> null
@@ -139,7 +158,7 @@ object Cell_fuzzyTestUtils {
             consecutiveStimulations = listOfNotNull(
                 // We build at least one intermediate update
                 inputCell.update(
-                    newValue = intermediateValueGenerator.next(),
+                    newValue = noiseValueGenerator.next(),
                 ),
                 // But, with a small chance, we build up to two extra intermediate (correction) updates
                 buildSingleExtraRandomCorrectionUpdateStimulation(),
@@ -147,6 +166,21 @@ object Cell_fuzzyTestUtils {
                 // Finally, the update sequence is revoked
                 inputCell.revokeUpdate(),
             ),
+        )
+    }
+
+    fun <SubjectValueT> buildExpectedSubjectCellValueTransition(
+        semanticSemanticTransition: SemanticCell.Transition<SubjectValueT>,
+    ): ExpectedCellValueTransition<SubjectValueT> = when (semanticSemanticTransition) {
+        is SemanticCell.Transition.Pass -> Cell_expectations_testUtils.expectNoValueTransition(
+            intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
+            expectedUnaffectedValue = semanticSemanticTransition.unaffectedValue,
+        )
+
+        is SemanticCell.Transition.Update -> Cell_expectations_testUtils.expectValueTransition(
+            intermediatePropagationTolerance = ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
+            expectedOldValue = semanticSemanticTransition.oldValue,
+            expectedNewValue = semanticSemanticTransition.updatedValue,
         )
     }
 }
