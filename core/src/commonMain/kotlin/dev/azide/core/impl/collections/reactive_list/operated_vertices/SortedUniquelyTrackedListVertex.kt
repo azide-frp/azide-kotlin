@@ -1,12 +1,11 @@
 package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
 import dev.azide.core.collections.helpers.SortableValue
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.registerBoundListener
@@ -24,45 +23,31 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     override fun handle(
         propagationContext: Transactions.PropagationContext,
     ) {
-        when (val sourceChange = sourceVertex.ongoingChange) {
-            null -> {
-                if (ongoingChange != null) {
-                    exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = null,
-                    )
-                }
-            }
-
-            else -> {
-                val builtChange = buildChange(
-                    sourceOngoingChange = sourceChange,
-                )
-
-                exposeChangeNotifyingListeners(
+        exposeChangeNotifyingListeners(
+            propagationContext = propagationContext,
+            change = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                buildChange(
+                    sourceOngoingChange = sourceOngoingChange,
                     propagationContext = propagationContext,
-                    change = builtChange,
                 )
-            }
-        }
+            },
+        )
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): ListChange<ElementT>? {
         if (upstreamListenerHandle != null || elementBySortKey != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         val initialOldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         elementBySortKey = treeMapOf(
@@ -71,14 +56,22 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
             }.toTypedArray(),
         )
 
-        return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
-            buildChange(sourceOngoingChange)
+        return when (processingContext) {
+            is Transactions.PropagationContext -> sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                buildChange(
+                    sourceOngoingChange = sourceOngoingChange,
+                    propagationContext = processingContext,
+                )
+            }
+
+            is Transactions.CommitmentContext -> null
         }
+
     }
 
     override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -90,12 +83,12 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> = when (val foundSortedElements = elementBySortKey) {
         // Inactive vertex
         null -> {
             val sourceContentView = sourceVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = processingContext,
             )
 
             sourceContentView.sortedBy { it.sortKey }.map { it.value }
@@ -106,35 +99,41 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     }
 
     private fun buildChange(
-        sourceOngoingChange: CollectionChange<SortableValue<ElementT, SortKeyT>>,
+        sourceOngoingChange: TrackedGenericCollectionVertex.CollectionChange<SortableValue<ElementT, SortKeyT>>,
+        propagationContext: Transactions.PropagationContext,
     ): ListChange<ElementT> {
-        val elementBySortKey = this.elementBySortKey ?: throw IllegalStateException("Vertex doesn't seem to be active")
+        val elementBySortKey =
+            this.elementBySortKey ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changeBuilder = ChangeBuilder()
 
-        sourceOngoingChange.addedElements.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
-            val addedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
+        val oldContentView = sourceVertex.getOldContentView(
+            processingContext = propagationContext,
+        )
 
-            if (addedKeyRankResult.kind == RankKind.Existing) {
-                throw IllegalStateException("Added element with duplicate sort key found in current content")
-            }
+        val abolishedContentView = sourceOngoingChange.getAbolishedContentView(
+            oldContentView = oldContentView,
+        )
 
-            changeBuilder.addAddition(
-                predictedIndex = addedKeyRankResult.rank,
-                sortKey = addedSortableElement.sortKey,
-                element = addedSortableElement.value,
-            )
-        }
+        abolishedContentView.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
+            val abolishedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
 
-        sourceOngoingChange.removedElements.forEach { removedSortableElement: SortableValue<ElementT, SortKeyT> ->
-            val removedKeyRankResult = elementBySortKey.findKeyRank(removedSortableElement.sortKey)
-
-            if (removedKeyRankResult.kind == RankKind.Potential) {
+            if (abolishedKeyRankResult.kind == RankKind.Potential) {
                 throw IllegalStateException("Removed element with non-existing sort key found in current content")
             }
 
-            changeBuilder.addRemoval(
-                removedIndex = removedKeyRankResult.rank,
+            changeBuilder.abolish(
+                abolishedIndex = abolishedKeyRankResult.rank,
+            )
+        }
+
+        sourceOngoingChange.introducedContentView.forEach { addedSortableElement: SortableValue<ElementT, SortKeyT> ->
+            val introducedKeyRankResult = elementBySortKey.findKeyRank(addedSortableElement.sortKey)
+
+            changeBuilder.introduce(
+                predictedIndex = introducedKeyRankResult.rank,
+                sortKey = addedSortableElement.sortKey,
+                element = addedSortableElement.value,
             )
         }
 
@@ -144,13 +143,13 @@ class SortedUniquelyTrackedListVertex<ElementT, SortKeyT : Comparable<SortKeyT>>
     private inner class ChangeBuilder {
         private val partBuilderByFirstIndexInclusive: MutableSortedMap<Int, PartBuilder> = treeMapOf()
 
-        fun addRemoval(
-            removedIndex: Int,
+        fun abolish(
+            abolishedIndex: Int,
         ) {
-            getOrCreatePartBuilderForIndex(removedIndex).addRemoval()
+            getOrCreatePartBuilderForIndex(abolishedIndex).addRemoval()
         }
 
-        fun addAddition(
+        fun introduce(
             predictedIndex: Int,
             sortKey: SortKeyT,
             element: ElementT,

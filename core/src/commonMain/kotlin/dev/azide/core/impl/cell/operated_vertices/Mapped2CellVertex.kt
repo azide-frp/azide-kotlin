@@ -1,9 +1,8 @@
 package dev.azide.core.impl.cell.operated_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.registerBoundListener
@@ -13,39 +12,37 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
     private val sourceVertex2: CellVertex<ValueT2>,
     private val transform: (ValueT1, ValueT2) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
-    cacheType = CacheType.Momentary,
 ), BoundListener {
     private var upstreamListenerHandle1: ListenerHandle? = null
     private var upstreamListenerHandle2: ListenerHandle? = null
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
-    ): CellVertex.Update<TransformedValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamListenerHandle1 != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         if (upstreamListenerHandle2 != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         this.upstreamListenerHandle1 = sourceVertex1.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         this.upstreamListenerHandle2 = sourceVertex2.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
-        )
-
-        return buildTransformedUpdate(
-            propagationContext = propagationContext,
         )
     }
+
+    override fun buildInitialUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<TransformedValueT>? = buildTransformedUpdate(
+        propagationContext = propagationContext,
+    )
 
     override fun deactivate() {
         // Unregister each listener if the respective source vertex is warm and actually gave us a handle
@@ -105,7 +102,7 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
 
         val newSourceValue1 = when (sourceOngoingUpdate1) {
             null -> sourceVertex1.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             else -> sourceOngoingUpdate1.updatedValue
@@ -113,7 +110,7 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
 
         val newSourceValue2 = when (sourceOngoingUpdate2) {
             null -> sourceVertex2.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             else -> sourceOngoingUpdate2.updatedValue
@@ -128,9 +125,9 @@ class Mapped2CellVertex<ValueT1, ValueT2, TransformedValueT>(
     }
 
     override fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedValueT = transform(
-        sourceVertex1.getOldValue(propagationContext),
-        sourceVertex2.getOldValue(propagationContext),
+        sourceVertex1.getOldValue(processingContext),
+        sourceVertex2.getOldValue(processingContext),
     )
 }

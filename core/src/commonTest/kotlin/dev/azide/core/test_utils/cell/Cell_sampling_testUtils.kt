@@ -6,7 +6,7 @@ import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
 data object Cell_sampling_testUtils {
-    fun <ValueT> executeSamplingTransaction(
+    fun <ValueT> testPassiveSampling(
         subjectCell: Cell<ValueT>,
         inputStimulation: TestStimulation? = null,
         expectedSubjectValue: ExpectedCellValue<ValueT>,

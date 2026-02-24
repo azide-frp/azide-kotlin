@@ -1,23 +1,20 @@
 package dev.azide.core.impl.event_stream.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 
 abstract class AbstractSimpleStatelessEventStreamVertex<EventT> : AbstractStatelessEventStreamVertex<EventT>() {
     final override fun activateOnline(
         propagationContext: Transactions.PropagationContext,
     ): EventStreamVertex.Emission<EventT>? = activate(
-        propagationContext = propagationContext,
-        mode = Vertex.ActivationMode.Online,
+        processingContext = propagationContext,
     )
 
     final override fun activateOffline(
-        propagationContext: Transactions.PropagationContext,
+        commitmentContext: Transactions.CommitmentContext,
     ) {
         val computedEmission = activate(
-            propagationContext = propagationContext,
-            mode = Vertex.ActivationMode.Offline,
+            processingContext = commitmentContext,
         )
 
         if (computedEmission != null) {
@@ -26,7 +23,6 @@ abstract class AbstractSimpleStatelessEventStreamVertex<EventT> : AbstractStatel
     }
 
     abstract fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<EventT>?
 }

@@ -1,18 +1,15 @@
 package dev.azide.core.collections.reactive_list
 
 import dev.azide.core.collections.ReactiveList
-import dev.azide.core.map
-import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
-import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_sampling_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.cell.updating
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_reaction_testUtils
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveList_sampling_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
@@ -38,14 +35,14 @@ class ReactiveList_ofSingle_tests {
         Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceCell = TestInputCell(
             initialValue = 10,
         )
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_sampling_testUtils.executeSamplingTransaction(
+        ReactiveList_sampling_testUtils.testPassiveSampling(
             subjectReactiveList = subjectReactiveList,
             expectedSubjectContent = ReactiveList_expectations_testUtils.expectStableContent(
                 expectedContent = listOf(10),
@@ -71,7 +68,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.updating(
                 tag = SourceCellTag,
@@ -102,7 +99,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = SourceCellTag,
@@ -133,7 +130,7 @@ class ReactiveList_ofSingle_tests {
 
         val subjectReactiveList = ReactiveList.of(sourceCell)
 
-        ReactiveList_reaction_testUtils.executeReactionTransaction(
+        ReactiveList_reaction_testUtils.testReaction(
             subjectReactiveList,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = SourceCellTag,

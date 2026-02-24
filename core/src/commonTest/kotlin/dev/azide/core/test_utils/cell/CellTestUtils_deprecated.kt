@@ -1,11 +1,11 @@
 package dev.azide.core.test_utils.cell
 
 import dev.azide.core.Cell
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex.ListenerStatus
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerHandle
-import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.registerBoundListenerOnline
@@ -15,7 +15,8 @@ import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-internal object CellTestUtils {
+@Suppress("ClassName")
+internal object CellTestUtils_deprecated {
     private object NoopListener : Listener {
         override fun handle(
             propagationContext: Transactions.PropagationContext,
@@ -104,7 +105,7 @@ internal object CellTestUtils {
 
             val preSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
             }
 
@@ -124,7 +125,7 @@ internal object CellTestUtils {
                     )
 
                     subjectVertex.getOldValue(
-                        propagationContext = propagationContext,
+                        processingContext = propagationContext,
                     )
                 },
             )
@@ -146,7 +147,7 @@ internal object CellTestUtils {
 
             val postSampledValue = Transactions.executeWithResult { propagationContext ->
                 subjectVertex.getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
             }
 
@@ -205,7 +206,7 @@ internal object CellTestUtils {
 
         val passivelySampledValue = Transactions.executeWithResult { propagationContext ->
             subjectVertex.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
         }
 
@@ -222,7 +223,7 @@ internal object CellTestUtils {
             )
 
             val sampledValue = subjectVertex.getOldValue(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             subjectVertex.unregisterListener(

@@ -3,9 +3,7 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.collections.ReactiveBag
 import dev.azide.core.collections.sampleTaggedElementsExternally
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
-import dev.azide.core.impl.collections.reactive_bag.expanded
 import dev.azide.core.impl.collections.reactive_bag.mapKeepingTags
-import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
 import dev.azide.core.impl.collections.reactive_bag.toMutableBag
 import dev.azide.core.sampleExternally
 import dev.azide.core.test_utils.TestStimulation
@@ -16,8 +14,9 @@ import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectatio
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ReactiveBagObservationTrait
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
+import dev.azide.core.test_utils.generic.TestSubjectHealthChecker
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils.TestSubjectHealthCheckStrategy
 
 @Suppress("ClassName")
 object ReactiveBag_fuse_testUtils {
@@ -49,7 +48,7 @@ object ReactiveBag_fuse_testUtils {
 
         override fun prepareHealthCheck(
             subject: ReactiveBag<String>,
-        ): generic_reaction_testUtils.TestSubjectHealthChecker.HealthCheckDescription<ReactiveBag<String>, TaggedBagChange<String>> {
+        ): TestSubjectHealthChecker.HealthCheckDescription<ReactiveBag<String>, TaggedBagChange<String>> {
             val preHealthCheckInputCells = inputReactiveBag.sampleTaggedElementsExternally()
 
             val newInputCellByTag: Map<ReactiveBag.Tag, TestInputCell<String>> = mapOf(
@@ -82,7 +81,7 @@ object ReactiveBag_fuse_testUtils {
 
             // Stimulate all input cells (including the ones not exposed in the subject bag anymore) to prove the health
             // of the input cells observation
-            val inputCellsStimulation = TestStimulation.combine(
+            val inputCellsStimulation = TestStimulation.combineInProvidedOrder(
                 inputCellByLabel.values.map { inputCell ->
                     val preHealthCheckValue = inputCell.sampleExternally()
 
@@ -90,8 +89,8 @@ object ReactiveBag_fuse_testUtils {
                 },
             )
 
-            return generic_reaction_testUtils.TestSubjectHealthChecker.HealthCheckDescription(
-                inputStimulation = TestStimulation.combine(
+            return TestSubjectHealthChecker.HealthCheckDescription(
+                inputStimulation = TestStimulation.combineInProvidedOrder(
                     inputCellsStimulation,
                     inputReactiveBag.change(
                         // Add some new cells to prove the health of the subject bag observation
@@ -110,7 +109,7 @@ object ReactiveBag_fuse_testUtils {
         }
     }
 
-    fun executeReactionTransaction(
+    fun testReaction(
         inputReactiveBag: TestInputReactiveBag<TestInputCell<String>>,
         inputCellByLabel: Map<String, TestInputCell<String>>,
         inputStimulationPlan: generic_reaction_testUtils.InputStimulationPlan,
@@ -118,7 +117,7 @@ object ReactiveBag_fuse_testUtils {
         expectedSubjectContentTransition: ExpectedReactiveBagContentTransition<String>,
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
-        generic_reaction_testUtils.executeReactionTransaction(
+        generic_reaction_testUtils.testReaction(
             trait = ReactiveBagObservationTrait(),
             subject = subjectReactiveBag,
             inputStimulationPlan = inputStimulationPlan,

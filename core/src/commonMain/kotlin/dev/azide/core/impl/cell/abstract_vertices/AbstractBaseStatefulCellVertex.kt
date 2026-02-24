@@ -8,7 +8,6 @@ abstract class AbstractBaseStatefulCellVertex<ValueT>(
 ) : AbstractCellVertex<ValueT>() {
     private var _stableValue: ValueT = initialValue
 
-
     final override fun persist(
         ongoingUpdate: CellVertex.Update<ValueT>?,
     ) {
@@ -18,6 +17,6 @@ abstract class AbstractBaseStatefulCellVertex<ValueT>(
     }
 
     final override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT = _stableValue
 }

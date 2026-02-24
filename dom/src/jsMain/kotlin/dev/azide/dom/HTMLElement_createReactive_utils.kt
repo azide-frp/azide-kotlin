@@ -9,7 +9,6 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.Node
-import org.w3c.dom.Text
 
 fun Document.creatingReactiveHtmlButtonElement(
     children: ReactiveList<Node>? = null,

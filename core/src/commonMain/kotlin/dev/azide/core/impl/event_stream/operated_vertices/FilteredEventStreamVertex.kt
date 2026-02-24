@@ -1,9 +1,8 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
@@ -54,17 +53,15 @@ class FilteredEventStreamVertex<EventT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<EventT>? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingEmission?.takeIf {
@@ -74,7 +71,7 @@ class FilteredEventStreamVertex<EventT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = subscriptionHandle,

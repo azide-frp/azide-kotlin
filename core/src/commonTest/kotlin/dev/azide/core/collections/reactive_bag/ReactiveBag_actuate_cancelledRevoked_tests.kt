@@ -91,7 +91,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect2StartRecord = targetEffect2.getAndResetSingleStartRecord()
         val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
@@ -150,7 +150,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -230,7 +230,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
         val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -313,7 +313,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect2b = TestTargetEffect.pure(result = 21)
         val targetEffect3b = TestTargetEffect.pure(result = 31)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -414,7 +414,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect6 = TestTargetEffect.pure(result = 60)
         val targetEffect7 = TestTargetEffect.pure(result = 70)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.changing(
@@ -510,7 +510,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect4 = TestTargetEffect.pure(result = 40)
         val targetEffect5 = TestTargetEffect.pure(result = 50)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -583,7 +583,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
         val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -658,7 +658,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect2b = TestTargetEffect.pure(result = 21)
         val targetEffect3b = TestTargetEffect.pure(result = 31)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -751,7 +751,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect6 = TestTargetEffect.pure(result = 60)
         val targetEffect7 = TestTargetEffect.pure(result = 70)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
@@ -843,7 +843,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect6 = TestTargetEffect.pure(result = 60)
         val targetEffect7 = TestTargetEffect.pure(result = 70)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -935,7 +935,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3StartRecord = targetEffect3.getAndResetSingleStartRecord()
         val targetEffect4StartRecord = targetEffect4.getAndResetSingleStartRecord()
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -1025,7 +1025,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect3b = TestTargetEffect.pure(result = 31)
         val targetEffect4b = TestTargetEffect.pure(result = 41)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
@@ -1137,7 +1137,7 @@ class ReactiveBag_actuate_cancelledRevoked_tests {
         val targetEffect7a = TestTargetEffect.pure(result = 70)
         val targetEffect7b = TestTargetEffect.pure(result = 71)
 
-        Effect_ReactiveBag_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_ReactiveBag_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceReactiveBag.correctingChange(

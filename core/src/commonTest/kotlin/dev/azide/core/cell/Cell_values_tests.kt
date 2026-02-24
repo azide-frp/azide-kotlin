@@ -3,11 +3,12 @@ package dev.azide.core.cell
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.values
 import kotlin.test.Test
 
 @Suppress("ClassName")
+// TODO: Switch to new-style unit test suite
 class Cell_values_tests {
     @Test
     fun test_spawn() {
@@ -15,7 +16,7 @@ class Cell_values_tests {
             initialValue = 10,
         )
 
-        EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
+        EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
             expectedEmittedEvent = 10,
             spawn = sourceCell.values,
         )
@@ -27,7 +28,7 @@ class Cell_values_tests {
             initialValue = 10,
         )
 
-        EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
+        EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
             inputStimulation = sourceCell.update(newValue = 11),
             expectedEmittedEvent = 11,
             spawn = sourceCell.values,
@@ -44,7 +45,7 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceCell.update(newValue = 20),
             expectedEmittedEvent = 20,
@@ -61,9 +62,9 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell.update(newValue = 20),
                 sourceCell.revokeUpdate(),
             ),
@@ -80,9 +81,9 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell.update(newValue = 20),
                 sourceCell.correctUpdate(correctedNewValue = 21),
             ),

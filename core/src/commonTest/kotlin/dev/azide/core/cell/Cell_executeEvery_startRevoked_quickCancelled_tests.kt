@@ -42,7 +42,7 @@ class Cell_executeEvery_startRevoked_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_Cell_startRevoked_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetActionRecorder1.expectIsNotExecuted(),
@@ -76,7 +76,7 @@ class Cell_executeEvery_startRevoked_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_Cell_startRevoked_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
@@ -114,7 +114,7 @@ class Cell_executeEvery_startRevoked_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_Cell_startRevoked_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
@@ -153,7 +153,7 @@ class Cell_executeEvery_startRevoked_quickCancelled_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.executeEvery()
 
-        Effect_Cell_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_Cell_startRevoked_quickCancelled_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,

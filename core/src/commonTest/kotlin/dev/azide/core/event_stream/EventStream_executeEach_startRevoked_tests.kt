@@ -43,7 +43,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.None,
         )
@@ -67,7 +67,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceActionEventStreamTag,
@@ -95,7 +95,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceActionEventStreamTag,
@@ -124,7 +124,7 @@ class EventStream_executeEach_startRevoked_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_startRevoked_testUtils.executeStartTransaction(
+        Effect_EventStream_startRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceActionEventStreamTag,

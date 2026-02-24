@@ -2,10 +2,9 @@ package dev.azide.core.impl.collections.reactive_bag.operated_vertices
 
 import dev.azide.core.Cell
 import dev.azide.core.collections.ReactiveBag.Tag
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
@@ -14,7 +13,6 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedTaggedBagVerte
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedTaggedBagVertex
 import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.impl.registerBoundListenerOnline
-import kotlin.collections.component2
 
 class FusedTrackedTaggedBagVertex<ElementT>(
     private val outerSourceBagVertex: TrackedTaggedBagVertex<Cell<ElementT>>,
@@ -23,26 +21,26 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         private val parent: FusedTrackedTaggedBagVertex<ElementT>,
         private val tag: Tag,
         initialSourceCellVertex: CellVertex<ElementT>,
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ) : BoundListener {
         companion object {
             fun <ElementT> attach(
                 parent: FusedTrackedTaggedBagVertex<ElementT>,
                 tag: Tag,
                 initialSourceCellVertex: CellVertex<ElementT>,
-                propagationContext: Transactions.PropagationContext,
+                processingContext: Transactions.ProcessingContext,
             ): InnerCellListener<ElementT> = InnerCellListener(
                 parent = parent,
                 tag = tag,
                 initialSourceCellVertex = initialSourceCellVertex,
-                propagationContext = propagationContext,
+                processingContext = processingContext,
             )
         }
 
         private var sourceCellVertex: CellVertex<ElementT> = initialSourceCellVertex
 
-        private var listenerHandle: ListenerHandle = initialSourceCellVertex.registerBoundListenerOnline(
-            propagationContext = propagationContext,
+        private var listenerHandle: ListenerHandle = initialSourceCellVertex.registerBoundListener(
+            processingContext = processingContext,
             listener = this,
         )
 
@@ -53,10 +51,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
             propagationContext: Transactions.PropagationContext,
         ) {
             val stableInnerSourceCellVertexByTag = parent.stableInnerSourceCellVertexByTag
-                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             val updatedUntouchedStableInnerCellVertexTags = parent.updatedUntouchedStableInnerCellVertexTags
-                    ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             val changedInnerCellVertexByTag = parent.changedInnerCellVertexByTag
 
@@ -83,23 +81,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 propagationContext = propagationContext,
             )
 
-            when (builtChange) {
-                null -> {
-                    if (parent.ongoingChange != null) {
-                        parent.exposeChangeNotifyingListeners(
-                            propagationContext = propagationContext,
-                            change = null,
-                        )
-                    }
-                }
-
-                else -> {
-                    parent.exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = builtChange,
-                    )
-                }
-            }
+            parent.exposeChangeNotifyingListeners(
+                propagationContext = propagationContext,
+                change = builtChange,
+            )
         }
 
         fun reattach(
@@ -206,17 +191,18 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
     ) {
         val stableInnerSourceCellVertexByTag =
-            this.stableInnerSourceCellVertexByTag ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.stableInnerSourceCellVertexByTag
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val updatedUntouchedStableInnerCellVertexTags = this.updatedUntouchedStableInnerCellVertexTags
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
 
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
 
         val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val sourceBagOngoingChange = outerSourceBagVertex.ongoingChange
 
@@ -327,7 +313,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 parent = this,
                 tag = previouslyRemovedTag,
                 initialSourceCellVertex = previouslyRemovedCellVertex,
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
 
             val previousListener = upstreamNewInnerCellListenerByTag.put(
@@ -378,7 +364,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                     parent = this,
                                     tag = newlyChangedTag,
                                     initialSourceCellVertex = addedInnerCellVertex,
-                                    propagationContext = propagationContext,
+                                    processingContext = propagationContext,
                                 )
 
                                 val previousListener = upstreamNewInnerCellListenerByTag.put(
@@ -404,7 +390,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                                             parent = this,
                                             tag = newlyChangedTag,
                                             initialSourceCellVertex = replacingInnerCellVertex,
-                                            propagationContext = propagationContext,
+                                            processingContext = propagationContext,
                                         )
                                     }
 
@@ -555,7 +541,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     parent = this,
                     tag = previouslyRemovedTag,
                     initialSourceCellVertex = previouslyRemovedCellVertex,
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
 
                 val previousListener = upstreamNewInnerCellListenerByTag.put(
@@ -581,22 +567,20 @@ class FusedTrackedTaggedBagVertex<ElementT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): TaggedBagChange<ElementT>? {
         if (upstreamSourceListenerHandle != null || upstreamNewInnerCellListenerByTag != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         // Register listener on source bag vertex
         this.upstreamSourceListenerHandle = outerSourceBagVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         val initialTaggedInnerCells = outerSourceBagVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         val initialStableInnerSourceCellVertexByTag: MutableMap<Tag, CellVertex<ElementT>> =
@@ -617,7 +601,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                             parent = this,
                             tag = stableTag,
                             initialSourceCellVertex = initialStableInnerCellVertex,
-                            propagationContext = propagationContext,
+                            processingContext = processingContext,
                         )
 
                         stableTag to initialCellListener
@@ -638,9 +622,10 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                     // None of the inner cells have an ongoing update - no fused change
                     initialStableInnerSourceCellUpdatedValueByTag.isEmpty() -> null
 
-                    // Some inner cells have ongoing updates - build fused change
+                    // Some inner cells have ongoing updates - build fused change (all are replacements since tags already exist)
                     else -> TaggedBagChange(
-                        changedElementByTag = initialStableInnerSourceCellUpdatedValueByTag,
+                        addedElementByTag = emptyMap(),
+                        replacedElementByTag = initialStableInnerSourceCellUpdatedValueByTag,
                         removedTags = emptySet(),
                     )
                 }
@@ -671,7 +656,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         parent = this,
                         tag = stableTag,
                         initialSourceCellVertex = initialStableInnerCellVertex,
-                        propagationContext = propagationContext,
+                        processingContext = processingContext,
                     )
 
                     stableTag to initialCellListener
@@ -699,7 +684,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                         parent = this,
                         tag = changedTag,
                         initialSourceCellVertex = initialChangedInnerCellVertex,
-                        propagationContext = propagationContext,
+                        processingContext = processingContext,
                     )
 
                     changedTag to initialChangedCellListener
@@ -708,7 +693,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 val initialChangedInnerSourceCellNewValueByTag: Map<Tag, ElementT> =
                     initialChangedInnerCellVertexByTag.entries.associate { (changedTag, changedInnerCellVertex) ->
                         changedTag to changedInnerCellVertex.getNewValue(
-                            propagationContext = propagationContext,
+                            processingContext = processingContext,
                         )
                     }
 
@@ -718,8 +703,22 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
                 this.removedInnerCellVertexTags = initialRemovedInnerCellVertexTags
 
+                // Split changed cells into added (tag not in stable map) vs replaced (tag already existed)
+                val initialAddedInnerSourceCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+                val initialReplacedInnerSourceCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+
+                for ((changedTag, newValue) in initialChangedInnerSourceCellNewValueByTag) {
+                    if (changedTag in initialStableInnerSourceCellVertexByTag) {
+                        initialReplacedInnerSourceCellNewValueByTag[changedTag] = newValue
+                    } else {
+                        initialAddedInnerSourceCellNewValueByTag[changedTag] = newValue
+                    }
+                }
+
                 TaggedBagChange(
-                    changedElementByTag = initialChangedInnerSourceCellNewValueByTag + initialUntouchedInnerSourceCellUpdatedValueByTag,
+                    // Untouched stable cell updates are replacements (the tags already exist in stable map)
+                    addedElementByTag = initialAddedInnerSourceCellNewValueByTag,
+                    replacedElementByTag = initialReplacedInnerSourceCellNewValueByTag + initialUntouchedInnerSourceCellUpdatedValueByTag,
                     removedTags = initialRemovedInnerCellVertexTags,
                 )
             }
@@ -728,12 +727,13 @@ class FusedTrackedTaggedBagVertex<ElementT>(
 
     override fun deactivate() {
         val upstreamSourceListenerHandle =
-            this.upstreamSourceListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamSourceListenerHandle
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         this.upstreamSourceListenerHandle = null
 
         val upstreamNewInnerCellListenerByTag = this.upstreamNewInnerCellListenerByTag
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         this.upstreamNewInnerCellListenerByTag = null
 
@@ -756,15 +756,15 @@ class FusedTrackedTaggedBagVertex<ElementT>(
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TaggedBag<ElementT> = when (val stableInnerSourceCellVertexByTag = this.stableInnerSourceCellVertexByTag) {
         // Inactive vertex - compute lazily
         null -> {
-            val sourceContent = outerSourceBagVertex.getOldContentView(propagationContext)
+            val sourceContent = outerSourceBagVertex.getOldContentView(processingContext)
 
             LazyFusedTaggedBag(
                 sourceBag = sourceContent,
-                propagationContext = propagationContext,
+                processingContext = processingContext,
             )
         }
 
@@ -772,7 +772,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         else -> {
             ActiveFusedTaggedBag(
                 stableCellVertexByTag = stableInnerSourceCellVertexByTag,
-                propagationContext = propagationContext,
+                processingContext = processingContext,
             )
         }
     }
@@ -781,14 +781,15 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         propagationContext: Transactions.PropagationContext,
     ): TaggedBagChange<ElementT>? {
         val updatedUntouchedStableInnerCellVertexTags = this.updatedUntouchedStableInnerCellVertexTags
-            ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
         val removedInnerCellVertexTags = this.removedInnerCellVertexTags
+        val stableInnerSourceCellVertexByTag = this.stableInnerSourceCellVertexByTag
 
         val untouchedInnerCellUpdatedValueByTag =
             updatedUntouchedStableInnerCellVertexTags.asSequence().mapNotNull { updatedStableTag ->
-                val stableCellVertex = this.stableInnerSourceCellVertexByTag?.get(updatedStableTag)
+                val stableCellVertex = stableInnerSourceCellVertexByTag?.get(updatedStableTag)
                     ?: throw IllegalStateException("Stable inner cell vertex not found for tag: $updatedStableTag")
 
                 // Filter out vertices without an ongoing update, which can happen in a case when a single cell vertex
@@ -798,24 +799,31 @@ class FusedTrackedTaggedBagVertex<ElementT>(
                 updatedStableTag to ongoingUpdate.updatedValue
             }.toMap()
 
-        val changedInnerCellNewValueByTag = when (changedInnerCellVertexByTag) {
-            null -> emptyMap()
-            else -> changedInnerCellVertexByTag.entries.associate { (changedTag, changedInnerCellVertex) ->
-                changedTag to changedInnerCellVertex.getNewValue(propagationContext = propagationContext)
+        // Split changed cells into added (tag not in stable map) vs replaced (tag already existed)
+        val addedInnerCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+        val replacedInnerCellNewValueByTag = mutableMapOf<Tag, ElementT>()
+
+        if (changedInnerCellVertexByTag != null) {
+            for ((changedTag, changedInnerCellVertex) in changedInnerCellVertexByTag) {
+                val newValue = changedInnerCellVertex.getNewValue(processingContext = propagationContext)
+
+                if (stableInnerSourceCellVertexByTag != null && changedTag in stableInnerSourceCellVertexByTag) {
+                    replacedInnerCellNewValueByTag[changedTag] = newValue
+                } else {
+                    addedInnerCellNewValueByTag[changedTag] = newValue
+                }
             }
         }
 
-        val changedElementByTag = changedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag
-
         return TaggedBagChange.of(
-            changedElementByTag = changedElementByTag,
+            addedElementByTag = addedInnerCellNewValueByTag,
+            // Untouched stable cell updates are replacements (the tags already exist in stable map)
+            replacedElementByTag = replacedInnerCellNewValueByTag + untouchedInnerCellUpdatedValueByTag,
             removedTags = removedInnerCellVertexTags ?: emptySet(),
         )
     }
 
-    override fun commit(
-        ongoingChange: TaggedBagChange<ElementT>?,
-    ) {
+    override fun transit() {
         val stableInnerSourceCellVertexByTag = this.stableInnerSourceCellVertexByTag ?: return
 
         val changedInnerCellVertexByTag = this.changedInnerCellVertexByTag
@@ -843,26 +851,26 @@ class FusedTrackedTaggedBagVertex<ElementT>(
      */
     private inner class LazyFusedTaggedBag(
         private val sourceBag: TaggedBag<Cell<ElementT>>,
-        private val propagationContext: Transactions.PropagationContext,
+        private val processingContext: Transactions.ProcessingContext,
     ) : TaggedBag<ElementT> {
         override val size: Int
             get() = sourceBag.size
 
         override val elementByTag: Map<Tag, ElementT>
             get() = sourceBag.elementByTag.mapValues { (_, cell) ->
-                cell.vertex.getOldValue(propagationContext)
+                cell.vertex.getOldValue(processingContext)
             }
 
         override fun getByTag(
             tag: Tag,
-        ): ElementT? = sourceBag.getByTag(tag)?.vertex?.getOldValue(propagationContext)
+        ): ElementT? = sourceBag.getByTag(tag)?.vertex?.getOldValue(processingContext)
 
         override fun containsTag(tag: Tag): Boolean = sourceBag.containsTag(tag)
 
         override fun isEmpty(): Boolean = sourceBag.isEmpty()
 
         override fun iterator(): Iterator<ElementT> = sourceBag.elementByTag.values.map { cell ->
-            cell.vertex.getOldValue(propagationContext)
+            cell.vertex.getOldValue(processingContext)
         }.iterator()
 
         override fun containsAll(
@@ -882,7 +890,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
      */
     private inner class ActiveFusedTaggedBag(
         private val stableCellVertexByTag: Map<Tag, CellVertex<ElementT>>,
-        private val propagationContext: Transactions.PropagationContext,
+        private val processingContext: Transactions.ProcessingContext,
     ) : TaggedBag<ElementT> {
         override val size: Int
             get() = stableCellVertexByTag.size
@@ -890,12 +898,12 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         override val elementByTag: Map<Tag, ElementT>
             get() = stableCellVertexByTag.mapValues { (_, stableCellVertex) ->
                 stableCellVertex.getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = processingContext,
                 )
             }
 
         override fun getByTag(tag: Tag): ElementT? = stableCellVertexByTag[tag]?.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         override fun containsTag(tag: Tag): Boolean = stableCellVertexByTag.containsKey(tag)
@@ -903,7 +911,7 @@ class FusedTrackedTaggedBagVertex<ElementT>(
         override fun isEmpty(): Boolean = stableCellVertexByTag.isEmpty()
 
         override fun iterator(): Iterator<ElementT> = stableCellVertexByTag.values.map { stableCellVertex ->
-            stableCellVertex.getOldValue(propagationContext)
+            stableCellVertex.getOldValue(processingContext)
         }.iterator()
 
         override fun containsAll(elements: Collection<ElementT>): Boolean {

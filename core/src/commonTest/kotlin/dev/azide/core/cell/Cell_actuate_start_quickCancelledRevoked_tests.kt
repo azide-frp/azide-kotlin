@@ -71,7 +71,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -117,7 +117,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.updating(
@@ -172,7 +172,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -227,7 +227,7 @@ class Cell_actuate_start_quickCancelledRevoked_tests {
 
         val subjectEffect: Effect<Cell<Int>> = sourceCell.actuate()
 
-        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.executeStartTransaction(
+        val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

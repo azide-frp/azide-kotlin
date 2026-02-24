@@ -6,13 +6,13 @@ import dev.azide.core.test_utils.generic.generic_reaction_nonPerceived_testUtils
 
 @Suppress("ClassName")
 data object Cell_reaction_nonPerceived_testUtils {
-    fun <ValueT> executeReactionTransaction(
+    fun <ValueT> testReaction(
         subjectCell: Cell<ValueT>,
         inputStimulation: TestStimulation,
         expectedOldSubjectValue: ExpectedCellValue<ValueT>,
         expectedNewSubjectValue: ExpectedCellValue<ValueT>,
     ) {
-        generic_reaction_nonPerceived_testUtils.executeReactionTransaction(
+        generic_reaction_nonPerceived_testUtils.testReaction(
             subject = subjectCell,
             inputStimulation = inputStimulation,
             expectedOldState = expectedOldSubjectValue,

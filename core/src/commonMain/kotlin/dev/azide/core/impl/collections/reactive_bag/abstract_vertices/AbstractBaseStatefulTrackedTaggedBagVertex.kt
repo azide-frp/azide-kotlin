@@ -1,6 +1,6 @@
 package dev.azide.core.impl.collections.reactive_bag.abstract_vertices
 
-import dev.azide.core.impl.Transactions.PropagationContext
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.MutableTaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
@@ -12,13 +12,13 @@ abstract class AbstractBaseStatefulTrackedTaggedBagVertex<ElementT>(
 ) : AbstractTrackedTaggedBagVertex<ElementT>() {
     private var _stableTaggedElements: MutableTaggedBag<ElementT> = initialTaggedElements
 
-    final override fun commit(
+    final override fun persist(
         ongoingChange: TaggedBagChange<ElementT>?,
     ) {
         ongoingChange?.applyTo(_stableTaggedElements)
     }
 
     final override fun getOldContentView(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TaggedBag<ElementT> = _stableTaggedElements
 }

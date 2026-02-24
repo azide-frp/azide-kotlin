@@ -1,14 +1,15 @@
 package dev.azide.core.test_utils.generic
 
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.registerBoundListenerOnline
+import dev.azide.core.impl.enqueueCallbackForCommitment
+import dev.azide.core.impl.registerBoundListener
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 
 class TestSubjectObserver<in SubjectT, out NotificationT : Any> private constructor(
     private val trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
     private val subjectLazy: Lazy<SubjectT>,
-) : Vertex.BoundListener {
+) : ListenableVertex.BoundListener {
     companion object {
         fun <SubjectT, NotificationT : Any> prepare(
             trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
@@ -35,7 +36,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
             subjectLazy = lazyOf(subject),
         ).also {
             it.observe(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
         }
 
@@ -54,7 +55,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         }
     }
 
-    private var listenerHandle: Vertex.ListenerHandle? = null
+    private var listenerHandle: ListenableVertex.ListenerHandle? = null
 
     private var observedNotifications: MutableList<NotificationT?> = mutableListOf()
 
@@ -70,7 +71,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         )
 
         ensureEnqueuedForCommitment(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
     }
 
@@ -83,10 +84,10 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
     }
 
     private fun ensureEnqueuedForCommitment(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ) {
         if (!isEnqueuedForCommitment) {
-            propagationContext.enqueueCallbackForCommitment {
+            processingContext.enqueueCallbackForCommitment {
                 observedNotifications.clear()
 
                 isEnqueuedForCommitment = false
@@ -97,7 +98,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
     }
 
     fun observe(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ) {
         if (listenerHandle != null) {
             throw IllegalStateException("The subject is already being observed")
@@ -105,8 +106,8 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
 
         val subject = subjectLazy.value
 
-        listenerHandle = trait.extractVertex(subject).registerBoundListenerOnline(
-            propagationContext = propagationContext,
+        listenerHandle = trait.extractVertex(subject).registerBoundListener(
+            processingContext = processingContext,
             listener = this,
         )
 
@@ -115,7 +116,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
         ).toMutableList()
 
         ensureEnqueuedForCommitment(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
     }
 
@@ -124,7 +125,7 @@ class TestSubjectObserver<in SubjectT, out NotificationT : Any> private construc
     ) {
         wrapUpContext.enqueueForWrapUp { propagationContext ->
             this.observe(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             )
         }
     }

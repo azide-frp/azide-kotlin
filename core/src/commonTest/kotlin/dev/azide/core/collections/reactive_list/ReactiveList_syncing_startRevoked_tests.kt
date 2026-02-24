@@ -44,7 +44,7 @@ class ReactiveList_syncing_startRevoked_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.expectUnmodified(
                 externalList = targetMutableList,
@@ -84,7 +84,7 @@ class ReactiveList_syncing_startRevoked_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.changing(
                 tag = SourceReactiveListTag,
@@ -133,7 +133,7 @@ class ReactiveList_syncing_startRevoked_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.revokingChange(
                 tag = SourceReactiveListTag,
@@ -182,7 +182,7 @@ class ReactiveList_syncing_startRevoked_tests {
             externalMutableList = targetMutableList,
         )
 
-        Schedule_startRevoked_testUtils.executeStartTransaction(
+        Schedule_startRevoked_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceReactiveList.correctingChange(
                 tag = SourceReactiveListTag,

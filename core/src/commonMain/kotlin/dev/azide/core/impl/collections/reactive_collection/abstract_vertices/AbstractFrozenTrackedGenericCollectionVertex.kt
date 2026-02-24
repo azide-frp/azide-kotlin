@@ -1,9 +1,8 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
-import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerHandle
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_collection.FrozenTrackedGenericCollectionVertex
 
 abstract class AbstractFrozenTrackedGenericCollectionVertex<out ContentT : Collection<*>> :
@@ -14,9 +13,8 @@ abstract class AbstractFrozenTrackedGenericCollectionVertex<out ContentT : Colle
         get() = 0
 
     final override fun registerListener(
-        propagationContext: PropagationContext,
-        listener: Listener,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
+        listener: Listener
     ): ListenerHandle = NoopListenerHandle
 
     final override fun unregisterListener(

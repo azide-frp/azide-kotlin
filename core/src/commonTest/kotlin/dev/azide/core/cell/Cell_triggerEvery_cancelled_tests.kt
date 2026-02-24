@@ -1,19 +1,19 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Schedule
-import dev.azide.core.triggerEvery
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.cell.updating
-import dev.azide.core.test_utils.schedule.Schedule_cancelled_testUtils
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.schedule.Schedule_cancelled_testUtils
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import dev.azide.core.triggerEvery
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -43,7 +43,7 @@ class Cell_triggerEvery_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             expectedTargetImpact = targetTriggerRecorder1.expectIsNotExecuted(),
         )
@@ -76,7 +76,7 @@ class Cell_triggerEvery_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -116,7 +116,7 @@ class Cell_triggerEvery_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -157,7 +157,7 @@ class Cell_triggerEvery_cancelled_tests {
 
         val subjectOutcome = subjectSchedule.startExternally()
 
-        Schedule_cancelled_testUtils.executeCancelTransaction(
+        Schedule_cancelled_testUtils.testCancel(
             subjectOutcome = subjectOutcome,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,

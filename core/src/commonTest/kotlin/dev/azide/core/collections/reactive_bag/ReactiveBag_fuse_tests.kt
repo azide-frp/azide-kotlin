@@ -3,17 +3,47 @@ package dev.azide.core.collections.reactive_bag
 import dev.azide.core.collections.fuse
 import dev.azide.core.collections.reactive_bag.ReactiveBag_fuse_testUtils.FuseEntryTag
 import dev.azide.core.impl.collections.reactive_bag.taggedBagOf
+import dev.azide.core.test_utils.TestSequentialStimulationSet
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
+import dev.azide.core.test_utils.collections.reactive_list.ReactiveBag_sampling_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
-import dev.azide.core.test_utils.generic.generic_reaction_testUtils.TestSubjectHealthCheckStrategy
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class ReactiveBag_fuse_tests {
+    @Test
+    fun test_passiveSampling() {
+        val initialInputCell1 = TestInputCell(initialValue = "#1a")
+        val initialInputCell2 = TestInputCell(initialValue = "#2")
+        val initialInputCell3 = TestInputCell(initialValue = "#3a")
+
+        val inputReactiveBag = TestInputReactiveBag(
+            initialTaggedElements = taggedBagOf(
+                FuseEntryTag.Tag1 to initialInputCell1,
+                FuseEntryTag.Tag2 to initialInputCell2,
+                FuseEntryTag.Tag3 to initialInputCell3,
+            ),
+        )
+
+        val subjectReactiveBag = inputReactiveBag.fuse()
+
+        ReactiveBag_sampling_testUtils.testPassiveSampling(
+            subjectReactiveBag = subjectReactiveBag,
+            expectedSubjectContent = ReactiveBag_expectations_testUtils.expectStableTaggedContent(
+                expectedTaggedElements = taggedBagOf(
+                    FuseEntryTag.Tag1 to "#1a",
+                    FuseEntryTag.Tag2 to "#2",
+                    FuseEntryTag.Tag3 to "#3a",
+                ),
+            ),
+        )
+    }
+
     @Test
     fun test_initialCellsUpdate_deactivated() {
         test_initialCellsUpdate(
@@ -48,7 +78,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -57,9 +87,11 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    initialInputCell1.update(newValue = "#1b"),
-                    initialInputCell3.update(newValue = "#3b"),
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        initialInputCell1.update(newValue = "#1b"),
+                        initialInputCell3.update(newValue = "#3b"),
+                    ),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -115,7 +147,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -124,9 +156,11 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    initialInputCell1.update(newValue = "#1b"),
-                    initialInputCell3.update(newValue = "#3b"),
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        initialInputCell1.update(newValue = "#1b"),
+                        initialInputCell3.update(newValue = "#3b"),
+                    ),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -185,7 +219,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -258,7 +292,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -330,7 +364,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -340,17 +374,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    addedInputCell1.update(newValue = "+1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to addedInputCell1,
-                                FuseEntryTag.Tag4 to addedInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                addedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to addedInputCell1,
+                                    FuseEntryTag.Tag4 to addedInputCell2,
+                                ),
                             ),
                         ),
+                        addedInputCell1.update(newValue = "+1b"),
+                        addedInputCell2.update(newValue = "+2b"),
                     ),
-                    addedInputCell2.update(newValue = "+2b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -407,7 +443,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -416,15 +452,17 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                addedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        sharedCell.update(newValue = "shared-b"),
                     ),
-                    sharedCell.update(newValue = "shared-b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -460,8 +498,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are added. The bag change is revoked, then one of the added cells revokes
-     * its updates.
+     * The input bag changes. Some tags/cells are added. The bag change is revoked; after the change is revoked,
+     * one of the added cells revokes its updates.
      */
     private fun test_bagChanges_addedCells_bagChangeRevoked_addedCellUpdateRevoked(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -483,7 +521,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -493,19 +531,25 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    addedInputCell1.update(newValue = "+1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            addedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to addedInputCell1,
-                                FuseEntryTag.Tag4 to addedInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            addedInputCell1.update(newValue = "+1b"),
+                            addedInputCell1.revokeUpdate(),
+                        ),
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    addedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to addedInputCell1,
+                                        FuseEntryTag.Tag4 to addedInputCell2,
+                                    ),
+                                ),
                             ),
+                            inputReactiveBag.revokeChange(),
                         ),
                     ),
-                    inputReactiveBag.revokeChange(),
-                    addedInputCell1.revokeUpdate(),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -533,7 +577,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are added. The bag change is revoked, then one of the initial cells updates.
+     * The input bag changes. Some tags/cells are added. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_addedCells_bagChangeRevoked_initialCellUpdate(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -555,7 +600,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -565,7 +610,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -631,7 +676,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -641,7 +686,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -689,6 +734,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags/cells are not part of the change anymore. One of the previously added cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsUnadded_previouslyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -710,7 +760,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -721,7 +771,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -731,6 +781,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The previously added cells updates _after_ the change
                     temporarilyAddedInputCell1.update(newValue = "+1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
@@ -797,7 +848,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -809,7 +860,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -859,6 +910,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags are now added with different cells. One of the previously added cells updates after the correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsAddedDifferently_previouslyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -881,7 +936,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -893,7 +948,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -902,6 +957,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The previously added cells updates _after_ the change
                     temporaryAddedInputCell1.update(newValue = "+1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
@@ -944,6 +1000,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are added. The input bag change is corrected. Some of the previously
+     * added tags are now added with different cells. One of the newly added cells updates after the correction.
+     */
     private fun test_bagChanges_addedCells_bagChangeCorrected_someCellsAddedDifferently_newlyAddedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -966,7 +1026,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -978,7 +1038,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             addedElementByTag = mapOf(
@@ -995,6 +1055,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // The newly added cell updates _after_ the change correction
                     finalAddedInputCell1.update(newValue = "+1!b"),
                 ),
             ),
@@ -1053,7 +1114,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1127,7 +1188,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1200,7 +1261,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1210,17 +1271,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    removedInputCell1.update(newValue = "-1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            removedTags = setOf(
-                                FuseEntryTag.Tag3,
-                                FuseEntryTag.Tag4,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                removedTags = setOf(
+                                    FuseEntryTag.Tag3,
+                                    FuseEntryTag.Tag4,
+                                ),
                             ),
                         ),
+                        removedInputCell1.update(newValue = "-1b"),
+                        removedInputCell2.update(newValue = "-2b"),
                     ),
-                    removedInputCell2.update(newValue = "-2b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -1255,8 +1318,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are removed. The bag change is revoked, then one of the removed cells
-     * updates.
+     * The input bag changes. Some tags/cells are removed. The bag change is revoked; after the change is revoked,
+     * one of the removed cells updates.
      */
     private fun test_bagChanges_removedCells_bagChangeRevoked_removedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -1279,7 +1342,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1289,7 +1352,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1299,6 +1362,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // The previously removed cell updates _after_ the change is revoked
                     removedInputCell1.update(newValue = "-1b"),
                 ),
             ),
@@ -1336,8 +1400,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are removed. The bag change is revoked, then one of the initial cells
-     * updates.
+     * The input bag changes. Some tags/cells are removed. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_removedCells_bagChangeRevoked_initialCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -1360,7 +1424,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1370,7 +1434,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1380,6 +1444,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // One of the initial cells updates _after_ the change is revoked
                     initialInputCell1.update(newValue = "#1b"),
                 ),
             ),
@@ -1443,7 +1508,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1454,7 +1519,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1507,6 +1572,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are not part of the change anymore. One of the temporarily removed cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someCellsUnremoved_temporarilyRemovedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1530,7 +1600,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1541,7 +1611,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1558,6 +1628,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporarily removed cells updates _after_ the change correction
                     temporarilyRemovedInputCell2.update(newValue = "-2~~"),
                 ),
             ),
@@ -1622,7 +1693,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1634,7 +1705,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1686,6 +1757,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are replaced with other cells in the change correction. One of the temporarily removed cells
+     * updates after the correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someRemovedCellsNowReplaced_temporarilyRemovedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1709,7 +1785,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1721,7 +1797,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -1730,7 +1806,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporarilyRemovedInputCell1.update(newValue = "-1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -1739,6 +1814,8 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporarily removed cells updates _after_ the change correction
+                    temporarilyRemovedInputCell1.update(newValue = "-1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -1774,6 +1851,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are removed. The input bag change is corrected. Some of the previously
+     * removed tags/cells are replaced with other cells in the change correction. One of the replacement cells updates
+     * after the correction.
+     */
     private fun test_bagChanges_removedCells_bagChangeCorrected_someRemovedCellsNowReplaced_replacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -1797,7 +1879,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1809,25 +1891,31 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            removedTags = setOf(
-                                FuseEntryTag.Tag3,
-                                FuseEntryTag.Tag4,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    removedTags = setOf(
+                                        FuseEntryTag.Tag3,
+                                        FuseEntryTag.Tag4,
+                                    ),
+                                ),
+                            ),
+                            inputReactiveBag.correctChange(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to replacementInputCell1,
+                                        FuseEntryTag.Tag4 to replacementInputCell2,
+                                    ),
+                                ),
                             ),
                         ),
-                    ),
-                    inputReactiveBag.correctChange(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
-                            ),
+                        TestStimulation.combineInProvidedOrder(
+                            replacementInputCell1.update(newValue = "~1b"),
                         ),
                     ),
-                    replacementInputCell1.update(newValue = "~1b"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -1888,7 +1976,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -1967,7 +2055,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2044,7 +2132,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2056,17 +2144,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    replacementInputCell1.update(newValue = "~1c"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to replacementInputCell1,
+                                    FuseEntryTag.Tag4 to replacementInputCell2,
+                                ),
                             ),
                         ),
+                        replacementInputCell1.update(newValue = "~1c"),
+                        replacementInputCell2.update(newValue = "~2c"),
                     ),
-                    replacementInputCell2.update(newValue = "~2c"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2126,7 +2216,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2136,15 +2226,17 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        sharedCell.update(newValue = "shared-b"),
                     ),
-                    sharedCell.update(newValue = "shared-b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2206,7 +2298,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2218,17 +2310,19 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    replacedInputCell1.update(newValue = "~1c"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag3 to replacementInputCell1,
+                                    FuseEntryTag.Tag4 to replacementInputCell2,
+                                ),
                             ),
                         ),
+                        replacedInputCell1.update(newValue = "~1c"),
+                        replacedInputCell2.update(newValue = "~2c"),
                     ),
-                    replacedInputCell2.update(newValue = "~2c"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2289,7 +2383,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2299,14 +2393,16 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    replacedInputCell.update(newValue = "~1b"),
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag4 to sharedCell,
+                observedInputStimulation = TestStimulation.combineInArbitraryOrder(
+                    setOf(
+                        inputReactiveBag.change(
+                            TestInputReactiveBag.ChangeDescription(
+                                replacedElementByTag = mapOf(
+                                    FuseEntryTag.Tag4 to sharedCell,
+                                ),
                             ),
                         ),
+                        replacedInputCell.update(newValue = "~1b"),
                     ),
                 ),
             ),
@@ -2344,8 +2440,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are replaced. The bag change is revoked, then one of the replaced cells
-     * updates.
+     * The input bag changes. Some tags/cells are replaced. The bag change is revoked; after the change is revoked,
+     * one of the replaced cells updates.
      */
     private fun test_bagChanges_replacedCells_bagChangeRevoked_replacedCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -2370,7 +2466,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2382,18 +2478,24 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to replacementInputCell1,
-                                FuseEntryTag.Tag4 to replacementInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to replacementInputCell1,
+                                        FuseEntryTag.Tag4 to replacementInputCell2,
+                                    ),
+                                ),
                             ),
+                            inputReactiveBag.revokeChange(),
+                        ),
+                        TestStimulation.combineInProvidedOrder(
+                            replacedInputCell1.update(newValue = "~1c"),
                         ),
                     ),
-                    inputReactiveBag.revokeChange(),
-                    replacedInputCell1.update(newValue = "~1c"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -2429,8 +2531,8 @@ class ReactiveBag_fuse_tests {
     }
 
     /**
-     * The input bag changes. Some tags/cells are replaced. The bag change is revoked, then one of the initial cells
-     * updates.
+     * The input bag changes. Some tags/cells are replaced. The bag change is revoked; after the change is revoked,
+     * one of the initial cells updates.
      */
     private fun test_bagChanges_replacedCells_bagChangeRevoked_initialCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
@@ -2455,7 +2557,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2467,7 +2569,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2477,6 +2579,7 @@ class ReactiveBag_fuse_tests {
                         ),
                     ),
                     inputReactiveBag.revokeChange(),
+                    // One of the initial cells updates _after_ the change is revoked
                     initialInputCell1.update(newValue = "#1b"),
                 ),
             ),
@@ -2541,7 +2644,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2554,7 +2657,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2634,7 +2737,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2647,7 +2750,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2663,6 +2766,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the temporary replacement cells updates _after_ the change is corrected
                     temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
@@ -2728,7 +2832,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2741,7 +2845,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2757,6 +2861,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    // One of the final replacement cells updates _after_ the change is corrected
                     finalReplacementInputCell1.update(newValue = "~1!b"),
                 ),
             ),
@@ -2822,7 +2927,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2836,7 +2941,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2918,7 +3023,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -2932,7 +3037,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2941,7 +3046,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -2950,6 +3054,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -2985,6 +3090,11 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are replaced. The input bag change is corrected. Some of the previously
+     * replaced tags/cells are now replaced to a different cell. One of the final replacement cells updates after the
+     * correction.
+     */
     private fun test_bagChanges_replacedCells_bagChangeCorrected_someCellsReplacedDifferently_finalReplacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -3010,7 +3120,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3024,25 +3134,31 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
-                    inputReactiveBag.change(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to temporaryReplacementInputCell1,
-                                FuseEntryTag.Tag4 to temporaryReplacementInputCell2,
+                observedInputStimulation = TestSequentialStimulationSet(
+                    includedStimulations = setOf(
+                        TestStimulation.combineInProvidedOrder(
+                            inputReactiveBag.change(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to temporaryReplacementInputCell1,
+                                        FuseEntryTag.Tag4 to temporaryReplacementInputCell2,
+                                    ),
+                                ),
+                            ),
+                            inputReactiveBag.correctChange(
+                                TestInputReactiveBag.ChangeDescription(
+                                    replacedElementByTag = mapOf(
+                                        FuseEntryTag.Tag3 to finalReplacementInputCell1,
+                                        FuseEntryTag.Tag4 to finalReplacementInputCell2,
+                                    ),
+                                ),
                             ),
                         ),
-                    ),
-                    inputReactiveBag.correctChange(
-                        TestInputReactiveBag.ChangeDescription(
-                            replacedElementByTag = mapOf(
-                                FuseEntryTag.Tag3 to finalReplacementInputCell1,
-                                FuseEntryTag.Tag4 to finalReplacementInputCell2,
-                            ),
+                        TestStimulation.combineInProvidedOrder(
+                            finalReplacementInputCell1.update(newValue = "~1!b"),
                         ),
                     ),
-                    finalReplacementInputCell1.update(newValue = "~1!b"),
-                ),
+                ).determinizeArbitrarily(),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
@@ -3104,7 +3220,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3116,7 +3232,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -3166,6 +3282,10 @@ class ReactiveBag_fuse_tests {
         )
     }
 
+    /**
+     * The input bag changes. Some tags/cells are replaced. The input bag change is corrected. Some of the previously
+     * replaced tags/cells are now removed. One of the temporary replacement cells updates after the correction.
+     */
     private fun test_bagChanges_replacedCells_bagChangeCorrected_someReplacedCellsNowRemoved_temporaryReplacementCellUpdates(
         subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
@@ -3189,7 +3309,7 @@ class ReactiveBag_fuse_tests {
 
         val subjectReactiveBag = inputReactiveBag.fuse()
 
-        ReactiveBag_fuse_testUtils.executeReactionTransaction(
+        ReactiveBag_fuse_testUtils.testReaction(
             inputReactiveBag = inputReactiveBag,
             inputCellByLabel = mapOf(
                 "initial 1" to initialInputCell1,
@@ -3201,7 +3321,7 @@ class ReactiveBag_fuse_tests {
             ),
             subjectReactiveBag = subjectReactiveBag,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                observedInputStimulation = TestStimulation.combine(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
                     inputReactiveBag.change(
                         TestInputReactiveBag.ChangeDescription(
                             replacedElementByTag = mapOf(
@@ -3210,7 +3330,6 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
-                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                     inputReactiveBag.correctChange(
                         TestInputReactiveBag.ChangeDescription(
                             removedTags = setOf(
@@ -3219,6 +3338,7 @@ class ReactiveBag_fuse_tests {
                             ),
                         ),
                     ),
+                    temporaryReplacementInputCell1.update(newValue = "~1~b"),
                 ),
             ),
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectTaggedContentTransition(
@@ -3236,5 +3356,10 @@ class ReactiveBag_fuse_tests {
             ),
             subjectHealthCheckStrategy = subjectHealthCheckStrategy,
         )
+    }
+
+    @Test
+    fun test_offlineActivation() {
+        // TODO
     }
 }

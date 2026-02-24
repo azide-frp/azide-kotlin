@@ -1,47 +1,68 @@
 package dev.azide.core.impl.cell.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
 import dev.azide.core.impl.cell.CellVertex
 
 abstract class AbstractStatelessCellVertex<ValueT> : AbstractCellVertex<ValueT>() {
     final override fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
-        when (mode) {
-            ActivationMode.Online -> {
-                val updateOnActivation = activateOnline(
-                    propagationContext = propagationContext,
-                )
+        activate(
+            processingContext = processingContext,
+        )
 
-                exposeUpdate(
-                    propagationContext = propagationContext,
-                    update = updateOnActivation,
-                )
-            }
+        prepare(
+            processingContext = processingContext,
+        )
 
-            ActivationMode.Offline -> {
-                activateOffline(
-                    propagationContext = propagationContext,
-                )
-            }
+        if (processingContext is Transactions.PropagationContext) {
+            exposeUpdate(
+                propagationContext = processingContext,
+                update = buildInitialUpdate(
+                    propagationContext = processingContext,
+                ),
+            )
         }
     }
 
     final override fun onLastListenerUnregistered() {
         deactivate()
 
+        reset()
+
         clearExposedUpdate()
     }
 
-    abstract fun activateOnline(
-        propagationContext: Transactions.PropagationContext,
-    ): CellVertex.Update<ValueT>?
+    /**
+     * Prepare the vertex for being sampled (initialize the internal cache).
+     */
+    open fun prepare(
+        processingContext: Transactions.ProcessingContext,
+    ) {
+    }
 
-    abstract fun activateOffline(
-        propagationContext: Transactions.PropagationContext,
+    /**
+     * Reset the vertex (drop the internal cache).
+     */
+    open fun reset() {
+    }
+
+    /**
+     * Activate the vertex (register all required upstream listeners).
+     */
+    abstract fun activate(
+        processingContext: Transactions.ProcessingContext,
     )
 
+    /**
+     * Deactivate the vertex (unregister all upstream listeners).
+     */
     abstract fun deactivate()
+
+    /**
+     * Build the initial update.
+     */
+    abstract fun buildInitialUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<ValueT>?
 }

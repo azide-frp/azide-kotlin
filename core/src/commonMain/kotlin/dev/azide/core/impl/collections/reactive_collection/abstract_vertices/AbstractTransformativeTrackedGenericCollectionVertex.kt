@@ -1,22 +1,22 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListener
 
 abstract class AbstractTransformativeTrackedGenericCollectionVertex<
         ContentT : Collection<*>,
-        ChangeT : CollectionChange<*>,
+        ChangeT : GenericCollectionChange<*>,
         TransformedContentT : Collection<*>,
-        TransformedChangeT : CollectionChange<*>,
+        TransformedChangeT : GenericCollectionChange<*>,
         > :
     AbstractStatelessTrackedGenericCollectionVertex<TransformedContentT, TransformedChangeT>(), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
@@ -27,50 +27,24 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     final override fun handle(
         propagationContext: PropagationContext,
     ) {
-        when (val sourceOngoingChange: ChangeT? = sourceVertex.ongoingChange) {
-            null -> { // Revocation
-                if (ongoingChange != null) {
-                    exposeChangeNotifyingListeners(
-                        propagationContext = propagationContext,
-                        change = null,
-                    )
-                }
-            }
-
-            else -> { // Original change / change correction
-                when (val transformedChange = transformChange(sourceOngoingChange)) {
-                    null -> {
-                        if (ongoingChange != null) {
-                            exposeChangeNotifyingListeners(
-                                propagationContext = propagationContext,
-                                change = null,
-                            )
-                        }
-                    }
-
-                    else -> {
-                        exposeChangeNotifyingListeners(
-                            propagationContext = propagationContext,
-                            change = transformedChange,
-                        )
-                    }
-                }
-            }
-        }
+        exposeChangeNotifyingListeners(
+            propagationContext = propagationContext,
+            change = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+                transformChange(sourceOngoingChange)
+            },
+        )
     }
 
     final override fun activate(
-        propagationContext: PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedChangeT? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingChange?.let(::transformChange)
@@ -78,7 +52,7 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
 
     final override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -88,10 +62,10 @@ abstract class AbstractTransformativeTrackedGenericCollectionVertex<
     }
 
     final override fun getOldContentView(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedContentT {
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return transformOldContentView(

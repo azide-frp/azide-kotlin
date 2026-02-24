@@ -38,7 +38,7 @@ class Cell_triggerEvery_start_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_start_testUtils.executeStartTransaction(
+        Schedule_start_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = targetTriggerRecorder1.expectIsExecutedOnce(),
         )
@@ -56,7 +56,7 @@ class Cell_triggerEvery_start_tests {
 
             val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-            Schedule_start_testUtils.executeStartTransaction(
+            Schedule_start_testUtils.testStart(
                 subjectSchedule = subjectSchedule,
                 slottedInputStimulation = sourceCell.updating(
                     tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -82,7 +82,7 @@ class Cell_triggerEvery_start_tests {
 
             val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-            Schedule_start_testUtils.executeStartTransaction(
+            Schedule_start_testUtils.testStart(
                 subjectSchedule = subjectSchedule,
                 slottedInputStimulation = sourceCell.revokingUpdate(
                     tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -109,7 +109,7 @@ class Cell_triggerEvery_start_tests {
 
             val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-            Schedule_start_testUtils.executeStartTransaction(
+            Schedule_start_testUtils.testStart(
                 subjectSchedule = subjectSchedule,
                 slottedInputStimulation = sourceCell.correctingUpdate(
                     tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,

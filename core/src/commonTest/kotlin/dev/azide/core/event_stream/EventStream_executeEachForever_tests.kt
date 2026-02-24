@@ -6,7 +6,7 @@ import dev.azide.core.map
 import dev.azide.core.test_utils.MockExternalTrigger
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -24,7 +24,7 @@ class EventStream_executeEachForever_tests {
             sourceEventStream.executeEachForever(),
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = Action.adapt(mockSideEffect).map { 10 },
@@ -47,9 +47,9 @@ class EventStream_executeEachForever_tests {
             sourceEventStream.executeEachForever(),
         )
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect).map { 10 },
                 ),
@@ -73,9 +73,9 @@ class EventStream_executeEachForever_tests {
             sourceEventStream.executeEachForever(),
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1).map { 10 },
                 ),

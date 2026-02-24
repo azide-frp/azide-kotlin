@@ -59,7 +59,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetEffect1.expectIsNotStarted(),
@@ -102,7 +102,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
@@ -157,7 +157,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
@@ -215,7 +215,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
@@ -287,7 +287,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,
@@ -355,7 +355,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -410,7 +410,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -466,7 +466,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -537,7 +537,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -608,7 +608,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -674,7 +674,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -740,7 +740,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,
@@ -822,7 +822,7 @@ class ReactiveBag_actuate_startRevoked_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        Effect_ReactiveBag_startRevoked_testUtils.executeStartTransaction(
+        Effect_ReactiveBag_startRevoked_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = SourceEffectReactiveBagTag,

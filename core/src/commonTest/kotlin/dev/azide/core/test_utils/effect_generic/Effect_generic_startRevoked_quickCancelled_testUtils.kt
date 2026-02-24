@@ -3,6 +3,7 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.TestSlottedStimulation4
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
@@ -11,9 +12,28 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation3
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_quickCancelled_testUtils {
-    fun <SubjectT> executeStartTransaction(
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started, but before it was canceled.
+         */
+        val preCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was canceled, but before the start was revoked.
+         */
+        val postCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect start was revoked.
+         */
+        val postStartRevocationStimulation: TestStimulation,
+    )
+
+    fun <SubjectT> testStart(
         subjectEffect: Effect<SubjectT>,
-        slottedInputStimulation: TestSlottedStimulation4? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -21,7 +41,7 @@ data object Effect_generic_startRevoked_quickCancelled_testUtils {
             expectedNewState = null,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation?.slotStimulation0?.stimulate(
+            inputStimulationPlan?.preStartStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -33,7 +53,7 @@ data object Effect_generic_startRevoked_quickCancelled_testUtils {
             val subject = effectOutcome.result
             val effectHandle = effectOutcome.handle
 
-            slottedInputStimulation?.slotStimulation1?.stimulate(
+            inputStimulationPlan?.preCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -42,14 +62,14 @@ data object Effect_generic_startRevoked_quickCancelled_testUtils {
                 propagationContext = propagationContext,
             )
 
-            slottedInputStimulation?.slotStimulation2?.stimulate(
+            inputStimulationPlan?.postCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             // 3. Revoke the effect's start
             startRevocable.revoke()
 
-            slottedInputStimulation?.slotStimulation3?.stimulate(
+            inputStimulationPlan?.postStartRevocationStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -58,5 +78,24 @@ data object Effect_generic_startRevoked_quickCancelled_testUtils {
 
             subject
         }
+    }
+
+    fun <SubjectT> testStart(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation4? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        testStart(
+            subjectEffect = subjectEffect,
+            inputStimulationPlan = slottedInputStimulation?.let {
+                InputStimulationPlan(
+                    preStartStimulation = it.slotStimulation0,
+                    preCancelStimulation = it.slotStimulation1,
+                    postCancelStimulation = it.slotStimulation2,
+                    postStartRevocationStimulation = it.slotStimulation3,
+                )
+            },
+            expectedTargetImpact = expectedTargetImpact,
+        )
     }
 }

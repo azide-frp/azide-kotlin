@@ -1,7 +1,6 @@
 package dev.azide.core.impl.cell.abstract_vertices
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 
 abstract class AbstractStatefulCellVertex<ValueT>(
@@ -13,18 +12,22 @@ abstract class AbstractStatefulCellVertex<ValueT>(
     private var isInitialized = false
 
     final override fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
         if (isInitialized) return
 
-        if (mode == Vertex.ActivationMode.Offline) {
-            throw UnsupportedOperationException("Offline initialization is not supported")
-        }
+        when (processingContext) {
+            is Transactions.CommitmentContext -> {
+                // TODO: Explain why this is unreachable
+                throw UnsupportedOperationException("Offline initialization is not supported")
+            }
 
-        ensureInitialized(
-            propagationContext = propagationContext,
-        )
+            is Transactions.PropagationContext -> {
+                ensureInitialized(
+                    propagationContext = processingContext,
+                )
+            }
+        }
     }
 
     final override fun onLastListenerUnregistered() {

@@ -50,7 +50,7 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -81,7 +81,7 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -112,7 +112,7 @@ class EventStream_hold_reaction_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,

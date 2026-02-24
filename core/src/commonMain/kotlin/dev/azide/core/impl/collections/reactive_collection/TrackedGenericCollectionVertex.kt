@@ -1,33 +1,44 @@
 package dev.azide.core.impl.collections.reactive_collection
 
-import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionContainsCellVertex
 import dev.azide.core.impl.collections.reactive_collection.operated_vertices.helpers.TrackedCollectionSizeCellVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 
-interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : CollectionChange<*>> : Vertex {
-    interface CollectionChange<out ElementT> {
+interface TrackedGenericCollectionVertex<out ContentT : Collection<*>, out ChangeT : GenericCollectionChange<*>> :
+    ListenableVertex {
+    interface GenericCollectionChange<out ContentT : Collection<*>> {
         val sizeDelta: Int
 
-        val addedElements: Collection<ElementT>
+        /**
+         * A view of the introduced content (i.e. added and replacement elements).
+         */
+        val introducedContentView: ContentT
 
-        val removedElements: Collection<ElementT>
+        /**
+         * A view of the abolished content (i.e. removed and replaced elements).
+         */
+        fun getAbolishedContentView(
+            oldContentView: @UnsafeVariance ContentT,
+        ): ContentT
     }
+
+    typealias CollectionChange<ElementT> = GenericCollectionChange<Collection<ElementT>>
 
     val ongoingChange: ChangeT?
 
     fun getOldContentView(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ContentT
 }
 
-typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, CollectionChange<ElementT>>
+typealias TrackedCollectionVertex<ElementT> = TrackedGenericCollectionVertex<Collection<ElementT>, GenericCollectionChange<Collection<ElementT>>>
 
 typealias TrackedSetVertex<ElementT> = TrackedGenericCollectionVertex<Set<ElementT>, SetChange<ElementT>>
 
@@ -35,7 +46,7 @@ typealias TrackedListVertex<ElementT> = TrackedGenericCollectionVertex<List<Elem
 
 typealias TrackedTaggedBagVertex<ElementT> = TrackedGenericCollectionVertex<TaggedBag<ElementT>, TaggedBagChange<ElementT>>
 
-fun <ContentT : Collection<*>, ChangeT : CollectionChange<*>> TrackedGenericCollectionVertex<ContentT, ChangeT>.buildSizeVertex(): CellVertex<Int> =
+fun TrackedCollectionVertex<*>.buildSizeVertex(): CellVertex<Int> =
     TrackedCollectionSizeCellVertex(
         sourceVertex = this@buildSizeVertex,
     )

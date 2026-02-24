@@ -1,8 +1,8 @@
 package dev.azide.core.test_utils.cell
 
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag_deprecated
 
-sealed interface TestInputReactiveCollectionStimulationTag : TestStimulationTag {
+sealed interface TestInputReactiveCollectionStimulationTag : TestStimulationTag_deprecated {
     data class Change(
         val inputTag: TestInputReactiveCollectionTag,
     ) : TestInputReactiveCollectionStimulationTag

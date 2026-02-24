@@ -77,7 +77,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -127,7 +127,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.updating(
@@ -186,7 +186,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.revokingUpdate(
@@ -245,7 +245,7 @@ class Cell_actuate_cancelledRevoked_tests {
 
         val targetEffect1StartRecord = targetEffect1.getAndResetStartRecords().single()
 
-        Effect_Cell_cancelledRevoked_testUtils.executeCancelTransaction(
+        Effect_Cell_cancelledRevoked_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             slottedInputStimulation = sourceCell.correctingUpdate(

@@ -3,7 +3,7 @@ package dev.azide.core.collections.reactive_collection
 import dev.azide.core.collections.ReactiveSet
 import dev.azide.core.collections.sum
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import kotlin.test.Test
@@ -18,7 +18,7 @@ class ReactiveCollection_sum_tests {
 
         val subjectCell = sourceReactiveSet.sum()
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -32,7 +32,7 @@ class ReactiveCollection_sum_tests {
 
         val subjectCell = sourceReactiveSet.sum()
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -46,7 +46,7 @@ class ReactiveCollection_sum_tests {
 
         val subjectCell = sourceReactiveSet.sum()
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -67,9 +67,9 @@ class ReactiveCollection_sum_tests {
 
         val subjectCell = sourceReactiveSet.sum()
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(5, 6),
@@ -90,9 +90,9 @@ class ReactiveCollection_sum_tests {
 
         val subjectCell = sourceReactiveSet.sum()
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
                     changeDescription = TestInputReactiveSet.ChangeDescription(
                         addedElements = setOf(5, 6),

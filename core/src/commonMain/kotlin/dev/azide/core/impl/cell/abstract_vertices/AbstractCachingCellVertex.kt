@@ -4,67 +4,48 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import kotlin.jvm.JvmInline
 
-abstract class AbstractCachingCellVertex<ValueT>(
-    private val cacheType: CacheType,
-) : AbstractSimpleStatelessCellVertex<ValueT>() {
-    enum class CacheType {
-        Momentary, Active,
-    }
-
+abstract class AbstractCachingCellVertex<ValueT> : AbstractStatelessCellVertex<ValueT>() {
     @JvmInline
     private value class OldValueCache<ValueT>(
         val cachedOldValue: ValueT,
     )
 
     /**
-     * A cache for the old cell's value. Depending on the [cacheType], it may be maintained only for the duration of a
-     * single transaction, or as long as the cell is active.
+     * A cache for the old cell's value, maintained as long as the cell is active.
      */
     private var _oldValueCache: OldValueCache<ValueT>? = null
 
+    final override fun prepare(processingContext: Transactions.ProcessingContext) {
+        _oldValueCache = OldValueCache(
+            cachedOldValue = computeOldValue(processingContext = processingContext),
+        )
+    }
+
+    final override fun reset() {
+        _oldValueCache = null
+    }
+
     final override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
-    ): ValueT {
-        when (val oldValueCache = _oldValueCache) {
-            null -> {
-                val computedOldValue = computeOldValue(propagationContext)
+        processingContext: Transactions.ProcessingContext,
+    ): ValueT = when (val oldValueCache = _oldValueCache) {
+        // The cell seems to be inactive, compute the value on demand
+        null -> computeOldValue(processingContext = processingContext)
 
-                _oldValueCache = OldValueCache(
-                    cachedOldValue = computedOldValue,
-                )
-
-                ensureEnqueuedForCommitment(
-                    propagationContext = propagationContext,
-                )
-
-                return computedOldValue
-            }
-
-            else -> {
-                return oldValueCache.cachedOldValue
-            }
-        }
+        // The cell seems to be active, return the maintained cached value
+        else -> oldValueCache.cachedOldValue
     }
 
     override fun persist(
         ongoingUpdate: CellVertex.Update<ValueT>?,
     ) {
-        when (cacheType) {
-            CacheType.Momentary -> {
-                _oldValueCache = null
-            }
-
-            CacheType.Active -> {
-                if (ongoingUpdate != null) {
-                    _oldValueCache = OldValueCache(
-                        cachedOldValue = ongoingUpdate.updatedValue,
-                    )
-                }
-            }
+        if (ongoingUpdate != null) {
+            _oldValueCache = OldValueCache(
+                cachedOldValue = ongoingUpdate.updatedValue,
+            )
         }
     }
 
     protected abstract fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT
 }

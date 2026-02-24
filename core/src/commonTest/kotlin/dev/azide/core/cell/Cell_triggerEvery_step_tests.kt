@@ -1,16 +1,16 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Schedule
-import dev.azide.core.triggerEvery
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.schedule.Schedule_step_testUtils
-import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.expectIsExecutedOnce
+import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.schedule.Schedule_step_testUtils
+import dev.azide.core.triggerEvery
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -28,7 +28,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.update(
                 newValue = targetTriggerRecorder2.recordedAction,
             ),
@@ -52,7 +52,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.revokingUpdate(
                 newValue = targetTriggerRecorder2.recordedAction,
             ).joint(),
@@ -77,7 +77,7 @@ class Cell_triggerEvery_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceCell.correctingUpdate(
                 intermediateNewValue = targetTriggerRecorder2.recordedAction,
                 correctedNewValue = targetTriggerRecorder3.recordedAction,

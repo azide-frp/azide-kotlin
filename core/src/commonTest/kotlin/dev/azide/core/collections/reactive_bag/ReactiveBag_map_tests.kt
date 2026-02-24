@@ -32,7 +32,7 @@ class ReactiveBag_map_tests {
         ReactiveBag_generic_testUtils.stimulationScenarioBank_sourceBagChangesCorrected.distribute(slotCount = SuitableSlotCount)
 
     @Test
-    fun test_passiveSample() {
+    fun test_passiveSampling() {
         val sourceReactiveBag = TestInputReactiveBag(
             initialTaggedElements = taggedBagOf(
                 0 to 0.1,
@@ -44,7 +44,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_sampling_testUtils.executeSamplingTransaction(
+        ReactiveBag_sampling_testUtils.testPassiveSampling(
             subjectReactiveBag = subjectReactiveBag,
             expectedSubjectContent = ReactiveBag_expectations_testUtils.expectStableTaggedContent(
                 expectedTaggedElements = taggedBagOf(
@@ -80,7 +80,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -138,7 +138,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -193,7 +193,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -258,7 +258,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -323,7 +323,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -377,7 +377,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -428,7 +428,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -485,7 +485,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.revokingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -544,7 +544,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -618,7 +618,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -688,7 +688,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,
@@ -762,7 +762,7 @@ class ReactiveBag_map_tests {
 
         val subjectReactiveBag = sourceReactiveBag.map { it.toString() }
 
-        ReactiveBag_reaction_testUtils.executeReactionTransaction(
+        ReactiveBag_reaction_testUtils.testReaction(
             subjectReactiveBag,
             slottedInputStimulation = sourceReactiveBag.correctingChange(
                 tag = ReactiveBag_generic_testUtils.SourceReactiveBagTag,

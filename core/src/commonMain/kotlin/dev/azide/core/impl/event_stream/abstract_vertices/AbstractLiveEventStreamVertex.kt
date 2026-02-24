@@ -1,18 +1,17 @@
 package dev.azide.core.impl.event_stream.abstract_vertices
 
 import dev.azide.core.CausalLoopException
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.Committable
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerStatus
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerStatus
-import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex.LiveListenerHandle
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 
-abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, CommittableVertex {
+abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<EventT>, Committable {
     private val _registeredListeners: MutableBag<Listener> = MutableBag()
 
     override val listenerCount: Int
@@ -28,16 +27,14 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         get() = _ongoingEmission
 
     override fun registerListener(
-        propagationContext: Transactions.PropagationContext,
-        listener: Listener,
-        mode: Vertex.ActivationMode,
-    ): Vertex.ListenerHandle {
+        processingContext: Transactions.ProcessingContext,
+        listener: Listener
+    ): ListenableVertex.ListenerHandle {
         val internalHandle = _registeredListeners.add(listener)
 
         if (_registeredListeners.size == 1) {
             onFirstListenerRegistered(
-                propagationContext = propagationContext,
-                mode = mode,
+                processingContext = processingContext,
             )
         }
 
@@ -47,7 +44,7 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     override fun unregisterListener(
-        handle: Vertex.ListenerHandle,
+        handle: ListenableVertex.ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
             handle as? LiveListenerHandle ?: throw IllegalArgumentException("Invalid handle")
@@ -59,10 +56,13 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
         }
     }
 
-    final override fun commit() {
-        if (_ongoingEmission != null) {
-            transit()
-        }
+    final override fun commit(
+        commitmentContext: Transactions.CommitmentContext,
+    ) {
+        transit(
+            commitmentContext = commitmentContext,
+            ongoingEmission = _ongoingEmission,
+        )
 
         _ongoingEmission = null
         _isEnqueuedForCommitment = false
@@ -134,14 +134,16 @@ abstract class AbstractLiveEventStreamVertex<EventT> : LiveEventStreamVertex<Eve
     }
 
     protected open fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
     }
 
     protected open fun onLastListenerUnregistered() {
     }
 
-    protected open fun transit() {
+    protected open fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: EventStreamVertex.Emission<EventT>?,
+    ) {
     }
 }

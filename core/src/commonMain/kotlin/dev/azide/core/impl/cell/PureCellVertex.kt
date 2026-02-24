@@ -7,6 +7,6 @@ class PureCellVertex<ValueT>(
     val value: ValueT,
 ) : AbstractFrozenCellVertex<ValueT>() {
     override fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT = value
 }

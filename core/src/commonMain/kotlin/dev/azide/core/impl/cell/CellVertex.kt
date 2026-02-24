@@ -1,10 +1,10 @@
 package dev.azide.core.impl.cell
 
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
 import kotlin.jvm.JvmInline
 
-interface CellVertex<out ValueT> : Vertex {
+interface CellVertex<out ValueT> : ListenableVertex {
     @JvmInline
     value class Update<out ValueT>(
         val updatedValue: ValueT,
@@ -18,17 +18,20 @@ interface CellVertex<out ValueT> : Vertex {
 
     val ongoingUpdate: Update<ValueT>?
 
+    /**
+     * Get the cell's old value. If the cell is to be listened to, be sure to listen to the cell before getting its
+     * old value for performance reasons.
+     */
     fun getOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT
 }
 
-
 fun <ValueT> CellVertex<ValueT>.getNewValue(
-    propagationContext: Transactions.PropagationContext,
+    processingContext: Transactions.ProcessingContext,
 ): ValueT = when (val ongoingUpdate = this.ongoingUpdate) {
     null -> getOldValue(
-        propagationContext = propagationContext,
+        processingContext = processingContext,
     )
 
     else -> ongoingUpdate.updatedValue

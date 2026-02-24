@@ -10,14 +10,12 @@ import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.collections.reactive_bag.ReactiveBag_expectations_testUtils
 import dev.azide.core.test_utils.collections.reactive_bag.TestInputReactiveBag
-import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_step_testUtils
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.generic_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 
 @Suppress("ClassName")
 data object ReactiveBag_actuate_testUtils {
@@ -112,19 +110,19 @@ data object ReactiveBag_actuate_testUtils {
         return subjectOutcome
     }
 
-    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
@@ -138,7 +136,7 @@ data object ReactiveBag_actuate_testUtils {
 
         val extraTargetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+        Effect_ReactiveBag_step_testUtils.testStep(
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(
@@ -180,7 +178,7 @@ data object ReactiveBag_actuate_testUtils {
 
         val extraTargetEffect = TestTargetEffect.pure(result = 0)
 
-        Effect_ReactiveBag_step_testUtils.executeStepTransaction(
+        Effect_ReactiveBag_step_testUtils.testStep(
             subjectReactiveBag = subjectReactiveBag,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             slottedInputStimulation = sourceReactiveBag.change(

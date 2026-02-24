@@ -6,7 +6,7 @@ import dev.azide.core.test_utils.TestStimulation
 
 @Suppress("ClassName")
 data object ReactiveList_sampling_testUtils {
-    fun <ElementT> executeSamplingTransaction(
+    fun <ElementT> testPassiveSampling(
         subjectReactiveList: ReactiveList<ElementT>,
         inputStimulation: TestStimulation? = null,
         expectedSubjectContent: ExpectedReactiveListContent<ElementT>,

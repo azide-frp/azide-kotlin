@@ -10,7 +10,7 @@ abstract class AbstractStatefulTrackedListVertex<ElementT>(
 ) : AbstractTrackedListVertex<ElementT>() {
     private var _stableElements: MutableList<ElementT> = initialElements
 
-    final override fun commit(
+    final override fun persist(
         ongoingChange: ListChange<ElementT>?,
     ) {
         ongoingChange?.applyTo(
@@ -19,6 +19,6 @@ abstract class AbstractStatefulTrackedListVertex<ElementT>(
     }
 
     final override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> = _stableElements
 }

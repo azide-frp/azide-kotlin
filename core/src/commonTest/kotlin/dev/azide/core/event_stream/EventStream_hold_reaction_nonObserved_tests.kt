@@ -19,7 +19,7 @@ class EventStream_hold_reaction_nonObserved_tests {
 
         val subjectCell = subjectMoment.pullExternally()
 
-        Cell_reaction_nonPerceived_testUtils.executeReactionTransaction(
+        Cell_reaction_nonPerceived_testUtils.testReaction(
             subjectCell = subjectCell,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 10,

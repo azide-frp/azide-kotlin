@@ -10,13 +10,13 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_Cell_start_rushedWrapUp_testUtils {
-    fun <ValueT> executeStartTransaction(
+    fun <ValueT> testStart(
         subjectCellEffect: Effect<Cell<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectValueTransition: ExpectedCellValueTransition<ValueT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_generic_start_rushedWrapUp_testUtils.testStart(
             trait = CellObservationTrait(),
             subjectEffect = subjectCellEffect,
             slottedInputStimulation = slottedInputStimulation,

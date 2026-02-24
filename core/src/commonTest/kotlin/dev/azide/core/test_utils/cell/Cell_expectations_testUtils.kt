@@ -4,7 +4,6 @@ import dev.azide.core.Cell
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
@@ -76,11 +75,13 @@ object Cell_expectations_testUtils {
             propagationContext: Transactions.PropagationContext,
             subject: Cell<ValueT>,
         ) {
+            val actualOldValue = subject.vertex.getOldValue(
+                processingContext = propagationContext,
+            )
+
             assertEquals(
                 expected = expectedValue,
-                actual = subject.vertex.getOldValue(
-                    propagationContext = propagationContext,
-                ),
+                actual = actualOldValue,
                 message = "The stable value of the cell did not match the expected stable value.",
             )
         }

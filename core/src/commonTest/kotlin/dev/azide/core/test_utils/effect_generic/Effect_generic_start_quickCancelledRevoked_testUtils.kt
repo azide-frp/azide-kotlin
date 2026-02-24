@@ -4,6 +4,7 @@ import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.TestSlottedStimulation4
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
@@ -15,11 +16,30 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation3
 
 @Suppress("ClassName")
 data object Effect_generic_start_quickCancelledRevoked_testUtils {
-    fun <SubjectT, NotificationT : Any> executeStartTransaction(
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started, but before it was canceled.
+         */
+        val preCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was canceled, but before the cancellation was revoked.
+         */
+        val postCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect cancellation was revoked.
+         */
+        val postCancelRevocationStimulation: TestStimulation,
+    )
+
+    fun <SubjectT, NotificationT : Any> testStart(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        slottedInputStimulation: TestSlottedStimulation4? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -27,7 +47,7 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
            expectedNewState = expectedSubjectTransition.expectedNewState,
        ) { propagationContext ->
            // 0. Pre-stimulation
-           slottedInputStimulation?.slotStimulation0?.stimulate(
+           inputStimulationPlan?.preStartStimulation?.stimulate(
                propagationContext = propagationContext,
            )
 
@@ -39,7 +59,7 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
            val subject = effectOutcome.result
            val effectHandle = effectOutcome.handle
 
-           slottedInputStimulation?.slotStimulation1?.stimulate(
+           inputStimulationPlan?.preCancelStimulation?.stimulate(
                propagationContext = propagationContext,
            )
 
@@ -61,14 +81,14 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
                propagationContext = propagationContext,
            )
 
-           slottedInputStimulation?.slotStimulation2?.stimulate(
+           inputStimulationPlan?.postCancelStimulation?.stimulate(
                propagationContext = propagationContext,
            )
 
            // 3. Revoke the effect's cancellation
            cancelRevocable.revoke()
 
-           slottedInputStimulation?.slotStimulation3?.stimulate(
+           inputStimulationPlan?.postCancelRevocationStimulation?.stimulate(
                propagationContext = propagationContext,
            )
 
@@ -89,4 +109,27 @@ data object Effect_generic_start_quickCancelledRevoked_testUtils {
 
            subject
        }
+
+    fun <SubjectT, NotificationT : Any> testStart(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation4? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
+        expectedTargetImpact: ExpectedImpact,
+    ): SubjectT = testStart(
+        trait = trait,
+        subjectEffect = subjectEffect,
+        subjectPerceptionStrategy = subjectPerceptionStrategy,
+        inputStimulationPlan = slottedInputStimulation?.let {
+            InputStimulationPlan(
+                preStartStimulation = it.slotStimulation0,
+                preCancelStimulation = it.slotStimulation1,
+                postCancelStimulation = it.slotStimulation2,
+                postCancelRevocationStimulation = it.slotStimulation3,
+            )
+        },
+        expectedSubjectTransition = expectedSubjectTransition,
+        expectedTargetImpact = expectedTargetImpact,
+    )
 }

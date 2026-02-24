@@ -28,7 +28,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.change(
                 changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -62,7 +62,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.change(
                 changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Removal(
@@ -94,7 +94,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.change(
                 changeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Replacement(
@@ -127,7 +127,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.revokingChange(
                 temporaryChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(
@@ -161,7 +161,7 @@ class ReactiveList_syncing_step_tests {
 
         subjectSchedule.startExternally()
 
-        Schedule_step_testUtils.executeStepTransaction(
+        Schedule_step_testUtils.testStep(
             inputStimulation = sourceReactiveList.correctingChange(
                 intermediateChangeDescription = ChangeDescription.of(
                     ChangeDescription.Part.Insertion(

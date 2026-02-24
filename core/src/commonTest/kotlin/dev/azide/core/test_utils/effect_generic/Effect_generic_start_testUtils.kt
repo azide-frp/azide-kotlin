@@ -4,6 +4,7 @@ import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.TestSlottedStimulation2
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
@@ -13,11 +14,22 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Effect_generic_start_testUtils {
-    fun <SubjectT, NotificationT : Any> executeStartTransaction(
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started.
+         */
+        val postStartStimulation: TestStimulation,
+    )
+
+    fun <SubjectT, NotificationT : Any> testStart(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectEffect: Effect<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        slottedInputStimulation: TestSlottedStimulation2? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
     ): SubjectT = Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -25,7 +37,7 @@ data object Effect_generic_start_testUtils {
         expectedNewState = expectedSubjectTransition.expectedNewState,
     ) { propagationContext ->
         // 0. Pre-stimulation
-        slottedInputStimulation?.slotStimulation0?.stimulate(
+        inputStimulationPlan?.preStartStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
@@ -36,7 +48,7 @@ data object Effect_generic_start_testUtils {
 
         val subject = effectOutcome.result
 
-        slottedInputStimulation?.slotStimulation1?.stimulate(
+        inputStimulationPlan?.postStartStimulation?.stimulate(
             propagationContext = propagationContext,
         )
 
@@ -64,4 +76,25 @@ data object Effect_generic_start_testUtils {
 
         subject
     }
+
+    fun <SubjectT, NotificationT : Any> testStart(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
+        subjectEffect: Effect<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
+        expectedTargetImpact: ExpectedImpact,
+    ): SubjectT = testStart(
+        trait = trait,
+        subjectEffect = subjectEffect,
+        subjectPerceptionStrategy = subjectPerceptionStrategy,
+        inputStimulationPlan = slottedInputStimulation?.let {
+            InputStimulationPlan(
+                preStartStimulation = it.slotStimulation0,
+                postStartStimulation = it.slotStimulation1,
+            )
+        },
+        expectedSubjectTransition = expectedSubjectTransition,
+        expectedTargetImpact = expectedTargetImpact,
+    )
 }

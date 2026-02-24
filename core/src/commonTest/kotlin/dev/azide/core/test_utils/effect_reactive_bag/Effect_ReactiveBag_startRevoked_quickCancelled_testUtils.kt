@@ -8,12 +8,12 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_ReactiveBag_startRevoked_quickCancelled_testUtils {
-    fun <ValueT> executeStartTransaction(
+    fun <ValueT> testStart(
         subjectReactiveBagEffect: Effect<ReactiveBag<ValueT>>,
         slottedInputStimulation: TestSlottedStimulation4? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Effect_generic_startRevoked_quickCancelled_testUtils.testStart(
             subjectEffect = subjectReactiveBagEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,

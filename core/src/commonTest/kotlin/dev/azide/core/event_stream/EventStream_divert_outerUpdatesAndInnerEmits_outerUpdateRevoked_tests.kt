@@ -14,14 +14,14 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
-    private val slottedStimulationScenarioBank = TestStimulationScenarioBank.mixAll(
+    private val slottedStimulationScenarioBank = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceOuterCellTag,
         ),
@@ -54,7 +54,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = TestStimulationMap.union(
                 outerSourceCell.revokingUpdate(
@@ -101,7 +101,7 @@ class EventStream_divert_outerUpdatesAndInnerEmits_outerUpdateRevoked_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = TestStimulationMap.union(
                 outerSourceCell.revokingUpdate(

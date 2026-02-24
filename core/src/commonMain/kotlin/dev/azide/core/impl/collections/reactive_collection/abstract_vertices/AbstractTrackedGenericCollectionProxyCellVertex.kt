@@ -1,20 +1,19 @@
 package dev.azide.core.impl.collections.reactive_collection.abstract_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_set.SetChange
 import dev.azide.core.impl.registerBoundListener
 
-abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : CollectionChange<*>, ValueT>(
+abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collection<*>, ChangeT : GenericCollectionChange<*>, ValueT>(
     private val sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
 ) : AbstractCachingCellVertex<ValueT>(
-    cacheType = CacheType.Active,
 ), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 
@@ -34,6 +33,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
             else -> {
                 val builtUpdate = buildUpdate(
                     propagationContext = propagationContext,
+                    sourceVertex = sourceVertex,
                     sourceChange = change,
                 )
 
@@ -59,30 +59,31 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     }
 
     override fun activate(
-        propagationContext: PropagationContext,
-        mode: Vertex.ActivationMode,
-    ): CellVertex.Update<ValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
+    }
 
-        return sourceVertex.ongoingChange?.let { sourceOngoingChange ->
-            buildUpdate(
-                propagationContext = propagationContext,
-                sourceChange = sourceOngoingChange,
-            )
-        }
+    override fun buildInitialUpdate(
+        propagationContext: PropagationContext,
+    ): CellVertex.Update<ValueT>? = sourceVertex.ongoingChange?.let { sourceOngoingChange ->
+        buildUpdate(
+            propagationContext = propagationContext,
+            sourceVertex = sourceVertex,
+            sourceChange = sourceOngoingChange,
+        )
     }
 
     final override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -92,10 +93,10 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     }
 
     final override fun computeOldValue(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT {
         val oldContentView = sourceVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return computeOldValue(
@@ -105,6 +106,7 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
 
     protected abstract fun buildUpdate(
         propagationContext: PropagationContext,
+        sourceVertex: TrackedGenericCollectionVertex<ContentT, ChangeT>,
         sourceChange: ChangeT,
     ): CellVertex.Update<ValueT>?
 
@@ -113,6 +115,6 @@ abstract class AbstractTrackedGenericCollectionProxyCellVertex<ContentT : Collec
     ): ValueT
 }
 
-typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, CollectionChange<ElementT>, ValueT>
+typealias AbstractTrackedCollectionProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Collection<ElementT>, TrackedGenericCollectionVertex.CollectionChange<ElementT>, ValueT>
 
 typealias AbstractTrackedSetProxyCellVertex<ElementT, ValueT> = AbstractTrackedGenericCollectionProxyCellVertex<Set<ElementT>, SetChange<ElementT>, ValueT>

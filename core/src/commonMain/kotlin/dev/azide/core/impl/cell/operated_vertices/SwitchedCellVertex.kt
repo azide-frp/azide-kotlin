@@ -1,18 +1,18 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.Cell
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
+import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
-import dev.azide.core.impl.cell.abstract_vertices.AbstractSimpleStatelessCellVertex
+import dev.azide.core.impl.cell.abstract_vertices.AbstractStatelessCellVertex
 import dev.azide.core.impl.cell.getNewValue
 import dev.azide.core.impl.registerBoundListener
 
 class SwitchedCellVertex<ValueT>(
     private val outerSourceVertex: CellVertex<Cell<ValueT>>,
-) : AbstractSimpleStatelessCellVertex<ValueT>(), BoundListener {
+) : AbstractStatelessCellVertex<ValueT>(), BoundListener {
     /**
      * The outer vertex listener handle.
      *
@@ -61,7 +61,7 @@ class SwitchedCellVertex<ValueT>(
             propagationContext: PropagationContext,
         ) {
             val stableInnerSourceVertex = this@SwitchedCellVertex.stableInnerSourceVertex
-                ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
             val updatedInnerSourceVertex = this@SwitchedCellVertex.updatedInnerSourceVertex
 
@@ -115,7 +115,7 @@ class SwitchedCellVertex<ValueT>(
                     ?: throw IllegalStateException("The outer source vertex doesn't seem to have updated")
 
                 val upstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle ?: throw IllegalStateException(
-                    "Vertex doesn't seem to be active"
+                    "ListenableVertex doesn't seem to be active"
                 )
 
                 updatedInnerSourceVertex.unregisterListener(
@@ -129,12 +129,12 @@ class SwitchedCellVertex<ValueT>(
                 // Re-subscribe to the stable inner vertex
 
                 val stableInnerSourceVertex =
-                    this.stableInnerSourceVertex ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                    this.stableInnerSourceVertex
+                        ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
                 this.upstreamNewInnerListenerHandle = stableInnerSourceVertex.registerBoundListener(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                     listener = innerSourceListener,
-                    mode = ActivationMode.Online,
                 )
 
                 when (val ongoingStableInnerUpdate = stableInnerSourceVertex.ongoingUpdate) {
@@ -156,19 +156,13 @@ class SwitchedCellVertex<ValueT>(
 
             else -> { // The outer source vertex has a proper update (potentially a correction)
                 val stableInnerSourceVertex = this@SwitchedCellVertex.stableInnerSourceVertex
-                    ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                    ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
                 val previousNewInnerSourceVertex = updatedInnerSourceVertex ?: stableInnerSourceVertex
 
                 val handledUpdatedInnerSourceCell: Cell<ValueT> = update.updatedValue
 
                 val handledUpdatedInnerSourceVertex = handledUpdatedInnerSourceCell.vertex
-
-                if (handledUpdatedInnerSourceVertex == previousNewInnerSourceVertex) {
-                    // If the source inner vertex doesn't effectively change, we can just ignore the update.
-                    // TODO: Clarify the CellVertex-level contract
-                    return
-                }
 
                 // Store link to the updated inner source vertex
 
@@ -177,7 +171,7 @@ class SwitchedCellVertex<ValueT>(
                 // Unsubscribe from the previous updated inner source vertex / stable source vertex
 
                 val previousUpstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle
-                    ?: throw IllegalStateException("Vertex doesn't seem to be active")
+                    ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
                 previousNewInnerSourceVertex.unregisterListener(
                     handle = previousUpstreamNewInnerListenerHandle,
@@ -186,19 +180,20 @@ class SwitchedCellVertex<ValueT>(
                 // Subscribe to the handled updated inner source vertex
 
                 this.upstreamNewInnerListenerHandle = handledUpdatedInnerSourceVertex.registerBoundListener(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                     listener = innerSourceListener,
-                    mode = ActivationMode.Online,
                 )
 
                 // Propagate the update
 
+                val updatedValue = handledUpdatedInnerSourceVertex.getNewValue(
+                    processingContext = propagationContext,
+                )
+
                 exposeUpdateNotifyingListeners(
                     propagationContext = propagationContext,
                     update = CellVertex.Update(
-                        updatedValue = handledUpdatedInnerSourceVertex.getNewValue(
-                            propagationContext = propagationContext,
-                        ),
+                        updatedValue = updatedValue,
                     ),
                 )
             }
@@ -206,31 +201,29 @@ class SwitchedCellVertex<ValueT>(
     }
 
     override fun activate(
-        propagationContext: PropagationContext,
-        mode: ActivationMode,
-    ): CellVertex.Update<ValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamOuterListenerHandle != null || stableInnerSourceVertex != null || updatedInnerSourceVertex != null || upstreamNewInnerListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         // Register the outer listener
 
         this.upstreamOuterListenerHandle = outerSourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         // Resolve the stable / updated inner source cells
 
         val stableInnerSourceCell: Cell<ValueT> = outerSourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         val updatedInnerSourceCell: Cell<ValueT>? = outerSourceVertex.ongoingUpdate?.updatedValue
 
         val newInnerSourceCell: Cell<ValueT> = updatedInnerSourceCell ?: outerSourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         val stableInnerSourceVertex = stableInnerSourceCell.vertex
@@ -247,12 +240,19 @@ class SwitchedCellVertex<ValueT>(
         // Register the inner source vertex listener (to the new inner source vertex)
 
         this.upstreamNewInnerListenerHandle = newInnerSourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = innerSourceListener,
-            mode = mode,
+        )
+    }
+
+    override fun buildInitialUpdate(
+        propagationContext: PropagationContext,
+    ): CellVertex.Update<ValueT>? {
+        val newInnerSourceCell: Cell<ValueT> = outerSourceVertex.getNewValue(
+            processingContext = propagationContext,
         )
 
-        return newInnerSourceVertex.ongoingUpdate
+        return newInnerSourceCell.vertex.ongoingUpdate
     }
 
     override fun deactivate() {
@@ -261,7 +261,7 @@ class SwitchedCellVertex<ValueT>(
         val upstreamNewInnerListenerHandle = this.upstreamNewInnerListenerHandle
 
         if (upstreamOuterListenerHandle == null || stableInnerSourceVertex == null) {
-            throw IllegalStateException("Vertex doesn't seem to be active")
+            throw IllegalStateException("ListenableVertex doesn't seem to be active")
         }
 
         // Unregister the outer source vertex listener
@@ -289,13 +289,13 @@ class SwitchedCellVertex<ValueT>(
     }
 
     override fun getOldValue(
-        propagationContext: PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ValueT {
         val oldInnerSourceVertex = when (val oldInnerSourceVertex = this.stableInnerSourceVertex) {
             null -> {
                 // When the vertex is inactive, (potentially) recompute the old cell. This might trigger user-provided
                 // transformations.
-                val oldCell = outerSourceVertex.getOldValue(propagationContext)
+                val oldCell = outerSourceVertex.getOldValue(processingContext)
 
                 oldCell.vertex
             }
@@ -305,7 +305,7 @@ class SwitchedCellVertex<ValueT>(
         }
 
         return oldInnerSourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
     }
 

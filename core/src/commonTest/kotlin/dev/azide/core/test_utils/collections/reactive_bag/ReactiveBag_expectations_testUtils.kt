@@ -6,7 +6,6 @@ import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.test_utils.generic.AbstractExplicitExpectedTestSubjectReaction
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectState
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
@@ -133,7 +132,7 @@ object ReactiveBag_expectations_testUtils {
             subject: ReactiveBag<ElementT>,
         ) {
             val actualTaggedContent = subject.trackedVertex.getOldContentView(
-                propagationContext = propagationContext,
+                processingContext = propagationContext,
             ).elementByTag
 
             assertEquals(

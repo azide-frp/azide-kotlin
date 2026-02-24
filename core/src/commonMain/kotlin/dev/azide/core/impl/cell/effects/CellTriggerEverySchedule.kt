@@ -1,18 +1,16 @@
 package dev.azide.core.impl.cell.effects
 
-import dev.azide.core.Action
 import dev.azide.core.Cell
 import dev.azide.core.Trigger
 import dev.azide.core.executeInternallyWrappedUp
-import dev.azide.core.impl.CommittableVertex
+import dev.azide.core.impl.Committable
+import dev.azide.core.impl.ListenableVertex
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.CellVertex.Update
 import dev.azide.core.impl.effects.InternalEffect
 import dev.azide.core.impl.effects.InternalSchedule
-import dev.azide.core.impl.enqueueForCommitment
 import dev.azide.core.impl.registerBoundListenerOnline
 
 class CellTriggerEverySchedule(
@@ -27,7 +25,7 @@ class CellTriggerEverySchedule(
         wrapUpContext: Transactions.WrapUpContext,
     ): InternalEffect.RevocableOutcome<Unit> {
         val initialInnerTrigger: Trigger = sourceActionCell.vertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
 
         val initialInnerTriggerRevocable = initialInnerTrigger.executeInternally(
@@ -35,14 +33,14 @@ class CellTriggerEverySchedule(
             wrapUpContext = wrapUpContext,
         ).revocable
 
-        class TriggerEveryRevocableOutcome : InternalEffect.RevocableOutcome<Unit>, Vertex.BoundListener,
-            CommittableVertex {
+        class TriggerEveryRevocableOutcome : InternalEffect.RevocableOutcome<Unit>, ListenableVertex.BoundListener,
+            Committable {
             private val sourceVertex: CellVertex<Trigger>
                 get() = sourceActionCell.vertex
 
             override val result = Unit
 
-            private var upstreamListenerHandle: Vertex.ListenerHandle? = null
+            private var upstreamListenerHandle: ListenableVertex.ListenerHandle? = null
 
             private var unstableNewInnerTriggerRevocable: Revocable? = null
 
@@ -123,7 +121,7 @@ class CellTriggerEverySchedule(
                 }
 
                 if (this@TriggerEveryRevocableOutcome.upstreamListenerHandle != null || this@TriggerEveryRevocableOutcome.unstableNewInnerTriggerRevocable != null) {
-                    throw IllegalStateException("Vertex seems to already be started up")
+                    throw IllegalStateException("ListenableVertex seems to already be started up")
                 }
 
                 // Re-register the listener
@@ -186,7 +184,9 @@ class CellTriggerEverySchedule(
                 }
             }
 
-            override fun commit() {
+            override fun commit(
+                commitmentContext: Transactions.CommitmentContext,
+            ) {
                 if (internalState != InternalState.StartedUp) {
                     return
                 }

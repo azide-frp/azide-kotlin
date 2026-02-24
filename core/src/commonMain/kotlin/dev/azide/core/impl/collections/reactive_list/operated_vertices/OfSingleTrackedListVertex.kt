@@ -1,9 +1,8 @@
 package dev.azide.core.impl.collections.reactive_list.operated_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractStatelessTrackedListVertex
 import dev.azide.core.impl.collections.reactive_list.ListChange
@@ -55,17 +54,15 @@ class OfSingleTrackedListVertex<ElementT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): ListChange<ElementT>? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingUpdate?.let { sourceOngoingUpdate ->
@@ -75,7 +72,7 @@ class OfSingleTrackedListVertex<ElementT>(
 
     override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -85,10 +82,10 @@ class OfSingleTrackedListVertex<ElementT>(
     }
 
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): List<ElementT> {
         val sourceValue = sourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         )
 
         return listOf(sourceValue)

@@ -1,9 +1,8 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
@@ -55,7 +54,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
                 when (internalState) {
                     InternalState.Spawning -> { // Fall back to emitting the old value
                         val oldValue: ValueT = sourceVertex.getOldValue(
-                            propagationContext = propagationContext,
+                            processingContext = propagationContext,
                         )
 
                         exposeEmissionNotifyingListeners(
@@ -87,17 +86,15 @@ class ValuesEventStreamVertex<ValueT> private constructor(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<ValueT>? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         val sourceOngoingUpdate = sourceVertex.ongoingUpdate
@@ -106,7 +103,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
             InternalState.Spawning -> { // Emit the new (updated / old) value
                 val newValue: ValueT = when (sourceOngoingUpdate) {
                     null -> sourceVertex.getOldValue(
-                        propagationContext = propagationContext,
+                        processingContext = processingContext,
                     )
 
                     else -> sourceOngoingUpdate.updatedValue
@@ -129,7 +126,7 @@ class ValuesEventStreamVertex<ValueT> private constructor(
 
     override fun deactivate() {
         val upstreamListenerHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = upstreamListenerHandle,
@@ -138,7 +135,10 @@ class ValuesEventStreamVertex<ValueT> private constructor(
         this.upstreamListenerHandle = null
     }
 
-    override fun transit() {
+    override fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: EventStreamVertex.Emission<ValueT>?,
+    ) {
         internalState = InternalState.Spawned
     }
 }

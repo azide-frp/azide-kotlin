@@ -11,13 +11,13 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_EventStream_start_rushedWrapUp_testUtils {
-    fun <EventT> executeStartTransaction(
+    fun <EventT> testStart(
         subjectEventStreamEffect: Effect<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_generic_start_rushedWrapUp_testUtils.testStart(
             trait = EventStreamObservationTrait(),
             subjectEffect = subjectEventStreamEffect,
             slottedInputStimulation = slottedInputStimulation,

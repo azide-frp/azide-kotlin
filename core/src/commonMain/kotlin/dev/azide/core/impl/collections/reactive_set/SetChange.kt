@@ -1,11 +1,11 @@
 package dev.azide.core.impl.collections.reactive_set
 
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 
 data class SetChange<out ElementT>(
-    override val addedElements: Set<ElementT>,
-    override val removedElements: Set<ElementT>,
-) : CollectionChange<ElementT> {
+    val addedElements: Set<ElementT>,
+    val removedElements: Set<ElementT>,
+) : GenericCollectionChange<Set<ElementT>> {
     companion object {
         fun <ElementT> of(
             addedElements: Set<ElementT>,
@@ -35,6 +35,13 @@ data class SetChange<out ElementT>(
 
     override val sizeDelta: Int
         get() = addedElements.size - removedElements.size
+
+    override val introducedContentView: Set<ElementT>
+        get() = addedElements
+
+    override fun getAbolishedContentView(
+        oldContentView: Set<@UnsafeVariance ElementT>,
+    ): Set<ElementT> = removedElements
 }
 
 fun <ElementT> SetChange<ElementT>.applyTo(

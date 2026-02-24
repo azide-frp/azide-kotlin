@@ -1,12 +1,11 @@
 package dev.azide.core.impl.event_stream
 
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.Listener
+import dev.azide.core.impl.ListenableVertex.ListenerStatus
 import dev.azide.core.impl.ReactiveFinalizationRegistry
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.Listener
-import dev.azide.core.impl.Vertex.ListenerStatus
 import dev.azide.core.impl.utils.weak_bag.MutableBag
 import dev.kmpx.platform.PlatformWeakReference
 import kotlin.jvm.JvmInline
@@ -40,7 +39,7 @@ interface LiveEventStreamVertex<out EventT> : EventStreamVertex<EventT> {
     @JvmInline
     value class LiveListenerHandle(
         val internalHandle: MutableBag.Handle<Listener>,
-    ) : Vertex.ListenerHandle
+    ) : ListenableVertex.ListenerHandle
 
     interface WeakListenerHandle {
         fun cancel()
@@ -62,17 +61,15 @@ fun <EventT> BoundListener.weaklyReferenced(
  * In a special (supported) case, [dependentVertex] and [listener] might be the same object.
  */
 fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
-    propagationContext: Transactions.PropagationContext,
-    dependentVertex: Vertex,
+    processingContext: Transactions.ProcessingContext,
+    dependentVertex: ListenableVertex,
     listener: BoundListener,
-    mode: ActivationMode,
 ): LiveEventStreamVertex.WeakListenerHandle {
-    val innerListenerHandle: Vertex.ListenerHandle = registerListener(
-        propagationContext = propagationContext,
+    val innerListenerHandle: ListenableVertex.ListenerHandle = registerListener(
+        processingContext = processingContext,
         listener = listener.weaklyReferenced(
             sourceEventStreamVertex = this@registerEmissionListenerWeakly,
         ),
-        mode = mode,
     )
 
     /*
@@ -90,11 +87,13 @@ fun <EventT> EventStreamVertex<EventT>.registerEmissionListenerWeakly(
      * short-lived loose listeners, the abandoned listener entries would constitute a significant memory leak.
      */
     val finalizationHandle: ReactiveFinalizationRegistry.Handle = ReactiveFinalizationRegistry.register(
-        target = dependentVertex, finalizationCallback = {
+        target = dependentVertex,
+        finalizationCallback = {
             this@registerEmissionListenerWeakly.unregisterListener(
                 handle = innerListenerHandle,
             )
-        })
+        },
+    )
 
     return object : LiveEventStreamVertex.WeakListenerHandle {
         override fun cancel() {

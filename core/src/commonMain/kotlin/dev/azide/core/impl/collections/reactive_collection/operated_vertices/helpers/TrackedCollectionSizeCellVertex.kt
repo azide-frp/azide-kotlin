@@ -3,7 +3,7 @@ package dev.azide.core.impl.collections.reactive_collection.operated_vertices.he
 import dev.azide.core.impl.Transactions.PropagationContext
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.collections.reactive_collection.TrackedCollectionVertex
-import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.CollectionChange
+import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollectionVertex.GenericCollectionChange
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
 
 class TrackedCollectionSizeCellVertex(
@@ -13,7 +13,8 @@ class TrackedCollectionSizeCellVertex(
 ) {
     override fun buildUpdate(
         propagationContext: PropagationContext,
-        sourceChange: CollectionChange<*>,
+        sourceVertex: TrackedCollectionVertex<*>,
+        sourceChange: GenericCollectionChange<Collection<Any?>>
     ): CellVertex.Update<Int>? {
         val sizeDelta = sourceChange.sizeDelta
 
@@ -22,7 +23,7 @@ class TrackedCollectionSizeCellVertex(
 
             else -> {
                 val oldSize = getOldValue(
-                    propagationContext = propagationContext,
+                    processingContext = propagationContext,
                 )
 
                 val newSize = oldSize + sizeDelta

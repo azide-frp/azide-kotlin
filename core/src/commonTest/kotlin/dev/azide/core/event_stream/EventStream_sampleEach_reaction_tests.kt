@@ -52,7 +52,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -82,7 +82,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -113,7 +113,7 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,

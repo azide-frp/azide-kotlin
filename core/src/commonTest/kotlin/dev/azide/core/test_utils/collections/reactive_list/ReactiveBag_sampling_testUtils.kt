@@ -7,7 +7,7 @@ import dev.azide.core.test_utils.collections.reactive_bag.ExpectedReactiveBagCon
 
 @Suppress("ClassName")
 data object ReactiveBag_sampling_testUtils {
-    fun <ElementT> executeSamplingTransaction(
+    fun <ElementT> testPassiveSampling(
         subjectReactiveBag: ReactiveBag<ElementT>,
         inputStimulation: TestStimulation? = null,
         expectedSubjectContent: ExpectedReactiveBagContent<ElementT>,

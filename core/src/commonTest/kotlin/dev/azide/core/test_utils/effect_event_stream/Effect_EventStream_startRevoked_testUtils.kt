@@ -8,12 +8,12 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_EventStream_startRevoked_testUtils {
-    fun <EventT> executeStartTransaction(
+    fun <EventT> testStart(
         subjectEventStreamEffect: Effect<EventStream<EventT>>,
         slottedInputStimulation: TestSlottedStimulation3? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_startRevoked_testUtils.executeStartTransaction(
+        Effect_generic_startRevoked_testUtils.testStart(
             subjectEffect = subjectEventStreamEffect,
             slottedInputStimulation = slottedInputStimulation,
             expectedTargetImpact = expectedTargetImpact,

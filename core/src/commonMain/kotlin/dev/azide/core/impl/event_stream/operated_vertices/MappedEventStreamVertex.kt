@@ -1,9 +1,9 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.EventStream
+import dev.azide.core.impl.ListenableVertex
+import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex
-import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractSimpleStatelessEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListener
@@ -15,7 +15,7 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
     private val sourceVertex: EventStreamVertex<EventT>
         get() = sourceEventStream.vertex
 
-    private var upstreamListenerHandle: Vertex.ListenerHandle? = null
+    private var upstreamListenerHandle: ListenableVertex.ListenerHandle? = null
 
     /**
      * Handle the emission of the source event stream.
@@ -43,17 +43,15 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ): EventStreamVertex.Emission<TransformedEventT>? {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            propagationContext = processingContext,
             listener = this,
-            mode = mode,
         )
 
         return sourceVertex.ongoingEmission?.map(transform)
@@ -61,7 +59,7 @@ class MappedEventStreamVertex<EventT, TransformedEventT>(
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = subscriptionHandle,

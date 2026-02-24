@@ -8,7 +8,7 @@ class PureTrackedGenericCollectionVertex<out ContentT: Collection<*>>(
     val elements: ContentT,
 ) : AbstractFrozenTrackedGenericCollectionVertex<ContentT>() {
     override fun getOldContentView(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): ContentT = elements
 }
 

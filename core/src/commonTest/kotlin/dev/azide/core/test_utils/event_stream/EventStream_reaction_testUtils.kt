@@ -7,12 +7,12 @@ import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 
 @Suppress("ClassName")
 data object EventStream_reaction_testUtils {
-    fun <EventT> executeReactionTransaction(
+    fun <EventT> testReaction(
         subjectEventStream: EventStream<EventT>,
         slottedInputStimulation: TestSlottedStimulation2,
         expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
     ) {
-        generic_reaction_testUtils.executeReactionTransaction(
+        generic_reaction_testUtils.testReaction(
             trait = EventStreamObservationTrait(),
             subject = subjectEventStream,
             slottedInputStimulation = slottedInputStimulation,

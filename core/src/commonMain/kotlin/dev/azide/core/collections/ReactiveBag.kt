@@ -40,7 +40,7 @@ val <ElementT> ReactiveBag<ElementT>.samplingTaggedElements: Moment<TaggedBag<El
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): TaggedBag<ElementT> = trackedVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         )
     }
 
@@ -53,7 +53,7 @@ val <ElementT> ReactiveBag<ElementT>.samplingTaggedContent: Moment<Map<Tag, Elem
             propagationContext: Transactions.PropagationContext,
             wrapUpContext: Transactions.WrapUpContext,
         ): Map<Tag, ElementT> = trackedVertex.getOldContentView(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
         ).elementByTag.toMap()
     }
 

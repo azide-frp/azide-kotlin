@@ -1,6 +1,6 @@
 package dev.azide.core.impl.collections.reactive_bag.operated_vertices
 
-import dev.azide.core.impl.Vertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.collections.reactive_bag.TaggedBag
 import dev.azide.core.impl.collections.reactive_bag.TaggedBagChange
 import dev.azide.core.impl.collections.reactive_collection.TrackedSetVertex
@@ -19,7 +19,8 @@ class FromSetTaggedBagVertex<ElementT>(
     override fun transformChange(
         change: SetChange<ElementT>,
     ): TaggedBagChange<ElementT> = TaggedBagChange(
-        changedElementByTag = change.addedElements.associateBy { it },
+        addedElementByTag = change.addedElements.associateBy { it },
+        replacedElementByTag = emptyMap(),
         removedTags = change.removedElements,
     )
 }

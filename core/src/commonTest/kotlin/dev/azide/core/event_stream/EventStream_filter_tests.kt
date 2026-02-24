@@ -16,6 +16,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
+// TODO: Switch to new-style unit test suite
 class EventStream_filter_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
@@ -46,7 +47,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -74,7 +75,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceEventStreamTag,
@@ -100,7 +101,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -128,7 +129,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.revokingEmission(
                 tag = SourceEventStreamTag,
@@ -154,7 +155,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -184,7 +185,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -211,7 +212,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,
@@ -240,7 +241,7 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.executeReactionTransaction(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
             slottedInputStimulation = sourceEventStream.correctingEmission(
                 tag = SourceEventStreamTag,

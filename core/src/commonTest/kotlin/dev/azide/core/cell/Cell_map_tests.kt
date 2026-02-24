@@ -1,45 +1,28 @@
 package dev.azide.core.cell
 
 import dev.azide.core.map
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
-import dev.azide.core.test_utils.cell.Cell_generic_testUtils
-import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
-import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.Cell_sampling_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import kotlin.test.Ignore
 import kotlin.test.Test
 
-@Suppress("ClassName", "PrivatePropertyName")
+@Suppress("ClassName")
 class Cell_map_tests {
-    private typealias SuitableSlotCount = TestSlotCount.Count2
 
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val slottedStimulationScenarioBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
+    // region Passive sampling
 
     @Test
-    fun test_passiveSample() {
-        val sourceCell = TestInputCell(
-            initialValue = 10,
-        )
+    fun test_passiveSampling() {
+        val inputCell = TestInputCell(initialValue = 10)
 
-        val subjectCell = sourceCell.map { it.toString() }
+        val subjectCell = inputCell.map { it.toString() }
 
-        Cell_sampling_testUtils.executeSamplingTransaction(
+        Cell_sampling_testUtils.testPassiveSampling(
             subjectCell = subjectCell,
             expectedSubjectValue = Cell_expectations_testUtils.expectStableValue(
                 expectedValue = "10",
@@ -47,98 +30,247 @@ class Cell_map_tests {
         )
     }
 
+    // endregion
+
+    // region Source cell updates
+
     @Test
-    fun test_sourceUpdates() {
-        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
-            test_sourceUpdates(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdates_deactivated() {
+        test_sourceUpdates(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectDeactivated,
+        )
     }
 
-    private fun test_sourceUpdates(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
-    ) {
-        val sourceCell = TestInputCell(
-            initialValue = 10,
+    @Test
+    fun test_sourceUpdates_keptAlive() {
+        test_sourceUpdates(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
         )
+    }
 
-        val subjectCell = sourceCell.map { it.toString() }
+    /**
+     * The source cell updates.
+     */
+    private fun test_sourceUpdates(
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
+    ) {
+        val inputCell = TestInputCell(initialValue = 10)
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        val subjectCell = inputCell.map { it.toString() }
+
+        Cell_map_testUtils.testReaction(
+            inputCell = inputCell,
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.updating(
-                tag = SourceCellTag,
-                newValue = 11,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = inputCell.update(newValue = 20),
+            ),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 expectedOldValue = "10",
-                expectedNewValue = "11",
+                expectedNewValue = "20",
             ),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
+        )
+    }
+
+    // endregion
+
+    // region Source cell updates to the same value
+
+    @Test
+    fun test_sourceUpdatesToSameValue_deactivated() {
+        test_sourceUpdatesToSameValue(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectDeactivated,
         )
     }
 
     @Test
-    fun test_sourceUpdates_revoked() {
-        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
-            test_sourceUpdates_revoked(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdatesToSameValue_keptAlive() {
+        test_sourceUpdatesToSameValue(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+        )
     }
 
-    private fun test_sourceUpdates_revoked(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+    /**
+     * The source cell updates to the same value it already holds (X → X). Cells do not rely on [equals] to suppress
+     * redundant updates, so the mapped cell still observes a real update (Y → Y where Y = f(X)).
+     */
+    private fun test_sourceUpdatesToSameValue(
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
-        val sourceCell = TestInputCell(
-            initialValue = 10,
-        )
+        val inputCell = TestInputCell(initialValue = 10)
 
-        val subjectCell = sourceCell.map { it.toString() }
+        val subjectCell = inputCell.map { it.toString() }
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_map_testUtils.testReaction(
+            inputCell = inputCell,
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.revokingUpdate(
-                tag = SourceCellTag,
-                newValue = 11,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = inputCell.update(newValue = 10),
+            ),
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldValue = "10",
+                expectedNewValue = "10",
+            ),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
+        )
+    }
+
+    // endregion
+
+    // region Source cell update revoked
+
+    @Test
+    fun test_sourceUpdates_revoked_deactivated() {
+        test_sourceUpdates_revoked(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectDeactivated,
+        )
+    }
+
+    @Test
+    fun test_sourceUpdates_revoked_keptAlive() {
+        test_sourceUpdates_revoked(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+        )
+    }
+
+    /**
+     * The source cell is updated and then the update is revoked, so the mapped cell should reflect no net change.
+     */
+    private fun test_sourceUpdates_revoked(
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
+    ) {
+        val inputCell = TestInputCell(initialValue = 10)
+
+        val subjectCell = inputCell.map { it.toString() }
+
+        Cell_map_testUtils.testReaction(
+            inputCell = inputCell,
+            subjectCell = subjectCell,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    inputCell.update(newValue = 20),
+                    inputCell.revokeUpdate(),
+                ),
+            ),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedUnaffectedValue = "10",
             ),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
+        )
+    }
+
+    // endregion
+
+    // region Source cell update corrected
+
+    @Test
+    fun test_sourceUpdates_corrected_deactivated() {
+        test_sourceUpdates_corrected(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectDeactivated,
         )
     }
 
     @Test
-    fun test_sourceUpdates_corrected() {
-        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
-            test_sourceUpdates_corrected(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdates_corrected_keptAlive() {
+        test_sourceUpdates_corrected(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+        )
     }
 
+    /**
+     * The source cell is updated and then the update is corrected to a different value. The mapped cell should reflect
+     * the corrected (final) value.
+     */
     private fun test_sourceUpdates_corrected(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
     ) {
-        val sourceCell = TestInputCell(
-            initialValue = 10,
-        )
+        val inputCell = TestInputCell(initialValue = 10)
 
-        val subjectCell = sourceCell.map { it.toString() }
+        val subjectCell = inputCell.map { it.toString() }
 
-        Cell_reaction_testUtils.executeReactionTransaction(
+        Cell_map_testUtils.testReaction(
+            inputCell = inputCell,
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.correctingUpdate(
-                tag = SourceCellTag,
-                intermediateNewValue = 11,
-                correctedNewValue = 12,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    inputCell.update(newValue = 20),
+                    inputCell.correctUpdate(correctedNewValue = 30),
+                ),
+            ),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedOldValue = "10",
-                expectedNewValue = "12",
+                expectedNewValue = "30",
             ),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
         )
     }
+
+    // endregion
+
+    // region Source cell update corrected to the same (original) value
+
+    @Test
+    fun test_sourceUpdates_correctedToSameValue_deactivated() {
+        test_sourceUpdates_correctedToSameValue(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectDeactivated,
+        )
+    }
+
+    @Test
+    fun test_sourceUpdates_correctedToSameValue_keptAlive() {
+        test_sourceUpdates_correctedToSameValue(
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+        )
+    }
+
+    /**
+     * The source cell is updated and then the update is corrected back to the original value. Cells do not rely on
+     * [equals] to suppress redundant updates, so the mapped cell still observes a real update (Y → Y where Y = f(X)).
+     */
+    private fun test_sourceUpdates_correctedToSameValue(
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
+    ) {
+        val inputCell = TestInputCell(initialValue = 10)
+
+        val subjectCell = inputCell.map { it.toString() }
+
+        Cell_map_testUtils.testReaction(
+            inputCell = inputCell,
+            subjectCell = subjectCell,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    inputCell.update(newValue = 20),
+                    inputCell.correctUpdate(correctedNewValue = 10),
+                ),
+            ),
+            expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+                expectedOldValue = "10",
+                expectedNewValue = "10",
+            ),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
+        )
+    }
+
+    // endregion
+
+    // region Offline activation
+
+    @Test
+    @Ignore // FIXME: Fix offline activation
+    fun test_offlineActivation() {
+        val inputCell = TestInputCell(initialValue = 10)
+
+        val subjectCell = inputCell.map { it.toString() }
+
+        Cell_map_testUtils.testOfflineActivation(
+            inputCell = inputCell,
+            subjectCell = subjectCell,
+        )
+    }
+
+    // endregion
 }

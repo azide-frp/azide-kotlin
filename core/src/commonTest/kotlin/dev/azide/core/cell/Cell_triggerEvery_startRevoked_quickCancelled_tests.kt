@@ -1,18 +1,18 @@
 package dev.azide.core.cell
 
 import dev.azide.core.Schedule
-import dev.azide.core.triggerEvery
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.cell.updating
-import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
+import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import dev.azide.core.triggerEvery
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
@@ -41,7 +41,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             expectedTargetImpact = ExpectedImpact.combine(
                 targetTriggerRecorder1.expectIsNotExecuted(),
@@ -75,7 +75,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.updating(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -113,7 +113,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.revokingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
@@ -152,7 +152,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         val subjectSchedule: Schedule = sourceCell.triggerEvery()
 
-        Schedule_startRevoked_quickCancelled_testUtils.executeStartTransaction(
+        Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
             slottedInputStimulation = sourceCell.correctingUpdate(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,

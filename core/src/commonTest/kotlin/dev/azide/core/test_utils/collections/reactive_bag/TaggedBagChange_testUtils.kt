@@ -14,23 +14,28 @@ object TaggedBagChange_testUtils {
         oldTaggedContent: Map<ReactiveBag.Tag, ElementT>,
         newTaggedContent: Map<ReactiveBag.Tag, ElementT>,
     ): TaggedBagChange<ElementT>? {
-        val changedElementByTag = buildMap {
-            for ((tag, newElement) in newTaggedContent) {
-                val oldElement = oldTaggedContent[tag]
-                if (oldElement != newElement) {
-                    put(tag, newElement)
+        val addedElementByTag = mutableMapOf<ReactiveBag.Tag, ElementT>()
+        val replacedElementByTag = mutableMapOf<ReactiveBag.Tag, ElementT>()
+        for ((tag, newElement) in newTaggedContent) {
+            val oldElement = oldTaggedContent[tag]
+            if (oldElement != newElement) {
+                if (tag in oldTaggedContent) {
+                    replacedElementByTag[tag] = newElement
+                } else {
+                    addedElementByTag[tag] = newElement
                 }
             }
         }
 
         val removedTags = oldTaggedContent.keys - newTaggedContent.keys
 
-        if (changedElementByTag.isEmpty() && removedTags.isEmpty()) {
+        if (addedElementByTag.isEmpty() && replacedElementByTag.isEmpty() && removedTags.isEmpty()) {
             return null
         }
 
         return TaggedBagChange(
-            changedElementByTag = changedElementByTag,
+            addedElementByTag = addedElementByTag,
+            replacedElementByTag = replacedElementByTag,
             removedTags = removedTags,
         )
     }

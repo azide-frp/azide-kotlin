@@ -12,14 +12,14 @@ import dev.azide.core.test_utils.generic.ExpectedImpact
 
 @Suppress("ClassName")
 data object Effect_EventStream_start_testUtils {
-    fun <EventT> executeStartTransaction(
+    fun <EventT> testStart(
         subjectEventStreamEffect: Effect<EventStream<EventT>>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
         slottedInputStimulation: TestSlottedStimulation2? = null,
         expectedSubjectEmission: ExpectedEventStreamEmission<EventT>,
         expectedTargetImpact: ExpectedImpact,
     ) {
-        Effect_generic_start_testUtils.executeStartTransaction(
+        Effect_generic_start_testUtils.testStart(
             trait = EventStreamObservationTrait(),
             subjectEffect = subjectEventStreamEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,

@@ -7,24 +7,35 @@ import dev.azide.core.impl.collections.reactive_collection.TrackedGenericCollect
 import dev.azide.core.impl.collections.reactive_collection.abstract_vertices.AbstractTrackedCollectionProxyCellVertex
 
 class TrackedCollectionContainsCellVertex<ElementT>(
-    sourceVertex: TrackedCollectionVertex<ElementT>,
+    private val sourceVertex: TrackedCollectionVertex<ElementT>,
     private val element: ElementT,
 ) : AbstractTrackedCollectionProxyCellVertex<ElementT, Boolean>(
     sourceVertex = sourceVertex,
 ) {
     override fun buildUpdate(
         propagationContext: Transactions.PropagationContext,
-        sourceChange: TrackedGenericCollectionVertex.CollectionChange<ElementT>,
-    ): CellVertex.Update<Boolean>? = when {
-        sourceChange.addedElements.contains(element) -> CellVertex.Update(
-            updatedValue = true,
+        sourceVertex: TrackedCollectionVertex<ElementT>,
+        sourceChange: TrackedGenericCollectionVertex.GenericCollectionChange<Collection<ElementT>>
+    ): CellVertex.Update<Boolean>? {
+        val oldContentView = sourceVertex.getOldContentView(
+            processingContext = propagationContext,
         )
 
-        sourceChange.removedElements.contains(element) -> CellVertex.Update(
-            updatedValue = false,
+        val abolishedContentView: Collection<ElementT> = sourceChange.getAbolishedContentView(
+            oldContentView = oldContentView,
         )
 
-        else -> null
+        return when {
+            sourceChange.introducedContentView.contains(element) -> CellVertex.Update(
+                updatedValue = true,
+            )
+
+            abolishedContentView.contains(element) -> CellVertex.Update(
+                updatedValue = false,
+            )
+
+            else -> null
+        }
     }
 
     override fun computeOldValue(

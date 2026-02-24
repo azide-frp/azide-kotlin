@@ -8,31 +8,29 @@ import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.cell.TestInputCellTag
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
-import dev.azide.core.test_utils.effect_generic.Effect_generic_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
-import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.expectIsExecutedOnce
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
+import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.generic_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 
 @Suppress("ClassName")
 data object Cell_executeEvery_testUtils {
     data object SourceActionCellTag : TestInputCellTag
 
-    val stimulationScenarioBank_sourceActionCellUpdates = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceActionCellUpdates = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceActionCellUpdatesRevoked = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceActionCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceActionCellUpdatesCorrected = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceActionCellTag,
         ),
@@ -46,7 +44,7 @@ data object Cell_executeEvery_testUtils {
 
         val targetActionRecorder = TestTargetActionRecorder.pure(result = -1)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -80,7 +78,7 @@ data object Cell_executeEvery_testUtils {
 
         val targetActionRecorder = TestTargetActionRecorder.pure(result = 0)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(

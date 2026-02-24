@@ -44,7 +44,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_rushedWrapUp_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_rushedWrapUp_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             expectedSubjectContentTransition = ReactiveBag_expectations_testUtils.expectNoTaggedContentTransition(
                 expectedUnaffectedTaggedContent = mapOf(
@@ -101,7 +101,7 @@ class ReactiveBag_actuate_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<ReactiveBag<Int>> = sourceReactiveBag.actuate()
 
-        val subjectReactiveBag = Effect_ReactiveBag_start_rushedWrapUp_testUtils.executeStartTransaction(
+        val subjectReactiveBag = Effect_ReactiveBag_start_rushedWrapUp_testUtils.testStart(
             subjectReactiveBagEffect = subjectEffect,
             slottedInputStimulation = sourceReactiveBag.changing(
                 tag = SourceEffectReactiveBagTag,

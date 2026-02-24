@@ -3,11 +3,11 @@ package dev.azide.core.impl.effects
 import dev.azide.core.Action
 import dev.azide.core.EventStream
 import dev.azide.core.executeInternallyWrappedUpUnpacked
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Revocable
 import dev.azide.core.impl.Transactions
 import dev.azide.core.impl.Transactions.PropagationContext
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
 import dev.azide.core.impl.event_stream.registerBoundListenerOnline
@@ -42,8 +42,7 @@ class ExecutedEachEventStreamVertex<EventT>(
                     propagationContext: PropagationContext,
                     wrapUpContext: Transactions.WrapUpContext,
                 ): Revocable {
-                    detach(
-                    )
+                    detach()
 
                     if (ongoingEmission != null) {
                         exposeEmissionNotifyingListeners(
@@ -78,8 +77,7 @@ class ExecutedEachEventStreamVertex<EventT>(
                  */
                 override fun revoke() {
                     if (internalState == InternalState.Attached) {
-                        detach(
-                        )
+                        detach()
                     }
 
                     internalState = InternalState.Disposed
@@ -145,7 +143,7 @@ class ExecutedEachEventStreamVertex<EventT>(
         propagationContext: PropagationContext,
     ): Emission<EventT>? {
         if (internalState != InternalState.Detached) {
-            throw IllegalStateException("Vertex is attached or disposed: $internalState")
+            throw IllegalStateException("ListenableVertex is attached or disposed: $internalState")
         }
 
         val sourceEventStream = this@ExecutedEachEventStreamVertex.sourceEventStream
@@ -179,7 +177,7 @@ class ExecutedEachEventStreamVertex<EventT>(
 
     private fun detach() {
         if (internalState != InternalState.Attached) {
-            throw IllegalStateException("Vertex is already detached or disposed: $internalState")
+            throw IllegalStateException("ListenableVertex is already detached or disposed: $internalState")
         }
 
         val sourceEventStream = this@ExecutedEachEventStreamVertex.sourceEventStream
@@ -204,7 +202,10 @@ class ExecutedEachEventStreamVertex<EventT>(
         internalState = InternalState.Detached
     }
 
-    override fun transit() {
+    override fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: Emission<EventT>?,
+    ) {
         this.executedActionRevocable = null
     }
 

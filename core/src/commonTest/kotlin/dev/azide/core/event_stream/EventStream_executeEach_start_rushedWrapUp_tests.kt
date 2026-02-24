@@ -32,7 +32,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_EventStream_start_rushedWrapUp_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
             expectedTargetImpact = ExpectedImpact.None,
@@ -55,7 +55,7 @@ class EventStream_executeEach_start_rushedWrapUp_tests {
 
         val subjectEffect: Effect<EventStream<Int>> = sourceEventStream.executeEach()
 
-        Effect_EventStream_start_rushedWrapUp_testUtils.executeStartTransaction(
+        Effect_EventStream_start_rushedWrapUp_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
             slottedInputStimulation = sourceEventStream.emitting(
                 tag = SourceActionEventStreamTag,

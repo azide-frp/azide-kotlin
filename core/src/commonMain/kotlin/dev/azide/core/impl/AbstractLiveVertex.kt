@@ -5,13 +5,13 @@ import dev.kmpx.collections.StableCollection
 import dev.kmpx.collections.lists.LinkedList
 import kotlin.jvm.JvmInline
 
-abstract class AbstractLiveVertex : Vertex {
+abstract class AbstractLiveVertex : ListenableVertex {
     @JvmInline
     private value class LiveListenerHandle(
-        val internalHandle: StableCollection.Handle<Vertex.Listener>,
-    ) : Vertex.ListenerHandle
+        val internalHandle: StableCollection.Handle<ListenableVertex.Listener>,
+    ) : ListenableVertex.ListenerHandle
 
-    private val _registeredListeners: LinkedList<Vertex.Listener> = LinkedList()
+    private val _registeredListeners: LinkedList<ListenableVertex.Listener> = LinkedList()
 
     override val listenerCount: Int
         get() = _registeredListeners.size
@@ -19,16 +19,14 @@ abstract class AbstractLiveVertex : Vertex {
     private var _isNotifyingListeners = false
 
     override fun registerListener(
-        propagationContext: Transactions.PropagationContext,
-        listener: Vertex.Listener,
-        mode: Vertex.ActivationMode,
-    ): Vertex.ListenerHandle {
+        processingContext: Transactions.ProcessingContext,
+        listener: ListenableVertex.Listener,
+    ): ListenableVertex.ListenerHandle {
         val internalHandle = _registeredListeners.append(listener)
 
         if (_registeredListeners.size == 1) {
             onFirstListenerRegistered(
-                propagationContext = propagationContext,
-                mode = mode,
+                processingContext = processingContext,
             )
         }
 
@@ -38,7 +36,7 @@ abstract class AbstractLiveVertex : Vertex {
     }
 
     override fun unregisterListener(
-        handle: Vertex.ListenerHandle,
+        handle: ListenableVertex.ListenerHandle,
     ) {
         @Suppress("UNCHECKED_CAST") val handleImpl =
             handle as? LiveListenerHandle ?: throw IllegalArgumentException("Invalid handle")
@@ -66,7 +64,7 @@ abstract class AbstractLiveVertex : Vertex {
                 )
 
                 // Remove the listener if it's unreachable
-                listenerStatus == Vertex.ListenerStatus.Unreachable
+                listenerStatus == ListenableVertex.ListenerStatus.Unreachable
             }
         } finally {
             _isNotifyingListeners = false
@@ -74,8 +72,7 @@ abstract class AbstractLiveVertex : Vertex {
     }
 
     protected open fun onFirstListenerRegistered(
-        propagationContext: Transactions.PropagationContext,
-        mode: Vertex.ActivationMode,
+        processingContext: Transactions.ProcessingContext,
     ) {
     }
 

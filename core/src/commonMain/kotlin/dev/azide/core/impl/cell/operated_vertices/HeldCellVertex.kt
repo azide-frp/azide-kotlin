@@ -1,9 +1,8 @@
 package dev.azide.core.impl.cell.operated_vertices
 
 import dev.azide.core.EventStream
+import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractStatefulCellVertex
 import dev.azide.core.impl.event_stream.registerEmissionListenerWeakly
@@ -51,10 +50,9 @@ class HeldCellVertex<ValueT> private constructor(
         val sourceVertex = sourceEventStream.vertex
 
         sourceVertex.registerEmissionListenerWeakly(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
             dependentVertex = this,
             listener = this,
-            mode = ActivationMode.Online,
         )
 
         return sourceVertex.ongoingEmission?.let { sourceOngoingEmission ->

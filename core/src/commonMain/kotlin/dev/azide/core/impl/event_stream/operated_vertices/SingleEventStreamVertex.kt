@@ -1,9 +1,8 @@
 package dev.azide.core.impl.event_stream.operated_vertices
 
 import dev.azide.core.EventStream
+import dev.azide.core.impl.ListenableVertex.BoundListener
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.event_stream.LiveEventStreamVertex
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractStatefulEventStreamVertex
@@ -48,18 +47,24 @@ class SingleEventStreamVertex<EventT>(
     ): EventStreamVertex.Emission<EventT>? {
 
         upstreamWeakListenerHandle = sourceVertex.registerEmissionListenerWeakly(
-            propagationContext = propagationContext,
+            processingContext = propagationContext,
             dependentVertex = this,
             listener = this,
-            mode = ActivationMode.Online,
         )
 
         return sourceVertex.ongoingEmission
     }
 
-    override fun transit() {
+    override fun transit(
+        commitmentContext: Transactions.CommitmentContext,
+        ongoingEmission: EventStreamVertex.Emission<EventT>?,
+    ) {
         val upstreamWeakListenerHandle = this.upstreamWeakListenerHandle
             ?: throw IllegalStateException("It looks as if the single emission already had place or the vertex wasn't initialized")
+
+        if (ongoingEmission == null) {
+            return
+        }
 
         upstreamWeakListenerHandle.cancel()
 

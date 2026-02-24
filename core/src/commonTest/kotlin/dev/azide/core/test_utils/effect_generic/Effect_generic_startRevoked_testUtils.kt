@@ -3,6 +3,7 @@ package dev.azide.core.test_utils.effect_generic
 import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.test_utils.TestSlottedStimulation3
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
 import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
@@ -10,9 +11,24 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object Effect_generic_startRevoked_testUtils {
-    fun <SubjectT> executeStartTransaction(
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was started.
+         */
+        val preStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was started, but before it was revoked.
+         */
+        val postStartStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect's start was revoked.
+         */
+        val postStartRevocationStimulation: TestStimulation,
+    )
+
+    fun <SubjectT> testStart(
         subjectEffect: Effect<SubjectT>,
-        slottedInputStimulation: TestSlottedStimulation3? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedTargetImpact: ExpectedImpact,
     ) {
         Effect_generic_testUtils.executeTransactionWithImpactAndNewStateVerification(
@@ -20,7 +36,7 @@ data object Effect_generic_startRevoked_testUtils {
             expectedNewState = null,
         ) { propagationContext ->
             // 0. Pre-stimulation
-            slottedInputStimulation?.slotStimulation0?.stimulate(
+            inputStimulationPlan?.preStartStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -31,18 +47,36 @@ data object Effect_generic_startRevoked_testUtils {
 
             val subject = effectOutcome.result
 
-            slottedInputStimulation?.slotStimulation1?.stimulate(
+            inputStimulationPlan?.postStartStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             // 2. Revoke the effect's start
             startRevocable.revoke()
 
-            slottedInputStimulation?.slotStimulation2?.stimulate(
+            inputStimulationPlan?.postStartRevocationStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
             subject
         }
+    }
+
+    fun <SubjectT> testStart(
+        subjectEffect: Effect<SubjectT>,
+        slottedInputStimulation: TestSlottedStimulation3? = null,
+        expectedTargetImpact: ExpectedImpact,
+    ) {
+        testStart(
+            subjectEffect = subjectEffect,
+            inputStimulationPlan = slottedInputStimulation?.let {
+                InputStimulationPlan(
+                    preStartStimulation = it.slotStimulation0,
+                    postStartStimulation = it.slotStimulation1,
+                    postStartRevocationStimulation = it.slotStimulation2,
+                )
+            },
+            expectedTargetImpact = expectedTargetImpact,
+        )
     }
 }

@@ -11,7 +11,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation2
 
 @Suppress("ClassName")
 data object generic_spawn_rushedWrapUp_testUtils {
-    fun <SubjectT : Any, NotificationT : Any> executeSpawnTransaction(
+    fun <SubjectT : Any, NotificationT : Any> testSpawn(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectSpawnMoment: Moment<SubjectT>,
         slottedInputStimulation: TestSlottedStimulation3? = null,

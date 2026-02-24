@@ -3,7 +3,7 @@ package dev.azide.core.event_stream
 import dev.azide.core.single
 import dev.azide.core.test_utils.async.AsyncTest
 import dev.azide.core.test_utils.async.AsyncTestGroup
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.JsEventStreamTestUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 
@@ -19,7 +19,7 @@ data object EventStream_single_garbageCollection_testGroup : AsyncTestGroup() {
             val sourceEventStream = TestInputEventStream<Int>()
 
             JsEventStreamTestUtils.ensureCollectible {
-                EventStreamTestUtils.spawnStatefulEventStream {
+                EventStreamTestUtils_deprecated.spawnStatefulEventStream {
                     sourceEventStream.single()
                 }
             }
@@ -32,15 +32,15 @@ data object EventStream_single_garbageCollection_testGroup : AsyncTestGroup() {
 
             JsEventStreamTestUtils.ensureCollectible {
 
-                val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
+                val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStream {
                     sourceEventStream.single()
                 }
 
-                EventStreamTestUtils.registerNoopListener(
+                EventStreamTestUtils_deprecated.registerNoopListener(
                     subjectEventStream = subjectEventStream,
                 )
 
-                EventStreamTestUtils.spawnStatefulEventStream {
+                EventStreamTestUtils_deprecated.spawnStatefulEventStream {
                     sourceEventStream.single()
                 }
             }

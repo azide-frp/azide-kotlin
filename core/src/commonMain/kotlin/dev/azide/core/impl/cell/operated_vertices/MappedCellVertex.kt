@@ -1,9 +1,8 @@
 package dev.azide.core.impl.cell.operated_vertices
 
+import dev.azide.core.impl.ListenableVertex.BoundListener
+import dev.azide.core.impl.ListenableVertex.ListenerHandle
 import dev.azide.core.impl.Transactions
-import dev.azide.core.impl.Vertex.ActivationMode
-import dev.azide.core.impl.Vertex.BoundListener
-import dev.azide.core.impl.Vertex.ListenerHandle
 import dev.azide.core.impl.cell.CellVertex
 import dev.azide.core.impl.cell.abstract_vertices.AbstractCachingCellVertex
 import dev.azide.core.impl.registerBoundListener
@@ -12,7 +11,6 @@ class MappedCellVertex<ValueT, TransformedValueT>(
     private val sourceVertex: CellVertex<ValueT>,
     private val transform: (ValueT) -> TransformedValueT,
 ) : AbstractCachingCellVertex<TransformedValueT>(
-    cacheType = CacheType.Momentary,
 ), BoundListener {
     private var upstreamListenerHandle: ListenerHandle? = null
 
@@ -40,25 +38,25 @@ class MappedCellVertex<ValueT, TransformedValueT>(
     }
 
     override fun activate(
-        propagationContext: Transactions.PropagationContext,
-        mode: ActivationMode,
-    ): CellVertex.Update<TransformedValueT>? {
+        processingContext: Transactions.ProcessingContext,
+    ) {
         if (upstreamListenerHandle != null) {
-            throw IllegalStateException("Vertex seems to be already active")
+            throw IllegalStateException("ListenableVertex seems to be already active")
         }
 
         upstreamListenerHandle = sourceVertex.registerBoundListener(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
             listener = this,
-            mode = mode,
         )
-
-        return sourceVertex.ongoingUpdate?.map(transform)
     }
+
+    override fun buildInitialUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<TransformedValueT>? = sourceVertex.ongoingUpdate?.map(transform)
 
     override fun deactivate() {
         val subscriptionHandle =
-            this.upstreamListenerHandle ?: throw IllegalStateException("Vertex doesn't seem to be active")
+            this.upstreamListenerHandle ?: throw IllegalStateException("ListenableVertex doesn't seem to be active")
 
         sourceVertex.unregisterListener(
             handle = subscriptionHandle,
@@ -68,10 +66,10 @@ class MappedCellVertex<ValueT, TransformedValueT>(
     }
 
     override fun computeOldValue(
-        propagationContext: Transactions.PropagationContext,
+        processingContext: Transactions.ProcessingContext,
     ): TransformedValueT = transform(
         sourceVertex.getOldValue(
-            propagationContext = propagationContext,
+            processingContext = processingContext,
         ),
     )
 }

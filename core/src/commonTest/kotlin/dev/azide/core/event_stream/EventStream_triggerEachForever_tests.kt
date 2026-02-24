@@ -45,7 +45,7 @@ class EventStream_triggerEachForever_tests {
         )
 
         TestUtils.stimulateSeparately(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect),
                 ),
@@ -70,7 +70,7 @@ class EventStream_triggerEachForever_tests {
         )
 
         TestUtils.stimulateSeparately(
-            inputStimulation = TestStimulation.combine(
+            inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = Action.adapt(mockSideEffect1),
                 ),

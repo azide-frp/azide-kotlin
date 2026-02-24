@@ -4,6 +4,7 @@ import dev.azide.core.Effect
 import dev.azide.core.executeInternallyWrappedUpUnpacked
 import dev.azide.core.impl.Revocable
 import dev.azide.core.test_utils.TestSlottedStimulation2
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectTransition
 import dev.azide.core.test_utils.generic.TestSubjectObservationTrait
@@ -13,11 +14,22 @@ import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 
 @Suppress("ClassName")
 data object Effect_generic_cancelled_testUtils {
-    fun <SubjectT, NotificationT : Any> executeCancelTransaction(
+    data class InputStimulationPlan(
+        /**
+         * Input stimulation before the test subject effect was canceled.
+         */
+        val preCancelStimulation: TestStimulation,
+        /**
+         * Input stimulation after the test subject effect was canceled.
+         */
+        val postCancelStimulation: TestStimulation,
+    )
+
+    fun <SubjectT, NotificationT : Any> testCancel(
         trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
         subjectOutcome: Effect.Outcome<SubjectT>,
         subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
-        slottedInputStimulation: TestSlottedStimulation2? = null,
+        inputStimulationPlan: InputStimulationPlan? = null,
         expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
         expectedTargetImpact: ExpectedImpact,
         cancelCount: Int = 1,
@@ -43,7 +55,7 @@ data object Effect_generic_cancelled_testUtils {
             )
 
             // 0. Pre-stimulation
-            slottedInputStimulation?.slotStimulation0?.stimulate(
+            inputStimulationPlan?.preCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -54,7 +66,7 @@ data object Effect_generic_cancelled_testUtils {
                 )
             }
 
-            slottedInputStimulation?.slotStimulation1?.stimulate(
+            inputStimulationPlan?.postCancelStimulation?.stimulate(
                 propagationContext = propagationContext,
             )
 
@@ -75,5 +87,30 @@ data object Effect_generic_cancelled_testUtils {
 
             subject
         }
+    }
+
+    fun <SubjectT, NotificationT : Any> testCancel(
+        trait: TestSubjectObservationTrait<SubjectT, NotificationT>,
+        subjectOutcome: Effect.Outcome<SubjectT>,
+        subjectPerceptionStrategy: TestSubjectPerceptionStrategy,
+        slottedInputStimulation: TestSlottedStimulation2? = null,
+        expectedSubjectTransition: ExpectedTestSubjectTransition<SubjectT, NotificationT>,
+        expectedTargetImpact: ExpectedImpact,
+        cancelCount: Int = 1,
+    ) {
+        testCancel(
+            trait = trait,
+            subjectOutcome = subjectOutcome,
+            subjectPerceptionStrategy = subjectPerceptionStrategy,
+            inputStimulationPlan = slottedInputStimulation?.let {
+                InputStimulationPlan(
+                    preCancelStimulation = it.slotStimulation0,
+                    postCancelStimulation = it.slotStimulation1,
+                )
+            },
+            expectedSubjectTransition = expectedSubjectTransition,
+            expectedTargetImpact = expectedTargetImpact,
+            cancelCount = cancelCount,
+        )
     }
 }

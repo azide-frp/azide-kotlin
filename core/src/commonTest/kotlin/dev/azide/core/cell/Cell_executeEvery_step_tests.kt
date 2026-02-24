@@ -11,8 +11,8 @@ import dev.azide.core.test_utils.cell.correctingUpdate
 import dev.azide.core.test_utils.cell.revokingUpdate
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
-import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.expectIsExecutedOnce
+import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.Test
@@ -47,7 +47,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.update(
@@ -92,7 +92,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.revokingUpdate(
@@ -138,7 +138,7 @@ class Cell_executeEvery_step_tests {
 
         val subjectCell = subjectEffect.startExternally().result
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
             inputStimulation = sourceCell.correctingUpdate(

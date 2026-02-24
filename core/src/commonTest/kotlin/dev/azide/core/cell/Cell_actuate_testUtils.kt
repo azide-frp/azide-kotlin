@@ -11,25 +11,25 @@ import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import dev.azide.core.test_utils.generic.generic_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 
 @Suppress("ClassName")
 data object Cell_actuate_testUtils {
     data object SourceEffectCellTag : TestInputCellTag
 
-    val stimulationScenarioBank_sourceEffectCellUpdates = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectCellUpdates = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.updateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectCellUpdatesRevoked = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectCellUpdatesRevoked = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectCellUpdatesCorrected = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectCellUpdatesCorrected = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.correctedUpdateScenario(
             inputCellTag = SourceEffectCellTag,
         ),
@@ -43,7 +43,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = -1)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
@@ -77,7 +77,7 @@ data object Cell_actuate_testUtils {
 
         val targetEffect = TestTargetEffect.pure(result = 0)
 
-        Effect_Cell_step_testUtils.executeStepTransaction(
+        Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = TestSubjectPerceptionStrategy.Perceived,
             inputStimulation = sourceCell.update(
