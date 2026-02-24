@@ -32,7 +32,7 @@ object EventStream_fuzzyTestUtils {
                 sequences = listOfNotNull(
                     buildSingleExtraRandomRevokedSequence(),
                     buildSingleExtraRandomRevokedSequence(),
-                ).filterNotNull(),
+                ),
             )
 
             else -> buildRandomEffectiveInputEventStreamStimulationSequence(
@@ -139,7 +139,7 @@ object EventStream_fuzzyTestUtils {
                 buildSingleExtraRandomCorrectionEmissionStimulation(),
                 buildSingleExtraRandomCorrectionEmissionStimulation(),
                 inputEventStream.revokeEmission(),
-            ).filterNotNull(),
+            ),
         )
     }
 }
