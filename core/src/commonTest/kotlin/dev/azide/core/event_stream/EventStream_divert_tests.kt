@@ -12,6 +12,7 @@ import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
+// TODO: Switch to new-style unit test suite
 class EventStream_divert_tests {
     @Test
     fun test_onlyCurrentInnerEmits_outerConst() {

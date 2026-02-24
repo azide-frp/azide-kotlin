@@ -8,6 +8,7 @@ import dev.azide.core.values
 import kotlin.test.Test
 
 @Suppress("ClassName")
+// TODO: Switch to new-style unit test suite
 class Cell_values_tests {
     @Test
     fun test_spawn() {

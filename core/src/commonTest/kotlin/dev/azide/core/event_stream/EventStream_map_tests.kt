@@ -7,6 +7,7 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
 @Suppress("ClassName")
+// TODO: Switch to new-style unit test suite
 class EventStream_map_tests {
     @Test
     fun test_sourceEmits() {

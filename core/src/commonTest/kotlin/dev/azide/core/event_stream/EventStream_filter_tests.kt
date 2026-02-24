@@ -16,6 +16,7 @@ import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
+// TODO: Switch to new-style unit test suite
 class EventStream_filter_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 

@@ -16,6 +16,7 @@ import dev.azide.core.updatedValues
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
+// TODO: Switch to new-style unit test suite
 class Cell_updatedValues_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
