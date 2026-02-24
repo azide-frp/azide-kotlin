@@ -20,7 +20,8 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-internal object EventStreamTestUtils {
+@Suppress("ClassName")
+internal object EventStreamTestUtils_deprecated {
     /**
      * Spawn a stateful event stream, not expecting it to emit during spawn.
      */

@@ -3,7 +3,7 @@ package dev.azide.core.test_utils.stimulation_combinatorics
 import dev.azide.core.test_utils.TestStimulation
 
 data class TestStimulationMap(
-    val stimulationByTag: Map<TestStimulationTag, TestStimulation>,
+    val stimulationByTag: Map<TestStimulationTag_deprecated, TestStimulation>,
 ) {
     companion object {
         val Empty = TestStimulationMap(
@@ -11,7 +11,7 @@ data class TestStimulationMap(
         )
 
         fun of(
-            vararg pairs: Pair<TestStimulationTag, TestStimulation>,
+            vararg pairs: Pair<TestStimulationTag_deprecated, TestStimulation>,
         ): TestStimulationMap = TestStimulationMap(
             stimulationByTag = pairs.toMap(),
         )
@@ -24,6 +24,6 @@ data class TestStimulationMap(
     }
 
     operator fun get(
-        tag: TestStimulationTag,
+        tag: TestStimulationTag_deprecated,
     ): TestStimulation = stimulationByTag[tag] ?: throw IllegalArgumentException("No stimulation found for tag: $tag")
 }

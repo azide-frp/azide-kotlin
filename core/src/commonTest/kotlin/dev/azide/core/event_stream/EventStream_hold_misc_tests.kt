@@ -10,7 +10,7 @@ import dev.azide.core.mapAt
 import dev.azide.core.sample
 import dev.azide.core.sampling
 import dev.azide.core.test_utils.TestUtils
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,7 +36,7 @@ class EventStream_hold_misc_tests {
             },
         )
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = memoryCell,
             expectedValue = 0,
         )

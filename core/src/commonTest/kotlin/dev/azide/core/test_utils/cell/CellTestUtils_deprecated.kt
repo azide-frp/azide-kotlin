@@ -15,7 +15,8 @@ import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-internal object CellTestUtils {
+@Suppress("ClassName")
+internal object CellTestUtils_deprecated {
     private object NoopListener : Listener {
         override fun handle(
             propagationContext: Transactions.PropagationContext,

@@ -2,7 +2,7 @@ package dev.azide.core.cell
 
 import dev.azide.core.Cell
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.cell.TestInputCell
 import kotlin.test.Test
 
@@ -25,7 +25,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = "10:A",
         )
@@ -48,7 +48,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = "10:A",
         )
@@ -71,7 +71,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = "10:A",
         )
@@ -90,7 +90,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceCell.update(
                 newValue = 11,
@@ -117,7 +117,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceCell1.update(
                 newValue = 11,
@@ -144,7 +144,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceCell2.update(
                 newValue = 'B',
@@ -171,7 +171,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceCell2.update(
                 newValue = 'B',
@@ -198,7 +198,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell2.update(
@@ -227,7 +227,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell2.update(
@@ -262,7 +262,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(
@@ -294,7 +294,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(
@@ -327,7 +327,7 @@ class Cell_map2_complex_tests {
             "$value1:$value2"
         }
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceCell1.update(

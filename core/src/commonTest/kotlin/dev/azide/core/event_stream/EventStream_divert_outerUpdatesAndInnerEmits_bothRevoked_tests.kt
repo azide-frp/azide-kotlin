@@ -14,14 +14,14 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
 import kotlin.test.Test
 
 @Suppress("ClassName")
 class EventStream_divert_outerUpdatesAndInnerEmits_bothRevoked_tests {
-    private val slottedStimulationScenarioBank = TestStimulationScenarioBank.mixAll(
+    private val slottedStimulationScenarioBank = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputCellTag.revokedUpdateScenario(
             inputCellTag = SourceOuterCellTag,
         ),

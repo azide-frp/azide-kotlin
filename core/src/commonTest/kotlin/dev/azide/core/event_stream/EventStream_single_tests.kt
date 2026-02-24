@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.single
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
@@ -12,12 +12,12 @@ class EventStream_single_tests {
     fun test_sourceEmits_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStream {
             sourceEventStream.single()
         }
 
         // Verify that the subject emits the same event as the source for the single emission
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 11,
@@ -26,7 +26,7 @@ class EventStream_single_tests {
         )
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 12,
@@ -39,7 +39,7 @@ class EventStream_single_tests {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 11,
             ),
@@ -49,7 +49,7 @@ class EventStream_single_tests {
         }
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 12,
@@ -61,12 +61,12 @@ class EventStream_single_tests {
     fun test_sourceEmits_revoked_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStream {
             sourceEventStream.single()
         }
 
         // Verify that the subject does not emit when the source emission is revoked
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
@@ -77,7 +77,7 @@ class EventStream_single_tests {
         )
 
         // Verify that the subject emits the same event as the source for the single (non-revoked) emission
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 12,
@@ -86,7 +86,7 @@ class EventStream_single_tests {
         )
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 13,
@@ -99,7 +99,7 @@ class EventStream_single_tests {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the same event as the source for the single emission (at spawn)
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream(
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStream(
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = 11,
@@ -111,7 +111,7 @@ class EventStream_single_tests {
         }
 
         // Verify that the subject emits the same event as the source for the single (non-revoked) emission
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 12,
@@ -120,7 +120,7 @@ class EventStream_single_tests {
         )
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 13,
@@ -132,12 +132,12 @@ class EventStream_single_tests {
     fun test_sourceEmits_corrected_afterSpawn() {
         val sourceEventStream = TestInputEventStream<Int>()
 
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStream {
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStream {
             sourceEventStream.single()
         }
 
         // Verify that the subject emits the corrected event from the source for the single emission
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
@@ -151,7 +151,7 @@ class EventStream_single_tests {
         )
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 13,
@@ -164,7 +164,7 @@ class EventStream_single_tests {
         val sourceEventStream = TestInputEventStream<Int>()
 
         // Verify that the subject emits the corrected event from the source for the single emission (at spawn)
-        val subjectEventStream = EventStreamTestUtils.spawnStatefulEventStreamExpectingEmission(
+        val subjectEventStream = EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
                     emittedEvent = 11,
@@ -179,7 +179,7 @@ class EventStream_single_tests {
         }
 
         // Verify that the subject does not emit for subsequent source emissions
-        EventStreamTestUtils.verifyDoesNotEmitAtAll(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 13,

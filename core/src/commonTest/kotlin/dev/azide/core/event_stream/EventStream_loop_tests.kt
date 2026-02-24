@@ -5,7 +5,7 @@ import dev.azide.core.EventStream
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.impl.utils.LoopClosure
 import dev.azide.core.map
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.event_stream.assertIsStackOverflowError
 import kotlin.test.Test
@@ -45,7 +45,7 @@ class EventStream_loop_tests {
             )
         }
 
-        EventStreamTestUtils.registerNoopListener(
+        EventStreamTestUtils_deprecated.registerNoopListener(
             subjectEventStream = loopedEventStream,
         )
     }
@@ -63,7 +63,7 @@ class EventStream_loop_tests {
             )
         }
 
-        EventStreamTestUtils.registerNoopListener(
+        EventStreamTestUtils_deprecated.registerNoopListener(
             subjectEventStream = loopedEventStream,
         )
     }
@@ -88,7 +88,7 @@ class EventStream_loop_tests {
         val sourceVertex = sourceEventStream.vertex
         val subjectVertex: EventStreamVertex<Int> = loopedEventStream.vertex
 
-        val subscribingVerifier = EventStreamTestUtils.subscribeForVerification(loopedEventStream)
+        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(loopedEventStream)
 
         assertEquals(
             expected = 1,
@@ -145,7 +145,7 @@ class EventStream_loop_tests {
         val sourceVertex = sourceEventStream.vertex
         val subjectVertex: EventStreamVertex<Int> = loopedEventStream.vertex
 
-        val subscribingVerifier = EventStreamTestUtils.subscribeForVerification(loopedEventStream)
+        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(loopedEventStream)
 
         assertEquals(
             expected = 1,

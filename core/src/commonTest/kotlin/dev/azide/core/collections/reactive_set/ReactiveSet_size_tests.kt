@@ -3,7 +3,7 @@ package dev.azide.core.collections.reactive_set
 import dev.azide.core.collections.filter
 import dev.azide.core.collections.size
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import kotlin.test.Test
@@ -19,7 +19,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 3,
         )
@@ -34,7 +34,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -56,7 +56,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -78,7 +78,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -99,7 +99,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -123,7 +123,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -147,7 +147,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -176,7 +176,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -206,7 +206,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -235,7 +235,7 @@ class ReactiveSet_size_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.size
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(

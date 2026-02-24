@@ -15,7 +15,7 @@ import dev.azide.core.test_utils.effect_reactive_bag.Effect_ReactiveBag_step_tes
 import dev.azide.core.test_utils.expectIsNotStarted
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
 import dev.azide.core.test_utils.generic.generic_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenarioBank_deprecated
 
 @Suppress("ClassName")
 data object ReactiveBag_actuate_testUtils {
@@ -110,19 +110,19 @@ data object ReactiveBag_actuate_testUtils {
         return subjectOutcome
     }
 
-    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChanges = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.changeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChangesRevoked = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.revokedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),
     )
 
-    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank.mixAll(
+    val stimulationScenarioBank_sourceEffectBagChangesCorrected = TestStimulationScenarioBank_deprecated.mixAll(
         TestInputReactiveCollectionTag.correctedChangeScenario(
             inputReactiveCollectionTag = SourceEffectReactiveBagTag,
         ),

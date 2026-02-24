@@ -2,30 +2,30 @@ package dev.azide.core.test_utils.stimulation_combinatorics
 
 import dev.azide.core.impl.utils.list.uncons
 
-data class TestStimulationScenarioBank(
-    val stimulationScenarios: Sequence<TestStimulationScenario>,
+data class TestStimulationScenarioBank_deprecated(
+    val stimulationScenarios: Sequence<TestStimulationScenario_deprecated>,
 ) {
     companion object {
-        val Empty: TestStimulationScenarioBank = TestStimulationScenarioBank(
+        val Empty: TestStimulationScenarioBank_deprecated = TestStimulationScenarioBank_deprecated(
             stimulationScenarios = emptySequence(),
         )
 
         fun of(
-            vararg stimulationScenarios: TestStimulationScenario,
-        ): TestStimulationScenarioBank = TestStimulationScenarioBank(
+            vararg stimulationScenarios: TestStimulationScenario_deprecated,
+        ): TestStimulationScenarioBank_deprecated = TestStimulationScenarioBank_deprecated(
             stimulationScenarios = stimulationScenarios.asSequence(),
         )
 
         fun mixAll(
-            vararg stimulationScenarios: TestStimulationScenario,
-        ): TestStimulationScenarioBank {
+            vararg stimulationScenarios: TestStimulationScenario_deprecated,
+        ): TestStimulationScenarioBank_deprecated {
             val (firstStimulationScenario, otherStimulationScenarios) = stimulationScenarios.toList().uncons()
                 ?: throw IllegalArgumentException("At least one stimulation sequence is required.")
 
-            return TestStimulationScenarioBank(
+            return TestStimulationScenarioBank_deprecated(
                 otherStimulationScenarios.fold(
                     initial = sequenceOf(firstStimulationScenario),
-                ) { combinedStimulationScenarios: Sequence<TestStimulationScenario>, nextStimulationScenario: TestStimulationScenario ->
+                ) { combinedStimulationScenarios: Sequence<TestStimulationScenario_deprecated>, nextStimulationScenario: TestStimulationScenario_deprecated ->
                     combinedStimulationScenarios.flatMap { oldStimulationScenario ->
                         oldStimulationScenario.combineWith(
                             otherStimulationScenario = nextStimulationScenario,
@@ -37,11 +37,11 @@ data class TestStimulationScenarioBank(
     }
 
     fun mixWith(
-        other: TestStimulationScenarioBank,
-    ): TestStimulationScenarioBank = TestStimulationScenarioBank(
+        other: TestStimulationScenarioBank_deprecated,
+    ): TestStimulationScenarioBank_deprecated = TestStimulationScenarioBank_deprecated(
         stimulationScenarios.fold(
             initial = other.stimulationScenarios,
-        ) { combinedStimulationScenarios: Sequence<TestStimulationScenario>, nextStimulationScenario: TestStimulationScenario ->
+        ) { combinedStimulationScenarios: Sequence<TestStimulationScenario_deprecated>, nextStimulationScenario: TestStimulationScenario_deprecated ->
             combinedStimulationScenarios.flatMap { oldStimulationScenario ->
                 oldStimulationScenario.combineWith(
                     otherStimulationScenario = nextStimulationScenario,

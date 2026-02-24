@@ -1,3 +1,3 @@
 package dev.azide.core.test_utils.stimulation_combinatorics
 
-interface TestStimulationTag
+interface TestStimulationTag_deprecated

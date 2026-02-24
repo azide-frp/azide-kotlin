@@ -3,7 +3,7 @@ package dev.azide.core.collections.reactive_set
 import dev.azide.core.collections.contains
 import dev.azide.core.collections.filter
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.collections.reactive_set.ReactiveSetTestUtils
 import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet
 import kotlin.test.Test
@@ -19,7 +19,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(3)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = true,
         )
@@ -34,7 +34,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(10)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = false,
         )
@@ -49,7 +49,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(6)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -71,7 +71,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(1)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -93,7 +93,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(3)
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -112,7 +112,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(10)
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = sourceReactiveSet.change(
                 changeDescription = TestInputReactiveSet.ChangeDescription(
@@ -133,7 +133,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(6)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -157,7 +157,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(1)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -181,7 +181,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(10)
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -205,7 +205,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(10)
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -234,7 +234,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(8)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -264,7 +264,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(3)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(
@@ -293,7 +293,7 @@ class ReactiveSet_contains_tests {
         val subjectReactiveSet = sourceReactiveSet.filter { it > 0 }
         val subjectCell = subjectReactiveSet.contains(3)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceReactiveSet.change(

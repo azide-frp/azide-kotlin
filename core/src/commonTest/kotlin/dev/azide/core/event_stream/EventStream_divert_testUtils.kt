@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.event_stream.TestInputEventStreamTag
 import dev.azide.core.test_utils.event_stream.emitting
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationScenario_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
 
 @Suppress("ClassName")
@@ -36,8 +36,8 @@ object EventStream_divert_testUtils {
                 TestSlottedStimulationScenario.of(
                     slotCount = SuitableSlotCount,
                     slotStimulationScenarios = listOf(
-                        TestStimulationScenario.Empty,
-                        TestStimulationScenario.of(
+                        TestStimulationScenario_deprecated.Empty,
+                        TestStimulationScenario_deprecated.of(
                             TestInputEventStreamStimulationTag.Emission(
                                 inputTag = SourceInnerEventStreamTag,
                             ),

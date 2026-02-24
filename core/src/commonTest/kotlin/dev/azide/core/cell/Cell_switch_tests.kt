@@ -3,7 +3,7 @@ package dev.azide.core.cell
 import dev.azide.core.Cell
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.cell.TestInputCell
 import kotlin.test.Test
 
@@ -21,7 +21,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -39,7 +39,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -57,7 +57,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -75,7 +75,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyAtRest(
+        CellTestUtils_deprecated.verifyAtRest(
             subjectCell = subjectCell,
             expectedValue = 10,
         )
@@ -93,7 +93,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = innerSourceCell.update(
                 newValue = 11,
@@ -115,7 +115,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = innerSourceCell.update(
                 newValue = 11,
@@ -137,7 +137,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerSourceCell.update(
@@ -161,7 +161,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 innerSourceCell.update(
@@ -188,7 +188,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = innerSourceCell.update(
                 newValue = 10,
@@ -214,7 +214,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        val observingVerifier = CellTestUtils.observeForVerification(
+        val observingVerifier = CellTestUtils_deprecated.observeForVerification(
             subjectCell = subjectCell,
         )
 
@@ -249,7 +249,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        val observingVerifier = CellTestUtils.observeForVerification(
+        val observingVerifier = CellTestUtils_deprecated.observeForVerification(
             subjectCell = subjectCell,
         )
 
@@ -286,7 +286,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        val observingVerifier = CellTestUtils.observeForVerification(
+        val observingVerifier = CellTestUtils_deprecated.observeForVerification(
             subjectCell = subjectCell,
         )
 
@@ -326,7 +326,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        val observingVerifier = CellTestUtils.observeForVerification(
+        val observingVerifier = CellTestUtils_deprecated.observeForVerification(
             subjectCell = subjectCell,
         )
 
@@ -360,7 +360,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = outerSourceCell.update(
                 newValue = laterInnerSourceCell,
@@ -382,7 +382,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = outerSourceCell.update(
                 newValue = singleInnerSourceCell,
@@ -408,7 +408,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = outerSourceCell.update(
                 newValue = laterInnerSourceCell,
@@ -434,7 +434,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -445,7 +445,7 @@ class Cell_switch_tests {
             expectedUnaffectedValue = 10,
         )
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = laterInnerSourceCell.update(
                 newValue = 21,
@@ -474,7 +474,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -488,7 +488,7 @@ class Cell_switch_tests {
             expectedNewValue = 30,
         )
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = intermediateInnerSourceCell.update(
                 newValue = 21,
@@ -513,7 +513,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -544,7 +544,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 laterInnerSourceCell.update(
@@ -571,7 +571,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInArbitraryOrder(
                 setOf(
@@ -604,7 +604,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -638,7 +638,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyDoesNotUpdateEffectively(
+        CellTestUtils_deprecated.verifyDoesNotUpdateEffectively(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -654,7 +654,7 @@ class Cell_switch_tests {
             expectedUnaffectedValue = 10,
         )
 
-        CellTestUtils.verifyDoesNotUpdateAtAll(
+        CellTestUtils_deprecated.verifyDoesNotUpdateAtAll(
             subjectCell = subjectCell,
             inputStimulation = laterInnerSourceCell.update(
                 newValue = 22,
@@ -679,7 +679,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(
@@ -710,7 +710,7 @@ class Cell_switch_tests {
 
         val subjectCell = Cell.switch(outerSourceCell)
 
-        CellTestUtils.verifyUpdatesAsExpected(
+        CellTestUtils_deprecated.verifyUpdatesAsExpected(
             subjectCell = subjectCell,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 outerSourceCell.update(

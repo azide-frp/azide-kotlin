@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.map
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
@@ -14,7 +14,7 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 11,
@@ -29,7 +29,7 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
@@ -46,7 +46,7 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(

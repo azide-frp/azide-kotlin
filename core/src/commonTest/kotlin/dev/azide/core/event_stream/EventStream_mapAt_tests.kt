@@ -4,7 +4,7 @@ import dev.azide.core.mapAt
 import dev.azide.core.sample
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
@@ -20,7 +20,7 @@ class EventStream_mapAt_tests {
             "$it:$externalValue"
         }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream.emit(
                 emittedEvent = 11,
@@ -39,7 +39,7 @@ class EventStream_mapAt_tests {
             "$it:$externalValue"
         }
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(
@@ -60,7 +60,7 @@ class EventStream_mapAt_tests {
             "$it:$externalValue"
         }
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream.emit(

@@ -2,7 +2,7 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.EventStream
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils
+import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
 
@@ -18,7 +18,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream1.emit(
                 emittedEvent = 11,
@@ -37,7 +37,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = sourceEventStream2.emit(
                 emittedEvent = 21,
@@ -56,7 +56,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -80,7 +80,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -101,7 +101,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream2.emit(
@@ -122,7 +122,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -147,7 +147,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -172,7 +172,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyDoesNotEmitEffectively(
+        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -197,7 +197,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -221,7 +221,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream2.emit(
@@ -245,7 +245,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -272,7 +272,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(
@@ -299,7 +299,7 @@ class EventStream_merge2_tests {
             sourceEventStream2,
         )
 
-        EventStreamTestUtils.verifyEmitsAsExpected(
+        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
             subjectEventStream = subjectEventStream,
             inputStimulation = TestStimulation.combineInProvidedOrder(
                 sourceEventStream1.emit(

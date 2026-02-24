@@ -5,7 +5,7 @@ import dev.azide.core.holding
 import dev.azide.core.map
 import dev.azide.core.pullExternally
 import dev.azide.core.sampling
-import dev.azide.core.test_utils.cell.CellTestUtils
+import dev.azide.core.test_utils.cell.CellTestUtils_deprecated
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import kotlin.test.Test
@@ -45,7 +45,7 @@ class Cell_sampling_tests {
 
         val subjectCell = sourceCell.map { it.toString() }
 
-        CellTestUtils.registerNoopListener(
+        CellTestUtils_deprecated.registerNoopListener(
             subjectCell = subjectCell,
         )
 

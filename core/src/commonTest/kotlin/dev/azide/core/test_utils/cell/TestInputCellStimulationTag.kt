@@ -1,8 +1,8 @@
 package dev.azide.core.test_utils.cell
 
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag_deprecated
 
-sealed interface TestInputCellStimulationTag : TestStimulationTag {
+sealed interface TestInputCellStimulationTag : TestStimulationTag_deprecated {
     data class Update(
         val inputTag: TestInputCellTag,
     ) : TestInputCellStimulationTag

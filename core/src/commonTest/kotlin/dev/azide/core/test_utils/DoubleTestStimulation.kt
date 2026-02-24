@@ -2,15 +2,15 @@ package dev.azide.core.test_utils
 
 import dev.azide.core.impl.Transactions
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag_deprecated
 
 data class DoubleTestStimulation(
     val firstStimulation: TestStimulation,
     val secondStimulation: TestStimulation,
 ) {
     fun tagged(
-        firstTag: TestStimulationTag,
-        secondTag: TestStimulationTag,
+        firstTag: TestStimulationTag_deprecated,
+        secondTag: TestStimulationTag_deprecated,
     ): TestStimulationMap = TestStimulationMap.of(
         firstTag to firstStimulation,
         secondTag to secondStimulation,
