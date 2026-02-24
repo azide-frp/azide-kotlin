@@ -11,7 +11,9 @@ abstract class AbstractStatelessCellVertex<ValueT> : AbstractCellVertex<ValueT>(
             processingContext = processingContext,
         )
 
-        prepare() // FIXME: Here?
+        prepare(
+            processingContext = processingContext,
+        )
 
         if (processingContext is Transactions.PropagationContext) {
             exposeUpdate(
@@ -24,32 +26,43 @@ abstract class AbstractStatelessCellVertex<ValueT> : AbstractCellVertex<ValueT>(
     }
 
     final override fun onLastListenerUnregistered() {
-        reset()
-
         deactivate()
+
+        reset()
 
         clearExposedUpdate()
     }
 
     /**
-     *
+     * Prepare the vertex for being sampled (initialize the internal cache).
      */
-    open fun prepare() {
+    open fun prepare(
+        processingContext: Transactions.ProcessingContext,
+    ) {
     }
 
+    /**
+     * Reset the vertex (drop the internal cache).
+     */
+    open fun reset() {
+    }
+
+    /**
+     * Activate the vertex (register all required upstream listeners).
+     */
     abstract fun activate(
         processingContext: Transactions.ProcessingContext,
     )
 
-    abstract fun buildInitialUpdate(
-        propagationContext: Transactions.PropagationContext,
-    ): CellVertex.Update<ValueT>?
-
+    /**
+     * Deactivate the vertex (unregister all upstream listeners).
+     */
     abstract fun deactivate()
 
     /**
-     *
+     * Build the initial update.
      */
-    open fun reset() {
-    }
+    abstract fun buildInitialUpdate(
+        propagationContext: Transactions.PropagationContext,
+    ): CellVertex.Update<ValueT>?
 }

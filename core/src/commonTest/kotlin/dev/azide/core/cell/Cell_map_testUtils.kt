@@ -6,7 +6,10 @@ import dev.azide.core.sampleExternally
 import dev.azide.core.test_utils.assertIsInactive
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_offlineActivation_testUtils
+import dev.azide.core.test_utils.cell.ExpectedCellValueTransition
 import dev.azide.core.test_utils.cell.TestInputCell
+import dev.azide.core.test_utils.generic.CellObservationTrait
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
 import dev.azide.core.test_utils.generic.TestSubjectHealthChecker
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 
@@ -46,6 +49,23 @@ object Cell_map_testUtils {
         Cell_offlineActivation_testUtils.testOfflineActivation(
             subjectCell = subjectCell,
             subjectHealthChecker = MapHealthChecker(inputCell = inputCell),
+        )
+    }
+
+    fun testReaction(
+        inputCell: TestInputCell<Int>,
+        inputStimulationPlan: generic_reaction_testUtils.InputStimulationPlan,
+        subjectCell: Cell<String>,
+        expectedSubjectValueTransition: ExpectedCellValueTransition<String>,
+        subjectHealthCheckStrategy: TestSubjectHealthCheckStrategy,
+    ) {
+        generic_reaction_testUtils.testReaction(
+            trait = CellObservationTrait(),
+            subject = subjectCell,
+            inputStimulationPlan = inputStimulationPlan,
+            expectedSubjectTransition = expectedSubjectValueTransition,
+            subjectHealthChecker = MapHealthChecker(inputCell = inputCell),
+            subjectHealthCheckStrategy = subjectHealthCheckStrategy,
         )
     }
 }

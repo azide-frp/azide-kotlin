@@ -15,28 +15,24 @@ abstract class AbstractCachingCellVertex<ValueT> : AbstractStatelessCellVertex<V
      */
     private var _oldValueCache: OldValueCache<ValueT>? = null
 
+    final override fun prepare(processingContext: Transactions.ProcessingContext) {
+        _oldValueCache = OldValueCache(
+            cachedOldValue = computeOldValue(processingContext = processingContext),
+        )
+    }
+
+    final override fun reset() {
+        _oldValueCache = null
+    }
+
     final override fun getOldValue(
         processingContext: Transactions.ProcessingContext,
-    ): ValueT {
-        when (val oldValueCache = _oldValueCache) {
-            null -> {
-                val computedOldValue = computeOldValue(processingContext)
+    ): ValueT = when (val oldValueCache = _oldValueCache) {
+        // The cell seems to be inactive, compute the value on demand
+        null -> computeOldValue(processingContext = processingContext)
 
-                _oldValueCache = OldValueCache(
-                    cachedOldValue = computedOldValue,
-                )
-
-                ensureEnqueuedForCommitment(
-                    processingContext = processingContext,
-                )
-
-                return computedOldValue
-            }
-
-            else -> { // The old value was already cached in this transaction, return
-                return oldValueCache.cachedOldValue
-            }
-        }
+        // The cell seems to be active, return the maintained cached value
+        else -> oldValueCache.cachedOldValue
     }
 
     override fun persist(
