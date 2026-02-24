@@ -3,46 +3,29 @@ package dev.azide.core.cell
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
-import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
-import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.bind
-import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
-import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
+import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.updatedValues
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
 class Cell_updatedValues_tests {
-    private typealias SuitableSlotCount = TestSlotCount.Count2
 
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val slottedStimulationScenarioBank_sourceCellUpdates =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdates.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceCellUpdatesRevoked =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesRevoked.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceCellUpdatesCorrected =
-        Cell_generic_testUtils.stimulationScenarioBank_sourceCellUpdatesCorrected.distribute(slotCount = SuitableSlotCount)
     @Test
-    fun test_sourceUpdates() {
-        slottedStimulationScenarioBank_sourceCellUpdates.forEach { slottedStimulationScenario ->
-            test_sourceUpdates(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdates_observed() {
+        test_sourceUpdates(placementObserved = true)
+    }
+
+    @Test
+    fun test_sourceUpdates_unobserved() {
+        test_sourceUpdates(placementObserved = false)
     }
 
     private fun test_sourceUpdates(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+        placementObserved: Boolean,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -50,17 +33,20 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.updating_deprecated(
-            tag = SourceCellTag,
-            newValue = 20,
-        ).bind(slottedStimulationScenario)
+        val inputPlan = if (placementObserved) {
+            generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = sourceCell.update(newValue = 20),
+            )
+        } else {
+            generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = sourceCell.update(newValue = 20),
+                observedInputStimulation = TestStimulation.Noop,
+            )
+        }
 
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                unobservedInputStimulation = slotted.slotStimulation0,
-                observedInputStimulation = slotted.slotStimulation1,
-            ),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
@@ -68,16 +54,17 @@ class Cell_updatedValues_tests {
     }
 
     @Test
-    fun test_sourceUpdates_revoked() {
-        slottedStimulationScenarioBank_sourceCellUpdatesRevoked.forEach { slottedStimulationScenario ->
-            test_sourceUpdates_revoked(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdates_revoked_observed() {
+        test_sourceUpdates_revoked(placementObserved = true)
+    }
+
+    @Test
+    fun test_sourceUpdates_revoked_unobserved() {
+        test_sourceUpdates_revoked(placementObserved = false)
     }
 
     private fun test_sourceUpdates_revoked(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+        placementObserved: Boolean,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -85,17 +72,26 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.revokingUpdate_deprecated(
-            tag = SourceCellTag,
-            newValue = 20,
-        ).bind(slottedStimulationScenario)
+        val inputPlan = if (placementObserved) {
+            generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = dev.azide.core.test_utils.DoubleTestStimulation(
+                    firstStimulation = sourceCell.update(newValue = 20),
+                    secondStimulation = sourceCell.revokeUpdate(),
+                ).joint(),
+            )
+        } else {
+            generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = dev.azide.core.test_utils.DoubleTestStimulation(
+                    firstStimulation = sourceCell.update(newValue = 20),
+                    secondStimulation = sourceCell.revokeUpdate(),
+                ).joint(),
+                observedInputStimulation = TestStimulation.Noop,
+            )
+        }
 
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                unobservedInputStimulation = slotted.slotStimulation0,
-                observedInputStimulation = slotted.slotStimulation1,
-            ),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -103,16 +99,17 @@ class Cell_updatedValues_tests {
     }
 
     @Test
-    fun test_sourceUpdates_corrected() {
-        slottedStimulationScenarioBank_sourceCellUpdatesCorrected.forEach { slottedStimulationScenario ->
-            test_sourceUpdates_corrected(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
+    fun test_sourceUpdates_corrected_observed() {
+        test_sourceUpdates_corrected(placementObserved = true)
+    }
+
+    @Test
+    fun test_sourceUpdates_corrected_unobserved() {
+        test_sourceUpdates_corrected(placementObserved = false)
     }
 
     private fun test_sourceUpdates_corrected(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
+        placementObserved: Boolean,
     ) {
         val sourceCell = TestInputCell(
             initialValue = 10,
@@ -120,18 +117,26 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.correctingUpdate_deprecated(
-            tag = SourceCellTag,
-            intermediateNewValue = 20,
-            correctedNewValue = 21,
-        ).bind(slottedStimulationScenario)
+        val inputPlan = if (placementObserved) {
+            generic_reaction_testUtils.InputStimulationPlan(
+                observedInputStimulation = dev.azide.core.test_utils.DoubleTestStimulation(
+                    firstStimulation = sourceCell.update(newValue = 20),
+                    secondStimulation = sourceCell.correctUpdate(correctedNewValue = 21),
+                ).joint(),
+            )
+        } else {
+            generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = dev.azide.core.test_utils.DoubleTestStimulation(
+                    firstStimulation = sourceCell.update(newValue = 20),
+                    secondStimulation = sourceCell.correctUpdate(correctedNewValue = 21),
+                ).joint(),
+                observedInputStimulation = TestStimulation.Noop,
+            )
+        }
 
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
-                unobservedInputStimulation = slotted.slotStimulation0,
-                observedInputStimulation = slotted.slotStimulation1,
-            ),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 21,
