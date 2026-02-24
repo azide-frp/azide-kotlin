@@ -38,16 +38,27 @@ interface SemanticEventStream<out LabelT : SemanticEventStream.Label, out EventT
                 return cache[timestamp.t]
             }
         }
+
+        fun <EventT, TransformedEventT> map(
+            semanticEventStream: AnySemanticEventStream<EventT>,
+            transform: (EventT) -> TransformedEventT,
+        ): AnySemanticEventStream<TransformedEventT> = mapAt(
+            semanticEventStream = semanticEventStream,
+            transform = { event, _ -> transform(event) },
+        )
+
+        fun <EventT, TransformedEventT> mapAt(
+            semanticEventStream: AnySemanticEventStream<EventT>,
+            transform: (EventT, Timestamp) -> TransformedEventT,
+        ): AnySemanticEventStream<TransformedEventT> = object : AnySemanticEventStream<TransformedEventT> {
+            override val label: Label = Label.Dependent
+
+            override fun evaluate(timestamp: Timestamp): TransformedEventT? {
+                val event = semanticEventStream.evaluate(timestamp = timestamp)
+                return event?.let { transform(it, timestamp) }
+            }
+        }
     }
 }
-
-
-fun <EventT> AnySemanticEventStream<EventT>.evaluateTransition(newTimestamp: Timestamp): Pair<EventT?, EventT?> {
-    val oldEvent = evaluate(timestamp = newTimestamp.previous)
-    val newEvent = evaluate(timestamp = newTimestamp)
-
-    return Pair(oldEvent, newEvent)
-}
-
 
 typealias AnySemanticEventStream<EventT> = SemanticEventStream<SemanticEventStream.Label, EventT>

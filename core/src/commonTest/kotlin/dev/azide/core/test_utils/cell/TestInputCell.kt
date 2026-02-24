@@ -52,43 +52,6 @@ class TestInputCell<ValueT>(
                 initialValue = initialRealValue,
             )
         }
-
-        fun <SemanticValueT, RealValueT> realizeIndirectly(
-            semanticCell: AnySemanticCell<SemanticValueT>,
-            valueRealizer: ValueRealizer<SemanticValueT, RealValueT>,
-        ): Pair<TestInputCell<RealValueT>, AnySemanticCell<RealValueT>> {
-            val initialSemanticValueSnapshot: SemanticCell.ValueSnapshot<SemanticValueT> = semanticCell.evaluate(
-                timestamp = Timestamp.zero,
-            )
-
-            val initialRealValue: RealValueT = valueRealizer.realize(
-                semanticValue = initialSemanticValueSnapshot.value,
-            )
-
-            val inputCell = TestInputCell(
-                initialValue = initialRealValue,
-            )
-
-            val testStimulationProvider = object : AnySemanticCell<RealValueT> {
-                override val label: SemanticCell.Label = SemanticCell.Label.Dependent
-
-                override fun evaluate(
-                    timestamp: Timestamp,
-                ): SemanticCell.ValueSnapshot<RealValueT> =
-                    semanticCell.evaluate(timestamp = timestamp).let { semanticValueSnapshot ->
-                        semanticValueSnapshot.map {
-                            valueRealizer.realize(
-                                semanticValue = it,
-                            )
-                        }
-                    }
-            }
-
-            return Pair(
-                inputCell,
-                testStimulationProvider,
-            )
-        }
     }
 
     private val _vertex = object : AbstractBaseStatefulCellVertex<ValueT>(

@@ -3,6 +3,8 @@ package dev.azide.core.test_utils.event_stream
 import dev.azide.core.test_utils.RandomValueGenerator
 import dev.azide.core.test_utils.TestSequentialStimulation
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.random.Random
 
 @Suppress("ClassName")
@@ -91,7 +93,7 @@ object EventStream_fuzzyTestUtils {
                         inputEventStream.correctEmission(
                             correctedEmittedEvent = newEvent,
                         ),
-                    ).filterNotNull(),
+                    ),
                 )
 
                 // Final emission is the initial emission
@@ -140,6 +142,19 @@ object EventStream_fuzzyTestUtils {
                 buildSingleExtraRandomCorrectionEmissionStimulation(),
                 inputEventStream.revokeEmission(),
             ),
+        )
+    }
+
+    fun <EventT> buildExpectedSubjectEventStreamEmission(
+        semanticEmission: EventT?,
+    ): ExpectedEventStreamEmission<EventT> = when (semanticEmission) {
+        null -> EventStream_expectations_testUtils.expectNoEmission(
+            intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+        )
+
+        else -> EventStream_expectations_testUtils.expectEmission(
+            intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
+            expectedEmittedEvent = semanticEmission,
         )
     }
 }

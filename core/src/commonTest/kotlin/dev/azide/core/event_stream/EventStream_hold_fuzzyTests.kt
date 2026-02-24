@@ -45,16 +45,15 @@ class EventStream_hold_fuzzyTests {
                 randomValueGenerator = semanticEventValueGenerator,
             )
 
-        // Realize the semantic event stream into a technical test input and a provider that mirrors the semantic stream
-        val (source, semanticStimulationProvider) = TestInputEventStream.realizeIndirectly(semanticInputEventStream)
+        val inputEventStream = TestInputEventStream<Int>()
 
         val semanticSubjectCell = HoldSemanticCell.fromEventStream(
             label = SemanticCell.Label.Dependent,
-            eventStream = semanticStimulationProvider,
+            eventStream = semanticInputEventStream,
             initialValue = initialHeldValue,
         )
 
-        val subjectMoment = source.holding(initialValue = initialHeldValue)
+        val subjectMoment = inputEventStream.holding(initialValue = initialHeldValue)
         val subjectCell = subjectMoment.pullExternally()
 
         Timestamp.generate(iterationCount).forEach { newTimestamp ->
@@ -68,7 +67,7 @@ class EventStream_hold_fuzzyTests {
                 noiseValueGenerator = object : RandomValueGenerator<Int> {
                     override operator fun next(): Int = semanticEventValueGenerator.next()
                 },
-                inputEventStream = source,
+                inputEventStream = inputEventStream,
                 semanticEmission = semanticEmission,
             )
 
