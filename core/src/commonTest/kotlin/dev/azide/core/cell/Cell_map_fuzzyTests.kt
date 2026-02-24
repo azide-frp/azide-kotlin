@@ -4,13 +4,15 @@ import dev.azide.core.map
 import dev.azide.core.test_utils.RandomValueGenerator
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.Cell_fuzzyTestUtils
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.semantic.HoldSemanticCell
+import dev.azide.core.test_utils.semantic.SemanticCell
+import dev.azide.core.test_utils.semantic.Timestamp
+import dev.azide.core.test_utils.semantic.evaluateTransition
+import dev.azide.core.test_utils.semantic.map
 import kotlin.random.Random
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
@@ -18,36 +20,43 @@ class Cell_map_fuzzyTests {
     companion object {
         private const val iterationCount = 1_000
 
-        private const val initialCellValue = 0
         private const val maxCellPayloadValue = 100
     }
 
+    data object InputCellLabel : SemanticCell.Label
+
     @Test
-    @Ignore // TODO: Figure out how a cell should behave when its input updates from X to X
     fun test_fuzzy() {
         val random = Random(0)
 
-        val inputCell = TestInputCell(
-            initialValue = initialCellValue,
+        val semanticValueGenerator = object : RandomValueGenerator<Int> {
+            override operator fun next(): Int = random.nextInt(maxCellPayloadValue)
+        }
+
+        val semanticInputCell: dev.azide.core.test_utils.semantic.AnySemanticCell<Int> = HoldSemanticCell.generateRandom(
+            label = InputCellLabel,
+            random = random,
+            randomValueGenerator = semanticValueGenerator,
+        )
+
+        val inputCell: TestInputCell<Int> = TestInputCell.realizeInitially(
+            semanticCell = semanticInputCell,
         )
 
         val subjectCell = inputCell.map { "#$it" }
 
-        var currentCellValue = initialCellValue
+        Timestamp.generate(iterationCount).forEach { newTimestamp ->
+            val semanticInputTransition = semanticInputCell.evaluateTransition(newTimestamp = newTimestamp)
 
-        repeat(iterationCount) {
-            val oldInputCellValue = currentCellValue
-            val newInputCellValue = random.nextInt(maxCellPayloadValue)
+            val semanticSubjectTransition = semanticInputTransition.map { "#$it" }
 
-            // Build the stimulation sequence
             val cellStimulationSequence = Cell_fuzzyTestUtils.buildRandomInputCellStimulationSequence(
                 random = random,
                 noiseValueGenerator = object : RandomValueGenerator<Int> {
                     override fun next(): Int = 0xBAADF00D.toInt()
                 },
                 inputCell = inputCell,
-                oldValue = oldInputCellValue,
-                newValue = newInputCellValue,
+                semanticInputTransition = semanticInputTransition,
             )
 
             val combinedInputStimulation =
@@ -57,7 +66,6 @@ class Cell_map_fuzzyTests {
                     )
                 } ?: TestStimulation.Noop
 
-            // Execute the reaction transaction
             Cell_reaction_testUtils.testReaction(
                 subjectCell = subjectCell,
                 slottedInputStimulation = TestSlottedStimulation2(
@@ -66,15 +74,10 @@ class Cell_map_fuzzyTests {
                         combinedInputStimulation,
                     ),
                 ),
-                expectedSubjectValueTransition = Cell_expectations_testUtils.expectValueTransition(
-                    intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
-                    expectedOldValue = "#$oldInputCellValue",
-                    expectedNewValue = "#$newInputCellValue",
+                expectedSubjectValueTransition = Cell_fuzzyTestUtils.buildExpectedSubjectCellValueTransition(
+                    semanticSubjectTransition,
                 ),
             )
-
-            // Update state for next iteration
-            currentCellValue = newInputCellValue
         }
     }
 }
