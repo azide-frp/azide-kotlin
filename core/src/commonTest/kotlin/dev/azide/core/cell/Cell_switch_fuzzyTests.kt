@@ -56,7 +56,6 @@ class Cell_switch_fuzzyTests {
                 label = InnerCellLabel(index = index),
                 random = random,
                 randomValueGenerator = innerValueGenerator,
-                timestampCount = iterationCount,
             )
         }
 
@@ -68,7 +67,6 @@ class Cell_switch_fuzzyTests {
             label = OuterCellLabel,
             random = random,
             randomValueGenerator = semanticInnerCellGenerator,
-            timestampCount = iterationCount,
         )
 
         val semanticSubjectCell = SemanticCell.switch(

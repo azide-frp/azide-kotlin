@@ -11,10 +11,9 @@ class HoldSemanticCell<out LabelT : SemanticCell.Label, out ValueT>(
      */
     initialValue: ValueT,
     /**
-     * The sequence of commands to execute at each timestamp, starting from a command for transition between t = 0 and
-     * t = 1.
+     * Given the current value, returns a [Command] describing what happens at the next timestamp.
      */
-    commandSequence: Sequence<Command<ValueT>>,
+    private val buildNewValue: (oldValue: ValueT) -> Command<ValueT>,
 ) : SemanticCell<LabelT, ValueT> {
     sealed class Command<out ValueT> {
         /**
@@ -35,102 +34,46 @@ class HoldSemanticCell<out LabelT : SemanticCell.Label, out ValueT>(
             label: LabelT,
             random: Random,
             randomValueGenerator: RandomValueGenerator<ValueT>,
-            timestampCount: Int,
         ): HoldSemanticCell<LabelT, ValueT> {
             val initialValue = randomValueGenerator.next()
-
-            val commandSequence = Timestamp.generate(count = timestampCount).map {
-                if (random.nextBoolean()) {
-                    Command.Update(
-                        updatedValue = randomValueGenerator.next(),
-                    )
-                } else {
-                    Command.Pass
-                }
-            }
 
             return HoldSemanticCell(
                 label = label,
                 initialValue = initialValue,
-                commandSequence = commandSequence,
+                buildNewValue = {
+                    if (random.nextBoolean()) {
+                        Command.Update(updatedValue = randomValueGenerator.next())
+                    } else {
+                        Command.Pass
+                    }
+                },
             )
         }
     }
 
-    private val valueSnapshotList: LazyBuiltList<ValueSnapshot<ValueT>> = LazyBuiltList.build(
-        sequence = sequenceOf(
-            ValueSnapshot(
-                value = initialValue,
-                timestamp = Timestamp.zero,
-            ),
-        ) + commandSequence.withIndex().scan(
-            initial = ValueSnapshot(
-                value = initialValue,
-                timestamp = Timestamp.zero,
-            ),
-        ) { oldSnapshot, indexedCommand ->
-            val (index, command) = indexedCommand
-
-            command.execute(
-                oldValueSnapshot = oldSnapshot,
-                timestamp = Timestamp(index + 1),
-            )
-        },
+    private val cache: MutableList<ValueSnapshot<ValueT>> = mutableListOf(
+        ValueSnapshot(
+            value = initialValue,
+            timestamp = Timestamp.zero,
+        ),
     )
 
     override fun evaluate(
         timestamp: Timestamp,
-    ): ValueSnapshot<ValueT> = valueSnapshotList.getOrNull(timestamp.t)
-        ?: throw IllegalArgumentException("Cell not defined for t = ${timestamp.t}")
-}
+    ): ValueSnapshot<ValueT> {
+        while (cache.size <= timestamp.t) {
+            val oldSnapshot = cache.last()
+            val nextTimestamp = Timestamp(cache.size)
 
-private fun <ValueT> HoldSemanticCell.Command<ValueT>.execute(
-    oldValueSnapshot: ValueSnapshot<ValueT>,
-    timestamp: Timestamp,
-): ValueSnapshot<ValueT> = when (this) {
-    is HoldSemanticCell.Command.Pass -> oldValueSnapshot
-
-    is HoldSemanticCell.Command.Update -> ValueSnapshot(
-        value = updatedValue,
-        timestamp = timestamp.next,
-    )
-}
-
-private class LazyBuiltList<E> private constructor(
-    private val iterator: Iterator<E>,
-) : AbstractList<E>() {
-    companion object {
-        fun <E> build(
-            sequence: Sequence<E>,
-        ): LazyBuiltList<E> = LazyBuiltList(
-            iterator = sequence.iterator(),
-        )
-    }
-
-    private val storageList = mutableListOf<E>()
-
-    override val size: Int
-        get() {
-            buildUntil(maxSize = Int.MAX_VALUE)
-
-            return storageList.size
-        }
-
-    private fun buildUntil(
-        maxSize: Int,
-    ) {
-        while (storageList.size <= maxSize) {
-            if (iterator.hasNext()) {
-                storageList.add(iterator.next())
-            } else {
-                return
+            cache += when (val command = buildNewValue(oldSnapshot.value)) {
+                is Command.Pass -> oldSnapshot
+                is Command.Update -> ValueSnapshot(
+                    value = command.updatedValue,
+                    timestamp = nextTimestamp,
+                )
             }
         }
-    }
 
-    override fun get(index: Int): E {
-        buildUntil(maxSize = index + 1)
-
-        return storageList[index]
+        return cache[timestamp.t]
     }
 }

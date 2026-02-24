@@ -1,9 +1,6 @@
 package dev.azide.core.test_utils.semantic
 
-import kotlin.jvm.JvmInline
-
-@JvmInline
-value class Timestamp(
+data class Timestamp(
     val t: Int,
 ) : Comparable<Timestamp> {
     companion object {
