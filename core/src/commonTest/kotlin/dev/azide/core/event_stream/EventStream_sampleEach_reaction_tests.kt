@@ -5,107 +5,76 @@ import dev.azide.core.Moment
 import dev.azide.core.sampleEach
 import dev.azide.core.sampling
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
-import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.emitting
-import dev.azide.core.test_utils.event_stream.revokingEmission
 import dev.azide.core.test_utils.cell.TestInputCell
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
-import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
-import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.TestStimulation
 import kotlin.test.Test
 
-@Suppress("ClassName", "PrivatePropertyName")
+@Suppress("ClassName")
 class EventStream_sampleEach_reaction_tests {
-    private typealias SuitableSlotCount = TestSlotCount.Count2
 
-    private typealias SuitableTestSlottedStimulationScenario = TestSlottedStimulationScenario<SuitableSlotCount>
-
-    private val slottedStimulationScenarioBank_sourceEventStreamEmits =
-        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmits.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked =
-        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsRevoked.distribute(slotCount = SuitableSlotCount)
-
-    private val slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected =
-        EventStream_generic_testUtils.stimulationScenarioBank_sourceEventStreamEmitsCorrected.distribute(slotCount = SuitableSlotCount)
+    // region step source emits
 
     @Test
     fun test_step_sourceEmits() {
-        slottedStimulationScenarioBank_sourceEventStreamEmits.forEach { slottedStimulationScenario ->
-            test_step_sourceEmits(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
-    }
-
-    private fun test_step_sourceEmits(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
-    ) {
         val helperCell = TestInputCell(initialValue = 10)
 
         val sourceEventStream = TestInputEventStream<Moment<Int>>()
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
+        val inputPlan = generic_reaction_testUtils.InputStimulationPlan(
+            unobservedInputStimulation = TestStimulation.Noop,
+            observedInputStimulation = sourceEventStream.emit(helperCell.sampling),
+        )
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceEventStream.emitting(
-                tag = SourceEventStreamTag,
-                emittedEvent = helperCell.sampling,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 10,
             ),
         )
     }
 
+    // endregion
+
+    // region step source emits revoked
+
     @Test
     fun test_step_sourceEmitsRevoked() {
-        slottedStimulationScenarioBank_sourceEventStreamEmitsRevoked.forEach { slottedStimulationScenario ->
-            test_step_sourceEmitsRevoked(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
-    }
-
-    private fun test_step_sourceEmitsRevoked(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
-    ) {
         val helperCell = TestInputCell(initialValue = 10)
 
         val sourceEventStream = TestInputEventStream<Moment<Int>>()
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
+        val inputPlan = generic_reaction_testUtils.InputStimulationPlan(
+            unobservedInputStimulation = TestStimulation.Noop,
+            observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                sourceEventStream.emit(helperCell.sampling),
+                sourceEventStream.revokeEmission(),
+            ),
+        )
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceEventStream.revokingEmission(
-                tag = SourceEventStreamTag,
-                emittedEvent = helperCell.sampling,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
 
+    // endregion
+
+    // region step source emits corrected
+
     @Test
     fun test_step_sourceEmitsCorrected() {
-        slottedStimulationScenarioBank_sourceEventStreamEmitsCorrected.forEach { slottedStimulationScenario ->
-            test_step_sourceEmitsCorrected(
-                slottedStimulationScenario = slottedStimulationScenario,
-            )
-        }
-    }
-
-    private fun test_step_sourceEmitsCorrected(
-        slottedStimulationScenario: SuitableTestSlottedStimulationScenario,
-    ) {
         val helperCell1 = TestInputCell(initialValue = 10)
         val helperCell2 = TestInputCell(initialValue = 20)
 
@@ -113,17 +82,23 @@ class EventStream_sampleEach_reaction_tests {
 
         val subjectEventStream: EventStream<Int> = sourceEventStream.sampleEach()
 
+        val inputPlan = generic_reaction_testUtils.InputStimulationPlan(
+            unobservedInputStimulation = TestStimulation.Noop,
+            observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                sourceEventStream.emit(helperCell1.sampling),
+                sourceEventStream.correctEmission(helperCell2.sampling),
+            ),
+        )
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceEventStream.correctingEmission(
-                tag = SourceEventStreamTag,
-                intermediateEmittedEvent = helperCell1.sampling,
-                correctedEmittedEvent = helperCell2.sampling,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = inputPlan,
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 20,
             ),
         )
     }
+
+    // endregion
 }
