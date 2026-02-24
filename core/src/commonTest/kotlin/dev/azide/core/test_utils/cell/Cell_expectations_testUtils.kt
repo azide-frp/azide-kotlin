@@ -75,11 +75,13 @@ object Cell_expectations_testUtils {
             propagationContext: Transactions.PropagationContext,
             subject: Cell<ValueT>,
         ) {
+            val actualOldValue = subject.vertex.getOldValue(
+                processingContext = propagationContext,
+            )
+
             assertEquals(
                 expected = expectedValue,
-                actual = subject.vertex.getOldValue(
-                    processingContext = propagationContext,
-                ),
+                actual = actualOldValue,
                 message = "The stable value of the cell did not match the expected stable value.",
             )
         }
