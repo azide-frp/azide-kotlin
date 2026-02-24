@@ -14,6 +14,9 @@ import dev.azide.core.impl.event_stream.registerBoundListenerOnline
 import dev.azide.core.impl.event_stream.registerListenerOnline
 import dev.azide.core.pullInternallyWrappedUp
 import dev.azide.core.test_utils.TestStimulation
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import kotlin.jvm.JvmInline
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -257,16 +260,16 @@ internal object EventStreamTestUtils_deprecated {
         inputStimulation: TestStimulation,
         expectedEmittedEvent: EventT,
     ) {
-        val subscribingVerifier = subscribeForVerification(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = inputStimulation,
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = expectedEmittedEvent,
+            ),
         )
-
-        subscribingVerifier.verifyEmitsAsExpected(
-            inputStimulation = inputStimulation,
-            expectedEmittedEvent = expectedEmittedEvent,
-        )
-
-        subscribingVerifier.stop()
     }
 
     /**
@@ -277,15 +280,14 @@ internal object EventStreamTestUtils_deprecated {
         subjectEventStream: EventStream<EventT>,
         inputStimulation: TestStimulation,
     ) {
-        val subscribingVerifier = subscribeForVerification(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = inputStimulation,
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
-
-        subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = inputStimulation,
-        )
-
-        subscribingVerifier.stop()
     }
 
     /**
@@ -296,15 +298,14 @@ internal object EventStreamTestUtils_deprecated {
         subjectEventStream: EventStream<EventT>,
         inputStimulation: TestStimulation,
     ) {
-        val subscribingVerifier = subscribeForVerification(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = inputStimulation,
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
-
-        subscribingVerifier.verifyDoesNotEmitEffectively(
-            inputStimulation = inputStimulation,
-        )
-
-        subscribingVerifier.stop()
     }
 
     /**

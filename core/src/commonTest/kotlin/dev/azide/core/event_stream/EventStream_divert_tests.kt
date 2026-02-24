@@ -6,13 +6,15 @@ import dev.azide.core.divertOf
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import kotlin.test.Ignore
 import kotlin.test.Test
 
 @Suppress("ClassName")
-// TODO: Switch to new-style unit test suite
 class EventStream_divert_tests {
     @Test
     fun test_onlyCurrentInnerEmits_outerConst() {
@@ -24,12 +26,17 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = innerEventStream.emit(
-                emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = innerEventStream.emit(
+                    emittedEvent = 11,
+                ),
             ),
-            expectedEmittedEvent = 11,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -43,12 +50,17 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = innerEventStream.emit(
-                emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = innerEventStream.emit(
+                    emittedEvent = 11,
+                ),
             ),
-            expectedEmittedEvent = 11,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -62,13 +74,19 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                innerEventStream.emit(
-                    emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    innerEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    innerEventStream.revokeEmission(),
                 ),
-                innerEventStream.revokeEmission(),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
@@ -83,17 +101,22 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                innerEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                innerEventStream.correctEmission(
-                    correctedEmittedEvent = 12,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    innerEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    innerEventStream.correctEmission(
+                        correctedEmittedEvent = 12,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = 12,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 12,
+            ),
         )
     }
 
@@ -109,21 +132,23 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
-            subjectEventStream = subjectEventStream,
-        )
-
         TestUtils.stimulateSeparately(
             outerSourceCell.update(
                 newValue = laterInnerSourceEventStream,
             ),
         )
 
-        subscribingVerifier.verifyEmitsAsExpected(
-            inputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 21,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = laterInnerSourceEventStream.emit(
+                    emittedEvent = 21,
+                ),
             ),
-            expectedEmittedEvent = 21,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 21,
+            ),
         )
     }
 
@@ -139,22 +164,25 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
-            subjectEventStream = subjectEventStream,
-        )
-
         TestUtils.stimulateSeparately(
             outerSourceCell.update(
                 newValue = laterInnerSourceEventStream,
             ),
         )
 
-        subscribingVerifier.verifyDoesNotEmitEffectively(
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    laterInnerSourceEventStream.revokeEmission(),
                 ),
-                laterInnerSourceEventStream.revokeEmission(),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
@@ -171,26 +199,28 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
-            subjectEventStream = subjectEventStream,
-        )
-
         TestUtils.stimulateSeparately(
             outerSourceCell.update(
                 newValue = laterInnerSourceEventStream,
             ),
         )
 
-        subscribingVerifier.verifyEmitsAsExpected(
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
-                ),
-                laterInnerSourceEventStream.correctEmission(
-                    correctedEmittedEvent = 22,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    laterInnerSourceEventStream.correctEmission(
+                        correctedEmittedEvent = 22,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = 22,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 22,
+            ),
         )
     }
 
@@ -206,20 +236,21 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
-            subjectEventStream = subjectEventStream,
-        )
-
         TestUtils.stimulateSeparately(
             outerSourceCell.update(
                 newValue = laterInnerSourceEventStream,
             ),
         )
 
-        subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = earlierInnerSourceEventStream.emit(
-                emittedEvent = 11,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = earlierInnerSourceEventStream.emit(
+                    emittedEvent = 11,
+                ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -235,11 +266,15 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = outerSourceCell.update(
-                newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = outerSourceCell.update(
+                    newValue = laterInnerSourceEventStream,
+                ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -255,11 +290,15 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = outerSourceCell.update(
-                newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = outerSourceCell.update(
+                    newValue = laterInnerSourceEventStream,
+                ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -275,21 +314,29 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    outerSourceCell.revokeUpdate(),
                 ),
-                outerSourceCell.revokeUpdate(),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 21,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = laterInnerSourceEventStream.emit(
+                    emittedEvent = 21,
+                ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -307,23 +354,31 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = intermediateInnerSourceEventStream,
-                ),
-                outerSourceCell.correctUpdate(
-                    correctedNewValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = intermediateInnerSourceEventStream,
+                    ),
+                    outerSourceCell.correctUpdate(
+                        correctedNewValue = laterInnerSourceEventStream,
+                    ),
                 ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = intermediateInnerSourceEventStream.emit(
-                emittedEvent = 21,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = intermediateInnerSourceEventStream.emit(
+                    emittedEvent = 21,
+                ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -339,16 +394,20 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
-                ),
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
                 ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -364,16 +423,20 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
-                ),
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
                 ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -389,17 +452,21 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitAtAll(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    laterInnerSourceEventStream.revokeEmission(),
                 ),
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
-                ),
-                laterInnerSourceEventStream.revokeEmission(),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -415,17 +482,22 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
-                ),
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    earlierInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = 11,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -441,17 +513,22 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    earlierInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = 11,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -467,17 +544,21 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    earlierInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
+                    earlierInnerSourceEventStream.revokeEmission(),
                 ),
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 21,
-                ),
-                earlierInnerSourceEventStream.revokeEmission(),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -493,20 +574,25 @@ class EventStream_divert_tests {
 
         val subjectEventStream = Cell.divert(outerSourceCell)
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                outerSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
-                ),
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                laterInnerSourceEventStream.emit(
-                    emittedEvent = 21,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    outerSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    earlierInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    laterInnerSourceEventStream.emit(
+                        emittedEvent = 21,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = 11,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -545,44 +631,54 @@ class EventStream_divert_tests {
         // Subject `divert` event stream (E)
         val subjectEventStream = Cell.divert(shallowOuterIntermediateCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    // B updates to A2, but C2 shouldn't even be subscribed to B during the propagation phase. _But_ when C2
+                    // eventually activates, it should correctly subscribe to C2 for the sake of future transactions (_not_
+                    // to C1, as it would if it was activated mid-transaction).
+                    deepOuterSourceCell.update(
+                        newValue = laterInnerSourceEventStream,
+                    ),
+                    // D updates from C1 to C2. E should acknowledge it, yet keep subscribed to C1 for the duration of the
+                    // propagation phase.
+                    shallowOuterIntermediateCell.update(
+                        newValue = laterInnerIntermediateEventStream,
+                    ),
+                    // This A1 event should be ignored, as E should still be subscribed to C1, so C2/B/A1/A2 shouldn't even
+                    // be active yet.
+                    earlierInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                ),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 
-        subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                // B updates to A2, but C2 shouldn't even be subscribed to B during the propagation phase. _But_ when C2
-                // eventually activates, it should correctly subscribe to C2 for the sake of future transactions (_not_
-                // to C1, as it would if it was activated mid-transaction).
-                deepOuterSourceCell.update(
-                    newValue = laterInnerSourceEventStream,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = laterInnerSourceEventStream.emit(
+                    emittedEvent = 21,
                 ),
-                // D updates from C1 to C2. E should acknowledge it, yet keep subscribed to C1 for the duration of the
-                // propagation phase.
-                shallowOuterIntermediateCell.update(
-                    newValue = laterInnerIntermediateEventStream,
-                ),
-                // This A1 event should be ignored, as E should still be subscribed to C1, so C2/B/A1/A2 shouldn't even
-                // be active yet.
-                earlierInnerSourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 21,
             ),
         )
 
-        subscribingVerifier.verifyEmitsAsExpected(
-            // A2 should be active at this point and its events should be propagated down to E.
-            inputStimulation = laterInnerSourceEventStream.emit(
-                emittedEvent = 21,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = earlierInnerSourceEventStream.emit(
+                    emittedEvent = 12,
+                ),
             ),
-            expectedEmittedEvent = 21,
-        )
-
-        subscribingVerifier.verifyDoesNotEmitAtAll(
-            // A1 should be inactive at this point.
-            inputStimulation = earlierInnerSourceEventStream.emit(
-                emittedEvent = 12,
-            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
     }
 
@@ -617,31 +713,38 @@ class EventStream_divert_tests {
         // Subject `divert` event stream (E)
         val subjectEventStream = Cell.divert(shallowOuterIntermediateCell)
 
-        val subscribingVerifier = EventStreamTestUtils_deprecated.subscribeForVerification(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-        )
-
-        subscribingVerifier.verifyDoesNotEmitAtAll(
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                // D updates from C1 to C2. E should acknowledge it, yet keep subscribed to C1 for the duration of the
-                // propagation phase.
-                shallowOuterIntermediateCell.update(
-                    newValue = laterInnerIntermediateEventStream,
-                ),
-                // This A1 event should be ignored, as E should still be subscribed to C1, so C2/B/A1/A2 shouldn't even
-                // be active yet.
-                deepInnerSourceEventStream.emit(
-                    emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    // D updates from C1 to C2. E should acknowledge it, yet keep subscribed to C1 for the duration of the
+                    // propagation phase.
+                    shallowOuterIntermediateCell.update(
+                        newValue = laterInnerIntermediateEventStream,
+                    ),
+                    // This A1 event should be ignored, as E should still be subscribed to C1, so C2/B/A1/A2 shouldn't even
+                    // be active yet.
+                    deepInnerSourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
                 ),
             ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
         )
 
-        subscribingVerifier.verifyEmitsAsExpected(
-            // A2 should be active at this point and its events should be propagated down to E.
-            inputStimulation = deepInnerSourceEventStream.emit(
-                emittedEvent = 21,
+        EventStream_reaction_testUtils.testReaction(
+            subjectEventStream = subjectEventStream,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                // A2 should be active at this point and its events should be propagated down to E.
+                observedInputStimulation = deepInnerSourceEventStream.emit(
+                    emittedEvent = 21,
+                ),
             ),
-            expectedEmittedEvent = 21,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 21,
+            ),
         )
     }
 }

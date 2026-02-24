@@ -9,14 +9,16 @@ import dev.azide.core.test_utils.cell.updating
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation0
+import dev.azide.core.test_utils.stimulation_combinatorics.slotStimulation1
 import dev.azide.core.updatedValues
 import kotlin.test.Test
 
 @Suppress("ClassName", "PrivatePropertyName")
-// TODO: Switch to new-style unit test suite
 class Cell_updatedValues_tests {
     private typealias SuitableSlotCount = TestSlotCount.Count2
 
@@ -48,12 +50,17 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
+        val slotted = sourceCell.updating(
+            tag = SourceCellTag,
+            newValue = 20,
+        ).bind(slottedStimulationScenario)
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceCell.updating(
-                tag = SourceCellTag,
-                newValue = 20,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = slotted.slotStimulation0,
+                observedInputStimulation = slotted.slotStimulation1,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 expectedEmittedEvent = 20,
             ),
@@ -78,12 +85,17 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
+        val slotted = sourceCell.revokingUpdate(
+            tag = SourceCellTag,
+            newValue = 20,
+        ).bind(slottedStimulationScenario)
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceCell.revokingUpdate(
-                tag = SourceCellTag,
-                newValue = 20,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = slotted.slotStimulation0,
+                observedInputStimulation = slotted.slotStimulation1,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
@@ -108,13 +120,18 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
+        val slotted = sourceCell.correctingUpdate(
+            tag = SourceCellTag,
+            intermediateNewValue = 20,
+            correctedNewValue = 21,
+        ).bind(slottedStimulationScenario)
+
         EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            slottedInputStimulation = sourceCell.correctingUpdate(
-                tag = SourceCellTag,
-                intermediateNewValue = 20,
-                correctedNewValue = 21,
-            ).bind(slottedStimulationScenario),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = slotted.slotStimulation0,
+                observedInputStimulation = slotted.slotStimulation1,
+            ),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 21,

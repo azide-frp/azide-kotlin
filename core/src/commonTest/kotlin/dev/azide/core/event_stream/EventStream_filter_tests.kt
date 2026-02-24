@@ -5,11 +5,9 @@ import dev.azide.core.filter
 import dev.azide.core.impl.event_stream.EventStreamVertex
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
-import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.asTransition
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
-import dev.azide.core.test_utils.generic.TestSubjectHealthChecker
+import dev.azide.core.test_utils.generic.TestSubjectHealthCheckStrategy
 import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import kotlin.test.Test
 
@@ -24,16 +22,18 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = sourceEventStream.emit(11),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission<Int>(
                 expectedEmittedEvent = 11,
             ),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = true),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = true,
         )
     }
 
@@ -43,14 +43,16 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = sourceEventStream.emit(11),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = false),
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission<Int>(),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = false,
         )
     }
 
@@ -64,8 +66,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -73,10 +75,12 @@ class EventStream_filter_tests {
                     sourceEventStream.revokeEmission(),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission<Int>(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = true),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = true,
         )
     }
 
@@ -86,8 +90,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -95,8 +99,10 @@ class EventStream_filter_tests {
                     sourceEventStream.revokeEmission(),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = false),
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission<Int>(),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = false,
         )
     }
 
@@ -110,8 +116,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { true }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -119,11 +125,13 @@ class EventStream_filter_tests {
                     sourceEventStream.correctEmission(12),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission<Int>(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
                 expectedEmittedEvent = 12,
             ),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = true),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = true,
         )
     }
 
@@ -133,8 +141,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { false }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -142,8 +150,10 @@ class EventStream_filter_tests {
                     sourceEventStream.correctEmission(12),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(),
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = false),
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission<Int>(),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = false,
         )
     }
 
@@ -153,8 +163,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -162,11 +172,13 @@ class EventStream_filter_tests {
                     sourceEventStream.correctEmission(-12),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission<Int>(
                 intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
             // 999 > 0, so the health-check emit is accepted
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = true),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = true,
         )
     }
 
@@ -176,8 +188,8 @@ class EventStream_filter_tests {
 
         val subjectEventStream = sourceEventStream.filter { it > 0 }
 
-        EventStream_reaction_testUtils.testReaction(
-            subjectEventStream = subjectEventStream,
+        EventStream_filter_testUtils.testReaction(
+            input = sourceEventStream,
             inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
                 unobservedInputStimulation = TestStimulation.Noop,
                 observedInputStimulation = TestStimulation.combineInProvidedOrder(
@@ -185,11 +197,13 @@ class EventStream_filter_tests {
                     sourceEventStream.correctEmission(12),
                 ),
             ),
-            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+            subjectEventStream = subjectEventStream,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission<Int>(
                 expectedEmittedEvent = 12,
             ),
             // 999 > 0, so the health-check emit is accepted
-            subjectHealthChecker = FilterHealthChecker(input = sourceEventStream, predicateAccepts = true),
+            subjectHealthCheckStrategy = TestSubjectHealthCheckStrategy.TestSubjectKeptActive,
+            predicateAccepts = true,
         )
     }
 
