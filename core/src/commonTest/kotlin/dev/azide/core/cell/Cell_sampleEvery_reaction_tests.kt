@@ -9,9 +9,9 @@ import dev.azide.core.test_utils.cell.Cell_generic_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
@@ -56,7 +56,7 @@ class Cell_sampleEvery_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = inputCell.updating(
+            slottedInputStimulation = inputCell.updating_deprecated(
                 tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
@@ -90,7 +90,7 @@ class Cell_sampleEvery_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = inputCell.revokingUpdate(
+            slottedInputStimulation = inputCell.revokingUpdate_deprecated(
                 tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),
@@ -125,7 +125,7 @@ class Cell_sampleEvery_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = inputCell.correctingUpdate(
+            slottedInputStimulation = inputCell.correctingUpdate_deprecated(
                 tag = SourceCellTag,
                 intermediateNewValue = helperCell2.sampling,
                 correctedNewValue = helperCell3.sampling,

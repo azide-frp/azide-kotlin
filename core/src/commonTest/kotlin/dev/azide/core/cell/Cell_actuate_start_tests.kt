@@ -7,9 +7,9 @@ import dev.azide.core.cell.Cell_actuate_testUtils.SourceEffectCellTag
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsNotStarted
@@ -115,7 +115,7 @@ class Cell_actuate_start_tests {
         Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = SourceEffectCellTag,
                 newValue = targetEffect2,
             ).bind(slottedStimulationScenario),
@@ -164,7 +164,7 @@ class Cell_actuate_start_tests {
         Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = sourceCell.revokingUpdate_deprecated(
                 tag = SourceEffectCellTag,
                 newValue = targetEffect2,
             ).bind(slottedStimulationScenario),
@@ -213,7 +213,7 @@ class Cell_actuate_start_tests {
         Effect_Cell_start_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = sourceCell.correctingUpdate_deprecated(
                 tag = SourceEffectCellTag,
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,

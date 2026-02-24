@@ -5,9 +5,9 @@ import dev.azide.core.Effect
 import dev.azide.core.executeEvery
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_startRevoked_testUtils
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
@@ -74,7 +74,7 @@ class Cell_executeEvery_startRevoked_tests {
 
         Effect_Cell_startRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 newValue = targetActionRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -108,7 +108,7 @@ class Cell_executeEvery_startRevoked_tests {
 
         Effect_Cell_startRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = sourceCell.revokingUpdate_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 newValue = targetActionRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -143,7 +143,7 @@ class Cell_executeEvery_startRevoked_tests {
 
         Effect_Cell_startRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = sourceCell.correctingUpdate_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 intermediateNewValue = targetActionRecorder2.recordedAction,
                 correctedNewValue = targetActionRecorder3.recordedAction,

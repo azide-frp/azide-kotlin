@@ -6,7 +6,7 @@ import dev.azide.core.executeEvery
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.generic.ExpectedImpact
@@ -66,7 +66,7 @@ class Cell_executeEvery_start_rushedWrapUp_tests {
 
         Effect_Cell_start_rushedWrapUp_testUtils.testStart(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 newValue = targetActionRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),

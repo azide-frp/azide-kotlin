@@ -3,9 +3,9 @@ package dev.azide.core.cell
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
@@ -50,7 +50,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.updating(
+        val slotted = sourceCell.updating_deprecated(
             tag = SourceCellTag,
             newValue = 20,
         ).bind(slottedStimulationScenario)
@@ -85,7 +85,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.revokingUpdate(
+        val slotted = sourceCell.revokingUpdate_deprecated(
             tag = SourceCellTag,
             newValue = 20,
         ).bind(slottedStimulationScenario)
@@ -120,7 +120,7 @@ class Cell_updatedValues_tests {
 
         val subjectEventStream = sourceCell.updatedValues
 
-        val slotted = sourceCell.correctingUpdate(
+        val slotted = sourceCell.correctingUpdate_deprecated(
             tag = SourceCellTag,
             intermediateNewValue = 20,
             correctedNewValue = 21,

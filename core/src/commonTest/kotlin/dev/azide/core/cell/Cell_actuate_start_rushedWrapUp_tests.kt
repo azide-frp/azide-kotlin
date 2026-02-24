@@ -7,7 +7,7 @@ import dev.azide.core.cell.Cell_actuate_testUtils.SourceEffectCellTag
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.expectIsStartedOnceAndCancelledOnce
 import dev.azide.core.test_utils.expectIsStartedOnceButNotCancelled
@@ -68,7 +68,7 @@ class Cell_actuate_start_rushedWrapUp_tests {
 
         Effect_Cell_start_rushedWrapUp_testUtils.testStart(
             subjectCellEffect = subjectEffect,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = SourceEffectCellTag,
                 newValue = targetEffect2,
             ).bind(slottedStimulationScenario),

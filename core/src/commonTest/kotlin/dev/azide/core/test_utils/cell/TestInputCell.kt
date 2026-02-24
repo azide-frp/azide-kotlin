@@ -12,7 +12,7 @@ import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.semantic.AnySemanticCell
 import dev.azide.core.test_utils.semantic.SemanticCell
 import dev.azide.core.test_utils.semantic.Timestamp
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap_deprecated
 
 class TestInputCell<ValueT>(
     initialValue: ValueT,
@@ -146,33 +146,33 @@ class TestInputCell<ValueT>(
         get() = _vertex
 }
 
-fun <ValueT> TestInputCell<ValueT>.updating(
+fun <ValueT> TestInputCell<ValueT>.updating_deprecated(
     tag: TestInputCellTag,
     newValue: ValueT,
-): TestStimulationMap = TestStimulationMap.of(
+): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
     TestInputCellStimulationTag.Update(inputTag = tag) to update(
         newValue = newValue,
     ),
 )
 
-fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate_deprecated(
     newValue: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = update(newValue = newValue),
     secondStimulation = revokeUpdate(),
 )
 
-fun <ValueT> TestInputCell<ValueT>.revokingUpdate(
+fun <ValueT> TestInputCell<ValueT>.revokingUpdate_deprecated(
     tag: TestInputCellTag,
     newValue: ValueT,
-): TestStimulationMap = revokingUpdate(
+): TestStimulationMap_deprecated = revokingUpdate_deprecated(
     newValue = newValue,
 ).tagged(
     firstTag = TestInputCellStimulationTag.Update(inputTag = tag),
     secondTag = TestInputCellStimulationTag.UpdateRevocation(inputTag = tag),
 )
 
-fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate_deprecated(
     intermediateNewValue: ValueT,
     correctedNewValue: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
@@ -180,11 +180,11 @@ fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
     secondStimulation = correctUpdate(correctedNewValue),
 )
 
-fun <ValueT> TestInputCell<ValueT>.correctingUpdate(
+fun <ValueT> TestInputCell<ValueT>.correctingUpdate_deprecated(
     tag: TestInputCellTag,
     intermediateNewValue: ValueT,
     correctedNewValue: ValueT,
-): TestStimulationMap = correctingUpdate(
+): TestStimulationMap_deprecated = correctingUpdate_deprecated(
     intermediateNewValue = intermediateNewValue,
     correctedNewValue = correctedNewValue,
 ).tagged(

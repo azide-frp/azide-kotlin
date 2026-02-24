@@ -6,7 +6,7 @@ data class TestSlottedStimulationScenarioBank<SlotCountT : TestSlotCount>(
     fun first(): TestSlottedStimulationScenario<SlotCountT> = slottedStimulationScenarios.first()
 
     fun bind(
-        stimulationMap: TestStimulationMap,
+        stimulationMap: TestStimulationMap_deprecated,
     ): Sequence<TestSlottedStimulation<SlotCountT>> = slottedStimulationScenarios.asSequence()
         .map { slottedStimulationScenario: TestSlottedStimulationScenario<SlotCountT> ->
             stimulationMap.bind(slottedStimulationScenario)

@@ -9,9 +9,9 @@ import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.emitting
-import dev.azide.core.test_utils.event_stream.revokingEmission
+import dev.azide.core.test_utils.event_stream.correctingEmission_deprecated
+import dev.azide.core.test_utils.event_stream.emitting_deprecated
+import dev.azide.core.test_utils.event_stream.revokingEmission_deprecated
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
@@ -52,7 +52,7 @@ class EventStream_hold_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceEventStream.emitting(
+            slottedInputStimulation = sourceEventStream.emitting_deprecated(
                 tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
@@ -83,7 +83,7 @@ class EventStream_hold_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceEventStream.revokingEmission(
+            slottedInputStimulation = sourceEventStream.revokingEmission_deprecated(
                 tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),
@@ -114,7 +114,7 @@ class EventStream_hold_reaction_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceEventStream.correctingEmission(
+            slottedInputStimulation = sourceEventStream.correctingEmission_deprecated(
                 tag = SourceEventStreamTag,
                 intermediateEmittedEvent = 10,
                 correctedEmittedEvent = 20,

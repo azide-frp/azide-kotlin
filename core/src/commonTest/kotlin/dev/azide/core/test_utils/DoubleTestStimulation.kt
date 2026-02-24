@@ -1,7 +1,7 @@
 package dev.azide.core.test_utils
 
 import dev.azide.core.impl.Transactions
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationTag_deprecated
 
 data class DoubleTestStimulation(
@@ -11,7 +11,7 @@ data class DoubleTestStimulation(
     fun tagged(
         firstTag: TestStimulationTag_deprecated,
         secondTag: TestStimulationTag_deprecated,
-    ): TestStimulationMap = TestStimulationMap.of(
+    ): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
         firstTag to firstStimulation,
         secondTag to secondStimulation,
     )

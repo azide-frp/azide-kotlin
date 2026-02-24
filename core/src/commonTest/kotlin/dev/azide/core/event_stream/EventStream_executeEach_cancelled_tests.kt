@@ -11,9 +11,9 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_cancelle
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.emitting
-import dev.azide.core.test_utils.event_stream.revokingEmission
+import dev.azide.core.test_utils.event_stream.correctingEmission_deprecated
+import dev.azide.core.test_utils.event_stream.emitting_deprecated
+import dev.azide.core.test_utils.event_stream.revokingEmission_deprecated
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
@@ -131,7 +131,7 @@ class EventStream_executeEach_cancelled_tests {
         Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceEventStream.emitting(
+            slottedInputStimulation = sourceEventStream.emitting_deprecated(
                 tag = SourceActionEventStreamTag,
                 emittedEvent = targetActionRecorder.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -180,7 +180,7 @@ class EventStream_executeEach_cancelled_tests {
         Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceEventStream.revokingEmission(
+            slottedInputStimulation = sourceEventStream.revokingEmission_deprecated(
                 tag = SourceActionEventStreamTag,
                 emittedEvent = targetActionRecorder.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -230,7 +230,7 @@ class EventStream_executeEach_cancelled_tests {
         Effect_EventStream_cancelled_testUtils.testCancel(
             subjectEffectOutcome = subjectOutcome,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceEventStream.correctingEmission(
+            slottedInputStimulation = sourceEventStream.correctingEmission_deprecated(
                 tag = SourceActionEventStreamTag,
                 intermediateEmittedEvent = targetActionRecorder1.recordedAction,
                 correctedEmittedEvent = targetActionRecorder2.recordedAction,
