@@ -10,6 +10,28 @@ import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
 
 class TestInputEventStream<EventT>() : EventStream<EventT> {
+    companion object {
+        fun <EventT> realizeInitially(
+            semanticEventStream: dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>,
+        ): TestInputEventStream<EventT> = TestInputEventStream()
+
+        fun <EventT> realizeIndirectly(
+            semanticEventStream: dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>,
+        ): Pair<TestInputEventStream<EventT>, dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>> {
+            val input = TestInputEventStream<EventT>()
+
+            val provider = object : dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT> {
+                override val label: dev.azide.core.test_utils.semantic.SemanticEventStream.Label =
+                    dev.azide.core.test_utils.semantic.SemanticEventStream.Label.Dependent
+
+                override fun evaluate(timestamp: dev.azide.core.test_utils.semantic.Timestamp): EventT? =
+                    semanticEventStream.evaluate(timestamp = timestamp)
+            }
+
+            return Pair(input, provider)
+        }
+    }
+
     private val _vertex = object : AbstractLiveEventStreamVertex<EventT>() {
         fun emit(
             propagationContext: Transactions.PropagationContext,
