@@ -2,12 +2,14 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.map
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import kotlin.test.Test
 
 @Suppress("ClassName")
-// TODO: Switch to new-style unit test suite
 class EventStream_map_tests {
     @Test
     fun test_sourceEmits() {
@@ -15,12 +17,17 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = sourceEventStream.emit(
-                emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = sourceEventStream.emit(
+                    emittedEvent = 11,
+                ),
             ),
-            expectedEmittedEvent = "11",
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = "11",
+            ),
         )
     }
 
@@ -30,13 +37,19 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    sourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    sourceEventStream.revokeEmission(),
                 ),
-                sourceEventStream.revokeEmission(),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
@@ -47,17 +60,22 @@ class EventStream_map_tests {
 
         val subjectEventStream = sourceEventStream.map { it.toString() }
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                sourceEventStream.emit(
-                    emittedEvent = 11,
-                ),
-                sourceEventStream.correctEmission(
-                    correctedEmittedEvent = 12,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    sourceEventStream.emit(
+                        emittedEvent = 11,
+                    ),
+                    sourceEventStream.correctEmission(
+                        correctedEmittedEvent = 12,
+                    ),
                 ),
             ),
-            expectedEmittedEvent = "12",
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = "12",
+            ),
         )
     }
 }

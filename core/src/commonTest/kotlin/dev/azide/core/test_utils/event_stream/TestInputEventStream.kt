@@ -7,31 +7,9 @@ import dev.azide.core.impl.event_stream.EventStreamVertex.Emission
 import dev.azide.core.impl.event_stream.abstract_vertices.AbstractLiveEventStreamVertex
 import dev.azide.core.test_utils.DoubleTestStimulation
 import dev.azide.core.test_utils.TestStimulation
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap_deprecated
 
-class TestInputEventStream<EventT>() : EventStream<EventT> {
-    companion object {
-        fun <EventT> realizeInitially(
-            semanticEventStream: dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>,
-        ): TestInputEventStream<EventT> = TestInputEventStream()
-
-        fun <EventT> realizeIndirectly(
-            semanticEventStream: dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>,
-        ): Pair<TestInputEventStream<EventT>, dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT>> {
-            val input = TestInputEventStream<EventT>()
-
-            val provider = object : dev.azide.core.test_utils.semantic.AnySemanticEventStream<EventT> {
-                override val label: dev.azide.core.test_utils.semantic.SemanticEventStream.Label =
-                    dev.azide.core.test_utils.semantic.SemanticEventStream.Label.Dependent
-
-                override fun evaluate(timestamp: dev.azide.core.test_utils.semantic.Timestamp): EventT? =
-                    semanticEventStream.evaluate(timestamp = timestamp)
-            }
-
-            return Pair(input, provider)
-        }
-    }
-
+class TestInputEventStream<EventT> : EventStream<EventT> {
     private val _vertex = object : AbstractLiveEventStreamVertex<EventT>() {
         fun emit(
             propagationContext: Transactions.PropagationContext,
@@ -119,30 +97,30 @@ class TestInputEventStream<EventT>() : EventStream<EventT> {
         get() = _vertex
 }
 
-fun <EventT> TestInputEventStream<EventT>.emitting(
+fun <EventT> TestInputEventStream<EventT>.emitting_deprecated(
     tag: TestInputEventStreamTag,
     emittedEvent: EventT,
-): TestStimulationMap = TestStimulationMap.of(
+): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
     TestInputEventStreamStimulationTag.Emission(inputTag = tag) to emit(
         emittedEvent = emittedEvent,
     ),
 )
 
-fun <EventT> TestInputEventStream<EventT>.revokingEmission(
+fun <EventT> TestInputEventStream<EventT>.revokingEmission_deprecated(
     tag: TestInputEventStreamTag,
     emittedEvent: EventT,
-): TestStimulationMap = TestStimulationMap.of(
+): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
     TestInputEventStreamStimulationTag.Emission(inputTag = tag) to emit(
         emittedEvent = emittedEvent,
     ),
     TestInputEventStreamStimulationTag.EmissionRevocation(inputTag = tag) to revokeEmission(),
 )
 
-fun <EventT> TestInputEventStream<EventT>.correctingEmission(
+fun <EventT> TestInputEventStream<EventT>.correctingEmission_deprecated(
     tag: TestInputEventStreamTag,
     intermediateEmittedEvent: EventT,
     correctedEmittedEvent: EventT,
-): TestStimulationMap = TestStimulationMap.of(
+): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
     TestInputEventStreamStimulationTag.Emission(inputTag = tag) to emit(
         emittedEvent = intermediateEmittedEvent,
     ),
@@ -151,7 +129,7 @@ fun <EventT> TestInputEventStream<EventT>.correctingEmission(
     ),
 )
 
-fun <ValueT> TestInputEventStream<ValueT>.revokingEmission(
+fun <ValueT> TestInputEventStream<ValueT>.revokingEmission_deprecated(
     emittedEvent: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(
     firstStimulation = emit(
@@ -160,7 +138,7 @@ fun <ValueT> TestInputEventStream<ValueT>.revokingEmission(
     secondStimulation = revokeEmission(),
 )
 
-fun <ValueT> TestInputEventStream<ValueT>.correctingEmission(
+fun <ValueT> TestInputEventStream<ValueT>.correctingEmission_deprecated(
     intermediateEmittedEvent: ValueT,
     correctedEmittedEvent: ValueT,
 ): DoubleTestStimulation = DoubleTestStimulation(

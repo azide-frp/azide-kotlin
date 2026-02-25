@@ -2,11 +2,9 @@ package dev.azide.core.event_stream
 
 import dev.azide.core.filter
 import dev.azide.core.test_utils.RandomValueGenerator
-import dev.azide.core.test_utils.TestSequentialStimulation
 import dev.azide.core.test_utils.TestSlottedStimulation2
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.event_stream.EventStream_fuzzyTestUtils
-import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
 import dev.azide.core.test_utils.semantic.AnySemanticEventStream
@@ -29,23 +27,23 @@ class EventStream_filter_fuzzyTests {
     fun test_fuzzy() {
         val random = Random(0)
 
-        val semanticEventValueGenerator = object : RandomValueGenerator<Int> {
+        val semanticValueGenerator = object : RandomValueGenerator<Int> {
             override operator fun next(): Int = random.nextInt(maxEventPayloadValue)
         }
 
         val semanticInputEventStream: AnySemanticEventStream<Int> = SemanticEventStream.generateRandom(
             label = InputEventStreamLabel,
             random = random,
-            randomValueGenerator = semanticEventValueGenerator,
+            randomValueGenerator = semanticValueGenerator,
         )
 
-        // Realize semantic stream into technical source and a mirror provider
-        val (source, semanticProvider) = TestInputEventStream.realizeIndirectly(semanticInputEventStream)
+        // Realize semantic stream into technical input and a mirror provider
+        val inputEventStream = TestInputEventStream<Int>()
 
         // Predicate under test: accept even numbers
         val predicate: (Int) -> Boolean = { it % 2 == 0 }
 
-        val subjectEventStream = source.filter(predicate = predicate)
+        val subjectEventStream = inputEventStream.filter(predicate = predicate)
 
         Timestamp.generate(iterationCount).forEach { newTimestamp ->
             // Semantic emitted event at this timestamp (may be null)
@@ -55,37 +53,23 @@ class EventStream_filter_fuzzyTests {
             val semanticSubjectEmission: Int? = semanticEmission?.takeIf { predicate(it) }
 
             // Build randomized technical stimulation sequence that realizes the semantic emission
-            val seq: TestSequentialStimulation? = EventStream_fuzzyTestUtils.buildRandomInputEventStreamStimulationSequence(
+            val eventStimulationSequence = EventStream_fuzzyTestUtils.buildRandomInputEventStreamStimulationSequence(
                 random = random,
                 noiseValueGenerator = object : RandomValueGenerator<Int> {
-                    override operator fun next(): Int = semanticEventValueGenerator.next()
+                    override operator fun next(): Int = 0xBAADF00D.toInt()
                 },
-                inputEventStream = source,
+                inputEventStream = inputEventStream,
                 semanticEmission = semanticEmission,
-            )
+            ) ?: TestStimulation.Noop
 
-            val combinedTestStimulation = seq?.consecutiveStimulations?.let { consecutive ->
-                @Suppress("UNCHECKED_CAST")
-                TestStimulation.combineInProvidedOrder(stimulations = (consecutive as List<TestStimulation>))
-            } ?: TestStimulation.Noop
-
-            val expected = if (semanticSubjectEmission != null) {
-                EventStream_expectations_testUtils.expectEmission(
-                    intermediatePropagationTolerance = dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
-                    expectedEmittedEvent = semanticSubjectEmission,
-                )
-            } else {
-                EventStream_expectations_testUtils.expectNoEmission(
-                    intermediatePropagationTolerance = dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance.Tolerate,
-                )
-            }
+            val expected = EventStream_fuzzyTestUtils.buildExpectedSubjectEventStreamEmission(semanticSubjectEmission)
 
             EventStream_reaction_testUtils.testReaction(
                 subjectEventStream = subjectEventStream,
                 slottedInputStimulation = TestSlottedStimulation2(
                     listOf(
                         TestStimulation.Noop,
-                        combinedTestStimulation,
+                        eventStimulationSequence,
                     ),
                 ),
                 expectedSubjectEmission = expected,

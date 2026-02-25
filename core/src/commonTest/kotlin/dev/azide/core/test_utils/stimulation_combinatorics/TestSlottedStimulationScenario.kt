@@ -19,7 +19,7 @@ data class TestSlottedStimulationScenario<@Suppress("unused") SlotCountT : TestS
     }
 }
 
-fun <@Suppress("unused") SlotCountT : TestSlotCount> TestStimulationMap.bind(
+fun <@Suppress("unused") SlotCountT : TestSlotCount> TestStimulationMap_deprecated.bind(
     scenario: TestSlottedStimulationScenario<SlotCountT>,
 ): TestSlottedStimulation<SlotCountT> = TestSlottedStimulation(
     slotStimulations = scenario.slotStimulationScenarios.map { stimulationScenario: TestStimulationScenario_deprecated ->

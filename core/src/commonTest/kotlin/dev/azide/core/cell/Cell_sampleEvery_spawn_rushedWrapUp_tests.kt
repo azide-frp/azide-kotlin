@@ -9,7 +9,7 @@ import dev.azide.core.test_utils.cell.Cell_generic_testUtils
 import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.Cell_spawn_rushedWrapUp_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
@@ -65,7 +65,7 @@ class Cell_sampleEvery_spawn_rushedWrapUp_tests {
 
         Cell_spawn_rushedWrapUp_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectSpawnMoment,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = SourceCellTag,
                 newValue = helperCell2.sampling,
             ).bind(slottedStimulationScenario),

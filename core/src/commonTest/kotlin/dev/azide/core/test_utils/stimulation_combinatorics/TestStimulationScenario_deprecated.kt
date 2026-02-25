@@ -47,7 +47,7 @@ data class TestStimulationScenario_deprecated(
     }
 
     fun bind(
-        stimulationMap: TestStimulationMap,
+        stimulationMap: TestStimulationMap_deprecated,
     ): TestStimulation = TestStimulation.combineInProvidedOrder(
         stimulations = stimulationTags.map { stimulationTag: TestStimulationTag_deprecated ->
             stimulationMap[stimulationTag]

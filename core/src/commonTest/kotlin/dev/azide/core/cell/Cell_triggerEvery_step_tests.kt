@@ -4,8 +4,8 @@ import dev.azide.core.Schedule
 import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
@@ -53,7 +53,7 @@ class Cell_triggerEvery_step_tests {
         subjectSchedule.startExternally()
 
         Schedule_step_testUtils.testStep(
-            inputStimulation = sourceCell.revokingUpdate(
+            inputStimulation = sourceCell.revokingUpdate_deprecated(
                 newValue = targetTriggerRecorder2.recordedAction,
             ).joint(),
             expectedTargetImpact = ExpectedImpact.combine(
@@ -78,7 +78,7 @@ class Cell_triggerEvery_step_tests {
         subjectSchedule.startExternally()
 
         Schedule_step_testUtils.testStep(
-            inputStimulation = sourceCell.correctingUpdate(
+            inputStimulation = sourceCell.correctingUpdate_deprecated(
                 intermediateNewValue = targetTriggerRecorder2.recordedAction,
                 correctedNewValue = targetTriggerRecorder3.recordedAction,
             ).joint(),

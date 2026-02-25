@@ -8,7 +8,7 @@ import dev.azide.core.test_utils.cell.Cell_spawn_nonPerceived_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils
 import dev.azide.core.test_utils.event_stream.EventStream_generic_testUtils.SourceEventStreamTag
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.emitting
+import dev.azide.core.test_utils.event_stream.emitting_deprecated
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
 import dev.azide.core.test_utils.stimulation_combinatorics.bind
@@ -57,7 +57,7 @@ class EventStream_hold_spawn_nonObserved_tests {
 
         Cell_spawn_nonPerceived_testUtils.testSpawn(
             subjectCellSpawnMoment = subjectMoment,
-            slottedInputStimulation = sourceEventStream.emitting(
+            slottedInputStimulation = sourceEventStream.emitting_deprecated(
                 tag = SourceEventStreamTag,
                 emittedEvent = 10,
             ).bind(slottedStimulationScenario),

@@ -6,9 +6,9 @@ import dev.azide.core.executeEvery
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_start_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsExecutedOnce
@@ -118,7 +118,7 @@ class Cell_executeEvery_start_quickCancelledRevoked_tests {
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 newValue = targetActionRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -173,7 +173,7 @@ class Cell_executeEvery_start_quickCancelledRevoked_tests {
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = sourceCell.revokingUpdate_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 newValue = targetActionRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -228,7 +228,7 @@ class Cell_executeEvery_start_quickCancelledRevoked_tests {
         val subjectCell = Effect_Cell_start_quickCancelledRevoked_testUtils.testStart(
             subjectCellEffect = subjectEffect,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = sourceCell.correctingUpdate_deprecated(
                 tag = Cell_executeEvery_testUtils.SourceActionCellTag,
                 intermediateNewValue = targetActionRecorder2.recordedAction,
                 correctedNewValue = targetActionRecorder3.recordedAction,

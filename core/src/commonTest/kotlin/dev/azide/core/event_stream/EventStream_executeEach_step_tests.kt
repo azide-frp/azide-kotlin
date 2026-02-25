@@ -10,8 +10,8 @@ import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_step_tes
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.revokingEmission
+import dev.azide.core.test_utils.event_stream.correctingEmission_deprecated
+import dev.azide.core.test_utils.event_stream.revokingEmission_deprecated
 import dev.azide.core.test_utils.expectIsExecutedOnce
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
@@ -86,7 +86,7 @@ class EventStream_executeEach_step_tests {
         Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            inputStimulation = sourceEventStream.revokingEmission(
+            inputStimulation = sourceEventStream.revokingEmission_deprecated(
                 emittedEvent = targetActionRecorder.recordedAction,
             ).joint(),
             expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
@@ -125,7 +125,7 @@ class EventStream_executeEach_step_tests {
         Effect_EventStream_step_testUtils.testStep(
             subjectEventStream = subjectEventStream,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            inputStimulation = sourceEventStream.correctingEmission(
+            inputStimulation = sourceEventStream.correctingEmission_deprecated(
                 intermediateEmittedEvent = targetActionRecorder1.recordedAction,
                 correctedEmittedEvent = targetActionRecorder2.recordedAction,
             ).joint(),

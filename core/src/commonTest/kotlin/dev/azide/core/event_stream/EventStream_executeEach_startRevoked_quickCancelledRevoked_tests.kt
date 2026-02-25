@@ -8,9 +8,9 @@ import dev.azide.core.executeEach
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.effect_event_stream.Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils
 import dev.azide.core.test_utils.event_stream.TestInputEventStream
-import dev.azide.core.test_utils.event_stream.correctingEmission
-import dev.azide.core.test_utils.event_stream.emitting
-import dev.azide.core.test_utils.event_stream.revokingEmission
+import dev.azide.core.test_utils.event_stream.correctingEmission_deprecated
+import dev.azide.core.test_utils.event_stream.emitting_deprecated
+import dev.azide.core.test_utils.event_stream.revokingEmission_deprecated
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
@@ -73,7 +73,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
-            slottedInputStimulation = sourceEventStream.emitting(
+            slottedInputStimulation = sourceEventStream.emitting_deprecated(
                 tag = SourceActionEventStreamTag,
                 emittedEvent = targetActionRecorder.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -105,7 +105,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
-            slottedInputStimulation = sourceEventStream.revokingEmission(
+            slottedInputStimulation = sourceEventStream.revokingEmission_deprecated(
                 tag = SourceActionEventStreamTag,
                 emittedEvent = targetActionRecorder.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -138,7 +138,7 @@ class EventStream_executeEach_startRevoked_quickCancelledRevoked_quickCancelledR
 
         Effect_EventStream_startRevoked_quickCancelledRevoked_testUtils.testStart(
             subjectEventStreamEffect = subjectEffect,
-            slottedInputStimulation = sourceEventStream.correctingEmission(
+            slottedInputStimulation = sourceEventStream.correctingEmission_deprecated(
                 tag = SourceActionEventStreamTag,
                 intermediateEmittedEvent = targetActionRecorder1.recordedAction,
                 correctedEmittedEvent = targetActionRecorder2.recordedAction,

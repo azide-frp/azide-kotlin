@@ -7,8 +7,8 @@ import dev.azide.core.startExternally
 import dev.azide.core.test_utils.TestTargetEffect
 import dev.azide.core.test_utils.cell.Cell_expectations_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
 import dev.azide.core.test_utils.effect_cell.Effect_Cell_step_testUtils
 import dev.azide.core.test_utils.effect_generic.TestSubjectPerceptionStrategy
 import dev.azide.core.test_utils.expectIsCancelledOnce
@@ -101,7 +101,7 @@ class Cell_actuate_step_tests {
         Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            inputStimulation = sourceCell.revokingUpdate(
+            inputStimulation = sourceCell.revokingUpdate_deprecated(
                 newValue = targetEffect2,
             ).joint(),
             expectedSubjectValueTransition = Cell_expectations_testUtils.expectNoValueTransition(
@@ -149,7 +149,7 @@ class Cell_actuate_step_tests {
         Effect_Cell_step_testUtils.testStep(
             subjectCell = subjectCell,
             subjectPerceptionStrategy = subjectPerceptionStrategy,
-            inputStimulation = sourceCell.correctingUpdate(
+            inputStimulation = sourceCell.correctingUpdate_deprecated(
                 intermediateNewValue = targetEffect2,
                 correctedNewValue = targetEffect3,
             ).joint(),

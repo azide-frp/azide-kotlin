@@ -7,9 +7,9 @@ import dev.azide.core.test_utils.cell.Cell_generic_testUtils.SourceCellTag
 import dev.azide.core.test_utils.cell.Cell_reaction_testUtils
 import dev.azide.core.test_utils.cell.Cell_sampling_testUtils
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlotCount
 import dev.azide.core.test_utils.stimulation_combinatorics.TestSlottedStimulationScenario
@@ -68,7 +68,7 @@ class Cell_map_complex_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = SourceCellTag,
                 newValue = 11,
             ).bind(slottedStimulationScenario),
@@ -99,7 +99,7 @@ class Cell_map_complex_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = sourceCell.revokingUpdate_deprecated(
                 tag = SourceCellTag,
                 newValue = 11,
             ).bind(slottedStimulationScenario),
@@ -130,7 +130,7 @@ class Cell_map_complex_tests {
 
         Cell_reaction_testUtils.testReaction(
             subjectCell = subjectCell,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = sourceCell.correctingUpdate_deprecated(
                 tag = SourceCellTag,
                 intermediateNewValue = 11,
                 correctedNewValue = 12,

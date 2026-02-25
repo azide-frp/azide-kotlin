@@ -3,9 +3,9 @@ package dev.azide.core.cell
 import dev.azide.core.Schedule
 import dev.azide.core.test_utils.TestTargetActionRecorder
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.cell.correctingUpdate
-import dev.azide.core.test_utils.cell.revokingUpdate
-import dev.azide.core.test_utils.cell.updating
+import dev.azide.core.test_utils.cell.correctingUpdate_deprecated
+import dev.azide.core.test_utils.cell.revokingUpdate_deprecated
+import dev.azide.core.test_utils.cell.updating_deprecated
 import dev.azide.core.test_utils.expectIsNotExecuted
 import dev.azide.core.test_utils.generic.ExpectedImpact
 import dev.azide.core.test_utils.schedule.Schedule_startRevoked_quickCancelled_testUtils
@@ -77,7 +77,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
-            slottedInputStimulation = sourceCell.updating(
+            slottedInputStimulation = sourceCell.updating_deprecated(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
                 newValue = targetTriggerRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -115,7 +115,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
-            slottedInputStimulation = sourceCell.revokingUpdate(
+            slottedInputStimulation = sourceCell.revokingUpdate_deprecated(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
                 newValue = targetTriggerRecorder2.recordedAction,
             ).bind(slottedStimulationScenario),
@@ -154,7 +154,7 @@ class Cell_triggerEvery_startRevoked_quickCancelled_tests {
 
         Schedule_startRevoked_quickCancelled_testUtils.testStart(
             subjectSchedule = subjectSchedule,
-            slottedInputStimulation = sourceCell.correctingUpdate(
+            slottedInputStimulation = sourceCell.correctingUpdate_deprecated(
                 tag = Cell_triggerEvery_testUtils.SourceTriggerCellTag,
                 intermediateNewValue = targetTriggerRecorder2.recordedAction,
                 correctedNewValue = targetTriggerRecorder3.recordedAction,

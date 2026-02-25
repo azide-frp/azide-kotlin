@@ -2,13 +2,19 @@ package dev.azide.core.cell
 
 import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.TestUtils
+import dev.azide.core.test_utils.TestSlottedStimulation3
 import dev.azide.core.test_utils.cell.TestInputCell
-import dev.azide.core.test_utils.event_stream.EventStreamTestUtils_deprecated
+import dev.azide.core.test_utils.event_stream.EventStream_expectations_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_reaction_testUtils
+import dev.azide.core.test_utils.event_stream.EventStream_spawn_testUtils
+import dev.azide.core.test_utils.event_stream.TestInputEventStream
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction
+import dev.azide.core.test_utils.generic.ExpectedTestSubjectReaction.IntermediatePropagationTolerance
+import dev.azide.core.test_utils.generic.generic_reaction_testUtils
 import dev.azide.core.values
 import kotlin.test.Test
 
 @Suppress("ClassName")
-// TODO: Switch to new-style unit test suite
 class Cell_values_tests {
     @Test
     fun test_spawn() {
@@ -16,9 +22,12 @@ class Cell_values_tests {
             initialValue = 10,
         )
 
-        EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
-            expectedEmittedEvent = 10,
-            spawn = sourceCell.values,
+        EventStream_spawn_testUtils.testSpawn(
+            subjectEventStreamSpawnMoment = sourceCell.values,
+            slottedInputStimulation = null,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 10,
+            ),
         )
     }
 
@@ -28,10 +37,18 @@ class Cell_values_tests {
             initialValue = 10,
         )
 
-        EventStreamTestUtils_deprecated.spawnStatefulEventStreamExpectingEmission(
-            inputStimulation = sourceCell.update(newValue = 11),
-            expectedEmittedEvent = 11,
-            spawn = sourceCell.values,
+        EventStream_spawn_testUtils.testSpawn(
+            subjectEventStreamSpawnMoment = sourceCell.values,
+            slottedInputStimulation = TestSlottedStimulation3(
+                listOf(
+                    sourceCell.update(newValue = 11),
+                    TestStimulation.Noop,
+                    TestStimulation.Noop,
+                ),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 11,
+            ),
         )
     }
 
@@ -45,10 +62,15 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = sourceCell.update(newValue = 20),
-            expectedEmittedEvent = 20,
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = sourceCell.update(newValue = 20),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 20,
+            ),
         )
     }
 
@@ -62,11 +84,17 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils_deprecated.verifyDoesNotEmitEffectively(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                sourceCell.update(newValue = 20),
-                sourceCell.revokeUpdate(),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    sourceCell.update(newValue = 20),
+                    sourceCell.revokeUpdate(),
+                ),
+            ),
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectNoEmission(
+                intermediatePropagationTolerance = IntermediatePropagationTolerance.Tolerate,
             ),
         )
     }
@@ -81,13 +109,18 @@ class Cell_values_tests {
             sourceCell.values,
         )
 
-        EventStreamTestUtils_deprecated.verifyEmitsAsExpected(
+        EventStream_reaction_testUtils.testReaction(
             subjectEventStream = subjectEventStream,
-            inputStimulation = TestStimulation.combineInProvidedOrder(
-                sourceCell.update(newValue = 20),
-                sourceCell.correctUpdate(correctedNewValue = 21),
+            inputStimulationPlan = generic_reaction_testUtils.InputStimulationPlan(
+                unobservedInputStimulation = TestStimulation.Noop,
+                observedInputStimulation = TestStimulation.combineInProvidedOrder(
+                    sourceCell.update(newValue = 20),
+                    sourceCell.correctUpdate(correctedNewValue = 21),
+                ),
             ),
-            expectedEmittedEvent = 21,
+            expectedSubjectEmission = EventStream_expectations_testUtils.expectEmission(
+                expectedEmittedEvent = 21,
+            ),
         )
     }
 }

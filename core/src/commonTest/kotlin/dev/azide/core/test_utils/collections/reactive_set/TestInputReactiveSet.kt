@@ -10,7 +10,7 @@ import dev.azide.core.test_utils.TestStimulation
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionStimulationTag
 import dev.azide.core.test_utils.cell.TestInputReactiveCollectionTag
 import dev.azide.core.test_utils.collections.reactive_set.TestInputReactiveSet.ChangeDescription
-import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap
+import dev.azide.core.test_utils.stimulation_combinatorics.TestStimulationMap_deprecated
 
 class TestInputReactiveSet<ElementT>(
     initialElements: Set<ElementT>,
@@ -149,7 +149,7 @@ class TestInputReactiveSet<ElementT>(
 fun <ElementT> TestInputReactiveSet<ElementT>.changing(
     tag: TestInputReactiveCollectionTag,
     changeDescription: ChangeDescription<ElementT>,
-): TestStimulationMap = TestStimulationMap.of(
+): TestStimulationMap_deprecated = TestStimulationMap_deprecated.of(
     TestInputReactiveCollectionStimulationTag.Change(
         inputTag = tag,
     ) to change(
@@ -169,7 +169,7 @@ fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
 fun <ElementT> TestInputReactiveSet<ElementT>.revokingChange(
     tag: TestInputReactiveCollectionTag,
     temporaryChangeDescription: ChangeDescription<ElementT>,
-): TestStimulationMap = revokingChange(
+): TestStimulationMap_deprecated = revokingChange(
     temporaryChangeDescription,
 ).tagged(
     firstTag = TestInputReactiveCollectionStimulationTag.Change(
@@ -196,7 +196,7 @@ fun <ElementT> TestInputReactiveSet<ElementT>.correctingChange(
     tag: TestInputReactiveCollectionTag,
     intermediateChangeDescription: ChangeDescription<ElementT>,
     correctedChangeDescription: ChangeDescription<ElementT>,
-): TestStimulationMap = correctingChange(
+): TestStimulationMap_deprecated = correctingChange(
     intermediateChangeDescription = intermediateChangeDescription,
     correctedChangeDescription = correctedChangeDescription,
 ).tagged(
